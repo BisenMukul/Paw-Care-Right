@@ -15,7 +15,9 @@
     "declaration": true,
     "baseUrl": ".",
     "paths": {
-      "@pawcareright/types": ["../types/dist/index.d.ts"]
+      "@pawcareright/types": ["../types/dist/index.d.ts"],
+      "@pawcareright/api-client": ["../api-client/dist/index.d.ts"],
+      "@pawcareright/api-client/mmkv-persister": ["../api-client/dist/mmkv-persister.d.ts"]
     }
   }
 }

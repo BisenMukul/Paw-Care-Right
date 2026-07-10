@@ -1,0 +1,65 @@
+{
+  "name": "@pawcareright/api-client",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./mmkv-persister": {
+      "types": "./dist/mmkv-persister.d.ts",
+      "import": "./dist/mmkv-persister.js",
+      "require": "./dist/mmkv-persister.cjs"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@pawcareright/types": "workspace:*",
+    "@tanstack/react-query": "^5",
+    "zod": "^4"
+  },
+  "peerDependencies": {
+    "react": "^19",
+    "react-native-mmkv": "^4",
+    "@tanstack/react-query-persist-client": "^5"
+  },
+  "peerDependenciesMeta": {
+    "react-native-mmkv": { "optional": true },
+    "@tanstack/react-query-persist-client": { "optional": true }
+  },
+  "devDependencies": {
+    "@pawcareright/config": "workspace:*",
+    "react": "^19",
+    "@types/react": "^19",
+    "react-native-mmkv": "^4",
+    "@tanstack/react-query-persist-client": "^5",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^22",
+    "eslint": "^9.39.4",
+    "eslint-config-prettier": "^9.1.2",
+    "eslint-plugin-import-x": "^4.17.1",
+    "jest": "^29.7.0",
+    "prettier": "^3.9.5",
+    "ts-jest": "^29.2.5",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.63.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "roots": ["<rootDir>/src"],
+    "transform": {
+      "^.+\\.tsx?$": ["ts-jest", { "tsconfig": "<rootDir>/tsconfig.spec.json" }]
+    },
+    "testMatch": ["**/*.spec.ts"],
+    "moduleFileExtensions": ["ts", "tsx", "js", "json"]
+  }
+}
