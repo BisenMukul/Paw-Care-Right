@@ -154,3 +154,7 @@
 - **Checkpoint:** C1 is after M3 — no checkpoint gate at M0. Proceeding.
 - **Actions:** `milestones.M0 = passed`; `currentPhase P0 → P1`; tag `milestone/M0` on this commit. Per the working-branch policy the milestone is pushed to the feature branch `claude/pull-main-next-task-oaad26` + tag (not a direct `main` push); it reaches `main` when the PR merges.
 - **Next:** Phase 1 (Auth, Users & Households → M1), starting T011 (Prisma core schema + migration).
+
+### M0 tag note (post-push)
+- Branch `claude/pull-main-next-task-oaad26` pushed with the M0 milestone commit (846710c). Full suite green, `milestones.M0=passed`, `currentPhase=P1` are on origin.
+- `git push origin milestone/M0` returns a deterministic HTTP 403 (retries exhausted). Proxy is healthy (no relay failures), so this is a GitHub credential-scope limit — the session token may push the working branch but not `refs/tags/*`. The annotated tag `milestone/M0` exists locally on 846710c; it will be pushed at PR merge or by a maintainer with tag-push rights. Not a gate failure — the milestone criteria all passed.
