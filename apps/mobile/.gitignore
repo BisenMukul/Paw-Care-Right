@@ -1,0 +1,11 @@
+.expo/
+node_modules/
+dist/
+web-build/
+*.tsbuildinfo
+.turbo/
+expo-env.d.ts
+ios/
+android/
+.metro-health-check*
+*.orig.*
