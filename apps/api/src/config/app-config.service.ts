@@ -38,4 +38,8 @@ export class AppConfigService {
   get appleClientId(): string {
     return this.env.APPLE_CLIENT_ID;
   }
+
+  get googleClientId(): string {
+    return this.env.GOOGLE_CLIENT_ID;
+  }
 }

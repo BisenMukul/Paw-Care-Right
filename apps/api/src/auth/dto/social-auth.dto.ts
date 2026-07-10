@@ -3,11 +3,11 @@ import { IsIn, IsNotEmpty, IsString } from "class-validator";
 
 import type { SocialProvider } from "../social/social-verifier";
 
-// Apple-only for now — T014 widens this to include "google". The
-// `@IsIn` allowlist (combined with the global `whitelist +
-// forbidNonWhitelisted` ValidationPipe) rejects any other provider with a
-// 400 VALIDATION_FAILED, before any verifier or DB work runs.
-const SUPPORTED_PROVIDERS: SocialProvider[] = ["apple"];
+// Apple + Google (T013/T014). The `@IsIn` allowlist (combined with the
+// global `whitelist + forbidNonWhitelisted` ValidationPipe) rejects any
+// other provider with a 400 VALIDATION_FAILED, before any verifier or DB
+// work runs.
+const SUPPORTED_PROVIDERS: SocialProvider[] = ["apple", "google"];
 
 export class SocialAuthDto {
   @ApiProperty({ enum: SUPPORTED_PROVIDERS })

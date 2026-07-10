@@ -12,6 +12,7 @@ import { OtpService } from "./otp.service";
 import { OtpRateLimitGuard } from "./rate-limit.guard";
 import { RefreshTokenService } from "./refresh-token.service";
 import { APPLE_JWKS_RESOLVER, APPLE_JWKS_URL, AppleTokenVerifier } from "./social/apple-token-verifier";
+import { GOOGLE_JWKS_RESOLVER, GOOGLE_JWKS_URL, GoogleTokenVerifier } from "./social/google-token-verifier";
 import { SocialAuthService } from "./social/social-auth.service";
 import { SOCIAL_TOKEN_VERIFIERS, type SocialTokenVerifier } from "./social/social-verifier";
 
@@ -40,10 +41,18 @@ import { SOCIAL_TOKEN_VERIFIERS, type SocialTokenVerifier } from "./social/socia
     // Tests override this provider with a local, offline JWKS (see
     // auth-social.e2e-spec.ts).
     { provide: APPLE_JWKS_RESOLVER, useFactory: () => createRemoteJWKSet(new URL(APPLE_JWKS_URL)) },
+    GoogleTokenVerifier,
+    // Production JWKS resolver: fetches + caches Google's public keys.
+    // Tests override this provider with a local, offline JWKS (see
+    // auth-social.e2e-spec.ts).
+    { provide: GOOGLE_JWKS_RESOLVER, useFactory: () => createRemoteJWKSet(new URL(GOOGLE_JWKS_URL)) },
     {
       provide: SOCIAL_TOKEN_VERIFIERS,
-      useFactory: (apple: AppleTokenVerifier): SocialTokenVerifier[] => [apple],
-      inject: [AppleTokenVerifier],
+      useFactory: (apple: AppleTokenVerifier, google: GoogleTokenVerifier): SocialTokenVerifier[] => [
+        apple,
+        google,
+      ],
+      inject: [AppleTokenVerifier, GoogleTokenVerifier],
     },
   ],
 })
