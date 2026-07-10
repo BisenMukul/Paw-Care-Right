@@ -142,3 +142,15 @@
 - Checker (Fable, adversarial): `loop/reviews/T010.review.md` → **VERDICT: pass**. Independently re-ran gates (build 2 chunks, 41/41 tests, 24/24 regression); re-proved isolation (core chunk mmkv=0, persist-client=0; mmkv chunk=1); re-proved import-clean with its own Bundler + NodeNext scratch consumers (both exit 0, deleted); confirmed optional peers (`peerDependenciesMeta.optional`, never hard deps), no `any`/`@ts-ignore`/`console.log`, apps untouched, config diff = +2 keys only. No safety surface.
 - New dependencies (§2 rule 7): `@tanstack/react-query@^5` (mandated shared data-fetching lib §3 — hard dep); `@tanstack/react-query-persist-client@^5` (official persistence backing the MMKV persister — optional peer); `zod@^4` (reuse, parses the error envelope); `react@^19` (peer, provider component); `react-native-mmkv@^4` (optional peer, mobile-only, already a mobile dep). tsup/jest/ts-jest/@types/eslint*/prettier/typescript/typescript-eslint reuse established shared versions.
 - Commit: feat(api-client): T010 packages/api-client scaffold (journal rides in the same one-task-one-commit).
+
+## [2026-07-10] 🚩 MILESTONE M0 — Phase 0 (Foundations & Scaffolding) COMPLETE
+- **Scope:** T000–T010 all DONE (11 tasks): repo/turbo/pnpm init, shared config (TS/ESLint/Prettier/env/tailwind preset), docker infra (pg16/redis7/minio), packages/types, NestJS api (health + error envelope + swagger), Next.js web, Expo mobile, GitHub Actions CI, packages/api-client.
+- **M0 gate (LOOP_PROTOCOL §6):**
+  1. Full suite (sequential): `pnpm typecheck` 9/9 · `pnpm lint` 8/8 · `pnpm test` 8/8 (incl. api health e2e vs live pg+redis, 10 api tests; api-client 41 tests; types 12; config 4) · `pnpm build` 6/6 — all exit 0.
+  2. `pnpm test:ai-evals` — N/A until M3 (packages/ai lands T029+).
+  3. Zero in_progress, zero blocked tasks. ✓
+  4. Coverage gate — begins at M1. N/A.
+  5. Infra/boot verification (from PHASES M0 line): `docker compose up` healthy (pg16/redis7/minio); `pnpm dev` — api serves `/v1/health` 200 `{db:ok,redis:ok}` + Swagger `/docs` (verified T006), web builds/serves `/`,`/privacy`,`/terms` (verified T007); mobile Metro boots ("Waiting on http://localhost:…", verified T008). On-device Expo Go boot deferred to the M1 device milestone (headless container).
+- **Checkpoint:** C1 is after M3 — no checkpoint gate at M0. Proceeding.
+- **Actions:** `milestones.M0 = passed`; `currentPhase P0 → P1`; tag `milestone/M0` on this commit. Per the working-branch policy the milestone is pushed to the feature branch `claude/pull-main-next-task-oaad26` + tag (not a direct `main` push); it reaches `main` when the PR merges.
+- **Next:** Phase 1 (Auth, Users & Households → M1), starting T011 (Prisma core schema + migration).
