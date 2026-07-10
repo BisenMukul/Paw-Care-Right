@@ -6,3 +6,62 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+enum Role {
+  OWNER
+  MEMBER
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  appleSub  String?  @unique
+  googleSub String?  @unique
+  locale    String
+  region    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  ownedHouseholds Household[]  @relation("HouseholdOwner")
+  memberships     Membership[]
+  devices         Device[]
+}
+
+model Household {
+  id        String   @id @default(uuid())
+  name      String
+  ownerId   String
+  owner     User     @relation("HouseholdOwner", fields: [ownerId], references: [id], onDelete: Restrict)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  memberships Membership[]
+
+  @@index([ownerId])
+}
+
+model Membership {
+  id          String   @id @default(uuid())
+  userId      String
+  householdId String
+  role        Role     @default(MEMBER)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  household   Household @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+
+  @@unique([userId, householdId])
+  @@index([userId])
+  @@index([householdId])
+}
+
+model Device {
+  id            String   @id @default(uuid())
+  userId        String
+  expoPushToken String   @unique
+  platform      String
+  lastSeenAt    DateTime @default(now())
+  createdAt     DateTime @default(now())
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
