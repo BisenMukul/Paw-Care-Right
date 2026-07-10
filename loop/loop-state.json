@@ -1,0 +1,717 @@
+{
+  "project": "Paw Care Right +",
+  "version": 2,
+  "status": "running",
+  "currentPhase": "P0",
+  "phases": {
+    "P0": {
+      "tasks": [
+        "T001",
+        "T002",
+        "T003",
+        "T004",
+        "T005",
+        "T006",
+        "T007",
+        "T008",
+        "T009",
+        "T010"
+      ],
+      "milestone": "M0"
+    },
+    "P1": {
+      "tasks": [
+        "T011",
+        "T012",
+        "T013",
+        "T014",
+        "T015",
+        "T016",
+        "T017",
+        "T018",
+        "T019",
+        "T020"
+      ],
+      "milestone": "M1"
+    },
+    "P2": {
+      "tasks": [
+        "T021",
+        "T022",
+        "T023",
+        "T024",
+        "T025",
+        "T026",
+        "T027",
+        "T028"
+      ],
+      "milestone": "M2"
+    },
+    "P3": {
+      "tasks": [
+        "T029",
+        "T030",
+        "T031",
+        "T032",
+        "T033",
+        "T034",
+        "T035",
+        "T036",
+        "T037",
+        "T038",
+        "T039",
+        "T040"
+      ],
+      "milestone": "M3"
+    },
+    "P4": {
+      "tasks": [
+        "T041",
+        "T042",
+        "T043",
+        "T044",
+        "T045",
+        "T046",
+        "T047",
+        "T048",
+        "T049",
+        "T050",
+        "T051",
+        "T052"
+      ],
+      "milestone": "M4"
+    },
+    "P5": {
+      "tasks": [
+        "T053",
+        "T054",
+        "T055",
+        "T056",
+        "T057",
+        "T058",
+        "T059",
+        "T060",
+        "T061",
+        "T062"
+      ],
+      "milestone": "M5"
+    },
+    "P6": {
+      "tasks": [
+        "T063",
+        "T064",
+        "T065",
+        "T066",
+        "T067",
+        "T068",
+        "T069",
+        "T070"
+      ],
+      "milestone": "M6"
+    },
+    "P7": {
+      "tasks": [
+        "T071",
+        "T072",
+        "T073",
+        "T074",
+        "T075",
+        "T076",
+        "T077",
+        "T078",
+        "T079",
+        "T080"
+      ],
+      "milestone": "M7"
+    },
+    "P8": {
+      "tasks": [
+        "T081",
+        "T082",
+        "T083",
+        "T084",
+        "T085",
+        "T086",
+        "T087",
+        "T088"
+      ],
+      "milestone": "M8"
+    },
+    "P9": {
+      "tasks": [
+        "T089",
+        "T090",
+        "T091",
+        "T092",
+        "T093",
+        "T094",
+        "T095",
+        "T096",
+        "T097",
+        "T098"
+      ],
+      "milestone": "M9"
+    },
+    "P10": {
+      "tasks": [
+        "T099",
+        "T100",
+        "T101",
+        "T102",
+        "T103",
+        "T104",
+        "T105",
+        "T106",
+        "T113",
+        "T114",
+        "T115",
+        "T116",
+        "T117",
+        "T118"
+      ],
+      "milestone": "M10"
+    },
+    "P11": {
+      "tasks": [
+        "T107",
+        "T108",
+        "T109",
+        "T110",
+        "T111",
+        "T112"
+      ],
+      "milestone": "M11"
+    }
+  },
+  "tasks": {
+    "T001": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T002": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T003": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T004": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T005": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T006": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T007": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T008": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T009": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T010": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T011": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T012": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T013": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T014": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T015": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T016": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T017": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T018": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T019": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T020": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T021": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T022": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T023": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T024": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T025": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T026": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T027": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T028": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T029": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T030": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T031": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T032": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T033": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T034": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T035": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T036": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T037": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T038": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T039": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T040": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T041": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T042": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T043": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T044": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T045": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T046": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T047": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T048": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T049": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T050": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T051": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T052": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T053": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T054": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T055": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T056": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T057": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T058": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T059": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T060": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T061": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T062": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T063": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T064": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T065": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T066": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T067": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T068": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T069": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T070": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T071": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T072": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T073": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T074": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T075": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T076": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T077": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T078": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T079": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T080": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T081": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T082": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T083": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T084": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T085": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T086": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T087": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T088": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T089": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T090": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T091": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T092": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T093": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T094": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T095": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T096": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T097": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T098": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T099": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T100": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T101": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T102": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T103": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T104": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T105": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T106": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T107": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T108": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T109": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T110": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T111": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T112": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T113": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T114": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T115": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T116": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T117": {
+      "status": "pending",
+      "attempts": 0
+    },
+    "T118": {
+      "status": "pending",
+      "attempts": 0
+    }
+  },
+  "milestones": {
+    "M0": {
+      "status": "pending"
+    },
+    "M1": {
+      "status": "pending"
+    },
+    "M2": {
+      "status": "pending"
+    },
+    "M3": {
+      "status": "pending"
+    },
+    "M4": {
+      "status": "pending"
+    },
+    "M5": {
+      "status": "pending"
+    },
+    "M6": {
+      "status": "pending"
+    },
+    "M7": {
+      "status": "pending"
+    },
+    "M8": {
+      "status": "pending"
+    },
+    "M9": {
+      "status": "pending"
+    },
+    "M10": {
+      "status": "pending"
+    },
+    "M11": {
+      "status": "pending"
+    }
+  },
+  "checkpoints": {
+    "C1": {
+      "afterMilestone": "M3",
+      "approved": false,
+      "gate": "Founder (ideally + veterinarian) reviews AI eval report before user-facing triage wiring"
+    },
+    "C2": {
+      "afterMilestone": "M7",
+      "approved": false,
+      "gate": "Store products configured, billing sandbox checklist run, pricing approved"
+    },
+    "C3": {
+      "afterMilestone": "M10",
+      "approved": false,
+      "gate": "Final name/bundle ids, store consoles, legal review, hotline verification, submission"
+    }
+  },
+  "slug": "pawcareright",
+  "bundleId": "com.pawcareright.app"
+}
