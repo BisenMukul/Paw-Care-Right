@@ -12,6 +12,7 @@ export const apiEnvSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   JWT_SECRET: z.string().min(1).default("dev-insecure-jwt-secret-do-not-use-in-production"),
   OTP_HMAC_SECRET: z.string().min(1).default("dev-insecure-otp-hmac-secret-do-not-use-in-production"),
+  APPLE_CLIENT_ID: z.string().min(1).default("com.pawcareright.app"),
 });
 
 export type ApiEnv = z.infer<typeof apiEnvSchema>;

@@ -6,7 +6,9 @@ import { LogoutDto } from "./dto/logout.dto";
 import { OtpRequestDto } from "./dto/otp-request.dto";
 import { OtpVerifyDto } from "./dto/otp-verify.dto";
 import { RefreshDto } from "./dto/refresh.dto";
+import { SocialAuthDto } from "./dto/social-auth.dto";
 import { OtpRateLimitGuard } from "./rate-limit.guard";
+import { SocialAuthService } from "./social/social-auth.service";
 
 // No global auth guard exists yet at T012 (that machinery — `@Public()` +
 // a global JWT guard — lands in T015). All four routes here are
@@ -15,7 +17,10 @@ import { OtpRateLimitGuard } from "./rate-limit.guard";
 @ApiTags("auth")
 @Controller("auth")
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly socialAuthService: SocialAuthService,
+  ) {}
 
   @Post("otp/request")
   @HttpCode(200)
@@ -47,5 +52,13 @@ export class AuthController {
   @ApiOkResponse({ description: "Always 200, even for unknown tokens (idempotent, no probing)." })
   logout(@Body() dto: LogoutDto): Promise<LogoutResult> {
     return this.authService.logout(dto.refreshToken);
+  }
+
+  @Post("social")
+  @HttpCode(200)
+  @ApiOkResponse({ description: "Verifies the social identity token and returns access + refresh tokens." })
+  @ApiUnauthorizedResponse({ description: "Invalid/unverifiable token, or no linkable identity." })
+  socialLogin(@Body() dto: SocialAuthDto): Promise<AuthTokens> {
+    return this.socialAuthService.login(dto.provider, dto.identityToken);
   }
 }

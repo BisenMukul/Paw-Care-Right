@@ -34,4 +34,8 @@ export class AppConfigService {
   get otpHmacSecret(): string {
     return this.env.OTP_HMAC_SECRET;
   }
+
+  get appleClientId(): string {
+    return this.env.APPLE_CLIENT_ID;
+  }
 }

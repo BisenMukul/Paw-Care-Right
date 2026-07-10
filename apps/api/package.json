@@ -25,6 +25,7 @@
     "class-transformer": "^0.5",
     "@prisma/client": "^6",
     "ioredis": "^5",
+    "jose": "^5",
     "zod": "^4",
     "@pawcareright/config": "workspace:*",
     "@pawcareright/types": "workspace:*"

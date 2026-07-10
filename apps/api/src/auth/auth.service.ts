@@ -1,5 +1,6 @@
 import { Inject, Injectable, InternalServerErrorException, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
+import type { Prisma } from "@prisma/client";
 
 import { PrismaService } from "../prisma/prisma.service";
 import {
@@ -27,11 +28,19 @@ export interface LogoutResult {
   ok: true;
 }
 
-interface ProvisionedUser {
+export interface ProvisionedUser {
   userId: string;
   email: string;
   householdId: string;
 }
+
+export interface NewAccountParams {
+  email: string;
+  appleSub?: string;
+  googleSub?: string;
+}
+
+type PrismaTx = Prisma.TransactionClient | PrismaService;
 
 /**
  * Orchestrates the OTP + JWT + refresh-token auth flow. Owns the
@@ -65,6 +74,16 @@ export class AuthService {
     }
 
     const provisioned = await this.provisionOrGetUser(email);
+    return this.issueSession(provisioned);
+  }
+
+  /**
+   * Signs an access token and issues a refresh token for an
+   * already-resolved user, shaping the standard `AuthTokens` response.
+   * Shared by `verifyOtp` and `SocialAuthService` so every sign-in path
+   * (OTP, Apple, future Google) issues sessions identically.
+   */
+  async issueSession(provisioned: ProvisionedUser): Promise<AuthTokens> {
     const { token: refreshToken } = await this.refreshTokenService.issue(provisioned.userId);
     const accessToken = this.signAccessToken(provisioned.userId);
 
@@ -119,17 +138,7 @@ export class AuthService {
       const existing = await tx.user.findUnique({ where: { email: normalizedEmail } });
 
       if (!existing) {
-        const user = await tx.user.create({
-          data: { email: normalizedEmail, locale: DEFAULT_LOCALE, region: DEFAULT_REGION },
-        });
-        const household = await tx.household.create({
-          data: { name: DEFAULT_HOUSEHOLD_NAME, ownerId: user.id },
-        });
-        await tx.membership.create({
-          data: { userId: user.id, householdId: household.id, role: "OWNER" },
-        });
-
-        return { userId: user.id, email: user.email, householdId: household.id };
+        return this.provisionNewAccount(tx, { email: normalizedEmail });
       }
 
       const household = await tx.household.findFirst({
@@ -138,12 +147,46 @@ export class AuthService {
       });
 
       if (!household) {
-        // Invariant break — social-auth users (T013/T014) may arrive with
-        // no owned household in a later task; defensive for now.
+        // Invariant break — every user provisioned via verifyOtp or
+        // provisionNewAccount owns a household. Defensive: do not
+        // silently create one here.
         throw new InternalServerErrorException();
       }
 
       return { userId: existing.id, email: existing.email, householdId: household.id };
     });
+  }
+
+  /**
+   * Creates a new User + owned Household + OWNER Membership — the same
+   * account shape as OTP first-verify. Shared by `provisionOrGetUser` and
+   * `SocialAuthService` (T013/T014) so every provisioning path produces an
+   * identical account structure. `tx` is a Prisma transaction client (or,
+   * for direct callers outside a transaction, `PrismaService` itself).
+   */
+  async provisionNewAccount(tx: PrismaTx, params: NewAccountParams): Promise<ProvisionedUser> {
+    const data: Prisma.UserCreateInput = {
+      email: params.email,
+      locale: DEFAULT_LOCALE,
+      region: DEFAULT_REGION,
+    };
+
+    if (params.appleSub) {
+      data.appleSub = params.appleSub;
+    }
+
+    if (params.googleSub) {
+      data.googleSub = params.googleSub;
+    }
+
+    const user = await tx.user.create({ data });
+    const household = await tx.household.create({
+      data: { name: DEFAULT_HOUSEHOLD_NAME, ownerId: user.id },
+    });
+    await tx.membership.create({
+      data: { userId: user.id, householdId: household.id, role: "OWNER" },
+    });
+
+    return { userId: user.id, email: user.email, householdId: household.id };
   }
 }
