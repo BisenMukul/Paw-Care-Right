@@ -1,0 +1,14 @@
+{
+  "ci": {
+    "collect": {
+      "url": ["http://localhost:3000/"],
+      "startServerCommand": "pnpm --filter @pawcareright/web start"
+    },
+    "assert": {
+      "assertions": {}
+    },
+    "upload": {
+      "target": "temporary-public-storage"
+    }
+  }
+}
