@@ -1,5 +1,7 @@
 # Paw Care Right + — Autonomous Build Bundle
 
+![CI](https://github.com/BisenMukul/Paw-Care-Right/actions/workflows/ci.yml/badge.svg)
+
 AI pet care companion (B2C, global, subscription). This folder is a **repo seed**: drop its contents into a fresh git repository and hand it to your Claude Code loop runner.
 
 ## What's inside
@@ -62,3 +64,14 @@ docker compose up -d      # start postgres, redis, minio (+ bootstrap the bucket
 docker compose ps         # check health status
 docker compose down       # stop and remove containers (named volumes persist)
 ```
+
+## Continuous Integration (CI)
+
+`.github/workflows/ci.yml` runs on every push to `main` and every pull request. Required checks (job `build`, with `postgres:16` + `redis:7` services so the api health e2e can reach them):
+
+- `typecheck` — `pnpm typecheck`
+- `lint` — `pnpm lint`
+- `test` — `pnpm test` (postgres + redis services)
+- `build` — `pnpm build`
+
+The `ai-evals` job (`pnpm test:ai-evals`) is a stub that activates once `packages/ai` lands at T040.
