@@ -25,6 +25,7 @@ model User {
   ownedHouseholds Household[]  @relation("HouseholdOwner")
   memberships     Membership[]
   devices         Device[]
+  refreshTokens   RefreshToken[]
 }
 
 model Household {
@@ -64,4 +65,20 @@ model Device {
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+}
+
+model RefreshToken {
+  id        String    @id @default(uuid())
+  userId    String
+  familyId  String    @default(uuid())
+  tokenHash String    @unique
+  expiresAt DateTime
+  rotatedAt DateTime?
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([familyId])
+  @@index([expiresAt])
 }

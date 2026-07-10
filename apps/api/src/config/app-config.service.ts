@@ -26,4 +26,12 @@ export class AppConfigService {
   get nodeEnv(): ApiEnv["NODE_ENV"] {
     return this.env.NODE_ENV;
   }
+
+  get jwtSecret(): string {
+    return this.env.JWT_SECRET;
+  }
+
+  get otpHmacSecret(): string {
+    return this.env.OTP_HMAC_SECRET;
+  }
 }

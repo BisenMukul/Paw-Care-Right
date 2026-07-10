@@ -16,6 +16,7 @@
   "dependencies": {
     "@nestjs/common": "^11",
     "@nestjs/core": "^11",
+    "@nestjs/jwt": "^11",
     "@nestjs/platform-express": "^11",
     "@nestjs/swagger": "^11",
     "reflect-metadata": "^0.2",
