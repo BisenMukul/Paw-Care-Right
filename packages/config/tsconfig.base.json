@@ -12,6 +12,10 @@
     "isolatedModules": true,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
-    "declaration": true
+    "declaration": true,
+    "baseUrl": ".",
+    "paths": {
+      "@pawcareright/types": ["../types/dist/index.d.ts"]
+    }
   }
 }
