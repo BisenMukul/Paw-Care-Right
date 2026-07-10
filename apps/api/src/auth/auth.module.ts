@@ -29,6 +29,10 @@ import { SOCIAL_TOKEN_VERIFIERS, type SocialTokenVerifier } from "./social/socia
     }),
   ],
   controllers: [AuthController],
+  // JwtModule is re-exported so the AppModule-scoped `JwtAuthGuard`
+  // (registered via APP_GUARD) injects the SAME secret-configured
+  // `JwtService` instance used for token issuance in `AuthService`.
+  exports: [JwtModule],
   providers: [
     AuthService,
     OtpService,
