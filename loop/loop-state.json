@@ -1,11 +1,12 @@
 {
   "project": "Paw Care Right +",
-  "version": 2,
+  "version": 6,
   "status": "running",
   "currentPhase": "P0",
   "phases": {
     "P0": {
       "tasks": [
+        "T000",
         "T001",
         "T002",
         "T003",
@@ -655,6 +656,10 @@
     "T118": {
       "status": "pending",
       "attempts": 0
+    },
+    "T000": {
+      "status": "done",
+      "attempts": 1
     }
   },
   "milestones": {
@@ -713,5 +718,25 @@
     }
   },
   "slug": "pawcareright",
-  "bundleId": "com.pawcareright.app"
+  "bundleId": "com.pawcareright.app",
+  "modelStrategy": {
+    "planner": "fable",
+    "executor": "sonnet",
+    "checker": "fable",
+    "fallback": "opus for planner+checker if fable unavailable",
+    "doc": "docs/MODEL_STRATEGY.md"
+  },
+  "runtimeAiProviders": {
+    "text": "ollama-cloud",
+    "vision": "ollama-cloud",
+    "image": "gemini",
+    "anthropicRuntime": false,
+    "doc": "docs/AI_PROVIDERS.md"
+  },
+  "taskContract": {
+    "activeTaskFile": "loop/current-task"
+  },
+  "bundleFixes": [
+    "surveillance-layer-corrections-v2: Write grants, fail-closed protected-paths (no python), current-task file contract, P0/no-HEAD tolerance, subshell fail-open fixes"
+  ]
 }

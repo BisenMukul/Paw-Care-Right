@@ -13,7 +13,7 @@ flowchart LR
   API --> RD[(Redis\ncache+queues)]
   API --> S3[(S3/MinIO\npet photos)]
   QW[BullMQ workers] --> RD
-  QW --> AI[Anthropic API\nvia packages/ai]
+  QW --> AI[AI providers\nOllama Cloud + Gemini\nvia packages/ai]
   QW --> EXPO[Expo Push]
   RC[RevenueCat] -->|webhooks| API
   U -->|IAP| RC
@@ -29,7 +29,7 @@ flowchart LR
 | workers (same deploy, separate process `apps/api/src/workers`) | `check-runner` (AI triage), `image-processor` (resize/EXIF-strip), `reminder-scheduler` + `push-sender`, `digest-builder`, `answer-cache-warmer` |
 | `apps/mobile` | The product. Offline-tolerant reads (Query cache persisted to MMKV), optimistic completes for reminders, secure token storage. |
 | `apps/web` | Marketing, programmatic SEO pages (SSG from `packages/data`), legal pages, read-only admin (basic auth + allowlist). |
-| `packages/ai` | Provider abstraction, prompts, red-flag rules, TriageResult schema, eval harness (`pnpm test:ai-evals`). No app imports Anthropic SDK directly. |
+| `packages/ai` | Provider abstraction, prompts, red-flag rules, TriageResult schema, eval harness (`pnpm test:ai-evals`). No app imports a vendor SDK directly (Ollama Cloud text+vision, Gemini images — see docs/AI_PROVIDERS.md). |
 | `packages/data` | Versioned seed datasets: `breeds/`, `toxins/`, `care-templates/`, `regions/` (emergency + poison hotlines, vaccine protocol groups). |
 
 ## 3. Data model (Prisma — authoritative field lists live in schema.prisma; this is the shape)

@@ -115,7 +115,7 @@ Owner invites partner/family → shared pets, shared reminders, shared timeline 
 intake (structured + text + photos)
   → normalize + species context
   → RED-FLAG RULES (deterministic)      — match ⇒ EMERGENCY interstitial (AI still runs async for context, never downgrades)
-  → provider call (vision+text, structured output)
+  → provider call (Ollama Cloud vision+text; schema embedded in prompt, temp 0)
   → Zod parse TriageResult              — fail ⇒ SAFE FALLBACK
   → post-rules (uncertainty ↑, cat bias ↑, tier floor from rules)
   → persist + render
@@ -146,7 +146,7 @@ Examples (non-exhaustive; the dataset task T031 completes the table): suspected 
 - Eval report is written to `loop/eval-reports/` and is the artifact for the M3 human checkpoint.
 
 ### 6.5 Cost controls
-Images downscaled ≤1024px before provider call; global answer cache for F3 lookups; per-user daily/monthly caps (Redis counters); prompt caching for the static system prompt; token budget middleware logs cost per check (target ≤ $0.02/check blended).
+Images downscaled ≤1024px before provider call; global answer cache for F3 lookups; per-user daily/monthly caps (Redis counters); token budget middleware logs cost per check (re-baseline target for the chosen Ollama model); provider details in docs/AI_PROVIDERS.md.
 
 ## 7. Monetization & Pricing
 

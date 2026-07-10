@@ -4,6 +4,8 @@ This file defines the loop's operating system. The agent running the loop **must
 
 ## 1. Roles
 
+> **Model-switching overlay:** In this bundle the maker/checker below are realized as separate-model Claude Code subagents — a Fable **planner**, a Sonnet **executor**, and a Fable **checker** — supervised by SubagentStop hooks. See `docs/MODEL_STRATEGY.md`, which refines (does not replace) the roles and iteration steps here. Where the two differ on *who runs a step*, MODEL_STRATEGY wins; the gates, milestones, and checkpoints in this file remain authoritative.
+
 - **MAKER** — implements the current task exactly per its card + `CLAUDE.md`. Runs as a subagent with a fresh, focused context: task card, relevant spec/architecture sections, and the files it needs.
 - **CHECKER** — a *separate* subagent, adversarial by default, that receives the task card and the diff — **not** the maker's reasoning. It verifies acceptance criteria literally, re-runs gates itself, and hunts for forbidden patterns. The checker's job is to find reasons to fail the task; passing is earned.
 - **ORCHESTRATOR** — the top-level loop session: selects tasks, spawns maker/checker, updates state, commits, enforces milestone gates and checkpoints.

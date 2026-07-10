@@ -1,6 +1,6 @@
 # Paw Care Right + — Build Phases & Task Cards
 
-**118 tasks · 12 phases (P0–P11) · milestones M0–M11 · human checkpoints after M3, M7, M10.**
+**119 tasks · 12 phases (P0–P11) · milestones M0–M11 · human checkpoints after M3, M7, M10.**
 
 Task card format: `Txxx · Title — effort(S/M/L)` · **Deps** (must be `done` first) · **Do** (implementation directive) · **Accept** (testable criteria — CHECKER verifies these literally). Global Definition of Done from `CLAUDE.md §8` applies to every task on top of its own criteria. Phase order is strict; within a phase, any task whose deps are met may be picked.
 
@@ -10,8 +10,12 @@ Task card format: `Txxx · Title — effort(S/M/L)` · **Deps** (must be `done` 
 
 **Goal:** monorepo boots, all quality commands run green in CI, local infra one command away.
 
+#### T000 · Verify model-switching surveillance layer — S
+**Deps:** — · **Do:** Before real work, confirm the Fable/Sonnet loop and its hooks are live (per `docs/model-strategy-setup.md`). Run `/agents` and confirm planner/executor/checker load at project scope. Confirm `loop/current-task` exists and the hooks read the task id from it (not from an env var). Then run the gate smoke-tests, **checking exit codes, not just that a command ran** (a hook that no-ops looks identical to a passing gate): (1) a plan file missing a required section is blocked by `gate_plan.sh` (exit 2); (2) a diff containing `console.log` in a plan-listed file is blocked by `gate_exec.sh` (exit 2); (3) an attempted edit to `CLAUDE.md` is blocked by `block_protected_paths.sh` (exit 2); (4) **fail-closed check:** pipe a `file_path`-bearing payload the hook can't parse and confirm it BLOCKS (exit 2), proving it does not fail open — and confirm the hook uses no `python3` dependency. On Windows, verify hooks actually execute via Git Bash. Record all exit codes in `loop/journal.md`. If your plan can't route `fable`, apply the Opus fallback and note it.
+**Accept:** Journal entry shows all four checks blocked with exit 2 as expected, `/agents` lists the three agents, and `loop/current-task` is confirmed as the task-id source; if Fable unavailable, the Opus-variant swap is recorded. No production code is written by this task.
+
 #### T001 · Init Turborepo + pnpm workspaces — S
-**Deps:** — · **Do:** Repo root: `pnpm-workspace.yaml` (apps/*, packages/*), `turbo.json` with pipelines `dev,build,lint,typecheck,test`, root `package.json` scripts per CLAUDE.md §5, `.gitignore`, `.nvmrc` (Node 22 LTS).
+**Deps:** T000 · **Do:** Repo root: `pnpm-workspace.yaml` (apps/*, packages/*), `turbo.json` with pipelines `dev,build,lint,typecheck,test`, root `package.json` scripts per CLAUDE.md §5, `.gitignore`, `.nvmrc` (Node 22 LTS).
 **Accept:** `pnpm i` clean; `pnpm turbo run build --dry` lists workspaces; git initialized on branch `main`, first commit made.
 
 #### T002 · Shared TS/ESLint/Prettier config package — S
@@ -19,8 +23,8 @@ Task card format: `Txxx · Title — effort(S/M/L)` · **Deps** (must be `done` 
 **Accept:** `pnpm lint` and `pnpm typecheck` pass at root; a deliberate `any` in a scratch file fails lint (then remove file); brand constants exported and imported cleanly by a scratch consumer.
 
 #### T003 · Zod env validation module — S
-**Deps:** T002 · **Do:** `packages/config/env`: `defineEnv(schema)` helper that parses `process.env`, throws with readable missing-key report. Create root `.env.example` with every key used across the repo (fake values), updated by every task that adds config.
-**Accept:** Unit tests: valid env parses; missing key throws listing the key; `.env.example` exists.
+**Deps:** T002 · **Do:** `packages/config/env`: `defineEnv(schema)` helper that parses `process.env`, throws with readable missing-key report. Create root `.env.example` with every key used across the repo (fake values), updated by every task that adds config. Seed it with the AI provider keys per docs/AI_PROVIDERS.md (`OLLAMA_CLOUD_API_KEY`, `OLLAMA_CLOUD_BASE_URL`, `AI_TEXT_MODEL`, `AI_VISION_MODEL`, `GEMINI_API_KEY`, `GEMINI_IMAGE_MODEL`) — and **no `ANTHROPIC_API_KEY`**.
+**Accept:** Unit tests: valid env parses; missing key throws listing the key; `.env.example` exists and contains the provider keys above and no `ANTHROPIC_API_KEY`.
 
 #### T004 · Docker Compose local infra — S
 **Deps:** T001 · **Do:** `docker-compose.yml`: postgres:16 (volume, healthcheck), redis:7, minio + bucket bootstrap (`pawcareright-media`). Document ports in README section.
@@ -147,8 +151,8 @@ Task card format: `Txxx · Title — effort(S/M/L)` · **Deps** (must be `done` 
 **Goal:** the triage brain exists, is measured, and is provably safe before any user-facing wiring.
 
 #### T029 · Provider abstraction — M
-**Deps:** T003,T005 · **Do:** `packages/ai`: `LlmProvider` interface (`complete(structured request incl. images) → raw`), Anthropic implementation (env-keyed, timeout, cost calc from usage), fake provider for tests; model id + prompt version constants exported.
-**Accept:** Unit tests with fake provider; Anthropic impl integration-tested behind env flag (skipped in CI without key); cost calc unit-tested.
+**Deps:** T003,T005 · **Do:** `packages/ai` provider seam per docs/AI_PROVIDERS.md: `TextProvider`, `VisionProvider`, `ImageProvider` interfaces + a `registry.ts` that selects impls from env. Implement `ollama-text.ts` and `ollama-vision.ts` against Ollama Cloud's OpenAI-compatible surface (`OLLAMA_CLOUD_BASE_URL`, `OLLAMA_CLOUD_API_KEY`, `AI_TEXT_MODEL`, `AI_VISION_MODEL`; timeout, temp-0 default for triage, cost/latency capture) and `gemini-image.ts` against Gemini (`GEMINI_API_KEY`, `GEMINI_IMAGE_MODEL`). Deterministic `fake/` providers for tests + CI. No vendor SDK imported outside this package. **No `ANTHROPIC_API_KEY`.**
+**Accept:** Unit tests with fake providers; each real impl integration-tested behind its own env flag (skipped in CI without keys); registry selects correct impl per env; cost/latency capture unit-tested; `.env.example` lists all provider keys with fake values.
 
 #### T030 · TriageResult schema + safe fallback — S
 **Deps:** T005 · **Do:** Zod schema per SPEC §6.3 in packages/types; `parseTriage(raw)` → `{ok,result}|{ok:false,reason}`; `SAFE_FALLBACK` constant object (vet-recommend copy, urgency VET_SOON floor).
@@ -163,8 +167,8 @@ Task card format: `Txxx · Title — effort(S/M/L)` · **Deps** (must be `done` 
 **Accept:** Schema tests per category; a completed-intake fixture per category validates; unknown category rejected.
 
 #### T033 · Triage prompt templates — L
-**Deps:** T029,T030,T032 · **Do:** System prompt encoding Safety Policy (§5) + output JSON contract + tier definitions + species caution biases; user-turn builder from pet context + intake + photos; 6–8 few-shot exemplars spanning tiers; prompt version registry.
-**Accept:** Snapshot tests of built prompts (no PII beyond pet context, versioned); fake-provider round-trip parses; forbidden-content lint (no "diagnose", no dosage patterns) over exemplar outputs.
+**Deps:** T029,T030,T032 · **Do:** System prompt encoding Safety Policy (§5) + output JSON contract + tier definitions + species caution biases; **embed the TriageResult JSON schema as text in the prompt with an explicit "return only JSON matching this schema" instruction, and default temperature 0** (open-weight-model reliability per docs/AI_PROVIDERS.md §3 — app-side Zod validation remains the source of truth, not provider-side structured output); user-turn builder from pet context + intake + photos; 6–8 few-shot exemplars spanning tiers; prompt version registry.
+**Accept:** Snapshot tests of built prompts (schema present, temp-0 set, no PII beyond pet context, versioned); fake-provider round-trip parses; a malformed-JSON fake response drives the repair-retry-then-SAFE_FALLBACK path (test); forbidden-content lint (no "diagnose", no dosage patterns) over exemplar outputs.
 
 #### T034 · Vision input pipeline — M
 **Deps:** T023,T029 · **Do:** Photo prep for provider: fetch from storage, downscale ≤1024px, strip metadata, basic unsafe-image pre-check hook (stub interface, log-only v1), base64 packaging with size budget (≤3 images).

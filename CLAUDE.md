@@ -56,7 +56,7 @@ Do not substitute any of these. If a task seems to require something else, mark 
 | Shared data validation | Zod schemas in `packages/types`, consumed by api, web, mobile |
 | Data fetching (web+mobile) | TanStack Query via shared `packages/api-client` |
 | Client state | Zustand (minimal; server state lives in Query) |
-| AI provider | Anthropic API behind a provider abstraction in `packages/ai` (model-agnostic interface) |
+| AI provider | Ollama Cloud (text + vision) and Google Gemini (image generation), behind the provider abstraction in `packages/ai`. See docs/AI_PROVIDERS.md. No `ANTHROPIC_API_KEY` at runtime |
 | Payments / subscriptions | RevenueCat (mobile IAP), server-side entitlement mirror via webhooks |
 | Push | Expo Notifications |
 | Object storage | S3-compatible (MinIO locally) |
@@ -154,8 +154,11 @@ These mirror `docs/PRODUCT_SPEC.md §5` and apply to every prompt, string, and U
 |---|---|
 | `docs/PRODUCT_SPEC.md` | What we're building, features, safety policy, pricing, metrics |
 | `docs/ARCHITECTURE.md` | System design: containers, data model, API surface, AI engine, queues |
-| `docs/PHASES.md` | All 12 phases, 118 task cards — the loop's work queue |
+| `docs/PHASES.md` | All 12 phases, 119 task cards — the loop's work queue |
 | `docs/OTA_UPDATES.md` | OTA code update system: EAS Update channels, rollouts, rollback, publish safety gates |
+| `docs/MODEL_STRATEGY.md` | Planner(Fable)/Executor(Sonnet)/Checker(Fable) model-switching loop — how each task is executed |
+| `docs/model-strategy-setup.md` | Setup + operation of the model-switching system (.claude agents/hooks) |
+| `docs/AI_PROVIDERS.md` | Runtime AI providers: Ollama Cloud (text+vision), Gemini (images). Replaces Anthropic at runtime |
 | `LOOP_PROTOCOL.md` | The autonomous loop: maker/checker, gates, milestones, checkpoints |
 | `loop/loop-state.json` | Machine-readable progress state |
 | `loop/journal.md` | Append-only human-readable log of every iteration |

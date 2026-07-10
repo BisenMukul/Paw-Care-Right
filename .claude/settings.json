@@ -1,0 +1,14 @@
+{
+  "hooks": {
+    "SubagentStop": [
+      { "matcher": "planner",
+        "hooks": [{ "type": "command", "command": ".claude/hooks/gate_plan.sh", "timeout": 20 }] },
+      { "matcher": "executor",
+        "hooks": [{ "type": "command", "command": ".claude/hooks/gate_exec.sh", "timeout": 900 }] }
+    ],
+    "PreToolUse": [
+      { "matcher": "Edit|Write",
+        "hooks": [{ "type": "command", "command": ".claude/hooks/block_protected_paths.sh", "timeout": 10 }] }
+    ]
+  }
+}
