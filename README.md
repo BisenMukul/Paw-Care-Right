@@ -42,3 +42,23 @@ Pause/resume, checkpoint approval, deferrals, and re-scoping: see `LOOP_PROTOCOL
 
 ## Prerequisites the loop expects on the machine
 Node 22 + pnpm, Docker (postgres/redis/minio via compose), git with push access. Product AI keys `OLLAMA_CLOUD_API_KEY` (text+vision) and `GEMINI_API_KEY` (images) for real AI-eval runs from Phase 3 (CI uses fake providers otherwise); see docs/AI_PROVIDERS.md. Store/RevenueCat/Sentry/PostHog keys are only needed from Phase 7 onward and are requested via checkpoint notes, never hardcoded.
+
+## Local infrastructure (docker compose)
+`docker-compose.yml` at the repo root brings up the local dev backing services: `postgres` (16), `redis` (7), and `minio` (S3-compatible object storage) plus a one-shot `createbuckets` sidecar that bootstraps the `pawcareright-media` bucket.
+
+| Service | Port | Notes |
+|---|---|---|
+| postgres | `5432` | db/user/password from `.env` (see `.env.example`) |
+| redis | `6379` | no persistence in dev (named volume intentionally omitted) |
+| minio API | `9000` | S3-compatible endpoint |
+| minio console | `9001` | `http://localhost:9001` — login with `MINIO_ROOT_USER` / `MINIO_ROOT_PASSWORD` |
+
+Bucket: `pawcareright-media` (created automatically by the `createbuckets` sidecar on first `up`).
+
+Creds and ports are read from `.env` (copy `.env.example` to `.env` first); all defaults are obviously-fake dev values. If a default port is already bound on your machine, override it via the corresponding `*_PORT` env var (`POSTGRES_PORT`, `REDIS_PORT`, `MINIO_PORT`, `MINIO_CONSOLE_PORT`) instead of editing `docker-compose.yml`.
+
+```
+docker compose up -d      # start postgres, redis, minio (+ bootstrap the bucket)
+docker compose ps         # check health status
+docker compose down       # stop and remove containers (named volumes persist)
+```
