@@ -321,3 +321,16 @@
 - Known-issue ledger for future phases: (1) jest worker-exit warning in the api suite (pre-existing, benign, root cause likely a BullMQ/app handle in src — revisit if it worsens); (2) mobile offline state is assertion-covered but not snapshotted (deliberate).
 - No new dependencies.
 - Commit: test(api,mobile): T028 phase-2 test sweep + fixtures (journal rides in the same one-task-one-commit).
+
+## [2026-07-11] 🚩 MILESTONE M2 — Phase 2 (Pets & Profiles) COMPLETE
+- **Scope:** T021–T028 all DONE (8 tasks): Pet model + household-scoped CRUD (404-no-leak, soft-delete, XOR validation); breed dataset (358 dogs / 82 cats) + cached fuzzy autocomplete (gsd AC, p95 1.86ms); photo pipeline (presigned MinIO uploads, first BullMQ worker, sharp renditions, EXIF-strip — incl. the checker-caught CI/MinIO fix); mobile add-pet wizard (MMKV-resumable draft, skip-path AC, SDK-57 compress); pet home screen (4 states, non-vacuous above-fold assertion); household invites (join-replaces invariant, uniform-404 anti-probing, family screen + deep-link join route); multi-pet switcher (active-pet hook, MMKV persistence); P2 test sweep (factories, coverage confirm).
+- **M2 gate (LOOP_PROTOCOL §6):**
+  1. Full suite: typecheck/lint/test/build all exit 0 — api **31 suites / 254 tests**, mobile **16 suites / 88 tests / 4 snapshots**, api-client 52, types (29+13 household/pet additions), data 22, config 4.
+  2. `test:ai-evals` — N/A until M3.
+  3. Zero in_progress, zero blocked. ✓
+  4. Coverage gate: services **98.22% stmts / 82.8% branch** (all 13 ≥ thresholds). ✓
+  5. This milestone journal entry. ✓
+- **Deferred device verification (headless container):** the PHASES M2 line "add pet + invite accepted between two dev accounts verified" is deferred to the first on-device session. Automated stand-ins passed: the T026 two-user e2e (owner invites → second user accepts → solo household replaced → reads the shared household's pets) and the T024 skip-path wizard completion; the verbatim manual scripts are journaled at T018/T024.
+- **Checkpoint:** C1 is after M3 — none at M2. Proceeding.
+- **Actions:** `milestones.M2 = passed`; `currentPhase P2 → P3`; active task → T029; tag `milestone/M2` (tag-ref push expected to 403 under session credentials — lands at PR merge, as M0/M1).
+- **Next:** Phase 3 — the AI Triage Engine (packages/ai, red-flag rules, provider abstraction, evals) → M3, then the C1 founder checkpoint (AI eval report review) before user-facing triage wiring.
