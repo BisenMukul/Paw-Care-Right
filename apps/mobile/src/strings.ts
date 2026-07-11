@@ -10,6 +10,11 @@ export const strings = {
   },
   home: {
     body: "Peace of mind between vet visits — your pet's care, all in one place.",
+    openActivePet: "Open pet home",
+  },
+  switcher: {
+    heading: "Your pets",
+    switchA11y: "Switch active pet",
   },
   care: {
     body: "Care reminders and templates will live here.",

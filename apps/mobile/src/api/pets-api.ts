@@ -26,6 +26,19 @@ export function usePet(id: string) {
 }
 
 /**
+ * Lists every pet in the caller's household (T027 plan D1 — a minimal
+ * client-side list hook over the pre-existing `GET /v1/pets`, keyed on the
+ * same `petsKeys.all` that `useCreatePet`/`useAcceptInvite` already
+ * invalidate). No backend/DTO change.
+ */
+export function usePets() {
+  return useQuery({
+    queryKey: petsKeys.all,
+    queryFn: () => apiClient.get<Pet[]>("/v1/pets"),
+  });
+}
+
+/**
  * Presign → PUT → confirm orchestration (matches T023's `PhotosController`).
  * Compression already applied at the photo step, so the blob is a JPEG
  * ≤1600px, well under the presign DTO's size/type limits (plan R7).

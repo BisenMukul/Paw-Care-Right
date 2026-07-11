@@ -305,3 +305,10 @@
 - Checker (Fable, adversarial): `loop/reviews/T026.review.md` → **VERDICT: pass**. Transaction analysis quoted (service :80-146): atomic claim :107-114 → pets-guard 409 BEFORE any delete :118-123 → leave :125-129 → create MEMBER :134-136, one $transaction; e2e proves B's solo household null, membership moved, invite used, B reads A's pets; adversarial sweep clean (no TOCTOU, no pet deletion, expired/used indistinguishable, >1 membership impossible via leave-before-join + composite unique backstop, member-invite 403). Non-blocking: my briefing said "5 migrations" — actual correct count is 4.
 - No new dependencies.
 - Commit: feat(api,mobile): T026 household invites (journal rides in the same one-task-one-commit).
+
+## [2026-07-11] T027 · Multi-pet switcher — DONE (attempt 1)
+- Planner (Fable): `loop/plans/T027.plan.md` — corrected the card's assumption (`usePets` didn't exist; added as a client-only list hook over the existing GET /v1/pets); `active-pet-store.ts` (zustand+persist, MMKV adapter cloned from add-pet-store, key `pawcareright.active-pet`); the single `useActivePet()` hook owning auto-heal (stale/null → first pet); self-contained `pet-switcher.tsx` (0 pets → CTA, 1 → static header, >1 → avatar row + Modal dropdown, initial-letter placeholder avatars).
+- Executor (Sonnet, single pass): all 8 files; mobile **16 suites / 88 tests green**; §1a 0; Metro boots (:8091); root gates green; api/packages untouched.
+- Checker (Fable, adversarial): `loop/reviews/T027.review.md` → **VERDICT: pass**. Both AC tests verified NON-VACUOUS: switch test keeps `petsKeys` real via jest.requireActual and asserts the real usePet re-queried `toHaveBeenLastCalledWith(PET_B.id)` (:116) with the rendered name flipping; persist test reads the RAW mocked MMKV key then `persist.rehydrate()` → the middleware's actual write observed. One-hook rule grep-confirmed (store imported only by use-active-pet.ts). Non-blocking: avatar-row Pressables lack individual a11y labels (the switch control is labeled).
+- No new dependencies.
+- Commit: feat(mobile): T027 multi-pet switcher (journal rides in the same one-task-one-commit).
