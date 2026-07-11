@@ -241,3 +241,16 @@
 - Checker (Fable, adversarial): `loop/reviews/T020.review.md` → **VERDICT: pass**. Refactor integrity verified line-by-line: no it() renamed/removed, no expect deleted/loosened; the security-critical assertions survive verbatim (guards 404-not-403 + owner/member matrix; devices ×5→count 1; auth-social cross-provider same-user + length-1). Coverage denominator honest. Gap-filler is a real unit test, not padding. No src production changes, no new deps, no lockfile change. Benign note: one eslint warning originated from the gitignored generated coverage/ artifact (removed before commit), not source.
 - No new dependencies.
 - Commit: test(api): T020 auth test sweep, factories, coverage gate (journal rides in the same one-task-one-commit).
+
+## [2026-07-11] 🚩 MILESTONE M1 — Phase 1 (Auth, Users & Households) COMPLETE
+- **Scope:** T011–T020 all DONE (10 tasks): Prisma core schema+migration+seed, email OTP auth + JWT/refresh-rotation (with the reuse-theft family-revocation fix), Apple + Google sign-in (verified-email linking, provider abstraction), global JWT/scope/role guards (404-no-leak), device registration + lastSeen middleware, security baseline (helmet/CORS/throttler/body limits), mobile auth flow (SecureStore, zustand machine, router groups, JIT push), api-client 401-refresh interceptor + MMKV persistence + useIsOffline, test factories + services coverage gate.
+- **M1 gate (LOOP_PROTOCOL §6):**
+  1. Full suite: typecheck/lint/test/build all exit 0 (turbo 9/9 test tasks; api 21 suites/146 tests, api-client 52, mobile 23, types 12, config 4).
+  2. `test:ai-evals` — N/A until M3 (packages/ai lands T029+).
+  3. Zero in_progress, zero blocked. ✓
+  4. Coverage gate (from M1: ≥80% api services): **98.79% stmts / 84.53% branch / 96.72% funcs / 98.68% lines** across all 9 services, threshold-enforced via `test:cov`. ✓
+  5. This milestone journal entry. ✓
+- **Deferred device verification (headless container — no device/emulator/Expo Go):** the PHASES M1 line "register/login on device via Expo Go verified (journal note)" is deferred to the first on-device session, with the verbatim manual scripts already journaled (T018 cold-start auto-login script; T008 Expo Go boot). Headless stand-ins passed: full mobile component/unit suites (OTP flow, store restore paths, SecureStore-only), Metro boots clean.
+- **Checkpoint:** C1 is after M3 — no checkpoint at M1. Proceeding.
+- **Actions:** `milestones.M1 = passed`; `currentPhase P1 → P2`; active task → T021; tag `milestone/M1` on this commit (tag-ref push expected to 403 under this session's credential scope — tag lands at PR merge, as with M0).
+- **Next:** Phase 2 (Pets & Profiles → M2), starting T021 (Pet model + CRUD API).
