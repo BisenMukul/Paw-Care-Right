@@ -278,8 +278,8 @@
       "attempts": 2
     },
     "T024": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 1
     },
     "T025": {
       "status": "pending",

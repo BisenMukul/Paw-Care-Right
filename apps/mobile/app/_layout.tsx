@@ -63,6 +63,8 @@ export default function RootLayout() {
           <Stack.Screen name="(auth)" />
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="push-rationale" />
+          <Stack.Screen name="add-pet" options={{ presentation: "modal" }} />
+          <Stack.Screen name="pets/[id]" />
         </Stack>
       </SafeAreaProvider>
     </PersistedApiQueryProvider>
