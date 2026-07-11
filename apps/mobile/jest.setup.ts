@@ -49,4 +49,29 @@ jest.mock("expo-web-browser", () => ({
   openAuthSessionAsync: jest.fn(async () => ({ type: "dismiss" })),
 }));
 
+// react-native-mmkv (T019) — the native module never loads in this
+// container; a tiny in-memory map stands in for it so any test that
+// transitively imports `src/api/query.ts` (the root layout) stays headless.
+jest.mock("react-native-mmkv", () => {
+  const store = new Map<string, string>();
+  return {
+    createMMKV: jest.fn(() => ({
+      getString: jest.fn((key: string) => store.get(key)),
+      set: jest.fn((key: string, value: string) => {
+        store.set(key, value);
+      }),
+      remove: jest.fn((key: string) => {
+        store.delete(key);
+      }),
+    })),
+  };
+});
+
+// expo-network (T019) — reports "always online" by default; individual
+// tests may override with `mockResolvedValueOnce`/`mockReturnValueOnce`.
+jest.mock("expo-network", () => ({
+  getNetworkStateAsync: jest.fn(async () => ({ isConnected: true, isInternetReachable: true })),
+  addNetworkStateListener: jest.fn(() => ({ remove: jest.fn() })),
+}));
+
 export {};

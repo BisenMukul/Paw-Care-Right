@@ -24,23 +24,21 @@
   "dependencies": {
     "@pawcareright/types": "workspace:*",
     "@tanstack/react-query": "^5",
+    "@tanstack/react-query-persist-client": "^5",
     "zod": "^4"
   },
   "peerDependencies": {
     "react": "^19",
-    "react-native-mmkv": "^4",
-    "@tanstack/react-query-persist-client": "^5"
+    "react-native-mmkv": "^4"
   },
   "peerDependenciesMeta": {
-    "react-native-mmkv": { "optional": true },
-    "@tanstack/react-query-persist-client": { "optional": true }
+    "react-native-mmkv": { "optional": true }
   },
   "devDependencies": {
     "@pawcareright/config": "workspace:*",
     "react": "^19",
     "@types/react": "^19",
     "react-native-mmkv": "^4",
-    "@tanstack/react-query-persist-client": "^5",
     "@types/jest": "^29.5.14",
     "@types/node": "^22",
     "eslint": "^9.39.4",

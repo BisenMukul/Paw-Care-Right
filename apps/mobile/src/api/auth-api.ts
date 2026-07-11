@@ -1,4 +1,4 @@
-import { apiClient } from "./client";
+import { authClient } from "./client";
 
 // No shared Zod auth-response schema exists in `packages/types` (verified —
 // see plan R9); this local interface mirrors the api's `AuthService`
@@ -14,21 +14,21 @@ export type SocialProvider = "apple" | "google";
 
 export const authApi = {
   requestOtp(email: string): Promise<{ ok: true }> {
-    return apiClient.post<{ ok: true }>("/v1/auth/otp/request", { email });
+    return authClient.post<{ ok: true }>("/v1/auth/otp/request", { email });
   },
   verifyOtp(email: string, code: string): Promise<AuthTokens> {
-    return apiClient.post<AuthTokens>("/v1/auth/otp/verify", { email, code });
+    return authClient.post<AuthTokens>("/v1/auth/otp/verify", { email, code });
   },
   social(provider: SocialProvider, identityToken: string): Promise<AuthTokens> {
-    return apiClient.post<AuthTokens>("/v1/auth/social", {
+    return authClient.post<AuthTokens>("/v1/auth/social", {
       provider,
       identityToken,
     });
   },
   refresh(refreshToken: string): Promise<AuthTokens> {
-    return apiClient.post<AuthTokens>("/v1/auth/refresh", { refreshToken });
+    return authClient.post<AuthTokens>("/v1/auth/refresh", { refreshToken });
   },
   logout(refreshToken: string): Promise<{ ok: true }> {
-    return apiClient.post<{ ok: true }>("/v1/auth/logout", { refreshToken });
+    return authClient.post<{ ok: true }>("/v1/auth/logout", { refreshToken });
   },
 };

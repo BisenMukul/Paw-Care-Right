@@ -123,6 +123,74 @@ describe("useAuthStore", () => {
     });
   });
 
+  describe("refreshSession()", () => {
+    it("persists tokens, sets signedIn, and returns the access token on success", async () => {
+      await SecureStore.setItemAsync("pawcareright.auth.refreshToken", "stale-refresh");
+      mockedAuthApi.refresh.mockResolvedValue(tokens);
+
+      const result = await useAuthStore.getState().refreshSession();
+
+      expect(result).toBe(tokens.accessToken);
+      const state = useAuthStore.getState();
+      expect(state.status).toBe("signedIn");
+      expect(state.user).toEqual(tokens.user);
+      expect(state.accessToken).toBe(tokens.accessToken);
+      expect(await SecureStore.getItemAsync("pawcareright.auth.accessToken")).toBe(
+        tokens.accessToken,
+      );
+      expect(await SecureStore.getItemAsync("pawcareright.auth.refreshToken")).toBe(
+        tokens.refreshToken,
+      );
+    });
+
+    it("returns null and leaves state untouched on failure", async () => {
+      await SecureStore.setItemAsync("pawcareright.auth.refreshToken", "expired-refresh");
+      mockedAuthApi.refresh.mockRejectedValue(new Error("expired"));
+      useAuthStore.setState({
+        status: "signedIn",
+        user: tokens.user,
+        householdId: tokens.householdId,
+        accessToken: "still-here",
+      });
+
+      const result = await useAuthStore.getState().refreshSession();
+
+      expect(result).toBeNull();
+      const state = useAuthStore.getState();
+      expect(state.status).toBe("signedIn");
+      expect(state.accessToken).toBe("still-here");
+      expect(await SecureStore.getItemAsync("pawcareright.auth.refreshToken")).toBe(
+        "expired-refresh",
+      );
+    });
+
+    it("returns null without calling authApi.refresh when no refresh token is stored", async () => {
+      const result = await useAuthStore.getState().refreshSession();
+
+      expect(result).toBeNull();
+      expect(mockedAuthApi.refresh).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("sessionExpired()", () => {
+    it("clears SecureStore and sets signedOut without calling logout", async () => {
+      await SecureStore.setItemAsync("pawcareright.auth.refreshToken", "refresh-1");
+      await SecureStore.setItemAsync("pawcareright.auth.accessToken", "access-1");
+      useAuthStore.setState({ status: "signedIn", accessToken: "access-1" });
+
+      await useAuthStore.getState().sessionExpired();
+
+      const state = useAuthStore.getState();
+      expect(state.status).toBe("signedOut");
+      expect(state.user).toBeNull();
+      expect(state.householdId).toBeNull();
+      expect(state.accessToken).toBeNull();
+      expect(await SecureStore.getItemAsync("pawcareright.auth.refreshToken")).toBeNull();
+      expect(await SecureStore.getItemAsync("pawcareright.auth.accessToken")).toBeNull();
+      expect(mockedAuthApi.logout).not.toHaveBeenCalled();
+    });
+  });
+
   describe("socialSignIn()", () => {
     it("saves tokens and transitions to signedIn", async () => {
       mockedAuthApi.social.mockResolvedValue(tokens);

@@ -8,5 +8,6 @@ export type { ApiClient, ApiClientConfig } from "./client";
 export { MAX_QUERY_RETRIES, shouldRetry } from "./retry";
 export { createQueryClient } from "./query-client";
 export type { CreateQueryClientOptions } from "./query-client";
-export { ApiQueryProvider } from "./query-provider";
-export type { ApiQueryProviderProps } from "./query-provider";
+export { ApiQueryProvider, PersistedApiQueryProvider } from "./query-provider";
+export type { ApiQueryProviderProps, PersistedApiQueryProviderProps } from "./query-provider";
+export { setOnline, useIsOffline } from "./online";

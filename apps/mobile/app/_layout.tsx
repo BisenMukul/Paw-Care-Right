@@ -1,9 +1,12 @@
+import { PersistedApiQueryProvider } from "@pawcareright/api-client";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { useEffect } from "react";
 import { View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
+import { queryClient, queryPersister } from "../src/api/query";
 import { useAuthStore } from "../src/auth/auth-store";
+import { useNetworkListener } from "../src/offline/use-network-listener";
 
 import "../global.css";
 
@@ -41,22 +44,27 @@ export default function RootLayout() {
   }, []);
 
   useAuthGate();
+  useNetworkListener();
 
   if (status === "restoring") {
     return (
-      <SafeAreaProvider>
-        <View testID="auth-splash" className="flex-1 items-center justify-center bg-white" />
-      </SafeAreaProvider>
+      <PersistedApiQueryProvider client={queryClient} persister={queryPersister}>
+        <SafeAreaProvider>
+          <View testID="auth-splash" className="flex-1 items-center justify-center bg-white" />
+        </SafeAreaProvider>
+      </PersistedApiQueryProvider>
     );
   }
 
   return (
-    <SafeAreaProvider>
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(auth)" />
-        <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="push-rationale" />
-      </Stack>
-    </SafeAreaProvider>
+    <PersistedApiQueryProvider client={queryClient} persister={queryPersister}>
+      <SafeAreaProvider>
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="(auth)" />
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="push-rationale" />
+        </Stack>
+      </SafeAreaProvider>
+    </PersistedApiQueryProvider>
   );
 }

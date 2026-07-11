@@ -89,4 +89,127 @@ describe("createApiClient", () => {
 
     expect(result).toEqual({ id: "2" });
   });
+
+  describe("401 -> refresh -> retry", () => {
+    function unauthorizedResponse(): Response {
+      return new Response(
+        JSON.stringify({ error: { code: "UNAUTHORIZED", message: "expired", requestId: "req-1" } }),
+        { status: 401 },
+      );
+    }
+
+    it("retries once after a 401 with the refreshed token", async () => {
+      let callCount = 0;
+      const fetchMock = fakeFetch(async (_url, init) => {
+        callCount += 1;
+        const headers = new Headers(init?.headers);
+        if (callCount === 1) {
+          expect(headers.get("Authorization")).toBeNull();
+          return unauthorizedResponse();
+        }
+        expect(headers.get("Authorization")).toBe("Bearer new-token");
+        return new Response(JSON.stringify({ ok: true }), { status: 200 });
+      });
+      const refreshSession = jest.fn(async () => "new-token");
+      const onSessionExpired = jest.fn();
+      const client = createApiClient({
+        baseUrl: "https://api.test",
+        fetch: fetchMock,
+        refreshSession,
+        onSessionExpired,
+      });
+
+      const result = await client.get<{ ok: true }>("/me");
+
+      expect(result).toEqual({ ok: true });
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+      expect(refreshSession).toHaveBeenCalledTimes(1);
+      expect(onSessionExpired).not.toHaveBeenCalled();
+    });
+
+    it("dedupes concurrent 401s into one refresh", async () => {
+      const fetchMock = fakeFetch(async (_url, init) => {
+        const headers = new Headers(init?.headers);
+        if (headers.get("Authorization") === "Bearer new-token") {
+          return new Response(JSON.stringify({ ok: true }), { status: 200 });
+        }
+        return unauthorizedResponse();
+      });
+      const refreshSession = jest.fn(async () => "new-token");
+      const onSessionExpired = jest.fn();
+      const client = createApiClient({
+        baseUrl: "https://api.test",
+        fetch: fetchMock,
+        refreshSession,
+        onSessionExpired,
+      });
+
+      const [resultA, resultB] = await Promise.all([
+        client.get<{ ok: true }>("/a"),
+        client.get<{ ok: true }>("/b"),
+      ]);
+
+      expect(resultA).toEqual({ ok: true });
+      expect(resultB).toEqual({ ok: true });
+      expect(refreshSession).toHaveBeenCalledTimes(1);
+      expect(onSessionExpired).not.toHaveBeenCalled();
+      expect(fetchMock).toHaveBeenCalledTimes(4);
+    });
+
+    it("calls onSessionExpired and throws when refresh returns null", async () => {
+      const fetchMock = fakeFetch(async () => unauthorizedResponse());
+      const refreshSession = jest.fn(async () => null);
+      const onSessionExpired = jest.fn();
+      const client = createApiClient({
+        baseUrl: "https://api.test",
+        fetch: fetchMock,
+        refreshSession,
+        onSessionExpired,
+      });
+
+      await expect(client.get("/me")).rejects.toMatchObject({ code: "UNAUTHORIZED", httpStatus: 401 });
+
+      expect(refreshSession).toHaveBeenCalledTimes(1);
+      expect(onSessionExpired).toHaveBeenCalledTimes(1);
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+    });
+
+    it("calls onSessionExpired and throws when refresh throws", async () => {
+      const fetchMock = fakeFetch(async () => unauthorizedResponse());
+      const refreshSession = jest.fn(async () => {
+        throw new Error("refresh boom");
+      });
+      const onSessionExpired = jest.fn();
+      const client = createApiClient({
+        baseUrl: "https://api.test",
+        fetch: fetchMock,
+        refreshSession,
+        onSessionExpired,
+      });
+
+      await expect(client.get("/me")).rejects.toMatchObject({ code: "UNAUTHORIZED", httpStatus: 401 });
+
+      expect(refreshSession).toHaveBeenCalledTimes(1);
+      expect(onSessionExpired).toHaveBeenCalledTimes(1);
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+    });
+
+    it("calls onSessionExpired on a second 401 after retry (no loop)", async () => {
+      const fetchMock = fakeFetch(async () => unauthorizedResponse());
+      const refreshSession = jest.fn(async () => "new-token");
+      const onSessionExpired = jest.fn();
+      const client = createApiClient({
+        baseUrl: "https://api.test",
+        fetch: fetchMock,
+        refreshSession,
+        onSessionExpired,
+      });
+
+      await expect(client.get("/me")).rejects.toMatchObject({ code: "UNAUTHORIZED", httpStatus: 401 });
+
+      expect(refreshSession).toHaveBeenCalledTimes(1);
+      expect(onSessionExpired).toHaveBeenCalledTimes(1);
+      expect(fetchMock).toHaveBeenCalledTimes(2);
+    });
+  });
 });
