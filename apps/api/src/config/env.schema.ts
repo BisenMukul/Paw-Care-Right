@@ -15,6 +15,11 @@ export const apiEnvSchema = z.object({
   APPLE_CLIENT_ID: z.string().min(1).default("com.pawcareright.app"),
   GOOGLE_CLIENT_ID: z.string().min(1).default("pawcareright-dev.apps.googleusercontent.com"),
   WEB_ADMIN_ORIGIN: z.string().url().default("http://localhost:3001"),
+  S3_ENDPOINT: z.string().url().default("http://localhost:9000"),
+  S3_REGION: z.string().min(1).default("us-east-1"),
+  S3_ACCESS_KEY: z.string().min(1).default("pawcareright"),
+  S3_SECRET_KEY: z.string().min(1).default("pawcareright-dev-secret"),
+  S3_BUCKET: z.string().min(1).default("pawcareright-media"),
 });
 
 export type ApiEnv = z.infer<typeof apiEnvSchema>;

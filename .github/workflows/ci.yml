@@ -36,6 +36,15 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: pnpm }
       - run: pnpm i --frozen-lockfile # triggers api postinstall `prisma generate` (no DB needed to generate)
+      # MinIO must be a docker-run step (not a service container): GH Actions
+      # services cannot pass the mandatory `server /data` command. Creds mirror
+      # docker-compose; env.schema S3_* defaults already point at localhost:9000.
+      - name: Start MinIO
+        run: |
+          docker run -d --name minio -p 9000:9000 \
+            -e MINIO_ROOT_USER=pawcareright -e MINIO_ROOT_PASSWORD=pawcareright-dev-secret \
+            minio/minio:RELEASE.2024-11-07T00-52-20Z server /data
+          for i in $(seq 1 30); do curl -sf http://localhost:9000/minio/health/live && break; sleep 2; done
       - run: pnpm typecheck
       - run: pnpm lint
       - run: pnpm test

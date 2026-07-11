@@ -46,4 +46,24 @@ export class AppConfigService {
   get webAdminOrigin(): string {
     return this.env.WEB_ADMIN_ORIGIN;
   }
+
+  get s3Endpoint(): string {
+    return this.env.S3_ENDPOINT;
+  }
+
+  get s3Region(): string {
+    return this.env.S3_REGION;
+  }
+
+  get s3AccessKey(): string {
+    return this.env.S3_ACCESS_KEY;
+  }
+
+  get s3SecretKey(): string {
+    return this.env.S3_SECRET_KEY;
+  }
+
+  get s3Bucket(): string {
+    return this.env.S3_BUCKET;
+  }
 }

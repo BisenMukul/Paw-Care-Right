@@ -12,8 +12,11 @@ import { ConfigModule } from "./config/config.module";
 import { DevicesModule } from "./devices/devices.module";
 import { HealthModule } from "./health/health.module";
 import { PetsModule } from "./pets/pets.module";
+import { PhotosModule } from "./photos/photos.module";
 import { PrismaModule } from "./prisma/prisma.module";
+import { QueueModule } from "./queue/queue.module";
 import { RedisModule } from "./redis/redis.module";
+import { WorkersModule } from "./workers/workers.module";
 
 @Module({
   imports: [
@@ -25,6 +28,9 @@ import { RedisModule } from "./redis/redis.module";
     DevicesModule,
     PetsModule,
     BreedsModule,
+    QueueModule,
+    PhotosModule,
+    WorkersModule,
     ThrottlerModule.forRoot([{ name: "default", ...THROTTLE_DEFAULT }]),
   ],
   // Four global guards, registered in this fixed order:

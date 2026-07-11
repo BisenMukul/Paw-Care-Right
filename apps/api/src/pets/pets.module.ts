@@ -8,5 +8,6 @@ import { PetsService } from "./pets.service";
   imports: [PrismaModule],
   controllers: [PetsController],
   providers: [PetsService],
+  exports: [PetsService],
 })
 export class PetsModule {}
