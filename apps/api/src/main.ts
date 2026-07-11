@@ -9,7 +9,7 @@ import { configureApp } from "./app.setup";
 import { AppConfigService } from "./config/app-config.service";
 
 async function bootstrap(): Promise<void> {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { bodyParser: false });
   configureApp(app);
 
   const config = app.get(AppConfigService);

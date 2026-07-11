@@ -19,32 +19,34 @@
     "@nestjs/jwt": "^11",
     "@nestjs/platform-express": "^11",
     "@nestjs/swagger": "^11",
-    "reflect-metadata": "^0.2",
-    "rxjs": "^7",
-    "class-validator": "^0.14",
-    "class-transformer": "^0.5",
+    "@nestjs/throttler": "^6.5.0",
+    "@pawcareright/config": "workspace:*",
+    "@pawcareright/types": "workspace:*",
     "@prisma/client": "^6",
+    "class-transformer": "^0.5",
+    "class-validator": "^0.14",
+    "helmet": "^8.2.0",
     "ioredis": "^5",
     "jose": "^5",
-    "zod": "^4",
-    "@pawcareright/config": "workspace:*",
-    "@pawcareright/types": "workspace:*"
+    "reflect-metadata": "^0.2",
+    "rxjs": "^7",
+    "zod": "^4"
   },
   "devDependencies": {
     "@nestjs/cli": "^11",
     "@nestjs/schematics": "^11",
     "@nestjs/testing": "^11",
-    "prisma": "^6",
-    "supertest": "^7",
-    "@types/supertest": "^6",
+    "@types/express": "^5",
     "@types/jest": "^29.5.14",
     "@types/node": "^22",
-    "@types/express": "^5",
+    "@types/supertest": "^6",
     "eslint": "^9.39.4",
     "eslint-config-prettier": "^9.1.2",
     "eslint-plugin-import-x": "^4.17.1",
     "jest": "^29.7.0",
     "prettier": "^3.9.5",
+    "prisma": "^6",
+    "supertest": "^7",
     "ts-jest": "^29.2.5",
     "tsx": "^4",
     "typescript": "^5.9.3",
@@ -55,14 +57,31 @@
   },
   "jest": {
     "testEnvironment": "node",
-    "roots": ["<rootDir>/src", "<rootDir>/test"],
-    "setupFiles": ["<rootDir>/test/jest.setup.ts"],
+    "roots": [
+      "<rootDir>/src",
+      "<rootDir>/test"
+    ],
+    "setupFiles": [
+      "<rootDir>/test/jest.setup.ts"
+    ],
     "globalSetup": "<rootDir>/test/global-setup.ts",
     "transform": {
-      "^.+\\.ts$": ["ts-jest", { "tsconfig": "<rootDir>/tsconfig.spec.json" }]
+      "^.+\\.ts$": [
+        "ts-jest",
+        {
+          "tsconfig": "<rootDir>/tsconfig.spec.json"
+        }
+      ]
     },
-    "testMatch": ["**/*.spec.ts", "**/*.e2e-spec.ts"],
-    "moduleFileExtensions": ["ts", "js", "json"],
+    "testMatch": [
+      "**/*.spec.ts",
+      "**/*.e2e-spec.ts"
+    ],
+    "moduleFileExtensions": [
+      "ts",
+      "js",
+      "json"
+    ],
     "moduleNameMapper": {
       "^@pawcareright/config$": "<rootDir>/../../packages/config/src/index.ts",
       "^@pawcareright/config/env$": "<rootDir>/../../packages/config/src/env/index.ts"

@@ -14,6 +14,7 @@ export const apiEnvSchema = z.object({
   OTP_HMAC_SECRET: z.string().min(1).default("dev-insecure-otp-hmac-secret-do-not-use-in-production"),
   APPLE_CLIENT_ID: z.string().min(1).default("com.pawcareright.app"),
   GOOGLE_CLIENT_ID: z.string().min(1).default("pawcareright-dev.apps.googleusercontent.com"),
+  WEB_ADMIN_ORIGIN: z.string().url().default("http://localhost:3001"),
 });
 
 export type ApiEnv = z.infer<typeof apiEnvSchema>;

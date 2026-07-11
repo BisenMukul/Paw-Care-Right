@@ -42,4 +42,8 @@ export class AppConfigService {
   get googleClientId(): string {
     return this.env.GOOGLE_CLIENT_ID;
   }
+
+  get webAdminOrigin(): string {
+    return this.env.WEB_ADMIN_ORIGIN;
+  }
 }
