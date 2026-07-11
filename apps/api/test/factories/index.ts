@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 
 import type { INestApplication } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import type { Household, Membership, PrismaClient, Role, User } from "@prisma/client";
+import type { Household, Membership, Pet, PrismaClient, Role, Species, User } from "@prisma/client";
 import request from "supertest";
 
 import { DEFAULT_LOCALE, DEFAULT_REGION } from "../../src/auth/auth.constants";
@@ -116,6 +116,48 @@ export async function createAuthedContext(
     request(app.getHttpServer())[method](path).set("Authorization", `Bearer ${token}`);
 
   return { user, household, token, authedAgent };
+}
+
+export async function createPet(
+  prisma: PrismaClient,
+  householdId: string,
+  overrides?: { species?: Species; name?: string },
+): Promise<Pet> {
+  return prisma.pet.create({
+    data: {
+      householdId,
+      species: overrides?.species ?? "DOG",
+      name: overrides?.name ?? "Fido",
+    },
+  });
+}
+
+/**
+ * Consolidates the duplicated `owner()`/`member()` helpers that used to be
+ * copy-pasted across the pets/photos/households e2e suites: mint an
+ * authed context via `createAuthedContext` and track the resulting user
+ * id(s) for `cleanupUsers`.
+ */
+export async function createOwnerContext(
+  app: INestApplication,
+  prisma: PrismaClient,
+  jwt: JwtService,
+  userIds: string[],
+): Promise<AuthedContext> {
+  const ctx = await createAuthedContext(app, prisma, jwt, { role: "OWNER" });
+  userIds.push(ctx.user.id);
+  return ctx;
+}
+
+export async function createMemberContext(
+  app: INestApplication,
+  prisma: PrismaClient,
+  jwt: JwtService,
+  userIds: string[],
+): Promise<AuthedContext> {
+  const ctx = await createAuthedContext(app, prisma, jwt, { role: "MEMBER" });
+  userIds.push(ctx.user.id, ctx.household.ownerId);
+  return ctx;
 }
 
 /**

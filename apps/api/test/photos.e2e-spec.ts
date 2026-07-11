@@ -18,7 +18,7 @@ import { StorageService } from "../src/storage/storage.service";
 import { IMAGES_QUEUE, type ImagesJobData } from "../src/workers/images.contract";
 import {
   cleanupUsers,
-  createAuthedContext,
+  createOwnerContext,
   createUser,
   mintAccessToken,
   resolveJwtService,
@@ -77,11 +77,7 @@ describe("Photos (e2e)", () => {
     await app.close();
   });
 
-  async function owner(): Promise<AuthedContext> {
-    const ctx = await createAuthedContext(app, prisma, jwtService, { role: "OWNER" });
-    userIds.push(ctx.user.id);
-    return ctx;
-  }
+  const owner = (): Promise<AuthedContext> => createOwnerContext(app, prisma, jwtService, userIds);
 
   async function createPet(ctx: AuthedContext, name = "Fido"): Promise<string> {
     const res = await ctx.authedAgent("post", "/v1/pets").send({ species: "DOG", name });

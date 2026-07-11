@@ -1,6 +1,6 @@
 import { setOnline } from "@pawcareright/api-client";
 import { petIdSchema, type Pet } from "@pawcareright/types";
-import { fireEvent, render, screen, within } from "@testing-library/react-native";
+import { act, fireEvent, render, screen, within } from "@testing-library/react-native";
 import { Dimensions, StyleSheet } from "react-native";
 import type { JsonElement, JsonNode } from "test-renderer";
 
@@ -63,8 +63,10 @@ describe("pet home screen — 4-state matrix (AC1)", () => {
     jest.clearAllMocks();
   });
 
-  afterEach(() => {
-    setOnline(true);
+  afterEach(async () => {
+    await act(() => {
+      setOnline(true);
+    });
   });
 
   it("loading: shows pet-home-loading, no header/CTA", async () => {
@@ -185,8 +187,10 @@ describe("pet home screen — above-the-fold (AC2)", () => {
     });
   });
 
-  afterEach(() => {
-    setOnline(true);
+  afterEach(async () => {
+    await act(() => {
+      setOnline(true);
+    });
   });
 
   it("[structural] pins the CTA above/outside the scrollable region", async () => {

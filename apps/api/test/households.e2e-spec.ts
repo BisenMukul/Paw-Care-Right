@@ -10,7 +10,9 @@ import { configureApp } from "../src/app.setup";
 import { INVITE_CODE_REGEX } from "../src/households/invite-code";
 import {
   cleanupUsers,
-  createAuthedContext,
+  createMemberContext,
+  createOwnerContext,
+  createPet,
   createUser,
   mintAccessToken,
   resolveJwtService,
@@ -47,17 +49,8 @@ describe("Households — invites (e2e)", () => {
     await app.close();
   });
 
-  async function owner(): Promise<AuthedContext> {
-    const ctx = await createAuthedContext(app, prisma, jwtService, { role: "OWNER" });
-    userIds.push(ctx.user.id);
-    return ctx;
-  }
-
-  async function member(): Promise<AuthedContext> {
-    const ctx = await createAuthedContext(app, prisma, jwtService, { role: "MEMBER" });
-    userIds.push(ctx.user.id, ctx.household.ownerId);
-    return ctx;
-  }
+  const owner = (): Promise<AuthedContext> => createOwnerContext(app, prisma, jwtService, userIds);
+  const member = (): Promise<AuthedContext> => createMemberContext(app, prisma, jwtService, userIds);
 
   async function mintInvite(ctx: AuthedContext): Promise<{ code: string; deepLink: string; expiresAt: string }> {
     const res = await ctx.authedAgent("post", "/v1/households/invites");
@@ -199,9 +192,7 @@ describe("Households — invites (e2e)", () => {
       const ownerA = await owner();
       const ownerB = await owner();
 
-      await prisma.pet.create({
-        data: { householdId: ownerB.household.id, species: "CAT", name: "B's Cat" },
-      });
+      await createPet(prisma, ownerB.household.id, { species: "CAT", name: "B's Cat" });
 
       const invite = await mintInvite(ownerA);
 

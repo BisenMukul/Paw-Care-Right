@@ -9,7 +9,8 @@ import { AppModule } from "../src/app.module";
 import { configureApp } from "../src/app.setup";
 import {
   cleanupUsers,
-  createAuthedContext,
+  createMemberContext,
+  createOwnerContext,
   createUser,
   mintAccessToken,
   resolveJwtService,
@@ -46,17 +47,8 @@ describe("Pets (e2e)", () => {
     await app.close();
   });
 
-  async function owner(): Promise<AuthedContext> {
-    const ctx = await createAuthedContext(app, prisma, jwtService, { role: "OWNER" });
-    userIds.push(ctx.user.id);
-    return ctx;
-  }
-
-  async function member(): Promise<AuthedContext> {
-    const ctx = await createAuthedContext(app, prisma, jwtService, { role: "MEMBER" });
-    userIds.push(ctx.user.id, ctx.household.ownerId);
-    return ctx;
-  }
+  const owner = (): Promise<AuthedContext> => createOwnerContext(app, prisma, jwtService, userIds);
+  const member = (): Promise<AuthedContext> => createMemberContext(app, prisma, jwtService, userIds);
 
   function minimalPet(overrides: Record<string, unknown> = {}) {
     return { species: "DOG", name: "Fido", ...overrides };
