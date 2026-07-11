@@ -14,6 +14,7 @@ import { configureApp } from "../src/app.setup";
 import { APPLE_ISSUER, APPLE_JWKS_RESOLVER } from "../src/auth/social/apple-token-verifier";
 import { GOOGLE_ISSUERS, GOOGLE_JWKS_RESOLVER } from "../src/auth/social/google-token-verifier";
 import { DEFAULT_LOCALE, DEFAULT_REGION } from "../src/auth/auth.constants";
+import { cleanupUsers, createHousehold, createUser } from "./factories";
 
 const TEST_AUDIENCE = "com.pawcareright.app"; // APPLE_CLIENT_ID default
 const KEY_ID = "e2e-test-key-1";
@@ -70,14 +71,7 @@ describe("Auth social (e2e)", () => {
   });
 
   afterEach(async () => {
-    for (const userId of createdUserIds) {
-      // Household.owner is onDelete: Restrict — households (and anything
-      // FK'd to the user) must be removed before the user row.
-      await prisma.membership.deleteMany({ where: { userId } });
-      await prisma.refreshToken.deleteMany({ where: { userId } });
-      await prisma.household.deleteMany({ where: { ownerId: userId } });
-      await prisma.user.deleteMany({ where: { id: userId } });
-    }
+    await cleanupUsers(prisma, [...createdUserIds]);
     createdUserIds.clear();
   });
 
@@ -272,15 +266,8 @@ describe("Auth social (e2e)", () => {
   it("Apple sign-in with an email matching an existing user links, does not duplicate", async () => {
     const email = uniqueEmail();
 
-    const existing = await prisma.user.create({
-      data: { email, locale: DEFAULT_LOCALE, region: DEFAULT_REGION },
-    });
-    const household = await prisma.household.create({
-      data: { name: "My Household", ownerId: existing.id },
-    });
-    await prisma.membership.create({
-      data: { userId: existing.id, householdId: household.id, role: "OWNER" },
-    });
+    const existing = await createUser(prisma, { email, locale: DEFAULT_LOCALE, region: DEFAULT_REGION });
+    await createHousehold(prisma, existing.id);
     createdUserIds.add(existing.id);
 
     const subject = uniqueSubject();
@@ -411,15 +398,8 @@ describe("Auth social (e2e)", () => {
   it("Google sign-in with an email matching an existing user links, does not duplicate", async () => {
     const email = uniqueGoogleEmail();
 
-    const existing = await prisma.user.create({
-      data: { email, locale: DEFAULT_LOCALE, region: DEFAULT_REGION },
-    });
-    const household = await prisma.household.create({
-      data: { name: "My Household", ownerId: existing.id },
-    });
-    await prisma.membership.create({
-      data: { userId: existing.id, householdId: household.id, role: "OWNER" },
-    });
+    const existing = await createUser(prisma, { email, locale: DEFAULT_LOCALE, region: DEFAULT_REGION });
+    await createHousehold(prisma, existing.id);
     createdUserIds.add(existing.id);
 
     const subject = uniqueGoogleSubject();
@@ -468,15 +448,13 @@ describe("Auth social (e2e)", () => {
     const email = uniqueGoogleEmail();
     const appleSubject = uniqueSubject();
 
-    const existing = await prisma.user.create({
-      data: { email, locale: DEFAULT_LOCALE, region: DEFAULT_REGION, appleSub: appleSubject },
+    const existing = await createUser(prisma, {
+      email,
+      locale: DEFAULT_LOCALE,
+      region: DEFAULT_REGION,
+      appleSub: appleSubject,
     });
-    const household = await prisma.household.create({
-      data: { name: "My Household", ownerId: existing.id },
-    });
-    await prisma.membership.create({
-      data: { userId: existing.id, householdId: household.id, role: "OWNER" },
-    });
+    await createHousehold(prisma, existing.id);
     createdUserIds.add(existing.id);
 
     const googleSubject = uniqueGoogleSubject();

@@ -8,6 +8,7 @@
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "lint": "eslint .",
     "test": "jest",
+    "test:cov": "jest --coverage",
     "prisma:generate": "prisma generate",
     "prisma:migrate:dev": "prisma migrate dev",
     "prisma:seed": "prisma db seed",
@@ -85,6 +86,18 @@
     "moduleNameMapper": {
       "^@pawcareright/config$": "<rootDir>/../../packages/config/src/index.ts",
       "^@pawcareright/config/env$": "<rootDir>/../../packages/config/src/env/index.ts"
+    },
+    "collectCoverageFrom": [
+      "src/**/*.service.ts"
+    ],
+    "coverageDirectory": "<rootDir>/coverage",
+    "coverageThreshold": {
+      "global": {
+        "statements": 80,
+        "lines": 80,
+        "functions": 80,
+        "branches": 70
+      }
     }
   }
 }

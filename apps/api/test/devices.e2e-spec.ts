@@ -9,9 +9,14 @@ import request from "supertest";
 
 import { AppModule } from "../src/app.module";
 import { configureApp } from "../src/app.setup";
-import { DEFAULT_LOCALE, DEFAULT_REGION } from "../src/auth/auth.constants";
-import { AppConfigService } from "../src/config/app-config.service";
 import { DEVICE_TOKEN_HEADER } from "../src/devices/last-seen.middleware";
+import {
+  cleanupUsers,
+  createUser as createFactoryUser,
+  mintAccessToken,
+  resolveJwtService,
+  uniqueEmail,
+} from "./factories";
 
 describe("Devices (e2e)", () => {
   let app: INestApplication;
@@ -21,29 +26,15 @@ describe("Devices (e2e)", () => {
   const userIds: string[] = [];
   const tokens: string[] = [];
 
-  function uniqueEmail(prefix: string): string {
-    return `${prefix}-${randomUUID()}@pawcareright.local`;
-  }
-
   function uniqueToken(prefix: string): string {
     return `ExponentPushToken[${prefix}-${randomUUID()}]`;
   }
 
-  function resolveJwtService(nestApp: INestApplication): JwtService {
-    try {
-      return nestApp.get(JwtService);
-    } catch {
-      return new JwtService({ secret: new AppConfigService().jwtSecret });
-    }
-  }
-
   async function createUser(prefix: string): Promise<{ id: string; bearer: string }> {
-    const user = await prisma.user.create({
-      data: { email: uniqueEmail(prefix), locale: DEFAULT_LOCALE, region: DEFAULT_REGION },
-    });
+    const user = await createFactoryUser(prisma, { email: uniqueEmail(prefix) });
     userIds.push(user.id);
-    const jwt = jwtService.sign({ sub: user.id });
-    return { id: user.id, bearer: jwt };
+    const bearer = mintAccessToken(jwtService, user.id);
+    return { id: user.id, bearer };
   }
 
   function registerDevice(bearer: string, expoPushToken: string, platform = "ios") {
@@ -65,9 +56,7 @@ describe("Devices (e2e)", () => {
   });
 
   afterAll(async () => {
-    await prisma.device.deleteMany({ where: { expoPushToken: { in: tokens } } });
-    await prisma.device.deleteMany({ where: { userId: { in: userIds } } });
-    await prisma.user.deleteMany({ where: { id: { in: userIds } } });
+    await cleanupUsers(prisma, userIds);
 
     await prisma.$disconnect();
     await app.close();

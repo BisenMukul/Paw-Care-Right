@@ -1,5 +1,3 @@
-import { randomUUID } from "node:crypto";
-
 import type { INestApplication } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { Test } from "@nestjs/testing";
@@ -9,9 +7,15 @@ import request from "supertest";
 
 import { AppModule } from "../src/app.module";
 import { configureApp } from "../src/app.setup";
-import { DEFAULT_LOCALE, DEFAULT_REGION } from "../src/auth/auth.constants";
-import { AppConfigService } from "../src/config/app-config.service";
 import { HouseholdScopedTestController } from "./household-scoped-test.controller";
+import {
+  addMembership,
+  cleanupUsers,
+  createHousehold,
+  createUser,
+  mintAccessToken,
+  resolveJwtService,
+} from "./factories";
 
 // Exercises the real global APP_GUARD chain (JwtAuthGuard →
 // HouseholdScopeGuard → RolesGuard) against `HouseholdScopedTestController`
@@ -28,25 +32,10 @@ describe("Guards (e2e)", () => {
   let memberId: string;
   let otherId: string;
   let h1Id: string;
-  let h2Id: string;
 
   let ownerToken: string;
   let memberToken: string;
   let otherOwnerToken: string;
-
-  function uniqueEmail(prefix: string): string {
-    return `${prefix}-${randomUUID()}@pawcareright.local`;
-  }
-
-  function resolveJwtService(nestApp: INestApplication): JwtService {
-    try {
-      return nestApp.get(JwtService);
-    } catch {
-      // Falls back to a locally configured instance (same default secret
-      // resolution as the app) if root-level DI resolution ever fails.
-      return new JwtService({ secret: new AppConfigService().jwtSecret });
-    }
-  }
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -61,40 +50,28 @@ describe("Guards (e2e)", () => {
     prisma = new PrismaClient();
     jwtService = resolveJwtService(app);
 
-    const owner = await prisma.user.create({
-      data: { email: uniqueEmail("owner"), locale: DEFAULT_LOCALE, region: DEFAULT_REGION },
-    });
-    const member = await prisma.user.create({
-      data: { email: uniqueEmail("member"), locale: DEFAULT_LOCALE, region: DEFAULT_REGION },
-    });
-    const other = await prisma.user.create({
-      data: { email: uniqueEmail("other"), locale: DEFAULT_LOCALE, region: DEFAULT_REGION },
-    });
+    const owner = await createUser(prisma);
+    const member = await createUser(prisma);
+    const other = await createUser(prisma);
     ownerId = owner.id;
     memberId = member.id;
     otherId = other.id;
 
-    const h1 = await prisma.household.create({ data: { name: "H1", ownerId } });
-    const h2 = await prisma.household.create({ data: { name: "H2", ownerId: otherId } });
+    const h1 = await createHousehold(prisma, ownerId, { name: "H1" });
+    // H2 exists so `other` genuinely owns a different household; the
+    // cross-household tests probe H1 with other's token, so only h1Id is kept.
+    await createHousehold(prisma, otherId, { name: "H2" });
     h1Id = h1.id;
-    h2Id = h2.id;
 
-    await prisma.membership.create({ data: { userId: ownerId, householdId: h1Id, role: "OWNER" } });
-    await prisma.membership.create({ data: { userId: memberId, householdId: h1Id, role: "MEMBER" } });
-    await prisma.membership.create({ data: { userId: otherId, householdId: h2Id, role: "OWNER" } });
+    await addMembership(prisma, { userId: memberId, householdId: h1Id, role: "MEMBER" });
 
-    ownerToken = jwtService.sign({ sub: ownerId });
-    memberToken = jwtService.sign({ sub: memberId });
-    otherOwnerToken = jwtService.sign({ sub: otherId });
+    ownerToken = mintAccessToken(jwtService, ownerId);
+    memberToken = mintAccessToken(jwtService, memberId);
+    otherOwnerToken = mintAccessToken(jwtService, otherId);
   });
 
   afterAll(async () => {
-    const userIds = [ownerId, memberId, otherId];
-    await prisma.membership.deleteMany({ where: { userId: { in: userIds } } });
-    // Household.owner is onDelete: Restrict — households must be removed
-    // before their owner users.
-    await prisma.household.deleteMany({ where: { id: { in: [h1Id, h2Id] } } });
-    await prisma.user.deleteMany({ where: { id: { in: userIds } } });
+    await cleanupUsers(prisma, [ownerId, memberId, otherId]);
 
     await prisma.$disconnect();
     await app.close();
