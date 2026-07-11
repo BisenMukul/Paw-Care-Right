@@ -254,8 +254,8 @@
       "attempts": 1
     },
     "T018": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 1
     },
     "T019": {
       "status": "pending",

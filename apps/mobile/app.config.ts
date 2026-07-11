@@ -27,6 +27,7 @@ const config: ExpoConfig = {
   ios: {
     bundleIdentifier: BUNDLE_ID,
     supportsTablet: true,
+    usesAppleSignIn: true,
   },
   android: {
     package: BUNDLE_ID,
@@ -38,7 +39,11 @@ const config: ExpoConfig = {
   web: {
     favicon: "./assets/favicon.png",
   },
-  plugins: ["expo-router"],
+  extra: {
+    apiBaseUrl: process.env.EXPO_PUBLIC_API_URL ?? "http://localhost:3000",
+    googleClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID ?? "",
+  },
+  plugins: ["expo-router", "expo-apple-authentication"],
 };
 
 export default config;
