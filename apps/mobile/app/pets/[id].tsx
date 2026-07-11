@@ -1,60 +1,104 @@
-import { Image } from "expo-image";
+import { useIsOffline } from "@pawcareright/api-client";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { ActivityIndicator, Text, View } from "react-native";
+import { ActivityIndicator, Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { usePet } from "../../src/api/pets-api";
+import { PetHeaderCard } from "../../src/components/pet-header-card";
 import { PrimaryButton } from "../../src/components/primary-button";
+import { QuickActions } from "../../src/components/quick-actions";
+import { CTA_HEIGHT } from "../../src/pets/pet-home-layout";
 import { strings } from "../../src/strings";
 
 /**
- * Deliberately minimal pet home (plan R4): name/species/breed + a local
- * photo preview (from the just-finished wizard) or a placeholder. No
- * remote photo fetch — no display-URL endpoint exists yet.
+ * Pet home (T025 plan): header card (photo, name, derived age, breed) plus
+ * a pinned, above-the-fold "Something wrong?" CTA and a quick-actions row —
+ * all three are inert stubs that route to the shared `coming-soon`
+ * placeholder (plan R1). No AI output, no diagnosis, no dosing; this screen
+ * touches no disclaimer/emergency surface (CLAUDE.md §7 unaffected).
+ *
+ * The header region (offline banner + header card + CTA) is rendered
+ * OUTSIDE and BEFORE the `pet-home-scroll` ScrollView so the CTA can never
+ * be scrolled off the top (plan §AC2a).
  */
 export default function PetHomeScreen() {
   const router = useRouter();
   const { id, localPhoto } = useLocalSearchParams<{ id: string; localPhoto?: string }>();
-  const { data: pet, isLoading, isError } = usePet(id);
+  const { data: pet, isLoading, isError, refetch } = usePet(id);
+  const isOffline = useIsOffline();
 
-  return (
-    <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-white px-6">
-      {isLoading ? (
-        <>
-          <ActivityIndicator testID="pet-home-loading" />
-          <Text className="text-center text-base text-brand-900">{strings.petHome.loading}</Text>
-        </>
-      ) : isError ? (
+  const goToComingSoon = (feature: string) => {
+    router.push({ pathname: "/coming-soon", params: { feature } });
+  };
+
+  if (isLoading) {
+    return (
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-white px-6">
+        <ActivityIndicator testID="pet-home-loading" />
+        <Text className="text-center text-base text-brand-900">{strings.petHome.loading}</Text>
+      </SafeAreaView>
+    );
+  }
+
+  if (isOffline && !pet) {
+    return (
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-white px-6">
+        <Text testID="pet-home-offline" className="text-center text-base text-brand-900">
+          {strings.petHome.offline}
+        </Text>
+        <PrimaryButton testID="pet-home-retry" label={strings.petHome.retry} onPress={() => refetch()} />
+      </SafeAreaView>
+    );
+  }
+
+  if (isError) {
+    return (
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-white px-6">
         <Text testID="pet-home-error" className="text-center text-base text-red-600">
           {strings.petHome.error}
         </Text>
-      ) : !pet ? (
+        <PrimaryButton testID="pet-home-retry" label={strings.petHome.retry} onPress={() => refetch()} />
+      </SafeAreaView>
+    );
+  }
+
+  if (!pet) {
+    return (
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-white px-6">
         <Text testID="pet-home-empty" className="text-center text-base text-brand-900">
           {strings.petHome.empty}
         </Text>
-      ) : (
-        <>
-          {localPhoto ? (
-            <Image
-              testID="pet-home-photo"
-              source={{ uri: localPhoto }}
-              className="h-32 w-32 rounded-full"
-            />
-          ) : (
-            <View testID="pet-home-photo-placeholder" className="h-32 w-32 rounded-full bg-brand-100" />
-          )}
-          <Text testID="pet-home-name" className="text-xl font-semibold text-brand-900">
-            {pet.name}
+      </SafeAreaView>
+    );
+  }
+
+  return (
+    <SafeAreaView className="flex-1 bg-white">
+      <View testID="pet-home-header-region" className="gap-3 px-6 pb-4 pt-2">
+        {isOffline ? (
+          <Text testID="pet-home-offline-banner" className="text-center text-sm text-brand-700">
+            {strings.petHome.offlineBanner}
           </Text>
-          <Text className="text-base text-brand-900">{pet.species}</Text>
-          {pet.breedSlug ? <Text className="text-base text-brand-900">{pet.breedSlug}</Text> : null}
-        </>
-      )}
-      <PrimaryButton
-        testID="pet-home-done"
-        label={strings.petHome.done}
-        onPress={() => router.replace("/(tabs)")}
-      />
+        ) : null}
+        <PetHeaderCard pet={pet} {...(localPhoto ? { localPhoto } : {})} />
+        <Pressable
+          testID="pet-home-cta"
+          onPress={() => goToComingSoon("symptom-check")}
+          accessibilityRole="button"
+          style={{ minHeight: CTA_HEIGHT }}
+          className="items-center justify-center rounded-lg bg-brand-700 px-6"
+        >
+          <Text className="text-base font-semibold text-white">{strings.petHome.somethingWrong}</Text>
+        </Pressable>
+      </View>
+      <ScrollView testID="pet-home-scroll" className="flex-1">
+        <View className="gap-4 px-6 pb-8 pt-4">
+          <QuickActions
+            onLogWeight={() => goToComingSoon("log-weight")}
+            onReminders={() => goToComingSoon("reminders")}
+          />
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }

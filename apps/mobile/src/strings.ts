@@ -112,5 +112,16 @@ export const strings = {
     error: "We couldn't load this pet.",
     empty: "This pet couldn't be found.",
     done: "Done",
+    somethingWrong: "Something wrong?",
+    logWeight: "Log weight",
+    reminders: "Reminders",
+    retry: "Retry",
+    offlineBanner: "You're offline — showing your last saved info.",
+    offline: "You're offline. Reconnect to load this pet.",
+    age: { yr: "yr", mo: "mo", approx: "~", unknown: "Age unknown" },
+  },
+  comingSoon: {
+    title: "Coming soon",
+    body: "This part of the app isn't ready yet. Check back soon.",
   },
 } as const;

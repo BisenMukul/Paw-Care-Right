@@ -1,0 +1,307 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`pet home screen snapshots empty 1`] = `
+<RNCSafeAreaView
+  className="flex-1 items-center justify-center gap-4 bg-white px-6"
+  edges={
+    {
+      "bottom": "additive",
+      "left": "additive",
+      "right": "additive",
+      "top": "additive",
+    }
+  }
+>
+  <Text
+    className="text-center text-base text-brand-900"
+    testID="pet-home-empty"
+  >
+    This pet couldn't be found.
+  </Text>
+</RNCSafeAreaView>
+`;
+
+exports[`pet home screen snapshots error 1`] = `
+<RNCSafeAreaView
+  className="flex-1 items-center justify-center gap-4 bg-white px-6"
+  edges={
+    {
+      "bottom": "additive",
+      "left": "additive",
+      "right": "additive",
+      "top": "additive",
+    }
+  }
+>
+  <Text
+    className="text-center text-base text-red-600"
+    testID="pet-home-error"
+  >
+    We couldn't load this pet.
+  </Text>
+  <View
+    accessibilityRole="button"
+    accessibilityState={
+      {
+        "busy": undefined,
+        "checked": undefined,
+        "disabled": false,
+        "expanded": undefined,
+        "selected": undefined,
+      }
+    }
+    accessibilityValue={
+      {
+        "max": undefined,
+        "min": undefined,
+        "now": undefined,
+        "text": undefined,
+      }
+    }
+    accessible={true}
+    className="items-center rounded-lg bg-brand-700 px-6 py-3"
+    collapsable={false}
+    focusable={true}
+    onBlur={[Function]}
+    onClick={[Function]}
+    onFocus={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    testID="pet-home-retry"
+  >
+    <Text
+      className="text-base font-semibold text-white"
+    >
+      Retry
+    </Text>
+  </View>
+</RNCSafeAreaView>
+`;
+
+exports[`pet home screen snapshots loaded 1`] = `
+<RNCSafeAreaView
+  className="flex-1 bg-white"
+  edges={
+    {
+      "bottom": "additive",
+      "left": "additive",
+      "right": "additive",
+      "top": "additive",
+    }
+  }
+>
+  <View
+    className="gap-3 px-6 pb-4 pt-2"
+    testID="pet-home-header-region"
+  >
+    <View
+      className="flex-row items-center gap-4 rounded-lg bg-brand-50 px-4"
+      style={
+        {
+          "height": 140,
+        }
+      }
+      testID="pet-home-header-card"
+    >
+      <Image
+        className="h-20 w-20 rounded-full"
+        source={
+          {
+            "uri": "file:///snap.jpg",
+          }
+        }
+        testID="pet-home-photo"
+      />
+      <View
+        className="flex-1 gap-1"
+      >
+        <Text
+          className="text-xl font-semibold text-brand-900"
+          testID="pet-home-name"
+        >
+          Rex
+        </Text>
+        <Text
+          className="text-base text-brand-900"
+          testID="pet-home-age"
+        >
+          2 yr
+        </Text>
+        <Text
+          className="text-base text-brand-900"
+          testID="pet-home-breed"
+        >
+          labrador-retriever
+        </Text>
+      </View>
+    </View>
+    <View
+      accessibilityRole="button"
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": undefined,
+          "expanded": undefined,
+          "selected": undefined,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      className="items-center justify-center rounded-lg bg-brand-700 px-6"
+      collapsable={false}
+      focusable={true}
+      onBlur={[Function]}
+      onClick={[Function]}
+      onFocus={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
+        {
+          "minHeight": 56,
+        }
+      }
+      testID="pet-home-cta"
+    >
+      <Text
+        className="text-base font-semibold text-white"
+      >
+        Something wrong?
+      </Text>
+    </View>
+  </View>
+  <RCTScrollView
+    className="flex-1"
+    testID="pet-home-scroll"
+  >
+    <View>
+      <View
+        className="gap-4 px-6 pb-8 pt-4"
+      >
+        <View
+          className="flex-row gap-3"
+        >
+          <View
+            accessibilityRole="button"
+            accessibilityState={
+              {
+                "busy": undefined,
+                "checked": undefined,
+                "disabled": undefined,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            className="flex-1 items-center rounded-lg bg-brand-100 px-4 py-3"
+            collapsable={false}
+            focusable={true}
+            onBlur={[Function]}
+            onClick={[Function]}
+            onFocus={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            testID="quick-action-log-weight"
+          >
+            <Text
+              className="text-base font-semibold text-brand-900"
+            >
+              Log weight
+            </Text>
+          </View>
+          <View
+            accessibilityRole="button"
+            accessibilityState={
+              {
+                "busy": undefined,
+                "checked": undefined,
+                "disabled": undefined,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            className="flex-1 items-center rounded-lg bg-brand-100 px-4 py-3"
+            collapsable={false}
+            focusable={true}
+            onBlur={[Function]}
+            onClick={[Function]}
+            onFocus={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            testID="quick-action-reminders"
+          >
+            <Text
+              className="text-base font-semibold text-brand-900"
+            >
+              Reminders
+            </Text>
+          </View>
+        </View>
+      </View>
+    </View>
+  </RCTScrollView>
+</RNCSafeAreaView>
+`;
+
+exports[`pet home screen snapshots loading 1`] = `
+<RNCSafeAreaView
+  className="flex-1 items-center justify-center gap-4 bg-white px-6"
+  edges={
+    {
+      "bottom": "additive",
+      "left": "additive",
+      "right": "additive",
+      "top": "additive",
+    }
+  }
+>
+  <ActivityIndicator
+    testID="pet-home-loading"
+  />
+  <Text
+    className="text-center text-base text-brand-900"
+  >
+    Loading…
+  </Text>
+</RNCSafeAreaView>
+`;
