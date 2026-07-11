@@ -19,6 +19,7 @@ export const strings = {
   },
   settings: {
     body: "Account and household settings will live here.",
+    family: "Family",
   },
   auth: {
     welcome: {
@@ -123,5 +124,24 @@ export const strings = {
   comingSoon: {
     title: "Coming soon",
     body: "This part of the app isn't ready yet. Check back soon.",
+  },
+  family: {
+    title: "Family",
+    loading: "Loading…",
+    error: "We couldn't load your household.",
+    empty: "We couldn't find your household.",
+    retry: "Retry",
+    owner: "Owner",
+    member: "Member",
+    invite: "Invite someone",
+    inviteError: "We couldn't create an invite. Please try again.",
+  },
+  join: {
+    title: "Join this household?",
+    body: "Accepting will move you into this household and leave your current one.",
+    accept: "Join household",
+    invalidError: "This invite link is invalid or has expired.",
+    petsPresentError:
+      "You have pets in your current household. Remove or rehome them before joining another household.",
   },
 } as const;

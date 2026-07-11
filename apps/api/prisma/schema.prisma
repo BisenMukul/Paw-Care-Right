@@ -37,6 +37,8 @@ model User {
   memberships     Membership[]
   devices         Device[]
   refreshTokens   RefreshToken[]
+  createdInvites  HouseholdInvite[] @relation("InviteCreator")
+  acceptedInvites HouseholdInvite[] @relation("InviteAcceptor")
 }
 
 model Household {
@@ -49,6 +51,7 @@ model Household {
 
   memberships Membership[]
   pets        Pet[]
+  invites     HouseholdInvite[]
 
   @@index([ownerId])
 }
@@ -113,4 +116,21 @@ model Pet {
   household         Household @relation(fields: [householdId], references: [id], onDelete: Cascade)
 
   @@index([householdId, deletedAt])
+}
+
+model HouseholdInvite {
+  id          String    @id @default(uuid())
+  code        String    @unique
+  householdId String
+  household   Household @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  createdById String
+  createdBy   User      @relation("InviteCreator", fields: [createdById], references: [id], onDelete: Cascade)
+  usedById    String?
+  usedBy      User?     @relation("InviteAcceptor", fields: [usedById], references: [id], onDelete: SetNull)
+  expiresAt   DateTime
+  usedAt      DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([householdId])
+  @@index([expiresAt])
 }
