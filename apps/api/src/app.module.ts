@@ -6,12 +6,13 @@ import { JwtAuthGuard } from "./auth/jwt-auth.guard";
 import { HouseholdScopeGuard } from "./common/household-scope.guard";
 import { RolesGuard } from "./common/roles.guard";
 import { ConfigModule } from "./config/config.module";
+import { DevicesModule } from "./devices/devices.module";
 import { HealthModule } from "./health/health.module";
 import { PrismaModule } from "./prisma/prisma.module";
 import { RedisModule } from "./redis/redis.module";
 
 @Module({
-  imports: [ConfigModule, PrismaModule, RedisModule, HealthModule, AuthModule],
+  imports: [ConfigModule, PrismaModule, RedisModule, HealthModule, AuthModule, DevicesModule],
   // Three global guards, registered in this fixed order:
   //   1. JwtAuthGuard — authenticates the caller (honors @Public()).
   //   2. HouseholdScopeGuard — resolves membership on @HouseholdScoped()
