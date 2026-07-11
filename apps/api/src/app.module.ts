@@ -10,6 +10,7 @@ import { THROTTLE_DEFAULT } from "./common/throttle.config";
 import { ConfigModule } from "./config/config.module";
 import { DevicesModule } from "./devices/devices.module";
 import { HealthModule } from "./health/health.module";
+import { PetsModule } from "./pets/pets.module";
 import { PrismaModule } from "./prisma/prisma.module";
 import { RedisModule } from "./redis/redis.module";
 
@@ -21,6 +22,7 @@ import { RedisModule } from "./redis/redis.module";
     HealthModule,
     AuthModule,
     DevicesModule,
+    PetsModule,
     ThrottlerModule.forRoot([{ name: "default", ...THROTTLE_DEFAULT }]),
   ],
   // Four global guards, registered in this fixed order:

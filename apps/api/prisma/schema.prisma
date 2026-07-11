@@ -12,6 +12,17 @@ enum Role {
   MEMBER
 }
 
+enum Species {
+  DOG
+  CAT
+}
+
+enum Sex {
+  MALE
+  FEMALE
+  UNKNOWN
+}
+
 model User {
   id        String   @id @default(uuid())
   email     String   @unique
@@ -37,6 +48,7 @@ model Household {
   updatedAt DateTime @updatedAt
 
   memberships Membership[]
+  pets        Pet[]
 
   @@index([ownerId])
 }
@@ -81,4 +93,24 @@ model RefreshToken {
   @@index([userId])
   @@index([familyId])
   @@index([expiresAt])
+}
+
+model Pet {
+  id                String    @id @default(uuid())
+  householdId       String
+  species           Species
+  breedSlug         String?
+  name              String
+  sex               Sex       @default(UNKNOWN)
+  neutered          Boolean   @default(false)
+  birthDate         DateTime?
+  ageEstimateMonths Int?
+  weightGrams       Int?
+  photoKey          String?
+  deletedAt         DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  household         Household @relation(fields: [householdId], references: [id], onDelete: Cascade)
+
+  @@index([householdId, deletedAt])
 }

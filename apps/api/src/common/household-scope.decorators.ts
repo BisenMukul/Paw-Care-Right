@@ -21,6 +21,26 @@ export const HouseholdScoped = (paramName = "householdId"): ReturnType<typeof Se
   SetMetadata(HOUSEHOLD_SCOPE_PARAM_KEY, paramName);
 
 /**
+ * Metadata key read by `HouseholdScopeGuard`'s additive "resolve from
+ * membership" mode. Set (via `@HouseholdFromMembership()`) on flat routes
+ * that carry no household id in the URL at all (e.g. `/pets`) — the guard
+ * instead resolves the caller's sole `Membership` and injects
+ * `req.householdScope` from it. Independent of `HOUSEHOLD_SCOPE_PARAM_KEY`;
+ * a route should use one mode or the other, never both.
+ */
+export const HOUSEHOLD_SCOPE_FROM_MEMBERSHIP_KEY = "householdScopeFromMembership";
+
+/**
+ * Marks a handler (or an entire controller class) as household-scoped via
+ * the caller's own membership rather than a route param. v1 assumes exactly
+ * one household per user (auto-provisioned): zero or more than one
+ * membership both resolve to `NotFoundException` (see `HouseholdScopeGuard`
+ * and plan Risk R2 — multi-household selection is deferred to T027/T028).
+ */
+export const HouseholdFromMembership = (): ReturnType<typeof SetMetadata> =>
+  SetMetadata(HOUSEHOLD_SCOPE_FROM_MEMBERSHIP_KEY, true);
+
+/**
  * Metadata key read by `RolesGuard`. Its value is the `Role` required to
  * proceed. Absent on a route → the guard no-ops.
  */
