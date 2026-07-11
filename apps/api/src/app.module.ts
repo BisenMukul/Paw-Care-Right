@@ -4,6 +4,7 @@ import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 
 import { AuthModule } from "./auth/auth.module";
 import { JwtAuthGuard } from "./auth/jwt-auth.guard";
+import { BreedsModule } from "./breeds/breeds.module";
 import { HouseholdScopeGuard } from "./common/household-scope.guard";
 import { RolesGuard } from "./common/roles.guard";
 import { THROTTLE_DEFAULT } from "./common/throttle.config";
@@ -23,6 +24,7 @@ import { RedisModule } from "./redis/redis.module";
     AuthModule,
     DevicesModule,
     PetsModule,
+    BreedsModule,
     ThrottlerModule.forRoot([{ name: "default", ...THROTTLE_DEFAULT }]),
   ],
   // Four global guards, registered in this fixed order:

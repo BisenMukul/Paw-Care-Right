@@ -1,0 +1,3224 @@
+[
+  {
+    "slug": "chihuahua",
+    "name": "Chihuahua",
+    "sizeClass": "TOY",
+    "typicalAdultWeightKg": {
+      "min": 1.5,
+      "max": 3
+    }
+  },
+  {
+    "slug": "yorkshire-terrier",
+    "name": "Yorkshire Terrier",
+    "sizeClass": "TOY",
+    "typicalAdultWeightKg": {
+      "min": 2,
+      "max": 3.2
+    }
+  },
+  {
+    "slug": "pomeranian",
+    "name": "Pomeranian",
+    "sizeClass": "TOY",
+    "typicalAdultWeightKg": {
+      "min": 1.9,
+      "max": 3.5
+    }
+  },
+  {
+    "slug": "maltese",
+    "name": "Maltese",
+    "sizeClass": "TOY",
+    "typicalAdultWeightKg": {
+      "min": 2,
+      "max": 4
+    }
+  },
+  {
+    "slug": "papillon",
+    "name": "Papillon",
+    "sizeClass": "TOY",
+    "typicalAdultWeightKg": {
+      "min": 1.5,
+      "max": 6
+    }
+  },
+  {
+    "slug": "pekingese",
+    "name": "Pekingese",
+    "sizeClass": "TOY",
+    "typicalAdultWeightKg": {
+      "min": 1.5,
+      "max": 6
+    }
+  },
+  {
+    "slug": "japanese-chin",
+    "name": "Japanese Chin",
+    "sizeClass": "TOY",
+    "typicalAdultWeightKg": {
+      "min": 1.5,
+      "max": 6
+    }
+  },
+  {
+    "slug": "toy-poodle",
+    "name": "Toy Poodle",
+    "sizeClass": "TOY",
+    "typicalAdultWeightKg": {
+      "min": 1.5,
+      "max": 6
+    }
+  },
+  {
+    "slug": "affenpinscher",
+    "name": "Affenpinscher",
+    "sizeClass": "TOY",
+    "typicalAdultWeightKg": {
+      "min": 1.5,
+      "max": 6
+    }
+  },
+  {
+    "slug": "brussels-griffon",
+    "name": "Brussels Griffon",
+    "sizeClass": "TOY",
+    "typicalAdultWeightKg": {
+      "min": 1.5,
+      "max": 6
+    }
+  },
+  {
+    "slug": "english-toy-spaniel",
+    "name": "English Toy Spaniel",
+    "sizeClass": "TOY",
+    "typicalAdultWeightKg": {
+      "min": 1.5,
+      "max": 6
+    }
+  },
+  {
+    "slug": "cavalier-king-charles-spaniel",
+    "name": "Cavalier King Charles Spaniel",
+    "sizeClass": "TOY",
+    "typicalAdultWeightKg": {
+      "min": 5.9,
+      "max": 8.2
+    }
+  },
+  {
+    "slug": "havanese",
+    "name": "Havanese",
+    "sizeClass": "TOY",
+    "typicalAdultWeightKg": {
+      "min": 1.5,
+      "max": 6
+    }
+  },
+  {
+    "slug": "bichon-frise",
+    "name": "Bichon Frise",
+    "sizeClass": "TOY",
+    "typicalAdultWeightKg": {
+      "min": 1.5,
+      "max": 6
+    }
+  },
+  {
+    "slug": "italian-greyhound",
+    "name": "Italian Greyhound",
+    "sizeClass": "TOY",
+    "typicalAdultWeightKg": {
+      "min": 1.5,
+      "max": 6
+    }
+  },
+  {
+    "slug": "miniature-pinscher",
+    "name": "Miniature Pinscher",
+    "sizeClass": "TOY",
+    "typicalAdultWeightKg": {
+      "min": 1.5,
+      "max": 6
+    }
+  },
+  {
+    "slug": "chinese-crested",
+    "name": "Chinese Crested",
+    "sizeClass": "TOY",
+    "typicalAdultWeightKg": {
+      "min": 1.5,
+      "max": 6
+    }
+  },
+  {
+    "slug": "silky-terrier",
+    "name": "Silky Terrier",
+    "sizeClass": "TOY",
+    "typicalAdultWeightKg": {
+      "min": 1.5,
+      "max": 6
+    }
+  },
+  {
+    "slug": "toy-fox-terrier",
+    "name": "Toy Fox Terrier",
+    "sizeClass": "TOY",
+    "typicalAdultWeightKg": {
+      "min": 1.5,
+      "max": 6
+    }
+  },
+  {
+    "slug": "russian-toy",
+    "name": "Russian Toy",
+    "sizeClass": "TOY",
+    "typicalAdultWeightKg": {
+      "min": 1.5,
+      "max": 6
+    }
+  },
+  {
+    "slug": "prague-ratter",
+    "name": "Prague Ratter",
+    "sizeClass": "TOY",
+    "typicalAdultWeightKg": {
+      "min": 1.5,
+      "max": 6
+    }
+  },
+  {
+    "slug": "biewer-terrier",
+    "name": "Biewer Terrier",
+    "sizeClass": "TOY",
+    "typicalAdultWeightKg": {
+      "min": 1.5,
+      "max": 6
+    }
+  },
+  {
+    "slug": "coton-de-tulear",
+    "name": "Coton de Tulear",
+    "sizeClass": "TOY",
+    "typicalAdultWeightKg": {
+      "min": 1.5,
+      "max": 6
+    }
+  },
+  {
+    "slug": "english-toy-terrier",
+    "name": "English Toy Terrier",
+    "sizeClass": "TOY",
+    "typicalAdultWeightKg": {
+      "min": 1.5,
+      "max": 6
+    }
+  },
+  {
+    "slug": "lowchen",
+    "name": "Lowchen",
+    "sizeClass": "TOY",
+    "typicalAdultWeightKg": {
+      "min": 1.5,
+      "max": 6
+    }
+  },
+  {
+    "slug": "volpino-italiano",
+    "name": "Volpino Italiano",
+    "sizeClass": "TOY",
+    "typicalAdultWeightKg": {
+      "min": 1.5,
+      "max": 6
+    }
+  },
+  {
+    "slug": "bolognese",
+    "name": "Bolognese",
+    "sizeClass": "TOY",
+    "typicalAdultWeightKg": {
+      "min": 1.5,
+      "max": 6
+    }
+  },
+  {
+    "slug": "japanese-terrier",
+    "name": "Japanese Terrier",
+    "sizeClass": "TOY",
+    "typicalAdultWeightKg": {
+      "min": 1.5,
+      "max": 6
+    }
+  },
+  {
+    "slug": "beagle",
+    "name": "Beagle",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 9,
+      "max": 11
+    }
+  },
+  {
+    "slug": "shih-tzu",
+    "name": "Shih Tzu",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "lhasa-apso",
+    "name": "Lhasa Apso",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "west-highland-white-terrier",
+    "name": "West Highland White Terrier",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "cairn-terrier",
+    "name": "Cairn Terrier",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "scottish-terrier",
+    "name": "Scottish Terrier",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "boston-terrier",
+    "name": "Boston Terrier",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "french-bulldog",
+    "name": "French Bulldog",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 8,
+      "max": 14
+    }
+  },
+  {
+    "slug": "pug",
+    "name": "Pug",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 9
+    }
+  },
+  {
+    "slug": "dachshund",
+    "name": "Dachshund",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "miniature-dachshund",
+    "name": "Miniature Dachshund",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 4,
+      "max": 5.5
+    }
+  },
+  {
+    "slug": "norfolk-terrier",
+    "name": "Norfolk Terrier",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "norwich-terrier",
+    "name": "Norwich Terrier",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "border-terrier",
+    "name": "Border Terrier",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "jack-russell-terrier",
+    "name": "Jack Russell Terrier",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "parson-russell-terrier",
+    "name": "Parson Russell Terrier",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "rat-terrier",
+    "name": "Rat Terrier",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "australian-terrier",
+    "name": "Australian Terrier",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "sealyham-terrier",
+    "name": "Sealyham Terrier",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "welsh-terrier",
+    "name": "Welsh Terrier",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "wire-fox-terrier",
+    "name": "Wire Fox Terrier",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "smooth-fox-terrier",
+    "name": "Smooth Fox Terrier",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "miniature-schnauzer",
+    "name": "Miniature Schnauzer",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "shetland-sheepdog",
+    "name": "Shetland Sheepdog",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "pembroke-welsh-corgi",
+    "name": "Pembroke Welsh Corgi",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "cardigan-welsh-corgi",
+    "name": "Cardigan Welsh Corgi",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "basenji",
+    "name": "Basenji",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "american-cocker-spaniel",
+    "name": "American Cocker Spaniel",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "english-cocker-spaniel",
+    "name": "English Cocker Spaniel",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "brittany",
+    "name": "Brittany",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 14,
+      "max": 18
+    }
+  },
+  {
+    "slug": "king-charles-spaniel",
+    "name": "King Charles Spaniel",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "tibetan-spaniel",
+    "name": "Tibetan Spaniel",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "tibetan-terrier",
+    "name": "Tibetan Terrier",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "schipperke",
+    "name": "Schipperke",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "japanese-spitz",
+    "name": "Japanese Spitz",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "bedlington-terrier",
+    "name": "Bedlington Terrier",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "dandie-dinmont-terrier",
+    "name": "Dandie Dinmont Terrier",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "skye-terrier",
+    "name": "Skye Terrier",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "manchester-terrier",
+    "name": "Manchester Terrier",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "lakeland-terrier",
+    "name": "Lakeland Terrier",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "cesky-terrier",
+    "name": "Cesky Terrier",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "kooikerhondje",
+    "name": "Kooikerhondje",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "swedish-vallhund",
+    "name": "Swedish Vallhund",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "finnish-spitz",
+    "name": "Finnish Spitz",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "norwegian-lundehund",
+    "name": "Norwegian Lundehund",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "norwegian-buhund",
+    "name": "Norwegian Buhund",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "portuguese-podengo-pequeno",
+    "name": "Portuguese Podengo Pequeno",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "danish-swedish-farmdog",
+    "name": "Danish-Swedish Farmdog",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "drever",
+    "name": "Drever",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "miniature-fox-terrier",
+    "name": "Miniature Fox Terrier",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "xoloitzcuintli-miniature",
+    "name": "Xoloitzcuintli (Miniature)",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "peruvian-inca-orchid-small",
+    "name": "Peruvian Inca Orchid (Small)",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "border-collie",
+    "name": "Border Collie",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "australian-cattle-dog",
+    "name": "Australian Cattle Dog",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "australian-shepherd",
+    "name": "Australian Shepherd",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "english-springer-spaniel",
+    "name": "English Springer Spaniel",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "welsh-springer-spaniel",
+    "name": "Welsh Springer Spaniel",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "whippet",
+    "name": "Whippet",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "basset-hound",
+    "name": "Basset Hound",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "bull-terrier",
+    "name": "Bull Terrier",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "staffordshire-bull-terrier",
+    "name": "Staffordshire Bull Terrier",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "american-staffordshire-terrier",
+    "name": "American Staffordshire Terrier",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "chow-chow",
+    "name": "Chow Chow",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "chinese-shar-pei",
+    "name": "Chinese Shar-Pei",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "keeshond",
+    "name": "Keeshond",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "standard-schnauzer",
+    "name": "Standard Schnauzer",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "alaskan-klee-kai",
+    "name": "Alaskan Klee Kai",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "norwegian-elkhound",
+    "name": "Norwegian Elkhound",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "ibizan-hound",
+    "name": "Ibizan Hound",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "pharaoh-hound",
+    "name": "Pharaoh Hound",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "shiba-inu",
+    "name": "Shiba Inu",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 8,
+      "max": 11
+    }
+  },
+  {
+    "slug": "american-eskimo-dog",
+    "name": "American Eskimo Dog",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "dalmatian",
+    "name": "Dalmatian",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 20,
+      "max": 32
+    }
+  },
+  {
+    "slug": "bearded-collie",
+    "name": "Bearded Collie",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "collie",
+    "name": "Collie",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "vizsla",
+    "name": "Vizsla",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "wirehaired-vizsla",
+    "name": "Wirehaired Vizsla",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "weimaraner",
+    "name": "Weimaraner",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 40
+    }
+  },
+  {
+    "slug": "german-shorthaired-pointer",
+    "name": "German Shorthaired Pointer",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "german-wirehaired-pointer",
+    "name": "German Wirehaired Pointer",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "pointer",
+    "name": "Pointer",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "english-setter",
+    "name": "English Setter",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "irish-setter",
+    "name": "Irish Setter",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "gordon-setter",
+    "name": "Gordon Setter",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "flat-coated-retriever",
+    "name": "Flat-Coated Retriever",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "curly-coated-retriever",
+    "name": "Curly-Coated Retriever",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "nova-scotia-duck-tolling-retriever",
+    "name": "Nova Scotia Duck Tolling Retriever",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "chesapeake-bay-retriever",
+    "name": "Chesapeake Bay Retriever",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 36
+    }
+  },
+  {
+    "slug": "labrador-retriever",
+    "name": "Labrador Retriever",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 36
+    }
+  },
+  {
+    "slug": "golden-retriever",
+    "name": "Golden Retriever",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 34
+    }
+  },
+  {
+    "slug": "standard-poodle",
+    "name": "Standard Poodle",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "miniature-poodle",
+    "name": "Miniature Poodle",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "portuguese-water-dog",
+    "name": "Portuguese Water Dog",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "spanish-water-dog",
+    "name": "Spanish Water Dog",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "lagotto-romagnolo",
+    "name": "Lagotto Romagnolo",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "barbet",
+    "name": "Barbet",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "puli",
+    "name": "Puli",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "pumi",
+    "name": "Pumi",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "mudi",
+    "name": "Mudi",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "icelandic-sheepdog",
+    "name": "Icelandic Sheepdog",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "finnish-lapphund",
+    "name": "Finnish Lapphund",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "lapponian-herder",
+    "name": "Lapponian Herder",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "swedish-lapphund",
+    "name": "Swedish Lapphund",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "canaan-dog",
+    "name": "Canaan Dog",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "thai-ridgeback",
+    "name": "Thai Ridgeback",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "bangkaew-dog",
+    "name": "Bangkaew Dog",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "korean-jindo-dog",
+    "name": "Korean Jindo Dog",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "hokkaido",
+    "name": "Hokkaido",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "kishu",
+    "name": "Kishu",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "shikoku",
+    "name": "Shikoku",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "kai-ken",
+    "name": "Kai Ken",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "miniature-bull-terrier",
+    "name": "Miniature Bull Terrier",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "basset-fauve-de-bretagne",
+    "name": "Basset Fauve de Bretagne",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "basset-bleu-de-gascogne",
+    "name": "Basset Bleu de Gascogne",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "petit-basset-griffon-vendeen",
+    "name": "Petit Basset Griffon Vendeen",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "griffon-nivernais",
+    "name": "Griffon Nivernais",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "beagle-harrier",
+    "name": "Beagle-Harrier",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "berger-picard",
+    "name": "Berger Picard",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "berger-des-pyrenees",
+    "name": "Berger des Pyrenees",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "catalan-sheepdog",
+    "name": "Catalan Sheepdog",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "polish-lowland-sheepdog",
+    "name": "Polish Lowland Sheepdog",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "stabyhoun",
+    "name": "Stabyhoun",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "wetterhoun",
+    "name": "Wetterhoun",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "schapendoes",
+    "name": "Schapendoes",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "bracco-italiano",
+    "name": "Bracco Italiano",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "spinone-italiano",
+    "name": "Spinone Italiano",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "cirneco-dell-etna",
+    "name": "Cirneco dell'Etna",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "ca-de-bou",
+    "name": "Ca de Bou",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "podenco-canario",
+    "name": "Podenco Canario",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "galgo-espanol",
+    "name": "Galgo Espanol",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "pachon-navarro",
+    "name": "Pachon Navarro",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "portuguese-podengo-medio",
+    "name": "Portuguese Podengo Medio",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "chodsky-pes",
+    "name": "Chodsky Pes",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "slovakian-wirehaired-pointer",
+    "name": "Slovakian Wirehaired Pointer",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "transylvanian-hound",
+    "name": "Transylvanian Hound",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "polish-hound",
+    "name": "Polish Hound",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "rajapalayam",
+    "name": "Rajapalayam",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "chippiparai",
+    "name": "Chippiparai",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "kombai",
+    "name": "Kombai",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "kanni",
+    "name": "Kanni",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "mudhol-hound",
+    "name": "Mudhol Hound",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "indian-pariah-dog",
+    "name": "Indian Pariah Dog",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "africanis",
+    "name": "Africanis",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "carolina-dog",
+    "name": "Carolina Dog",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "blue-lacy",
+    "name": "Blue Lacy",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "catahoula-leopard-dog",
+    "name": "Catahoula Leopard Dog",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "american-bulldog",
+    "name": "American Bulldog",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "redbone-coonhound",
+    "name": "Redbone Coonhound",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "bluetick-coonhound",
+    "name": "Bluetick Coonhound",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "plott-hound",
+    "name": "Plott Hound",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "treeing-walker-coonhound",
+    "name": "Treeing Walker Coonhound",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "black-and-tan-coonhound",
+    "name": "Black and Tan Coonhound",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "american-foxhound",
+    "name": "American Foxhound",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "english-foxhound",
+    "name": "English Foxhound",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "harrier",
+    "name": "Harrier",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "otterhound",
+    "name": "Otterhound",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "german-shepherd",
+    "name": "German Shepherd Dog",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 30,
+      "max": 40
+    }
+  },
+  {
+    "slug": "belgian-malinois",
+    "name": "Belgian Malinois",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "belgian-tervuren",
+    "name": "Belgian Tervuren",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "belgian-sheepdog",
+    "name": "Belgian Sheepdog",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "belgian-laekenois",
+    "name": "Belgian Laekenois",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "dutch-shepherd",
+    "name": "Dutch Shepherd",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "doberman-pinscher",
+    "name": "Doberman Pinscher",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 30,
+      "max": 45
+    }
+  },
+  {
+    "slug": "rottweiler",
+    "name": "Rottweiler",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 35,
+      "max": 60
+    }
+  },
+  {
+    "slug": "boxer",
+    "name": "Boxer",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 32
+    }
+  },
+  {
+    "slug": "rhodesian-ridgeback",
+    "name": "Rhodesian Ridgeback",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "akita",
+    "name": "Akita",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 32,
+      "max": 45
+    }
+  },
+  {
+    "slug": "american-akita",
+    "name": "American Akita",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "alaskan-malamute",
+    "name": "Alaskan Malamute",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 34,
+      "max": 43
+    }
+  },
+  {
+    "slug": "siberian-husky",
+    "name": "Siberian Husky",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 16,
+      "max": 27
+    }
+  },
+  {
+    "slug": "great-pyrenees",
+    "name": "Great Pyrenees",
+    "sizeClass": "GIANT",
+    "typicalAdultWeightKg": {
+      "min": 39,
+      "max": 54
+    }
+  },
+  {
+    "slug": "anatolian-shepherd",
+    "name": "Anatolian Shepherd",
+    "sizeClass": "GIANT",
+    "typicalAdultWeightKg": {
+      "min": 45,
+      "max": 90
+    }
+  },
+  {
+    "slug": "kuvasz",
+    "name": "Kuvasz",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "komondor",
+    "name": "Komondor",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "bernese-mountain-dog",
+    "name": "Bernese Mountain Dog",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 35,
+      "max": 55
+    }
+  },
+  {
+    "slug": "greater-swiss-mountain-dog",
+    "name": "Greater Swiss Mountain Dog",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "cane-corso",
+    "name": "Cane Corso",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 40,
+      "max": 50
+    }
+  },
+  {
+    "slug": "dogue-de-bordeaux",
+    "name": "Dogue de Bordeaux",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 45,
+      "max": 65
+    }
+  },
+  {
+    "slug": "bloodhound",
+    "name": "Bloodhound",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 36,
+      "max": 50
+    }
+  },
+  {
+    "slug": "borzoi",
+    "name": "Borzoi",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "greyhound",
+    "name": "Greyhound",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 27,
+      "max": 40
+    }
+  },
+  {
+    "slug": "afghan-hound",
+    "name": "Afghan Hound",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "saluki",
+    "name": "Saluki",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "azawakh",
+    "name": "Azawakh",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "sloughi",
+    "name": "Sloughi",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "old-english-sheepdog",
+    "name": "Old English Sheepdog",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "airedale-terrier",
+    "name": "Airedale Terrier",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "samoyed",
+    "name": "Samoyed",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 17,
+      "max": 30
+    }
+  },
+  {
+    "slug": "giant-schnauzer",
+    "name": "Giant Schnauzer",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "hovawart",
+    "name": "Hovawart",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "german-pinscher",
+    "name": "German Pinscher",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "large-munsterlander",
+    "name": "Large Munsterlander",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "small-munsterlander",
+    "name": "Small Munsterlander",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "pudelpointer",
+    "name": "Pudelpointer",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "deutsch-drahthaar",
+    "name": "Deutsch Drahthaar",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "german-hunting-terrier",
+    "name": "German Hunting Terrier",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "briard",
+    "name": "Briard",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "beauceron",
+    "name": "Beauceron",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "bouvier-des-flandres",
+    "name": "Bouvier des Flandres",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "estrela-mountain-dog",
+    "name": "Estrela Mountain Dog",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "portuguese-sheepdog",
+    "name": "Portuguese Sheepdog",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "portuguese-watchdog",
+    "name": "Portuguese Watchdog",
+    "sizeClass": "GIANT",
+    "typicalAdultWeightKg": {
+      "min": 45,
+      "max": 90
+    }
+  },
+  {
+    "slug": "castro-laboreiro-dog",
+    "name": "Castro Laboreiro Dog",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "pyrenean-sheepdog",
+    "name": "Pyrenean Sheepdog",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "bergamasco-shepherd",
+    "name": "Bergamasco Shepherd",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "maremma-sheepdog",
+    "name": "Maremma Sheepdog",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "sarplaninac",
+    "name": "Sarplaninac",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "karst-shepherd",
+    "name": "Karst Shepherd",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "croatian-sheepdog",
+    "name": "Croatian Sheepdog",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "tornjak",
+    "name": "Tornjak",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "black-russian-terrier",
+    "name": "Black Russian Terrier",
+    "sizeClass": "GIANT",
+    "typicalAdultWeightKg": {
+      "min": 45,
+      "max": 90
+    }
+  },
+  {
+    "slug": "east-european-shepherd",
+    "name": "East European Shepherd",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "moscow-watchdog",
+    "name": "Moscow Watchdog",
+    "sizeClass": "GIANT",
+    "typicalAdultWeightKg": {
+      "min": 45,
+      "max": 90
+    }
+  },
+  {
+    "slug": "south-russian-shepherd-dog",
+    "name": "South Russian Shepherd Dog",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "karelian-bear-dog",
+    "name": "Karelian Bear Dog",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "jamthund",
+    "name": "Jamthund",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "east-siberian-laika",
+    "name": "East Siberian Laika",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "west-siberian-laika",
+    "name": "West Siberian Laika",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "russo-european-laika",
+    "name": "Russo-European Laika",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "tosa-inu",
+    "name": "Tosa Inu",
+    "sizeClass": "GIANT",
+    "typicalAdultWeightKg": {
+      "min": 45,
+      "max": 90
+    }
+  },
+  {
+    "slug": "chongqing-dog",
+    "name": "Chongqing Dog",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "xiasi-dog",
+    "name": "Xiasi Dog",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "sapsali",
+    "name": "Sapsali",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "pungsan-dog",
+    "name": "Pungsan Dog",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "phu-quoc-ridgeback",
+    "name": "Phu Quoc Ridgeback",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "rampur-greyhound",
+    "name": "Rampur Greyhound",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "bakharwal-dog",
+    "name": "Bakharwal Dog",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "himalayan-sheepdog",
+    "name": "Himalayan Sheepdog",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "boerboel",
+    "name": "Boerboel",
+    "sizeClass": "GIANT",
+    "typicalAdultWeightKg": {
+      "min": 45,
+      "max": 90
+    }
+  },
+  {
+    "slug": "kangal",
+    "name": "Kangal",
+    "sizeClass": "GIANT",
+    "typicalAdultWeightKg": {
+      "min": 45,
+      "max": 90
+    }
+  },
+  {
+    "slug": "fila-brasileiro",
+    "name": "Fila Brasileiro",
+    "sizeClass": "GIANT",
+    "typicalAdultWeightKg": {
+      "min": 45,
+      "max": 90
+    }
+  },
+  {
+    "slug": "presa-canario",
+    "name": "Presa Canario",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "caucasian-shepherd-dog",
+    "name": "Caucasian Shepherd Dog",
+    "sizeClass": "GIANT",
+    "typicalAdultWeightKg": {
+      "min": 45,
+      "max": 90
+    }
+  },
+  {
+    "slug": "central-asian-shepherd-dog",
+    "name": "Central Asian Shepherd Dog",
+    "sizeClass": "GIANT",
+    "typicalAdultWeightKg": {
+      "min": 45,
+      "max": 90
+    }
+  },
+  {
+    "slug": "spanish-mastiff",
+    "name": "Spanish Mastiff",
+    "sizeClass": "GIANT",
+    "typicalAdultWeightKg": {
+      "min": 45,
+      "max": 90
+    }
+  },
+  {
+    "slug": "pyrenean-mastiff",
+    "name": "Pyrenean Mastiff",
+    "sizeClass": "GIANT",
+    "typicalAdultWeightKg": {
+      "min": 45,
+      "max": 90
+    }
+  },
+  {
+    "slug": "basque-shepherd-dog",
+    "name": "Basque Shepherd Dog",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "great-dane",
+    "name": "Great Dane",
+    "sizeClass": "GIANT",
+    "typicalAdultWeightKg": {
+      "min": 50,
+      "max": 90
+    }
+  },
+  {
+    "slug": "irish-wolfhound",
+    "name": "Irish Wolfhound",
+    "sizeClass": "GIANT",
+    "typicalAdultWeightKg": {
+      "min": 48,
+      "max": 90
+    }
+  },
+  {
+    "slug": "scottish-deerhound",
+    "name": "Scottish Deerhound",
+    "sizeClass": "GIANT",
+    "typicalAdultWeightKg": {
+      "min": 45,
+      "max": 90
+    }
+  },
+  {
+    "slug": "saint-bernard",
+    "name": "Saint Bernard",
+    "sizeClass": "GIANT",
+    "typicalAdultWeightKg": {
+      "min": 55,
+      "max": 90
+    }
+  },
+  {
+    "slug": "newfoundland",
+    "name": "Newfoundland",
+    "sizeClass": "GIANT",
+    "typicalAdultWeightKg": {
+      "min": 45,
+      "max": 68
+    }
+  },
+  {
+    "slug": "leonberger",
+    "name": "Leonberger",
+    "sizeClass": "GIANT",
+    "typicalAdultWeightKg": {
+      "min": 45,
+      "max": 77
+    }
+  },
+  {
+    "slug": "tibetan-mastiff",
+    "name": "Tibetan Mastiff",
+    "sizeClass": "GIANT",
+    "typicalAdultWeightKg": {
+      "min": 34,
+      "max": 73
+    }
+  },
+  {
+    "slug": "neapolitan-mastiff",
+    "name": "Neapolitan Mastiff",
+    "sizeClass": "GIANT",
+    "typicalAdultWeightKg": {
+      "min": 50,
+      "max": 70
+    }
+  },
+  {
+    "slug": "english-mastiff",
+    "name": "English Mastiff",
+    "sizeClass": "GIANT",
+    "typicalAdultWeightKg": {
+      "min": 70,
+      "max": 100
+    }
+  },
+  {
+    "slug": "bullmastiff",
+    "name": "Bullmastiff",
+    "sizeClass": "GIANT",
+    "typicalAdultWeightKg": {
+      "min": 41,
+      "max": 59
+    }
+  },
+  {
+    "slug": "landseer",
+    "name": "Landseer",
+    "sizeClass": "GIANT",
+    "typicalAdultWeightKg": {
+      "min": 45,
+      "max": 90
+    }
+  },
+  {
+    "slug": "alapaha-blue-blood-bulldog",
+    "name": "Alapaha Blue Blood Bulldog",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "american-bully",
+    "name": "American Bully",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "american-hairless-terrier",
+    "name": "American Hairless Terrier",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "american-water-spaniel",
+    "name": "American Water Spaniel",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "anglo-francais-de-petite-venerie",
+    "name": "Anglo-Francais de Petite Venerie",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "ariegeois",
+    "name": "Ariegeois",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "ariege-pointer",
+    "name": "Ariege Pointer",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "artois-hound",
+    "name": "Artois Hound",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "austrian-black-and-tan-hound",
+    "name": "Austrian Black and Tan Hound",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "austrian-pinscher",
+    "name": "Austrian Pinscher",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "azores-cattle-dog",
+    "name": "Azores Cattle Dog",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "bavarian-mountain-hound",
+    "name": "Bavarian Mountain Hound",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "billy",
+    "name": "Billy",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "bohemian-shepherd",
+    "name": "Bohemian Shepherd",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "bosnian-coarse-haired-hound",
+    "name": "Bosnian Coarse-haired Hound",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "braque-du-bourbonnais",
+    "name": "Braque du Bourbonnais",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "braque-saint-germain",
+    "name": "Braque Saint-Germain",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "braque-francais",
+    "name": "Braque Francais",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "grand-bleu-de-gascogne",
+    "name": "Grand Bleu de Gascogne",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "grand-basset-griffon-vendeen",
+    "name": "Grand Basset Griffon Vendeen",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "poitevin",
+    "name": "Poitevin",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "francais-blanc-et-noir",
+    "name": "Francais Blanc et Noir",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "francais-tricolore",
+    "name": "Francais Tricolore",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "epagneul-francais",
+    "name": "Epagneul Francais",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "epagneul-picard",
+    "name": "Epagneul Picard",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "epagneul-pont-audemer",
+    "name": "Epagneul Pont-Audemer",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "epagneul-bleu-de-picardie",
+    "name": "Epagneul Bleu de Picardie",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "chien-d-artois",
+    "name": "Chien d'Artois",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "alano-espanol",
+    "name": "Alano Espanol",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "cimarron-uruguayo",
+    "name": "Cimarron Uruguayo",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "dogo-argentino",
+    "name": "Dogo Argentino",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 36,
+      "max": 45
+    }
+  },
+  {
+    "slug": "perro-de-pastor-mallorquin",
+    "name": "Perro de Pastor Mallorquin",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "norwegian-elkhound-black",
+    "name": "Norwegian Elkhound Black",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "hamiltonstovare",
+    "name": "Hamiltonstovare",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "schillerstovare",
+    "name": "Schillerstovare",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "smalandsstovare",
+    "name": "Smalandsstovare",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "norrbottenspets",
+    "name": "Norrbottenspets",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "dunker",
+    "name": "Dunker",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "halden-hound",
+    "name": "Halden Hound",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "hygenhund",
+    "name": "Hygenhund",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "new-guinea-singing-dog",
+    "name": "New Guinea Singing Dog",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "formosan-mountain-dog",
+    "name": "Formosan Mountain Dog",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "canadian-eskimo-dog",
+    "name": "Canadian Eskimo Dog",
+    "sizeClass": "GIANT",
+    "typicalAdultWeightKg": {
+      "min": 45,
+      "max": 90
+    }
+  },
+  {
+    "slug": "greenland-dog",
+    "name": "Greenland Dog",
+    "sizeClass": "GIANT",
+    "typicalAdultWeightKg": {
+      "min": 45,
+      "max": 90
+    }
+  },
+  {
+    "slug": "chinook",
+    "name": "Chinook",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "seppala-siberian-sleddog",
+    "name": "Seppala Siberian Sleddog",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "mackenzie-river-husky",
+    "name": "Mackenzie River Husky",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "sakhalin-husky",
+    "name": "Sakhalin Husky",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "alopekis",
+    "name": "Alopekis",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "cretan-hound",
+    "name": "Cretan Hound",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "greek-harehound",
+    "name": "Greek Harehound",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "hellenikos-poimenikos",
+    "name": "Hellenikos Poimenikos",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "segugio-italiano",
+    "name": "Segugio Italiano",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "pastore-d-oropa",
+    "name": "Pastore d'Oropa",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "perdiguero-de-burgos",
+    "name": "Perdiguero de Burgos",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "ratonero-bodeguero-andaluz",
+    "name": "Ratonero Bodeguero Andaluz",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "ratonero-valenciano",
+    "name": "Ratonero Valenciano",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "podenco-andaluz",
+    "name": "Podenco Andaluz",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "sabueso-espanol",
+    "name": "Sabueso Espanol",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "villano-de-las-encartaciones",
+    "name": "Villano de Las Encartaciones",
+    "sizeClass": "GIANT",
+    "typicalAdultWeightKg": {
+      "min": 45,
+      "max": 90
+    }
+  },
+  {
+    "slug": "perro-majorero",
+    "name": "Perro Majorero",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "aidi",
+    "name": "Aidi",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "kintamani",
+    "name": "Kintamani",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "gaddi-kutta",
+    "name": "Gaddi Kutta",
+    "sizeClass": "GIANT",
+    "typicalAdultWeightKg": {
+      "min": 45,
+      "max": 90
+    }
+  },
+  {
+    "slug": "peruvian-inca-orchid-medium",
+    "name": "Peruvian Inca Orchid (Medium)",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "xoloitzcuintli-standard",
+    "name": "Xoloitzcuintli (Standard)",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "american-pit-bull-terrier",
+    "name": "American Pit Bull Terrier",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "american-english-coonhound",
+    "name": "American English Coonhound",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "boykin-spaniel",
+    "name": "Boykin Spaniel",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "feist",
+    "name": "Feist",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "mountain-cur",
+    "name": "Mountain Cur",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "leopard-cur",
+    "name": "Leopard Cur",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "stephens-stock-cur",
+    "name": "Stephens Stock Cur",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "kemmer-cur",
+    "name": "Kemmer Cur",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "treeing-cur",
+    "name": "Treeing Cur",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "alaskan-husky",
+    "name": "Alaskan Husky",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "berger-blanc-suisse",
+    "name": "Berger Blanc Suisse",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 25,
+      "max": 45
+    }
+  },
+  {
+    "slug": "australian-kelpie",
+    "name": "Australian Kelpie",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "australian-stumpy-tail-cattle-dog",
+    "name": "Australian Stumpy Tail Cattle Dog",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "miniature-american-shepherd",
+    "name": "Miniature American Shepherd",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  {
+    "slug": "australian-coolie",
+    "name": "Australian Coolie",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 12,
+      "max": 25
+    }
+  },
+  {
+    "slug": "mixed-unknown",
+    "name": "Mixed / Unknown",
+    "sizeClass": "UNKNOWN",
+    "typicalAdultWeightKg": {
+      "min": 2,
+      "max": 60
+    }
+  }
+]

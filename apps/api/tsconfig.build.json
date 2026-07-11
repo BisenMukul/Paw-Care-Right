@@ -6,6 +6,7 @@
     "declaration": false,
     "paths": {
       "@pawcareright/types": ["../types/dist/index.d.ts"],
+      "@pawcareright/data": ["../data/dist/index.d.ts"],
       "@pawcareright/config": ["../config/dist/index.d.ts"],
       "@pawcareright/config/env": ["../config/dist/env/index.d.ts"]
     }

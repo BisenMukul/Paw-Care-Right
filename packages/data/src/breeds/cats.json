@@ -1,0 +1,740 @@
+[
+  {
+    "slug": "abyssinian",
+    "name": "Abyssinian",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 3.5,
+      "max": 5.5
+    }
+  },
+  {
+    "slug": "american-bobtail",
+    "name": "American Bobtail",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 3.5,
+      "max": 5.5
+    }
+  },
+  {
+    "slug": "american-curl",
+    "name": "American Curl",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 3.5,
+      "max": 5.5
+    }
+  },
+  {
+    "slug": "american-shorthair",
+    "name": "American Shorthair",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 3.5,
+      "max": 5.5
+    }
+  },
+  {
+    "slug": "american-wirehair",
+    "name": "American Wirehair",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 3.5,
+      "max": 5.5
+    }
+  },
+  {
+    "slug": "balinese",
+    "name": "Balinese",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 2,
+      "max": 3.5
+    }
+  },
+  {
+    "slug": "bengal",
+    "name": "Bengal",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 4,
+      "max": 7
+    }
+  },
+  {
+    "slug": "birman",
+    "name": "Birman",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 3.5,
+      "max": 5.5
+    }
+  },
+  {
+    "slug": "bombay",
+    "name": "Bombay",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 3.5,
+      "max": 5.5
+    }
+  },
+  {
+    "slug": "british-longhair",
+    "name": "British Longhair",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 5.5,
+      "max": 9
+    }
+  },
+  {
+    "slug": "british-shorthair",
+    "name": "British Shorthair",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 4,
+      "max": 8
+    }
+  },
+  {
+    "slug": "burmese",
+    "name": "Burmese",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 2,
+      "max": 3.5
+    }
+  },
+  {
+    "slug": "burmilla",
+    "name": "Burmilla",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 3.5,
+      "max": 5.5
+    }
+  },
+  {
+    "slug": "california-spangled",
+    "name": "California Spangled",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 3.5,
+      "max": 5.5
+    }
+  },
+  {
+    "slug": "chartreux",
+    "name": "Chartreux",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 3.5,
+      "max": 5.5
+    }
+  },
+  {
+    "slug": "chausie",
+    "name": "Chausie",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 5.5,
+      "max": 9
+    }
+  },
+  {
+    "slug": "colorpoint-shorthair",
+    "name": "Colorpoint Shorthair",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 2,
+      "max": 3.5
+    }
+  },
+  {
+    "slug": "cornish-rex",
+    "name": "Cornish Rex",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 2,
+      "max": 3.5
+    }
+  },
+  {
+    "slug": "cymric",
+    "name": "Cymric",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 3.5,
+      "max": 5.5
+    }
+  },
+  {
+    "slug": "devon-rex",
+    "name": "Devon Rex",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 2,
+      "max": 3.5
+    }
+  },
+  {
+    "slug": "donskoy",
+    "name": "Donskoy",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 3.5,
+      "max": 5.5
+    }
+  },
+  {
+    "slug": "egyptian-mau",
+    "name": "Egyptian Mau",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 3.5,
+      "max": 5.5
+    }
+  },
+  {
+    "slug": "european-shorthair",
+    "name": "European Shorthair",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 3.5,
+      "max": 5.5
+    }
+  },
+  {
+    "slug": "exotic-shorthair",
+    "name": "Exotic Shorthair",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 3.5,
+      "max": 5.5
+    }
+  },
+  {
+    "slug": "havana-brown",
+    "name": "Havana Brown",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 2,
+      "max": 3.5
+    }
+  },
+  {
+    "slug": "himalayan",
+    "name": "Himalayan",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 3.5,
+      "max": 5.5
+    }
+  },
+  {
+    "slug": "japanese-bobtail",
+    "name": "Japanese Bobtail",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 2,
+      "max": 3.5
+    }
+  },
+  {
+    "slug": "javanese",
+    "name": "Javanese",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 2,
+      "max": 3.5
+    }
+  },
+  {
+    "slug": "khao-manee",
+    "name": "Khao Manee",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 2,
+      "max": 3.5
+    }
+  },
+  {
+    "slug": "korat",
+    "name": "Korat",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 2,
+      "max": 3.5
+    }
+  },
+  {
+    "slug": "korean-bobtail",
+    "name": "Korean Bobtail",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 3.5,
+      "max": 5.5
+    }
+  },
+  {
+    "slug": "kurilian-bobtail",
+    "name": "Kurilian Bobtail",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 3.5,
+      "max": 5.5
+    }
+  },
+  {
+    "slug": "laperm",
+    "name": "LaPerm",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 3.5,
+      "max": 5.5
+    }
+  },
+  {
+    "slug": "lykoi",
+    "name": "Lykoi",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 2,
+      "max": 3.5
+    }
+  },
+  {
+    "slug": "maine-coon",
+    "name": "Maine Coon",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 5.4,
+      "max": 8.2
+    }
+  },
+  {
+    "slug": "manx",
+    "name": "Manx",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 3.5,
+      "max": 5.5
+    }
+  },
+  {
+    "slug": "munchkin",
+    "name": "Munchkin",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 2,
+      "max": 3.5
+    }
+  },
+  {
+    "slug": "nebelung",
+    "name": "Nebelung",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 3.5,
+      "max": 5.5
+    }
+  },
+  {
+    "slug": "norwegian-forest-cat",
+    "name": "Norwegian Forest Cat",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 5.5,
+      "max": 9
+    }
+  },
+  {
+    "slug": "ocicat",
+    "name": "Ocicat",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 3.5,
+      "max": 5.5
+    }
+  },
+  {
+    "slug": "ojos-azules",
+    "name": "Ojos Azules",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 3.5,
+      "max": 5.5
+    }
+  },
+  {
+    "slug": "oriental-longhair",
+    "name": "Oriental Longhair",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 2,
+      "max": 3.5
+    }
+  },
+  {
+    "slug": "oriental-shorthair",
+    "name": "Oriental Shorthair",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 2,
+      "max": 3.5
+    }
+  },
+  {
+    "slug": "persian",
+    "name": "Persian",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 3.5,
+      "max": 5.5
+    }
+  },
+  {
+    "slug": "peterbald",
+    "name": "Peterbald",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 2,
+      "max": 3.5
+    }
+  },
+  {
+    "slug": "pixie-bob",
+    "name": "Pixie-bob",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 5.5,
+      "max": 9
+    }
+  },
+  {
+    "slug": "ragamuffin",
+    "name": "Ragamuffin",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 5.5,
+      "max": 9
+    }
+  },
+  {
+    "slug": "ragdoll",
+    "name": "Ragdoll",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 4.5,
+      "max": 9
+    }
+  },
+  {
+    "slug": "russian-blue",
+    "name": "Russian Blue",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 3,
+      "max": 5.5
+    }
+  },
+  {
+    "slug": "savannah",
+    "name": "Savannah",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 5.5,
+      "max": 9
+    }
+  },
+  {
+    "slug": "scottish-fold",
+    "name": "Scottish Fold",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 3.5,
+      "max": 5.5
+    }
+  },
+  {
+    "slug": "selkirk-rex",
+    "name": "Selkirk Rex",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 3.5,
+      "max": 5.5
+    }
+  },
+  {
+    "slug": "siamese",
+    "name": "Siamese",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 2.5,
+      "max": 4.5
+    }
+  },
+  {
+    "slug": "siberian",
+    "name": "Siberian",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 5.5,
+      "max": 9
+    }
+  },
+  {
+    "slug": "singapura",
+    "name": "Singapura",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 1.8,
+      "max": 3.2
+    }
+  },
+  {
+    "slug": "snowshoe",
+    "name": "Snowshoe",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 3.5,
+      "max": 5.5
+    }
+  },
+  {
+    "slug": "somali",
+    "name": "Somali",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 3.5,
+      "max": 5.5
+    }
+  },
+  {
+    "slug": "sphynx",
+    "name": "Sphynx",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 3.5,
+      "max": 5.5
+    }
+  },
+  {
+    "slug": "thai",
+    "name": "Thai",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 2,
+      "max": 3.5
+    }
+  },
+  {
+    "slug": "tonkinese",
+    "name": "Tonkinese",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 2,
+      "max": 3.5
+    }
+  },
+  {
+    "slug": "toyger",
+    "name": "Toyger",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 3.5,
+      "max": 5.5
+    }
+  },
+  {
+    "slug": "turkish-angora",
+    "name": "Turkish Angora",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 2,
+      "max": 3.5
+    }
+  },
+  {
+    "slug": "turkish-van",
+    "name": "Turkish Van",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 5.5,
+      "max": 9
+    }
+  },
+  {
+    "slug": "york-chocolate",
+    "name": "York Chocolate",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 3.5,
+      "max": 5.5
+    }
+  },
+  {
+    "slug": "aegean-cat",
+    "name": "Aegean Cat",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 3.5,
+      "max": 5.5
+    }
+  },
+  {
+    "slug": "australian-mist",
+    "name": "Australian Mist",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 3.5,
+      "max": 5.5
+    }
+  },
+  {
+    "slug": "brazilian-shorthair",
+    "name": "Brazilian Shorthair",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 3.5,
+      "max": 5.5
+    }
+  },
+  {
+    "slug": "chantilly-tiffany",
+    "name": "Chantilly-Tiffany",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 3.5,
+      "max": 5.5
+    }
+  },
+  {
+    "slug": "cyprus-cat",
+    "name": "Cyprus Cat",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 3.5,
+      "max": 5.5
+    }
+  },
+  {
+    "slug": "foldex",
+    "name": "Foldex",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 3.5,
+      "max": 5.5
+    }
+  },
+  {
+    "slug": "german-rex",
+    "name": "German Rex",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 2,
+      "max": 3.5
+    }
+  },
+  {
+    "slug": "highlander",
+    "name": "Highlander",
+    "sizeClass": "LARGE",
+    "typicalAdultWeightKg": {
+      "min": 5.5,
+      "max": 9
+    }
+  },
+  {
+    "slug": "minskin",
+    "name": "Minskin",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 2,
+      "max": 3.5
+    }
+  },
+  {
+    "slug": "napoleon",
+    "name": "Napoleon",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 2,
+      "max": 3.5
+    }
+  },
+  {
+    "slug": "serengeti",
+    "name": "Serengeti",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 3.5,
+      "max": 5.5
+    }
+  },
+  {
+    "slug": "serrade-petit",
+    "name": "Serrade Petit",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 2,
+      "max": 3.5
+    }
+  },
+  {
+    "slug": "skookum",
+    "name": "Skookum",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 2,
+      "max": 3.5
+    }
+  },
+  {
+    "slug": "sokoke",
+    "name": "Sokoke",
+    "sizeClass": "MEDIUM",
+    "typicalAdultWeightKg": {
+      "min": 3.5,
+      "max": 5.5
+    }
+  },
+  {
+    "slug": "ukrainian-levkoy",
+    "name": "Ukrainian Levkoy",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 2,
+      "max": 3.5
+    }
+  },
+  {
+    "slug": "toybob",
+    "name": "Toybob",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 2,
+      "max": 3.5
+    }
+  },
+  {
+    "slug": "mekong-bobtail",
+    "name": "Mekong Bobtail",
+    "sizeClass": "SMALL",
+    "typicalAdultWeightKg": {
+      "min": 2,
+      "max": 3.5
+    }
+  },
+  {
+    "slug": "mixed-unknown",
+    "name": "Mixed / Unknown",
+    "sizeClass": "UNKNOWN",
+    "typicalAdultWeightKg": {
+      "min": 2,
+      "max": 9
+    }
+  }
+]

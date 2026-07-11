@@ -22,6 +22,7 @@
     "@nestjs/swagger": "^11",
     "@nestjs/throttler": "^6.5.0",
     "@pawcareright/config": "workspace:*",
+    "@pawcareright/data": "workspace:*",
     "@pawcareright/types": "workspace:*",
     "@prisma/client": "^6",
     "class-transformer": "^0.5",
@@ -85,7 +86,8 @@
     ],
     "moduleNameMapper": {
       "^@pawcareright/config$": "<rootDir>/../../packages/config/src/index.ts",
-      "^@pawcareright/config/env$": "<rootDir>/../../packages/config/src/env/index.ts"
+      "^@pawcareright/config/env$": "<rootDir>/../../packages/config/src/env/index.ts",
+      "^@pawcareright/data$": "<rootDir>/../../packages/data/src/index.ts"
     },
     "collectCoverageFrom": [
       "src/**/*.service.ts"
