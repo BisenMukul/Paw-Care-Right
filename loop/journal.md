@@ -426,3 +426,11 @@
 - Non-blocking (checker): colon-style Redis key prefix matches established repo convention (pawcareright:otp:/rl:/breeds:) vs §1a's dash table — consistent with precedent; negative-cost clamping code-handled but not unit-tested.
 - No new dependencies.
 - Commit: feat(api,ai): T039 cost controls & quotas (journal rides in the same one-task-one-commit).
+
+## [2026-07-12] T040 · CI ai-evals gate — DONE (attempt 1)
+- Planner (Fable): `loop/plans/T040.plan.md` — CI/docs-only, full YAML pre-written in-plan: ci.yml ai-evals job gains a date stamp + `upload-artifact@v4` with `if: always()` (report uploads ON FAILURE — when it's most needed; 30d retention, run_id-unique names); NEW `.github/workflows/ai-evals-nightly.yml` (workflow_dispatch + cron 17 3 * * *): real-provider run gated on BOTH the `OLLAMA_CLOUD_API_KEY` secret and `AI_TEXT_MODEL` repo variable (a real key with the placeholder model would fail — the double guard closes the gap), **schedule+missing → clean skip; dispatch+missing → hard fail** (a requested real run never silently downgrades to fake); `OLLAMA_CLOUD_BASE_URL` deliberately unset (empty-string injection would fail the url schema — R3); README "## AI quality gates" section (T1–T5 table, 154/41/195 corpus, local fake+real commands, honest default-branch caveat: nightly is inert until merge to main). resolveMode semantics verified against source — zero harness changes.
+- Executor (Sonnet, single pass, no deviations): exactly 3 files; both YAMLs parse; secret hygiene verified ([ -z ] tests only, names never values).
+- Checker (Fable, adversarial): `loop/reviews/T040.review.md` → **VERDICT: pass**. ci.yml build job/triggers/concurrency byte-identical; nightly semantics traced step-by-step (guard branches, present-gating, always()&&present upload expression valid); resolveMode traced with the real-run env → correctly "real", placeholder-model gap closed; README T1–T5 targets match score.ts exactly; corpus figures match actual YAML counts.
+- Non-blocking (checker): generated eval reports appear as untracked files — do not accidentally stage (gitignore out of T040 scope).
+- No new dependencies. No harness code changes.
+- Commit: ci(evals): T040 CI ai-evals gate (journal rides in the same one-task-one-commit).

@@ -1,0 +1,62 @@
+name: AI Evals (real provider)
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 3 * * *" # 03:17 UTC nightly (off-the-hour to dodge peak load)
+concurrency:
+  group: ai-evals-nightly-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  ai-evals-real:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: 10.34.3 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      # Gate on provider config WITHOUT printing any secret value. A scheduled
+      # run with missing config skips cleanly (neutral); a manually dispatched
+      # run fails loudly so the request is never silently downgraded to fake.
+      - name: Guard on provider config
+        id: guard
+        env:
+          KEY: ${{ secrets.OLLAMA_CLOUD_API_KEY }}
+          MODEL: ${{ vars.AI_TEXT_MODEL }}
+          EVENT: ${{ github.event_name }}
+        run: |
+          missing=""
+          [ -z "$KEY" ] && missing="OLLAMA_CLOUD_API_KEY (secret)"
+          [ -z "$MODEL" ] && missing="${missing:+$missing, }AI_TEXT_MODEL (variable)"
+          if [ -n "$missing" ]; then
+            if [ "$EVENT" = "workflow_dispatch" ]; then
+              echo "::error::Real-provider eval run requested but missing: $missing"
+              exit 1
+            fi
+            echo "::notice::Real-provider evals skipped — missing: $missing"
+            echo "present=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Install
+        if: steps.guard.outputs.present == 'true'
+        run: pnpm i --frozen-lockfile
+      - name: Stamp date
+        if: steps.guard.outputs.present == 'true'
+        id: stamp
+        run: echo "date=$(date -u +%Y%m%d)" >> "$GITHUB_OUTPUT"
+      - name: Run real-provider evals
+        if: steps.guard.outputs.present == 'true'
+        env:
+          AI_TEXT_PROVIDER: ollama
+          OLLAMA_CLOUD_API_KEY: ${{ secrets.OLLAMA_CLOUD_API_KEY }}
+          AI_TEXT_MODEL: ${{ vars.AI_TEXT_MODEL }}
+        run: pnpm test:ai-evals
+      - name: Upload eval report
+        if: ${{ always() && steps.guard.outputs.present == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai-evals-real-${{ steps.stamp.outputs.date }}-${{ github.run_id }}
+          path: loop/eval-reports/*.md
+          retention-days: 90
+          if-no-files-found: warn
