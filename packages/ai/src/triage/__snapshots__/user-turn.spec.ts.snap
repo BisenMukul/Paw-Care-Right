@@ -1,0 +1,26 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`buildUserTurn matches the deterministic serialization (snapshot) 1`] = `
+"PET
+- Name: Bruno
+- Species: Dog
+- Breed: Labrador Retriever
+- Sex: Male, neutered
+- Age: 36 months
+- Weight: 28 kg
+
+REPORTED PROBLEM: Vomiting
+
+INTAKE
+- How long has the vomiting been happening?: 2 days
+- How many times?: Four or more times
+- What do you see in the vomit?: Blood, Yellow bile
+- Is your pet eating and drinking?: Reduced
+- Energy level right now: 2 of 5 (1 = Very weak / collapsed, 5 = Normal and playful)
+
+OWNER'S DESCRIPTION: He seems uncomfortable after eating.
+
+PHOTOS ATTACHED: 2
+
+Return only JSON matching the schema. No text outside the JSON."
+`;
