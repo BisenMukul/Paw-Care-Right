@@ -11,6 +11,7 @@ interface FakeRedisClient {
   get: jest.Mock;
   del: jest.Mock;
   incr: jest.Mock;
+  incrby: jest.Mock;
   expire: jest.Mock;
   quit: jest.Mock;
 }
@@ -23,6 +24,7 @@ describe("RedisService", () => {
       get: jest.fn().mockResolvedValue("value"),
       del: jest.fn().mockResolvedValue(1),
       incr: jest.fn().mockResolvedValue(1),
+      incrby: jest.fn().mockResolvedValue(1),
       expire: jest.fn().mockResolvedValue(1),
       quit: jest.fn().mockResolvedValue("OK"),
     };
@@ -81,6 +83,14 @@ describe("RedisService", () => {
 
     await expect(service.incr("key")).resolves.toBe(1);
     expect(client.incr).toHaveBeenCalledWith("key");
+  });
+
+  it("incrBy delegates to the client", async () => {
+    const { service, client } = buildService();
+    client.incrby.mockResolvedValue(5);
+
+    await expect(service.incrBy("key", 5)).resolves.toBe(5);
+    expect(client.incrby).toHaveBeenCalledWith("key", 5);
   });
 
   it("expire delegates to the client", async () => {

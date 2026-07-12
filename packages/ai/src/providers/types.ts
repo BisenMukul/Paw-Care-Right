@@ -32,6 +32,13 @@ export interface TextGenerateOptions {
   /** Default DEFAULT_TIMEOUT_MS. */
   timeoutMs?: number;
   maxTokens?: number;
+  /**
+   * Advisory prompt-cache hint: the provider MAY use this to cache the static
+   * system segment. Ollama Cloud (OpenAI-compat) exposes no cache flag today
+   * and ignores it; Gemini never handles text triage (AI_PROVIDERS §3/§4).
+   * Optional and additive — it must never change control flow or output.
+   */
+  cacheable?: boolean;
 }
 
 export interface TextResult {

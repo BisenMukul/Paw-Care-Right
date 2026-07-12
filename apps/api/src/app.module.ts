@@ -16,6 +16,7 @@ import { PetsModule } from "./pets/pets.module";
 import { PhotosModule } from "./photos/photos.module";
 import { PrismaModule } from "./prisma/prisma.module";
 import { QueueModule } from "./queue/queue.module";
+import { QuotaModule } from "./quota/quota.module";
 import { RedisModule } from "./redis/redis.module";
 import { WorkersModule } from "./workers/workers.module";
 
@@ -32,6 +33,7 @@ import { WorkersModule } from "./workers/workers.module";
     BreedsModule,
     QueueModule,
     PhotosModule,
+    QuotaModule,
     WorkersModule,
     ThrottlerModule.forRoot([{ name: "default", ...THROTTLE_DEFAULT }]),
   ],

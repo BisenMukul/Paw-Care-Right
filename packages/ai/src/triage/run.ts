@@ -22,10 +22,13 @@ export async function runTriage(input: TriagePromptInput, deps: RunTriageDeps): 
 
   try {
     attempts = 1;
+    // Static system segment is deterministic/reusable — advisory prompt-cache
+    // hint (AI_PROVIDERS §3/§4; inert today, see TextGenerateOptions.cacheable).
     const res1 = await deps.provider.generate({
       system: built.system,
       messages: built.messages,
       temperature: 0,
+      cacheable: true,
     });
 
     const parsed1 = parseTriage(extractJsonCandidate(res1.text));
@@ -46,10 +49,13 @@ export async function runTriage(input: TriagePromptInput, deps: RunTriageDeps): 
     ];
 
     attempts = 2;
+    // Same static system segment as the initial call — advisory prompt-cache
+    // hint (AI_PROVIDERS §3/§4; inert today, see TextGenerateOptions.cacheable).
     const res2 = await deps.provider.generate({
       system: built.system,
       messages: messages2,
       temperature: 0,
+      cacheable: true,
     });
 
     const parsed2 = parseTriage(extractJsonCandidate(res2.text));

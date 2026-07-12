@@ -34,6 +34,10 @@ export class RedisService implements OnModuleDestroy {
     return this.client.incr(key);
   }
 
+  async incrBy(key: string, amount: number): Promise<number> {
+    return this.client.incrby(key, amount);
+  }
+
   async expire(key: string, seconds: number): Promise<void> {
     await this.client.expire(key, seconds);
   }
