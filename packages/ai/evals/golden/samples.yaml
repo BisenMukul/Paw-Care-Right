@@ -1,0 +1,57 @@
+cases:
+  # 1 — GDV via rules; AI deliberately under-calls to prove the floor holds.
+  - id: gdv-large-dog-retching
+    description: Large-breed dog, unproductive retching + distended abdomen → GDV. Rules floor to EMERGENCY_NOW regardless of AI.
+    input:
+      species: DOG
+      sex: MALE
+      ageMonths: 60
+      sizeClass: LARGE
+      category: vomiting
+      signs: { retching_unproductive: true, distended_abdomen: true }
+      freeText: "My big dog keeps trying to vomit but nothing comes up and his belly looks swollen and hard."
+    expectedTier: EMERGENCY_NOW
+    expectRedFlagRule: gdv-suspected
+    expectSource: rules
+    fakeResponse: |
+      {"urgency":"MONITOR","confidence":"medium","summary":"Your dog may have an upset stomach; keep an eye on him.","possibleCauses":[{"name":"Upset stomach","whyItFits":"Retching can follow eating something disagreeable."}],"redFlagsToWatch":["Worsening belly swelling"],"homeCare":["Offer small amounts of water"],"doNot":["Do not give human medications to your pet."],"vetQuestions":["Has anything like this happened before?"],"followUpHours":12}
+
+  # 2 — Blocked male cat via rules; AI says REASSURE; floor + homeCare-strip exercised.
+  - id: blocked-male-cat
+    description: Male cat straining to urinate → urethral obstruction. Rules floor to EMERGENCY_NOW; homeCare from AI must be stripped on escalation.
+    input:
+      species: CAT
+      sex: MALE
+      category: urinary
+      signs: { straining_to_urinate: true }
+      freeText: "My male cat keeps going to the litter box and straining but nothing comes out."
+    expectedTier: EMERGENCY_NOW
+    expectRedFlagRule: urinary-blockage-cat
+    expectSource: rules
+    fakeResponse: |
+      {"urgency":"REASSURE","confidence":"high","summary":"This is probably minor litter-box behaviour.","possibleCauses":[],"redFlagsToWatch":["Straining that continues"],"homeCare":["Keep the litter box clean"],"doNot":["Do not give human medications to your pet."],"vetQuestions":["Is he producing any urine?"],"followUpHours":24}
+
+  # 3 — Benign single vomit, no red flags; AI REASSURE stands.
+  - id: mild-dog-single-vomit
+    description: One-off vomit, now bright, eating and playful. No red-flag signs; AI REASSURE is the final tier.
+    input:
+      species: DOG
+      category: vomiting
+      freeText: "He ate some grass, vomited once, and is now bright, playful and eating normally."
+    expectedTier: REASSURE
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"REASSURE","confidence":"high","summary":"A single vomit in an otherwise bright, playful dog is usually not concerning.","possibleCauses":[{"name":"Dietary indiscretion","whyItFits":"Eating grass can cause a one-off vomit."}],"redFlagsToWatch":["Repeated vomiting","Becoming quiet or off food"],"homeCare":["Offer a small bland meal later today"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  # 4 — Ambiguity + cat bias landing in-range + homeCare strip on a golden case.
+  - id: cat-inappetence-ambiguous
+    description: Senior cat, reduced appetite ~1 day, a little quiet. Acceptable VET_24H..VET_SOON. Cat bias raises AI VET_SOON to VET_24H (in range) and strips homeCare.
+    input:
+      species: CAT
+      ageMonths: 96
+      category: not-eating
+      freeText: "My older cat has eaten much less for about a day and seems a bit quiet."
+    acceptableTiers: [VET_24H, VET_SOON]
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"VET_SOON","confidence":"medium","summary":"Reduced appetite in a senior cat should be checked by a vet fairly soon.","possibleCauses":[{"name":"Several possible causes","whyItFits":"Appetite loss in cats has many causes and cats hide illness."}],"redFlagsToWatch":["No food for more than a day","Hiding or collapse"],"homeCare":["Offer a warmed, strong-smelling favourite food"],"doNot":["Do not give human medications to your pet."],"vetQuestions":["When did she last eat normally?"],"followUpHours":24}

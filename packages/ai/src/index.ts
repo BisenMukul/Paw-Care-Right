@@ -6,3 +6,4 @@ export * from "./usage";
 export * from "./rules";
 export * from "./triage";
 export * from "./food";
+export * from "./post-rules";
