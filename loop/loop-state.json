@@ -306,8 +306,8 @@
       "attempts": 1
     },
     "T031": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 1
     },
     "T032": {
       "status": "pending",
