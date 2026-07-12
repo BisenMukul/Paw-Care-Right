@@ -1,0 +1,304 @@
+cases:
+  # ---- Plain dog cases (12) — T-DOG-V24 template (urgency VET_24H, no bias, no floor).
+  - id: v24-d01
+    description: Dog with a non-weight-bearing limp.
+    input:
+      species: DOG
+      ageMonths: 36
+    expectedTier: VET_24H
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"VET_24H","confidence":"medium","summary":"A dog that will not put weight on a leg should be seen by a vet within the day.","possibleCauses":[{"name":"Condition needing prompt veterinary attention","whyItFits":"These signs warrant a vet visit within the next day."}],"redFlagsToWatch":["Signs getting worse","New symptoms appearing"],"homeCare":[],"doNot":["Do not give human medications to your pet."],"vetQuestions":["When did this start?"],"followUpHours":12}
+
+  - id: v24-d02
+    description: Dog off food for two days.
+    input:
+      species: DOG
+      ageMonths: 48
+    expectedTier: VET_24H
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"VET_24H","confidence":"medium","summary":"A dog not eating for two days should be checked by a vet within the day.","possibleCauses":[{"name":"Condition needing prompt veterinary attention","whyItFits":"These signs warrant a vet visit within the next day."}],"redFlagsToWatch":["Signs getting worse","New symptoms appearing"],"homeCare":[],"doNot":["Do not give human medications to your pet."],"vetQuestions":["When did this start?"],"followUpHours":12}
+
+  - id: v24-d03
+    description: Dog with a painful, swollen ear.
+    input:
+      species: DOG
+      ageMonths: 60
+    expectedTier: VET_24H
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"VET_24H","confidence":"medium","summary":"A painful, swollen ear in a dog should be checked by a vet within the day.","possibleCauses":[{"name":"Condition needing prompt veterinary attention","whyItFits":"These signs warrant a vet visit within the next day."}],"redFlagsToWatch":["Signs getting worse","New symptoms appearing"],"homeCare":[],"doNot":["Do not give human medications to your pet."],"vetQuestions":["When did this start?"],"followUpHours":12}
+
+  - id: v24-d04
+    description: Dog squinting with eye discharge.
+    input:
+      species: DOG
+      ageMonths: 24
+    expectedTier: VET_24H
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"VET_24H","confidence":"medium","summary":"Squinting with eye discharge in a dog should be checked by a vet within the day.","possibleCauses":[{"name":"Condition needing prompt veterinary attention","whyItFits":"These signs warrant a vet visit within the next day."}],"redFlagsToWatch":["Signs getting worse","New symptoms appearing"],"homeCare":[],"doNot":["Do not give human medications to your pet."],"vetQuestions":["When did this start?"],"followUpHours":12}
+
+  - id: v24-d05
+    description: Young puppy with notable lethargy.
+    input:
+      species: DOG
+      ageMonths: 5
+    expectedTier: VET_24H
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"VET_24H","confidence":"medium","summary":"A puppy with notable lethargy should be checked by a vet within the day.","possibleCauses":[{"name":"Condition needing prompt veterinary attention","whyItFits":"These signs warrant a vet visit within the next day."}],"redFlagsToWatch":["Signs getting worse","New symptoms appearing"],"homeCare":[],"doNot":["Do not give human medications to your pet."],"vetQuestions":["When did this start?"],"followUpHours":12}
+
+  - id: v24-d06
+    description: Young puppy with ongoing diarrhea.
+    input:
+      species: DOG
+      ageMonths: 6
+    expectedTier: VET_24H
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"VET_24H","confidence":"medium","summary":"A puppy with ongoing diarrhea should be checked by a vet within the day.","possibleCauses":[{"name":"Condition needing prompt veterinary attention","whyItFits":"These signs warrant a vet visit within the next day."}],"redFlagsToWatch":["Signs getting worse","New symptoms appearing"],"homeCare":[],"doNot":["Do not give human medications to your pet."],"vetQuestions":["When did this start?"],"followUpHours":12}
+
+  - id: v24-d07
+    description: Dog with bloody stool but otherwise active.
+    input:
+      species: DOG
+      ageMonths: 84
+    expectedTier: VET_24H
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"VET_24H","confidence":"medium","summary":"Bloody stool in an otherwise active dog should be checked by a vet within the day.","possibleCauses":[{"name":"Condition needing prompt veterinary attention","whyItFits":"These signs warrant a vet visit within the next day."}],"redFlagsToWatch":["Signs getting worse","New symptoms appearing"],"homeCare":[],"doNot":["Do not give human medications to your pet."],"vetQuestions":["When did this start?"],"followUpHours":12}
+
+  - id: v24-d08
+    description: Dog with a swollen face and hives.
+    input:
+      species: DOG
+      ageMonths: 30
+    expectedTier: VET_24H
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"VET_24H","confidence":"medium","summary":"A swollen face with hives in a dog should be checked by a vet within the day.","possibleCauses":[{"name":"Condition needing prompt veterinary attention","whyItFits":"These signs warrant a vet visit within the next day."}],"redFlagsToWatch":["Signs getting worse","New symptoms appearing"],"homeCare":[],"doNot":["Do not give human medications to your pet."],"vetQuestions":["When did this start?"],"followUpHours":12}
+
+  - id: v24-d09
+    description: Senior dog limping with a swollen joint.
+    input:
+      species: DOG
+      ageMonths: 140
+    expectedTier: VET_24H
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"VET_24H","confidence":"medium","summary":"A senior dog limping with a swollen joint should be checked by a vet within the day.","possibleCauses":[{"name":"Condition needing prompt veterinary attention","whyItFits":"These signs warrant a vet visit within the next day."}],"redFlagsToWatch":["Signs getting worse","New symptoms appearing"],"homeCare":[],"doNot":["Do not give human medications to your pet."],"vetQuestions":["When did this start?"],"followUpHours":12}
+
+  - id: v24-d10
+    description: Senior dog coughing and off food.
+    input:
+      species: DOG
+      ageMonths: 120
+    expectedTier: VET_24H
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"VET_24H","confidence":"medium","summary":"A senior dog coughing and off food should be checked by a vet within the day.","possibleCauses":[{"name":"Condition needing prompt veterinary attention","whyItFits":"These signs warrant a vet visit within the next day."}],"redFlagsToWatch":["Signs getting worse","New symptoms appearing"],"homeCare":[],"doNot":["Do not give human medications to your pet."],"vetQuestions":["When did this start?"],"followUpHours":12}
+
+  - id: v24-d11
+    description: Dog lethargic and not drinking.
+    input:
+      species: DOG
+      ageMonths: 96
+    expectedTier: VET_24H
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"VET_24H","confidence":"medium","summary":"A lethargic dog that is not drinking should be checked by a vet within the day.","possibleCauses":[{"name":"Condition needing prompt veterinary attention","whyItFits":"These signs warrant a vet visit within the next day."}],"redFlagsToWatch":["Signs getting worse","New symptoms appearing"],"homeCare":[],"doNot":["Do not give human medications to your pet."],"vetQuestions":["When did this start?"],"followUpHours":12}
+
+  - id: v24-d12
+    description: Dog with a painful, soft abdomen.
+    input:
+      species: DOG
+      ageMonths: 54
+    expectedTier: VET_24H
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"VET_24H","confidence":"medium","summary":"A painful, soft abdomen in a dog should be checked by a vet within the day.","possibleCauses":[{"name":"Condition needing prompt veterinary attention","whyItFits":"These signs warrant a vet visit within the next day."}],"redFlagsToWatch":["Signs getting worse","New symptoms appearing"],"homeCare":[],"doNot":["Do not give human medications to your pet."],"vetQuestions":["When did this start?"],"followUpHours":12}
+
+  # ---- Ambiguity dog cases (2) — acceptableTiers:[VET_24H,VET_SOON].
+  - id: v24-amb-dog1
+    description: Dog with an ambiguous presentation between VET_24H and VET_SOON; AI settles on VET_24H.
+    input:
+      species: DOG
+      ageMonths: 60
+    acceptableTiers: [VET_24H, VET_SOON]
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"VET_24H","confidence":"medium","summary":"This presentation is borderline but leans toward a same-day vet check.","possibleCauses":[{"name":"Condition needing prompt veterinary attention","whyItFits":"These signs warrant a vet visit within the next day."}],"redFlagsToWatch":["Signs getting worse","New symptoms appearing"],"homeCare":[],"doNot":["Do not give human medications to your pet."],"vetQuestions":["When did this start?"],"followUpHours":12}
+
+  - id: v24-amb-dog2
+    description: Dog with an ambiguous presentation between VET_24H and VET_SOON; AI settles on VET_SOON.
+    input:
+      species: DOG
+      ageMonths: 44
+    acceptableTiers: [VET_24H, VET_SOON]
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"VET_SOON","confidence":"medium","summary":"This presentation is borderline but leans toward a check within the next day or two.","possibleCauses":[{"name":"Condition worth a vet check soon","whyItFits":"These signs are best assessed by a vet in the next day or two."}],"redFlagsToWatch":["Symptoms worsening","New symptoms appearing"],"homeCare":["Offer a small bland meal and rest"],"doNot":["Do not give human medications to your pet."],"vetQuestions":["When did this start?"],"followUpHours":24}
+
+  # ---- Plain cat cases (14) — T-CAT-V24 template (urgency VET_SOON -> bias -> VET_24H; homeCare stripped).
+  - id: v24-c01
+    description: Cat limping and hiding.
+    input:
+      species: CAT
+      ageMonths: 48
+    expectedTier: VET_24H
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"VET_SOON","confidence":"medium","summary":"A cat that is limping and hiding is worth a vet check in the next day or so.","possibleCauses":[{"name":"Condition that should be checked by a vet soon","whyItFits":"These signs are worth a vet check in the next day or so."}],"redFlagsToWatch":["Signs getting worse","Stops eating or drinking"],"homeCare":["Keep them warm and quiet and offer water"],"doNot":["Do not give human medications to your pet."],"vetQuestions":["When did this start?"],"followUpHours":24}
+
+  - id: v24-c02
+    description: Cat with eye discharge and squinting.
+    input:
+      species: CAT
+      ageMonths: 36
+    expectedTier: VET_24H
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"VET_SOON","confidence":"medium","summary":"A cat with eye discharge and squinting is worth a vet check in the next day or so.","possibleCauses":[{"name":"Condition that should be checked by a vet soon","whyItFits":"These signs are worth a vet check in the next day or so."}],"redFlagsToWatch":["Signs getting worse","Stops eating or drinking"],"homeCare":["Keep them warm and quiet and offer water"],"doNot":["Do not give human medications to your pet."],"vetQuestions":["When did this start?"],"followUpHours":24}
+
+  - id: v24-c03
+    description: Senior cat vomiting twice and lethargic.
+    input:
+      species: CAT
+      ageMonths: 120
+    expectedTier: VET_24H
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"VET_SOON","confidence":"medium","summary":"A senior cat vomiting twice and lethargic is worth a vet check in the next day or so.","possibleCauses":[{"name":"Condition that should be checked by a vet soon","whyItFits":"These signs are worth a vet check in the next day or so."}],"redFlagsToWatch":["Signs getting worse","Stops eating or drinking"],"homeCare":["Keep them warm and quiet and offer water"],"doNot":["Do not give human medications to your pet."],"vetQuestions":["When did this start?"],"followUpHours":24}
+
+  - id: v24-c04
+    description: Cat sneezing and off food.
+    input:
+      species: CAT
+      ageMonths: 24
+    expectedTier: VET_24H
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"VET_SOON","confidence":"medium","summary":"A cat sneezing and off food is worth a vet check in the next day or so.","possibleCauses":[{"name":"Condition that should be checked by a vet soon","whyItFits":"These signs are worth a vet check in the next day or so."}],"redFlagsToWatch":["Signs getting worse","Stops eating or drinking"],"homeCare":["Keep them warm and quiet and offer water"],"doNot":["Do not give human medications to your pet."],"vetQuestions":["When did this start?"],"followUpHours":24}
+
+  - id: v24-c05
+    description: Kitten with notable lethargy.
+    input:
+      species: CAT
+      ageMonths: 4
+    expectedTier: VET_24H
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"VET_SOON","confidence":"medium","summary":"A kitten with notable lethargy is worth a vet check in the next day or so.","possibleCauses":[{"name":"Condition that should be checked by a vet soon","whyItFits":"These signs are worth a vet check in the next day or so."}],"redFlagsToWatch":["Signs getting worse","Stops eating or drinking"],"homeCare":["Keep them warm and quiet and offer water"],"doNot":["Do not give human medications to your pet."],"vetQuestions":["When did this start?"],"followUpHours":24}
+
+  - id: v24-c06
+    description: Kitten with ongoing diarrhea.
+    input:
+      species: CAT
+      ageMonths: 6
+    expectedTier: VET_24H
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"VET_SOON","confidence":"medium","summary":"A kitten with ongoing diarrhea is worth a vet check in the next day or so.","possibleCauses":[{"name":"Condition that should be checked by a vet soon","whyItFits":"These signs are worth a vet check in the next day or so."}],"redFlagsToWatch":["Signs getting worse","Stops eating or drinking"],"homeCare":["Keep them warm and quiet and offer water"],"doNot":["Do not give human medications to your pet."],"vetQuestions":["When did this start?"],"followUpHours":24}
+
+  - id: v24-c07
+    description: Cat overgrooming a sore spot.
+    input:
+      species: CAT
+      ageMonths: 60
+    expectedTier: VET_24H
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"VET_SOON","confidence":"medium","summary":"A cat overgrooming a sore spot is worth a vet check in the next day or so.","possibleCauses":[{"name":"Condition that should be checked by a vet soon","whyItFits":"These signs are worth a vet check in the next day or so."}],"redFlagsToWatch":["Signs getting worse","Stops eating or drinking"],"homeCare":["Keep them warm and quiet and offer water"],"doNot":["Do not give human medications to your pet."],"vetQuestions":["When did this start?"],"followUpHours":24}
+
+  - id: v24-c08
+    description: Cat drooling and off food.
+    input:
+      species: CAT
+      ageMonths: 84
+    expectedTier: VET_24H
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"VET_SOON","confidence":"medium","summary":"A cat drooling and off food is worth a vet check in the next day or so.","possibleCauses":[{"name":"Condition that should be checked by a vet soon","whyItFits":"These signs are worth a vet check in the next day or so."}],"redFlagsToWatch":["Signs getting worse","Stops eating or drinking"],"homeCare":["Keep them warm and quiet and offer water"],"doNot":["Do not give human medications to your pet."],"vetQuestions":["When did this start?"],"followUpHours":24}
+
+  - id: v24-c09
+    description: Senior cat stiff and reluctant to move.
+    input:
+      species: CAT
+      ageMonths: 150
+    expectedTier: VET_24H
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"VET_SOON","confidence":"medium","summary":"A senior cat that is stiff and reluctant to move is worth a vet check in the next day or so.","possibleCauses":[{"name":"Condition that should be checked by a vet soon","whyItFits":"These signs are worth a vet check in the next day or so."}],"redFlagsToWatch":["Signs getting worse","Stops eating or drinking"],"homeCare":["Keep them warm and quiet and offer water"],"doNot":["Do not give human medications to your pet."],"vetQuestions":["When did this start?"],"followUpHours":24}
+
+  - id: v24-c10
+    description: Senior cat with a weight drop and drinking more.
+    input:
+      species: CAT
+      ageMonths: 132
+    expectedTier: VET_24H
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"VET_SOON","confidence":"medium","summary":"A senior cat with a weight drop and drinking more is worth a vet check in the next day or so.","possibleCauses":[{"name":"Condition that should be checked by a vet soon","whyItFits":"These signs are worth a vet check in the next day or so."}],"redFlagsToWatch":["Signs getting worse","Stops eating or drinking"],"homeCare":["Keep them warm and quiet and offer water"],"doNot":["Do not give human medications to your pet."],"vetQuestions":["When did this start?"],"followUpHours":24}
+
+  - id: v24-c11
+    description: Cat with soft, flattened stool.
+    input:
+      species: CAT
+      ageMonths: 18
+    expectedTier: VET_24H
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"VET_SOON","confidence":"medium","summary":"A cat with soft, flattened stool is worth a vet check in the next day or so.","possibleCauses":[{"name":"Condition that should be checked by a vet soon","whyItFits":"These signs are worth a vet check in the next day or so."}],"redFlagsToWatch":["Signs getting worse","Stops eating or drinking"],"homeCare":["Keep them warm and quiet and offer water"],"doNot":["Do not give human medications to your pet."],"vetQuestions":["When did this start?"],"followUpHours":24}
+
+  - id: v24-c12
+    description: Cat scratching an ear with a head tilt.
+    input:
+      species: CAT
+      ageMonths: 72
+    expectedTier: VET_24H
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"VET_SOON","confidence":"medium","summary":"A cat scratching an ear with a head tilt is worth a vet check in the next day or so.","possibleCauses":[{"name":"Condition that should be checked by a vet soon","whyItFits":"These signs are worth a vet check in the next day or so."}],"redFlagsToWatch":["Signs getting worse","Stops eating or drinking"],"homeCare":["Keep them warm and quiet and offer water"],"doNot":["Do not give human medications to your pet."],"vetQuestions":["When did this start?"],"followUpHours":24}
+
+  - id: v24-c13
+    description: Cat with a swollen paw.
+    input:
+      species: CAT
+      ageMonths: 54
+    expectedTier: VET_24H
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"VET_SOON","confidence":"medium","summary":"A cat with a swollen paw is worth a vet check in the next day or so.","possibleCauses":[{"name":"Condition that should be checked by a vet soon","whyItFits":"These signs are worth a vet check in the next day or so."}],"redFlagsToWatch":["Signs getting worse","Stops eating or drinking"],"homeCare":["Keep them warm and quiet and offer water"],"doNot":["Do not give human medications to your pet."],"vetQuestions":["When did this start?"],"followUpHours":24}
+
+  - id: v24-c14
+    description: Cat off food for one day.
+    input:
+      species: CAT
+      ageMonths: 42
+    expectedTier: VET_24H
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"VET_SOON","confidence":"medium","summary":"A cat off food for one day is worth a vet check in the next day or so.","possibleCauses":[{"name":"Condition that should be checked by a vet soon","whyItFits":"These signs are worth a vet check in the next day or so."}],"redFlagsToWatch":["Signs getting worse","Stops eating or drinking"],"homeCare":["Keep them warm and quiet and offer water"],"doNot":["Do not give human medications to your pet."],"vetQuestions":["When did this start?"],"followUpHours":24}
+
+  # ---- Ambiguity cat cases (2) — acceptableTiers:[VET_24H,VET_SOON].
+  - id: v24-amb-cat1
+    description: Cat with an ambiguous presentation between VET_24H and VET_SOON; cat bias lands VET_24H.
+    input:
+      species: CAT
+      ageMonths: 96
+    acceptableTiers: [VET_24H, VET_SOON]
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"VET_SOON","confidence":"medium","summary":"This presentation is borderline; the cat bias lands it at a same-day vet check.","possibleCauses":[{"name":"Condition that should be checked by a vet soon","whyItFits":"These signs are worth a vet check in the next day or so."}],"redFlagsToWatch":["Signs getting worse","Stops eating or drinking"],"homeCare":["Keep them warm and quiet and offer water"],"doNot":["Do not give human medications to your pet."],"vetQuestions":["When did this start?"],"followUpHours":24}
+
+  - id: v24-amb-cat2
+    description: Cat with an ambiguous presentation between VET_24H and VET_SOON; cat bias lands VET_SOON.
+    input:
+      species: CAT
+      ageMonths: 30
+    acceptableTiers: [VET_24H, VET_SOON]
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"MONITOR","confidence":"high","summary":"This presentation is mild; the cat bias lifts it to a check within the next day or two.","possibleCauses":[{"name":"Mild condition to keep an eye on","whyItFits":"These signs are usually manageable at home with monitoring."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Offer favourite food and keep the space calm"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}

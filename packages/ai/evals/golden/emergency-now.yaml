@@ -1,0 +1,314 @@
+cases:
+  # ---- Rules-driven cases (22) — fire via structured `signs`, OMIT fakeResponse
+  # (default SAFE_FALLBACK is used; the rules floor raises it to EMERGENCY_NOW
+  # regardless of species, proving the provider is never consulted for the
+  # tier floor). Every red-flag rule in RED_FLAG_RULES is represented exactly
+  # once here (assertion 6).
+
+  - id: en-toxin-dog
+    description: Dog ingested a suspected toxin. Rules floor to EMERGENCY_NOW regardless of AI.
+    input:
+      species: DOG
+      ageMonths: 4
+      signs: { toxin_ingestion: true }
+    expectedTier: EMERGENCY_NOW
+    expectRedFlagRule: toxin-ingestion
+    expectSource: rules
+
+  - id: en-gdv-dog-large
+    description: Large-breed male dog, unproductive retching + distended abdomen — classic GDV presentation.
+    input:
+      species: DOG
+      sex: MALE
+      ageMonths: 72
+      sizeClass: LARGE
+      signs: { retching_unproductive: true, distended_abdomen: true }
+    expectedTier: EMERGENCY_NOW
+    expectRedFlagRule: gdv-suspected
+    expectSource: rules
+
+  - id: en-urinary-block-male-cat
+    description: Male cat straining to urinate — classic feline urethral obstruction presentation.
+    input:
+      species: CAT
+      sex: MALE
+      ageMonths: 36
+      signs: { straining_to_urinate: true }
+    expectedTier: EMERGENCY_NOW
+    expectRedFlagRule: urinary-blockage-cat
+    expectSource: rules
+
+  - id: en-seizure-dog
+    description: Dog having a prolonged or repeated seizure.
+    input:
+      species: DOG
+      ageMonths: 84
+      signs: { seizure_prolonged_or_repeated: true }
+    expectedTier: EMERGENCY_NOW
+    expectRedFlagRule: seizure-prolonged-or-repeated
+    expectSource: rules
+
+  - id: en-collapse-dog
+    description: Senior dog has collapsed and is unresponsive.
+    input:
+      species: DOG
+      ageMonths: 132
+      signs: { collapse_unresponsive: true }
+    expectedTier: EMERGENCY_NOW
+    expectRedFlagRule: collapse-unresponsive
+    expectSource: rules
+
+  - id: en-pale-gums-dog
+    description: Dog has pale/abnormal gum color, a shock indicator.
+    input:
+      species: DOG
+      ageMonths: 60
+      signs: { abnormal_gum_color: true }
+    expectedTier: EMERGENCY_NOW
+    expectRedFlagRule: abnormal-gum-color
+    expectSource: rules
+
+  - id: en-breathing-dog
+    description: Dog is having noticeable difficulty breathing.
+    input:
+      species: DOG
+      ageMonths: 48
+      signs: { breathing_difficulty: true }
+    expectedTier: EMERGENCY_NOW
+    expectRedFlagRule: breathing-difficulty
+    expectSource: rules
+
+  - id: en-bleeding-dog
+    description: Dog has uncontrolled bleeding from a wound.
+    input:
+      species: DOG
+      ageMonths: 24
+      signs: { uncontrolled_bleeding: true }
+    expectedTier: EMERGENCY_NOW
+    expectRedFlagRule: uncontrolled-bleeding
+    expectSource: rules
+
+  - id: en-heatstroke-dog
+    description: Dog shows signs consistent with heatstroke.
+    input:
+      species: DOG
+      ageMonths: 30
+      signs: { heatstroke: true }
+    expectedTier: EMERGENCY_NOW
+    expectRedFlagRule: heatstroke
+    expectSource: rules
+
+  - id: en-chocolate-dog
+    description: Dog ingested chocolate — theobromine toxicity risk.
+    input:
+      species: DOG
+      ageMonths: 12
+      signs: { chocolate_ingestion: true }
+    expectedTier: EMERGENCY_NOW
+    expectRedFlagRule: chocolate-ingestion-dog
+    expectSource: rules
+
+  - id: en-xylitol-dog
+    description: Dog ingested a xylitol-containing product.
+    input:
+      species: DOG
+      ageMonths: 36
+      signs: { xylitol_ingestion: true }
+    expectedTier: EMERGENCY_NOW
+    expectRedFlagRule: xylitol-ingestion-dog
+    expectSource: rules
+
+  - id: en-dystocia-dog
+    description: Female dog in birthing distress (dystocia).
+    input:
+      species: DOG
+      sex: FEMALE
+      ageMonths: 36
+      signs: { birthing_distress: true }
+    expectedTier: EMERGENCY_NOW
+    expectRedFlagRule: birthing-distress
+    expectSource: rules
+
+  - id: en-envenom-cat
+    description: Cat suspected of envenomation (snake/scorpion).
+    input:
+      species: CAT
+      ageMonths: 48
+      signs: { envenomation: true }
+    expectedTier: EMERGENCY_NOW
+    expectRedFlagRule: envenomation
+    expectSource: rules
+
+  - id: en-trauma-cat
+    description: Cat suffered major trauma (e.g. hit by a vehicle or fall).
+    input:
+      species: CAT
+      ageMonths: 18
+      signs: { major_trauma: true }
+    expectedTier: EMERGENCY_NOW
+    expectRedFlagRule: major-trauma
+    expectSource: rules
+
+  - id: en-ocular-cat
+    description: Cat has an ocular emergency (bulging eye / sudden blindness).
+    input:
+      species: CAT
+      ageMonths: 60
+      signs: { ocular_emergency: true }
+    expectedTier: EMERGENCY_NOW
+    expectRedFlagRule: ocular-emergency
+    expectSource: rules
+
+  - id: en-cant-stand-cat
+    description: Senior cat suddenly unable to stand.
+    input:
+      species: CAT
+      ageMonths: 144
+      signs: { unable_to_stand: true }
+    expectedTier: EMERGENCY_NOW
+    expectRedFlagRule: sudden-inability-to-stand
+    expectSource: rules
+
+  - id: en-rodenticide-cat
+    description: Cat exposed to rodenticide (rat/mouse poison).
+    input:
+      species: CAT
+      ageMonths: 24
+      signs: { rodenticide_exposure: true }
+    expectedTier: EMERGENCY_NOW
+    expectRedFlagRule: rodenticide-exposure
+    expectSource: rules
+
+  - id: en-string-fb-cat
+    description: Cat has a suspected linear foreign body (string/thread).
+    input:
+      species: CAT
+      ageMonths: 8
+      signs: { linear_foreign_body: true }
+    expectedTier: EMERGENCY_NOW
+    expectRedFlagRule: linear-foreign-body-cat
+    expectSource: rules
+
+  - id: en-distended-abdomen-cat
+    description: Senior cat has a distended, hard abdomen (no retching — isolates from GDV, which is dog-only).
+    input:
+      species: CAT
+      ageMonths: 120
+      signs: { distended_abdomen: true }
+    expectedTier: EMERGENCY_NOW
+    expectRedFlagRule: distended-abdomen
+    expectSource: rules
+
+  - id: en-urinary-signs-female-cat
+    description: Female cat straining to urinate with blood in urine (sex FEMALE isolates from the male-only urinary-blockage-cat rule).
+    input:
+      species: CAT
+      sex: FEMALE
+      ageMonths: 54
+      signs: { straining_to_urinate: true, blood_in_urine: true }
+    expectedTier: EMERGENCY_NOW
+    expectRedFlagRule: urinary-obstruction-signs-cat
+    expectSource: rules
+
+  - id: en-open-fracture-cat
+    description: Cat has an open fracture or deep wound.
+    input:
+      species: CAT
+      ageMonths: 30
+      signs: { open_fracture_or_deep_wound: true }
+    expectedTier: EMERGENCY_NOW
+    expectRedFlagRule: open-fracture-or-deep-wound
+    expectSource: rules
+
+  - id: en-neonatal-cat
+    description: Neonatal kitten found collapsed.
+    input:
+      species: CAT
+      ageMonths: 1
+      signs: { neonatal_collapse: true }
+    expectedTier: EMERGENCY_NOW
+    expectRedFlagRule: neonatal-collapse
+    expectSource: rules
+
+  # ---- AI-driven cases (8) — fire NO rule (no signs/freeText); the fake
+  # response's OWN urgency + species bias must reach EMERGENCY_NOW.
+
+  - id: en-ai-dog-hge
+    description: Dog with profuse bloody diarrhea and very weak — AI-driven emergency, no structured red-flag signs.
+    input:
+      species: DOG
+      ageMonths: 90
+    expectedTier: EMERGENCY_NOW
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"EMERGENCY_NOW","confidence":"medium","summary":"Profuse bloody diarrhea with marked weakness in a dog needs urgent in-person veterinary care.","possibleCauses":[{"name":"Serious problem needing urgent care","whyItFits":"The described signs can be life-threatening and need a hands-on exam."}],"redFlagsToWatch":["Worsening or new signs"],"homeCare":[],"doNot":["Do not give human medications to your pet."],"vetQuestions":["When did this start?"],"followUpHours":null}
+
+  - id: en-ai-dog-pain
+    description: Young puppy, hunched posture, extreme lethargy, hard to rouse — AI-driven emergency.
+    input:
+      species: DOG
+      ageMonths: 5
+    expectedTier: EMERGENCY_NOW
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"EMERGENCY_NOW","confidence":"medium","summary":"A hunched, extremely lethargic puppy who is hard to rouse needs urgent in-person veterinary care.","possibleCauses":[{"name":"Serious problem needing urgent care","whyItFits":"The described signs can be life-threatening and need a hands-on exam."}],"redFlagsToWatch":["Worsening or new signs"],"homeCare":[],"doNot":["Do not give human medications to your pet."],"vetQuestions":["When did this start?"],"followUpHours":null}
+
+  - id: en-ai-dog-multivomit
+    description: Senior dog with repeated vomiting and severe lethargy — AI-driven emergency.
+    input:
+      species: DOG
+      ageMonths: 132
+    expectedTier: EMERGENCY_NOW
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"EMERGENCY_NOW","confidence":"medium","summary":"Repeated vomiting with severe lethargy in a senior dog needs urgent in-person veterinary care.","possibleCauses":[{"name":"Serious problem needing urgent care","whyItFits":"The described signs can be life-threatening and need a hands-on exam."}],"redFlagsToWatch":["Worsening or new signs"],"homeCare":[],"doNot":["Do not give human medications to your pet."],"vetQuestions":["When did this start?"],"followUpHours":null}
+
+  - id: en-ai-cat-jaundice
+    description: Cat with yellowish gums, off food, very quiet — AI-driven emergency (cat bias raises VET_24H to EMERGENCY_NOW).
+    input:
+      species: CAT
+      ageMonths: 84
+    expectedTier: EMERGENCY_NOW
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"VET_24H","confidence":"medium","summary":"Yellowish gums with reduced appetite and quietness in a cat needs urgent in-person veterinary care.","possibleCauses":[{"name":"Serious problem needing urgent care","whyItFits":"The described signs can be life-threatening and need a hands-on exam."}],"redFlagsToWatch":["Worsening or new signs"],"homeCare":[],"doNot":["Do not give human medications to your pet."],"vetQuestions":["When did this start?"],"followUpHours":null}
+
+  - id: en-ai-cat-anorexia
+    description: Senior cat has not eaten in three days and is hiding — AI-driven emergency (cat bias raises VET_24H to EMERGENCY_NOW).
+    input:
+      species: CAT
+      ageMonths: 156
+    expectedTier: EMERGENCY_NOW
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"VET_24H","confidence":"medium","summary":"A senior cat that has not eaten in three days and is hiding needs urgent in-person veterinary care.","possibleCauses":[{"name":"Serious problem needing urgent care","whyItFits":"The described signs can be life-threatening and need a hands-on exam."}],"redFlagsToWatch":["Worsening or new signs"],"homeCare":[],"doNot":["Do not give human medications to your pet."],"vetQuestions":["When did this start?"],"followUpHours":null}
+
+  - id: en-ai-cat-weak
+    description: Young kitten, very floppy and very weak — AI-driven emergency (cat bias raises VET_24H to EMERGENCY_NOW).
+    input:
+      species: CAT
+      ageMonths: 6
+    expectedTier: EMERGENCY_NOW
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"VET_24H","confidence":"medium","summary":"A kitten who is very weak and unusually floppy needs urgent in-person veterinary care.","possibleCauses":[{"name":"Serious problem needing urgent care","whyItFits":"The described signs can be life-threatening and need a hands-on exam."}],"redFlagsToWatch":["Worsening or new signs"],"homeCare":[],"doNot":["Do not give human medications to your pet."],"vetQuestions":["When did this start?"],"followUpHours":null}
+
+  - id: en-ai-cat-severe-lethargy
+    description: Cat with severe sudden lethargy and feels cold — AI-driven emergency (cat bias raises VET_24H to EMERGENCY_NOW).
+    input:
+      species: CAT
+      ageMonths: 48
+    expectedTier: EMERGENCY_NOW
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"VET_24H","confidence":"medium","summary":"Sudden severe lethargy and feeling unusually cold in a cat needs urgent in-person veterinary care.","possibleCauses":[{"name":"Serious problem needing urgent care","whyItFits":"The described signs can be life-threatening and need a hands-on exam."}],"redFlagsToWatch":["Worsening or new signs"],"homeCare":[],"doNot":["Do not give human medications to your pet."],"vetQuestions":["When did this start?"],"followUpHours":null}
+
+  - id: en-ai-cat-labored
+    description: Cat breathing quicker than normal and very quiet — AI-driven emergency (cat bias raises VET_24H to EMERGENCY_NOW).
+    input:
+      species: CAT
+      ageMonths: 30
+    expectedTier: EMERGENCY_NOW
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"VET_24H","confidence":"medium","summary":"A cat breathing noticeably quicker than normal and unusually quiet needs urgent in-person veterinary care.","possibleCauses":[{"name":"Serious problem needing urgent care","whyItFits":"The described signs can be life-threatening and need a hands-on exam."}],"redFlagsToWatch":["Worsening or new signs"],"homeCare":[],"doNot":["Do not give human medications to your pet."],"vetQuestions":["When did this start?"],"followUpHours":null}

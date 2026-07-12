@@ -1,0 +1,304 @@
+cases:
+  # ---- Plain dog cases (12) — T-DOG-VSN template (urgency VET_SOON, no bias, no floor).
+  - id: vsn-d01
+    description: Dog with itchy, red skin.
+    input:
+      species: DOG
+      ageMonths: 36
+    expectedTier: VET_SOON
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"VET_SOON","confidence":"medium","summary":"Itchy, red skin in a dog is worth a vet check in the next day or two.","possibleCauses":[{"name":"Condition worth a vet check soon","whyItFits":"These signs are best assessed by a vet in the next day or two."}],"redFlagsToWatch":["Symptoms worsening","New symptoms appearing"],"homeCare":["Offer a small bland meal and rest"],"doNot":["Do not give human medications to your pet."],"vetQuestions":["When did this start?"],"followUpHours":24}
+
+  - id: vsn-d02
+    description: Dog with bright, soft stool.
+    input:
+      species: DOG
+      ageMonths: 90
+    expectedTier: VET_SOON
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"VET_SOON","confidence":"medium","summary":"Soft stool in an otherwise bright dog is worth a vet check in the next day or two.","possibleCauses":[{"name":"Condition worth a vet check soon","whyItFits":"These signs are best assessed by a vet in the next day or two."}],"redFlagsToWatch":["Symptoms worsening","New symptoms appearing"],"homeCare":["Offer a small bland meal and rest"],"doNot":["Do not give human medications to your pet."],"vetQuestions":["When did this start?"],"followUpHours":24}
+
+  - id: vsn-d03
+    description: Dog with one watery eye.
+    input:
+      species: DOG
+      ageMonths: 24
+    expectedTier: VET_SOON
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"VET_SOON","confidence":"medium","summary":"One watery eye in a dog is worth a vet check in the next day or two.","possibleCauses":[{"name":"Condition worth a vet check soon","whyItFits":"These signs are best assessed by a vet in the next day or two."}],"redFlagsToWatch":["Symptoms worsening","New symptoms appearing"],"homeCare":["Offer a small bland meal and rest"],"doNot":["Do not give human medications to your pet."],"vetQuestions":["When did this start?"],"followUpHours":24}
+
+  - id: vsn-d04
+    description: Young puppy with mild diarrhea.
+    input:
+      species: DOG
+      ageMonths: 5
+    expectedTier: VET_SOON
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"VET_SOON","confidence":"medium","summary":"Mild diarrhea in a puppy is worth a vet check in the next day or two.","possibleCauses":[{"name":"Condition worth a vet check soon","whyItFits":"These signs are best assessed by a vet in the next day or two."}],"redFlagsToWatch":["Symptoms worsening","New symptoms appearing"],"homeCare":["Offer a small bland meal and rest"],"doNot":["Do not give human medications to your pet."],"vetQuestions":["When did this start?"],"followUpHours":24}
+
+  - id: vsn-d05
+    description: Young puppy with itchy skin.
+    input:
+      species: DOG
+      ageMonths: 6
+    expectedTier: VET_SOON
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"VET_SOON","confidence":"medium","summary":"Itchy skin in a puppy is worth a vet check in the next day or two.","possibleCauses":[{"name":"Condition worth a vet check soon","whyItFits":"These signs are best assessed by a vet in the next day or two."}],"redFlagsToWatch":["Symptoms worsening","New symptoms appearing"],"homeCare":["Offer a small bland meal and rest"],"doNot":["Do not give human medications to your pet."],"vetQuestions":["When did this start?"],"followUpHours":24}
+
+  - id: vsn-d06
+    description: Dog scratching an ear repeatedly.
+    input:
+      species: DOG
+      ageMonths: 72
+    expectedTier: VET_SOON
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"VET_SOON","confidence":"medium","summary":"Repeated ear scratching in a dog is worth a vet check in the next day or two.","possibleCauses":[{"name":"Condition worth a vet check soon","whyItFits":"These signs are best assessed by a vet in the next day or two."}],"redFlagsToWatch":["Symptoms worsening","New symptoms appearing"],"homeCare":["Offer a small bland meal and rest"],"doNot":["Do not give human medications to your pet."],"vetQuestions":["When did this start?"],"followUpHours":24}
+
+  - id: vsn-d07
+    description: Senior dog stiff after walks.
+    input:
+      species: DOG
+      ageMonths: 140
+    expectedTier: VET_SOON
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"VET_SOON","confidence":"medium","summary":"A senior dog stiff after walks is worth a vet check in the next day or two.","possibleCauses":[{"name":"Condition worth a vet check soon","whyItFits":"These signs are best assessed by a vet in the next day or two."}],"redFlagsToWatch":["Symptoms worsening","New symptoms appearing"],"homeCare":["Offer a small bland meal and rest"],"doNot":["Do not give human medications to your pet."],"vetQuestions":["When did this start?"],"followUpHours":24}
+
+  - id: vsn-d08
+    description: Dog with a small, clean cut.
+    input:
+      species: DOG
+      ageMonths: 30
+    expectedTier: VET_SOON
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"VET_SOON","confidence":"medium","summary":"A small, clean cut on a dog is worth a vet check in the next day or two.","possibleCauses":[{"name":"Condition worth a vet check soon","whyItFits":"These signs are best assessed by a vet in the next day or two."}],"redFlagsToWatch":["Symptoms worsening","New symptoms appearing"],"homeCare":["Offer a small bland meal and rest"],"doNot":["Do not give human medications to your pet."],"vetQuestions":["When did this start?"],"followUpHours":24}
+
+  - id: vsn-d09
+    description: Owner noticed a new lump on their dog.
+    input:
+      species: DOG
+      ageMonths: 84
+    expectedTier: VET_SOON
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"VET_SOON","confidence":"medium","summary":"A newly noticed lump on a dog is worth a vet check in the next day or two.","possibleCauses":[{"name":"Condition worth a vet check soon","whyItFits":"These signs are best assessed by a vet in the next day or two."}],"redFlagsToWatch":["Symptoms worsening","New symptoms appearing"],"homeCare":["Offer a small bland meal and rest"],"doNot":["Do not give human medications to your pet."],"vetQuestions":["When did this start?"],"followUpHours":24}
+
+  - id: vsn-d10
+    description: Dog sneezing but otherwise bright.
+    input:
+      species: DOG
+      ageMonths: 18
+    expectedTier: VET_SOON
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"VET_SOON","confidence":"medium","summary":"Sneezing in an otherwise bright dog is worth a vet check in the next day or two.","possibleCauses":[{"name":"Condition worth a vet check soon","whyItFits":"These signs are best assessed by a vet in the next day or two."}],"redFlagsToWatch":["Symptoms worsening","New symptoms appearing"],"homeCare":["Offer a small bland meal and rest"],"doNot":["Do not give human medications to your pet."],"vetQuestions":["When did this start?"],"followUpHours":24}
+
+  - id: vsn-d11
+    description: Dog with a mild cough but still eating well.
+    input:
+      species: DOG
+      ageMonths: 54
+    expectedTier: VET_SOON
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"VET_SOON","confidence":"medium","summary":"A mild cough in a dog that is still eating well is worth a vet check in the next day or two.","possibleCauses":[{"name":"Condition worth a vet check soon","whyItFits":"These signs are best assessed by a vet in the next day or two."}],"redFlagsToWatch":["Symptoms worsening","New symptoms appearing"],"homeCare":["Offer a small bland meal and rest"],"doNot":["Do not give human medications to your pet."],"vetQuestions":["When did this start?"],"followUpHours":24}
+
+  - id: vsn-d12
+    description: Dog scooting after meals.
+    input:
+      species: DOG
+      ageMonths: 42
+    expectedTier: VET_SOON
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"VET_SOON","confidence":"medium","summary":"A dog scooting after meals is worth a vet check in the next day or two.","possibleCauses":[{"name":"Condition worth a vet check soon","whyItFits":"These signs are best assessed by a vet in the next day or two."}],"redFlagsToWatch":["Symptoms worsening","New symptoms appearing"],"homeCare":["Offer a small bland meal and rest"],"doNot":["Do not give human medications to your pet."],"vetQuestions":["When did this start?"],"followUpHours":24}
+
+  # ---- Ambiguity dog cases (3) — acceptableTiers:[VET_SOON,MONITOR].
+  - id: vsn-amb-dog1
+    description: Dog with an ambiguous presentation between VET_SOON and MONITOR; AI settles on MONITOR.
+    input:
+      species: DOG
+      ageMonths: 60
+    acceptableTiers: [VET_SOON, MONITOR]
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"MONITOR","confidence":"high","summary":"This presentation is mild and borderline; monitoring at home for now is reasonable.","possibleCauses":[{"name":"Mild condition to keep an eye on","whyItFits":"These signs are usually manageable at home with monitoring."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Rest and monitor; offer bland food"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: vsn-amb-dog2
+    description: Dog with an ambiguous presentation between VET_SOON and MONITOR; AI settles on VET_SOON.
+    input:
+      species: DOG
+      ageMonths: 44
+    acceptableTiers: [VET_SOON, MONITOR]
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"VET_SOON","confidence":"medium","summary":"This presentation is borderline but leans toward a vet check in the next day or two.","possibleCauses":[{"name":"Condition worth a vet check soon","whyItFits":"These signs are best assessed by a vet in the next day or two."}],"redFlagsToWatch":["Symptoms worsening","New symptoms appearing"],"homeCare":["Offer a small bland meal and rest"],"doNot":["Do not give human medications to your pet."],"vetQuestions":["When did this start?"],"followUpHours":24}
+
+  - id: vsn-amb-dog3
+    description: Senior dog with an ambiguous presentation between VET_SOON and MONITOR; AI settles on VET_SOON.
+    input:
+      species: DOG
+      ageMonths: 120
+    acceptableTiers: [VET_SOON, MONITOR]
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"VET_SOON","confidence":"medium","summary":"This senior dog's presentation is borderline but leans toward a vet check in the next day or two.","possibleCauses":[{"name":"Condition worth a vet check soon","whyItFits":"These signs are best assessed by a vet in the next day or two."}],"redFlagsToWatch":["Symptoms worsening","New symptoms appearing"],"homeCare":["Offer a small bland meal and rest"],"doNot":["Do not give human medications to your pet."],"vetQuestions":["When did this start?"],"followUpHours":24}
+
+  # ---- Plain cat cases (13) — T-CAT-VSN template (urgency MONITOR -> bias -> VET_SOON).
+  - id: vsn-c01
+    description: Cat with an occasional hairball vomit.
+    input:
+      species: CAT
+      ageMonths: 60
+    expectedTier: VET_SOON
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"MONITOR","confidence":"high","summary":"An occasional hairball vomit in a cat is usually manageable but worth a check.","possibleCauses":[{"name":"Mild condition to keep an eye on","whyItFits":"These signs are usually manageable at home with monitoring."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Offer favourite food and keep the space calm"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: vsn-c02
+    description: Cat with an itchy ear.
+    input:
+      species: CAT
+      ageMonths: 36
+    expectedTier: VET_SOON
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"MONITOR","confidence":"high","summary":"An itchy ear in a cat is usually manageable but worth a check.","possibleCauses":[{"name":"Mild condition to keep an eye on","whyItFits":"These signs are usually manageable at home with monitoring."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Offer favourite food and keep the space calm"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: vsn-c03
+    description: Cat with soft stool but otherwise active.
+    input:
+      species: CAT
+      ageMonths: 48
+    expectedTier: VET_SOON
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"MONITOR","confidence":"high","summary":"Soft stool in an otherwise active cat is usually manageable but worth a check.","possibleCauses":[{"name":"Mild condition to keep an eye on","whyItFits":"These signs are usually manageable at home with monitoring."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Offer favourite food and keep the space calm"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: vsn-c04
+    description: Cat with a watery eye.
+    input:
+      species: CAT
+      ageMonths: 24
+    expectedTier: VET_SOON
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"MONITOR","confidence":"high","summary":"A watery eye in a cat is usually manageable but worth a check.","possibleCauses":[{"name":"Mild condition to keep an eye on","whyItFits":"These signs are usually manageable at home with monitoring."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Offer favourite food and keep the space calm"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: vsn-c05
+    description: Kitten sneezing occasionally.
+    input:
+      species: CAT
+      ageMonths: 4
+    expectedTier: VET_SOON
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"MONITOR","confidence":"high","summary":"Occasional sneezing in a kitten is usually manageable but worth a check.","possibleCauses":[{"name":"Mild condition to keep an eye on","whyItFits":"These signs are usually manageable at home with monitoring."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Offer favourite food and keep the space calm"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: vsn-c06
+    description: Kitten with a soft stool.
+    input:
+      species: CAT
+      ageMonths: 6
+    expectedTier: VET_SOON
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"MONITOR","confidence":"high","summary":"A soft stool in a kitten is usually manageable but worth a check.","possibleCauses":[{"name":"Mild condition to keep an eye on","whyItFits":"These signs are usually manageable at home with monitoring."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Offer favourite food and keep the space calm"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: vsn-c07
+    description: Cat overgrooming their belly.
+    input:
+      species: CAT
+      ageMonths: 72
+    expectedTier: VET_SOON
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"MONITOR","confidence":"high","summary":"Overgrooming the belly in a cat is usually manageable but worth a check.","possibleCauses":[{"name":"Mild condition to keep an eye on","whyItFits":"These signs are usually manageable at home with monitoring."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Offer favourite food and keep the space calm"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: vsn-c08
+    description: Senior cat drinking slightly more than usual.
+    input:
+      species: CAT
+      ageMonths: 132
+    expectedTier: VET_SOON
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"MONITOR","confidence":"high","summary":"A senior cat drinking slightly more than usual is usually manageable but worth a check.","possibleCauses":[{"name":"Mild condition to keep an eye on","whyItFits":"These signs are usually manageable at home with monitoring."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Offer favourite food and keep the space calm"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: vsn-c09
+    description: Senior cat jumping less than before.
+    input:
+      species: CAT
+      ageMonths: 150
+    expectedTier: VET_SOON
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"MONITOR","confidence":"high","summary":"A senior cat jumping less than before is usually manageable but worth a check.","possibleCauses":[{"name":"Mild condition to keep an eye on","whyItFits":"These signs are usually manageable at home with monitoring."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Offer favourite food and keep the space calm"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: vsn-c10
+    description: Cat with a mild limp but still playful.
+    input:
+      species: CAT
+      ageMonths: 18
+    expectedTier: VET_SOON
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"MONITOR","confidence":"high","summary":"A mild limp in an otherwise playful cat is usually manageable but worth a check.","possibleCauses":[{"name":"Mild condition to keep an eye on","whyItFits":"These signs are usually manageable at home with monitoring."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Offer favourite food and keep the space calm"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: vsn-c11
+    description: Cat with a reduced but still bright appetite.
+    input:
+      species: CAT
+      ageMonths: 84
+    expectedTier: VET_SOON
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"MONITOR","confidence":"high","summary":"A slightly reduced but still bright appetite in a cat is usually manageable but worth a check.","possibleCauses":[{"name":"Mild condition to keep an eye on","whyItFits":"These signs are usually manageable at home with monitoring."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Offer favourite food and keep the space calm"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: vsn-c12
+    description: Cat sneezing with clear discharge.
+    input:
+      species: CAT
+      ageMonths: 54
+    expectedTier: VET_SOON
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"MONITOR","confidence":"high","summary":"Sneezing with clear discharge in a cat is usually manageable but worth a check.","possibleCauses":[{"name":"Mild condition to keep an eye on","whyItFits":"These signs are usually manageable at home with monitoring."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Offer favourite food and keep the space calm"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: vsn-c13
+    description: Cat scratching at their neck.
+    input:
+      species: CAT
+      ageMonths: 42
+    expectedTier: VET_SOON
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"MONITOR","confidence":"high","summary":"Scratching at the neck in a cat is usually manageable but worth a check.","possibleCauses":[{"name":"Mild condition to keep an eye on","whyItFits":"These signs are usually manageable at home with monitoring."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Offer favourite food and keep the space calm"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  # ---- Ambiguity cat cases (2) — acceptableTiers:[VET_SOON,MONITOR].
+  - id: vsn-amb-cat1
+    description: Cat with an ambiguous presentation between VET_SOON and MONITOR; cat bias lands VET_SOON.
+    input:
+      species: CAT
+      ageMonths: 96
+    acceptableTiers: [VET_SOON, MONITOR]
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"MONITOR","confidence":"high","summary":"This presentation is borderline; the cat bias lands it at a vet check in the next day or two.","possibleCauses":[{"name":"Mild condition to keep an eye on","whyItFits":"These signs are usually manageable at home with monitoring."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Offer favourite food and keep the space calm"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: vsn-amb-cat2
+    description: Cat with an ambiguous presentation between VET_SOON and MONITOR; cat bias lands MONITOR.
+    input:
+      species: CAT
+      ageMonths: 30
+    acceptableTiers: [VET_SOON, MONITOR]
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"REASSURE","confidence":"high","summary":"This presentation is mild; the cat bias lifts it to a level worth keeping an eye on.","possibleCauses":[{"name":"Normal variation, unlikely to need a vet visit","whyItFits":"These signs are common and typically resolve on their own."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Continue normal care and watch for changes"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}

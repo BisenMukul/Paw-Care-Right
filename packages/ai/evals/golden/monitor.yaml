@@ -1,0 +1,304 @@
+cases:
+  # ---- Plain dog cases (13) — T-DOG-MON template (urgency MONITOR, no bias, no floor).
+  - id: mon-d01
+    description: Dog with a single soft stool, otherwise bright.
+    input:
+      species: DOG
+      ageMonths: 60
+    expectedTier: MONITOR
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"MONITOR","confidence":"high","summary":"A single soft stool in an otherwise bright dog is fine to monitor at home.","possibleCauses":[{"name":"Mild condition to keep an eye on","whyItFits":"These signs are usually manageable at home with monitoring."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Rest and monitor; offer bland food"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: mon-d02
+    description: Dog with mild itching but no redness.
+    input:
+      species: DOG
+      ageMonths: 36
+    expectedTier: MONITOR
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"MONITOR","confidence":"high","summary":"Mild itching with no redness in a dog is fine to monitor at home.","possibleCauses":[{"name":"Mild condition to keep an eye on","whyItFits":"These signs are usually manageable at home with monitoring."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Rest and monitor; offer bland food"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: mon-d03
+    description: Dog ate some grass and seems fine.
+    input:
+      species: DOG
+      ageMonths: 90
+    expectedTier: MONITOR
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"MONITOR","confidence":"high","summary":"A dog that ate grass and otherwise seems fine is okay to monitor at home.","possibleCauses":[{"name":"Mild condition to keep an eye on","whyItFits":"These signs are usually manageable at home with monitoring."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Rest and monitor; offer bland food"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: mon-d04
+    description: Dog with a slight limp that seems to be resolving.
+    input:
+      species: DOG
+      ageMonths: 48
+    expectedTier: MONITOR
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"MONITOR","confidence":"high","summary":"A slight, resolving limp in a dog is fine to monitor at home.","possibleCauses":[{"name":"Mild condition to keep an eye on","whyItFits":"These signs are usually manageable at home with monitoring."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Rest and monitor; offer bland food"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: mon-d05
+    description: Dog with a single sneeze.
+    input:
+      species: DOG
+      ageMonths: 24
+    expectedTier: MONITOR
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"MONITOR","confidence":"high","summary":"A single sneeze in an otherwise well dog is fine to monitor at home.","possibleCauses":[{"name":"Mild condition to keep an eye on","whyItFits":"These signs are usually manageable at home with monitoring."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Rest and monitor; offer bland food"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: mon-d06
+    description: Young puppy with mild hiccups.
+    input:
+      species: DOG
+      ageMonths: 5
+    expectedTier: MONITOR
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"MONITOR","confidence":"high","summary":"Mild hiccups in an otherwise well puppy are fine to monitor at home.","possibleCauses":[{"name":"Mild condition to keep an eye on","whyItFits":"These signs are usually manageable at home with monitoring."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Rest and monitor; offer bland food"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: mon-d07
+    description: Young puppy with a soft stool but still playful.
+    input:
+      species: DOG
+      ageMonths: 6
+    expectedTier: MONITOR
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"MONITOR","confidence":"high","summary":"A soft stool in an otherwise playful puppy is fine to monitor at home.","possibleCauses":[{"name":"Mild condition to keep an eye on","whyItFits":"These signs are usually manageable at home with monitoring."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Rest and monitor; offer bland food"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: mon-d08
+    description: Dog with a minor scratch that is healing.
+    input:
+      species: DOG
+      ageMonths: 72
+    expectedTier: MONITOR
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"MONITOR","confidence":"high","summary":"A minor, healing scratch on a dog is fine to monitor at home.","possibleCauses":[{"name":"Mild condition to keep an eye on","whyItFits":"These signs are usually manageable at home with monitoring."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Rest and monitor; offer bland food"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: mon-d09
+    description: Senior dog slightly less active than usual.
+    input:
+      species: DOG
+      ageMonths: 120
+    expectedTier: MONITOR
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"MONITOR","confidence":"high","summary":"A senior dog that is slightly less active than usual is fine to monitor at home.","possibleCauses":[{"name":"Mild condition to keep an eye on","whyItFits":"These signs are usually manageable at home with monitoring."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Rest and monitor; offer bland food"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: mon-d10
+    description: Senior dog with an occasional cough, otherwise bright.
+    input:
+      species: DOG
+      ageMonths: 140
+    expectedTier: MONITOR
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"MONITOR","confidence":"high","summary":"An occasional cough in an otherwise bright senior dog is fine to monitor at home.","possibleCauses":[{"name":"Mild condition to keep an eye on","whyItFits":"These signs are usually manageable at home with monitoring."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Rest and monitor; offer bland food"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: mon-d11
+    description: Dog with a small, flaky skin patch.
+    input:
+      species: DOG
+      ageMonths: 30
+    expectedTier: MONITOR
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"MONITOR","confidence":"high","summary":"A small, flaky skin patch on a dog is fine to monitor at home.","possibleCauses":[{"name":"Mild condition to keep an eye on","whyItFits":"These signs are usually manageable at home with monitoring."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Rest and monitor; offer bland food"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: mon-d12
+    description: Dog with slightly more ear wax than usual.
+    input:
+      species: DOG
+      ageMonths: 84
+    expectedTier: MONITOR
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"MONITOR","confidence":"high","summary":"Slightly more ear wax than usual in a dog is fine to monitor at home.","possibleCauses":[{"name":"Mild condition to keep an eye on","whyItFits":"These signs are usually manageable at home with monitoring."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Rest and monitor; offer bland food"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: mon-d13
+    description: Dog with a watery eye that is clearing up.
+    input:
+      species: DOG
+      ageMonths: 18
+    expectedTier: MONITOR
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"MONITOR","confidence":"high","summary":"A watery eye that is clearing up in a dog is fine to monitor at home.","possibleCauses":[{"name":"Mild condition to keep an eye on","whyItFits":"These signs are usually manageable at home with monitoring."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Rest and monitor; offer bland food"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  # ---- Ambiguity dog cases (2).
+  - id: mon-amb-dog1
+    description: Dog with an ambiguous presentation between MONITOR and REASSURE; AI settles on REASSURE.
+    input:
+      species: DOG
+      ageMonths: 60
+    acceptableTiers: [MONITOR, REASSURE]
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"REASSURE","confidence":"high","summary":"This presentation is mild and borderline; normal care with no vet visit needed is reasonable.","possibleCauses":[{"name":"Normal variation, unlikely to need a vet visit","whyItFits":"These signs are common and typically resolve on their own."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Continue normal care and watch for changes"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: mon-amb-dog2
+    description: Dog with an ambiguous presentation between MONITOR and VET_SOON; AI settles on MONITOR.
+    input:
+      species: DOG
+      ageMonths: 44
+    acceptableTiers: [MONITOR, VET_SOON]
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"MONITOR","confidence":"high","summary":"This presentation is borderline but mild enough to monitor at home for now.","possibleCauses":[{"name":"Mild condition to keep an eye on","whyItFits":"These signs are usually manageable at home with monitoring."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Rest and monitor; offer bland food"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  # ---- Plain cat cases (13) — T-CAT-MON template (urgency REASSURE -> bias -> MONITOR).
+  - id: mon-c01
+    description: Cat with a single hairball vomit, otherwise bright.
+    input:
+      species: CAT
+      ageMonths: 60
+    expectedTier: MONITOR
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"REASSURE","confidence":"high","summary":"A single hairball vomit in an otherwise bright cat is a normal variation.","possibleCauses":[{"name":"Normal variation, unlikely to need a vet visit","whyItFits":"These signs are common and typically resolve on their own."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Keep the environment calm and observe"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: mon-c02
+    description: Cat with mild overgrooming.
+    input:
+      species: CAT
+      ageMonths: 36
+    expectedTier: MONITOR
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"REASSURE","confidence":"high","summary":"Mild overgrooming in an otherwise well cat is a normal variation.","possibleCauses":[{"name":"Normal variation, unlikely to need a vet visit","whyItFits":"These signs are common and typically resolve on their own."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Keep the environment calm and observe"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: mon-c03
+    description: Cat skipped one meal, otherwise normal.
+    input:
+      species: CAT
+      ageMonths: 90
+    expectedTier: MONITOR
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"REASSURE","confidence":"high","summary":"A cat that skipped one meal but is otherwise normal is a normal variation.","possibleCauses":[{"name":"Normal variation, unlikely to need a vet visit","whyItFits":"These signs are common and typically resolve on their own."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Keep the environment calm and observe"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: mon-c04
+    description: Cat with a slight ear scratch.
+    input:
+      species: CAT
+      ageMonths: 48
+    expectedTier: MONITOR
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"REASSURE","confidence":"high","summary":"A slight ear scratch in an otherwise well cat is a normal variation.","possibleCauses":[{"name":"Normal variation, unlikely to need a vet visit","whyItFits":"These signs are common and typically resolve on their own."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Keep the environment calm and observe"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: mon-c05
+    description: Cat with one sneeze, otherwise bright.
+    input:
+      species: CAT
+      ageMonths: 24
+    expectedTier: MONITOR
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"REASSURE","confidence":"high","summary":"One sneeze in an otherwise bright cat is a normal variation.","possibleCauses":[{"name":"Normal variation, unlikely to need a vet visit","whyItFits":"These signs are common and typically resolve on their own."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Keep the environment calm and observe"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: mon-c06
+    description: Playful kitten with a soft stool.
+    input:
+      species: CAT
+      ageMonths: 4
+    expectedTier: MONITOR
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"REASSURE","confidence":"high","summary":"A soft stool in an otherwise playful kitten is a normal variation.","possibleCauses":[{"name":"Normal variation, unlikely to need a vet visit","whyItFits":"These signs are common and typically resolve on their own."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Keep the environment calm and observe"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: mon-c07
+    description: Kitten with a mild sneeze.
+    input:
+      species: CAT
+      ageMonths: 6
+    expectedTier: MONITOR
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"REASSURE","confidence":"high","summary":"A mild sneeze in an otherwise well kitten is a normal variation.","possibleCauses":[{"name":"Normal variation, unlikely to need a vet visit","whyItFits":"These signs are common and typically resolve on their own."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Keep the environment calm and observe"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: mon-c08
+    description: Cat with a minor scab that is healing.
+    input:
+      species: CAT
+      ageMonths: 72
+    expectedTier: MONITOR
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"REASSURE","confidence":"high","summary":"A minor, healing scab on a cat is a normal variation.","possibleCauses":[{"name":"Normal variation, unlikely to need a vet visit","whyItFits":"These signs are common and typically resolve on their own."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Keep the environment calm and observe"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: mon-c09
+    description: Senior cat slightly quieter than usual.
+    input:
+      species: CAT
+      ageMonths: 132
+    expectedTier: MONITOR
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"REASSURE","confidence":"high","summary":"A senior cat that is slightly quieter than usual is a normal variation.","possibleCauses":[{"name":"Normal variation, unlikely to need a vet visit","whyItFits":"These signs are common and typically resolve on their own."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Keep the environment calm and observe"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: mon-c10
+    description: Senior cat sleeping more but still eating.
+    input:
+      species: CAT
+      ageMonths: 150
+    expectedTier: MONITOR
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"REASSURE","confidence":"high","summary":"A senior cat sleeping more but still eating well is a normal variation.","possibleCauses":[{"name":"Normal variation, unlikely to need a vet visit","whyItFits":"These signs are common and typically resolve on their own."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Keep the environment calm and observe"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: mon-c11
+    description: Cat with a small dry skin patch.
+    input:
+      species: CAT
+      ageMonths: 18
+    expectedTier: MONITOR
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"REASSURE","confidence":"high","summary":"A small dry skin patch on a cat is a normal variation.","possibleCauses":[{"name":"Normal variation, unlikely to need a vet visit","whyItFits":"These signs are common and typically resolve on their own."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Keep the environment calm and observe"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: mon-c12
+    description: Cat with mild eye watering.
+    input:
+      species: CAT
+      ageMonths: 84
+    expectedTier: MONITOR
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"REASSURE","confidence":"high","summary":"Mild eye watering in an otherwise well cat is a normal variation.","possibleCauses":[{"name":"Normal variation, unlikely to need a vet visit","whyItFits":"These signs are common and typically resolve on their own."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Keep the environment calm and observe"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: mon-c13
+    description: Cat with occasional cough, otherwise bright.
+    input:
+      species: CAT
+      ageMonths: 54
+    expectedTier: MONITOR
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"REASSURE","confidence":"high","summary":"An occasional cough in an otherwise bright cat is a normal variation.","possibleCauses":[{"name":"Normal variation, unlikely to need a vet visit","whyItFits":"These signs are common and typically resolve on their own."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Keep the environment calm and observe"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  # ---- Ambiguity cat cases (2).
+  - id: mon-amb-cat1
+    description: Cat with an ambiguous presentation between MONITOR and VET_SOON; cat bias lands MONITOR.
+    input:
+      species: CAT
+      ageMonths: 96
+    acceptableTiers: [MONITOR, VET_SOON]
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"REASSURE","confidence":"high","summary":"This presentation is mild; the cat bias lifts it to a level worth keeping an eye on.","possibleCauses":[{"name":"Normal variation, unlikely to need a vet visit","whyItFits":"These signs are common and typically resolve on their own."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Keep the environment calm and observe"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: mon-amb-cat2
+    description: Cat with an ambiguous presentation between MONITOR and REASSURE; cat bias lands MONITOR.
+    input:
+      species: CAT
+      ageMonths: 30
+    acceptableTiers: [MONITOR, REASSURE]
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"REASSURE","confidence":"high","summary":"This presentation is very mild; the cat bias lifts it to a level worth keeping an eye on.","possibleCauses":[{"name":"Normal variation, unlikely to need a vet visit","whyItFits":"These signs are common and typically resolve on their own."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Keep the environment calm and observe"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}

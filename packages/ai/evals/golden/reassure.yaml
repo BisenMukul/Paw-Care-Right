@@ -1,0 +1,304 @@
+cases:
+  # ---- Plain dog cases (28) — T-DOG-REA template (urgency REASSURE, no bias,
+  # no floor). REASSURE is DOG-ONLY (plan Risk R1: cat bias `raiseOne` only
+  # ever increases urgency, so no cat AI tier maps down to REASSURE).
+  - id: rea-d01
+    description: Dog vomited once after eating grass, now bright and playful.
+    input:
+      species: DOG
+      ageMonths: 48
+    expectedTier: REASSURE
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"REASSURE","confidence":"high","summary":"A single vomit after eating grass in an otherwise bright, playful dog is usually not concerning.","possibleCauses":[{"name":"Normal variation, unlikely to need a vet visit","whyItFits":"These signs are common and typically resolve on their own."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Continue normal care and watch for changes"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: rea-d02
+    description: Dog ate normally today and is bright and active.
+    input:
+      species: DOG
+      ageMonths: 36
+    expectedTier: REASSURE
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"REASSURE","confidence":"high","summary":"A dog eating normally and remaining bright is not a concern.","possibleCauses":[{"name":"Normal variation, unlikely to need a vet visit","whyItFits":"These signs are common and typically resolve on their own."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Continue normal care and watch for changes"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: rea-d03
+    description: Dog had a mild, brief bout of hiccups.
+    input:
+      species: DOG
+      ageMonths: 24
+    expectedTier: REASSURE
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"REASSURE","confidence":"high","summary":"A brief bout of hiccups in an otherwise well dog is usually not concerning.","possibleCauses":[{"name":"Normal variation, unlikely to need a vet visit","whyItFits":"These signs are common and typically resolve on their own."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Continue normal care and watch for changes"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: rea-d04
+    description: Dog had one soft stool, otherwise active and normal.
+    input:
+      species: DOG
+      ageMonths: 60
+    expectedTier: REASSURE
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"REASSURE","confidence":"high","summary":"One soft stool in an otherwise active, normal dog is usually not concerning.","possibleCauses":[{"name":"Normal variation, unlikely to need a vet visit","whyItFits":"These signs are common and typically resolve on their own."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Continue normal care and watch for changes"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: rea-d05
+    description: Dog has a tiny scratch that has already healed.
+    input:
+      species: DOG
+      ageMonths: 30
+    expectedTier: REASSURE
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"REASSURE","confidence":"high","summary":"A tiny, already-healed scratch on a dog is not a concern.","possibleCauses":[{"name":"Normal variation, unlikely to need a vet visit","whyItFits":"These signs are common and typically resolve on their own."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Continue normal care and watch for changes"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: rea-d06
+    description: Playful puppy, entirely normal behavior.
+    input:
+      species: DOG
+      ageMonths: 5
+    expectedTier: REASSURE
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"REASSURE","confidence":"high","summary":"A playful puppy behaving entirely normally is not a concern.","possibleCauses":[{"name":"Normal variation, unlikely to need a vet visit","whyItFits":"These signs are common and typically resolve on their own."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Continue normal care and watch for changes"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: rea-d07
+    description: Puppy teething, chewing more than usual.
+    input:
+      species: DOG
+      ageMonths: 6
+    expectedTier: REASSURE
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"REASSURE","confidence":"high","summary":"A teething puppy chewing more than usual is a normal variation.","possibleCauses":[{"name":"Normal variation, unlikely to need a vet visit","whyItFits":"These signs are common and typically resolve on their own."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Continue normal care and watch for changes"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: rea-d08
+    description: Dog shedding as part of a routine seasonal coat change.
+    input:
+      species: DOG
+      ageMonths: 42
+    expectedTier: REASSURE
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"REASSURE","confidence":"high","summary":"Routine seasonal shedding in a dog is not a concern.","possibleCauses":[{"name":"Normal variation, unlikely to need a vet visit","whyItFits":"These signs are common and typically resolve on their own."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Continue normal care and watch for changes"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: rea-d09
+    description: Older dog taking a normal afternoon nap.
+    input:
+      species: DOG
+      ageMonths: 120
+    expectedTier: REASSURE
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"REASSURE","confidence":"high","summary":"An older dog napping normally in the afternoon is not a concern.","possibleCauses":[{"name":"Normal variation, unlikely to need a vet visit","whyItFits":"These signs are common and typically resolve on their own."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Continue normal care and watch for changes"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: rea-d10
+    description: Senior dog a little slower but still eating well.
+    input:
+      species: DOG
+      ageMonths: 140
+    expectedTier: REASSURE
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"REASSURE","confidence":"high","summary":"A senior dog a little slower but still eating well is not a concern.","possibleCauses":[{"name":"Normal variation, unlikely to need a vet visit","whyItFits":"These signs are common and typically resolve on their own."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Continue normal care and watch for changes"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: rea-d11
+    description: Dog panting normally after a play session.
+    input:
+      species: DOG
+      ageMonths: 54
+    expectedTier: REASSURE
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"REASSURE","confidence":"high","summary":"Normal panting after a play session in a dog is not a concern.","possibleCauses":[{"name":"Normal variation, unlikely to need a vet visit","whyItFits":"These signs are common and typically resolve on their own."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Continue normal care and watch for changes"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: rea-d12
+    description: Dog had a single sneeze and is otherwise bright.
+    input:
+      species: DOG
+      ageMonths: 18
+    expectedTier: REASSURE
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"REASSURE","confidence":"high","summary":"A single sneeze in an otherwise bright dog is not a concern.","possibleCauses":[{"name":"Normal variation, unlikely to need a vet visit","whyItFits":"These signs are common and typically resolve on their own."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Continue normal care and watch for changes"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: rea-d13
+    description: Dog has a minor dry nose, otherwise well.
+    input:
+      species: DOG
+      ageMonths: 72
+    expectedTier: REASSURE
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"REASSURE","confidence":"high","summary":"A minor dry nose in an otherwise well dog is not a concern.","possibleCauses":[{"name":"Normal variation, unlikely to need a vet visit","whyItFits":"These signs are common and typically resolve on their own."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Continue normal care and watch for changes"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: rea-d14
+    description: Dog briefly chased its tail, then settled down.
+    input:
+      species: DOG
+      ageMonths: 96
+    expectedTier: REASSURE
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"REASSURE","confidence":"high","summary":"A brief bout of tail-chasing followed by settling down is not a concern.","possibleCauses":[{"name":"Normal variation, unlikely to need a vet visit","whyItFits":"These signs are common and typically resolve on their own."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Continue normal care and watch for changes"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: rea-d15
+    description: Dog ate a small treat and is completely fine.
+    input:
+      species: DOG
+      ageMonths: 84
+    expectedTier: REASSURE
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"REASSURE","confidence":"high","summary":"Eating a small treat with no ill effects is not a concern.","possibleCauses":[{"name":"Normal variation, unlikely to need a vet visit","whyItFits":"These signs are common and typically resolve on their own."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Continue normal care and watch for changes"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: rea-d16
+    description: Dog drinking a normal amount of water.
+    input:
+      species: DOG
+      ageMonths: 66
+    expectedTier: REASSURE
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"REASSURE","confidence":"high","summary":"Drinking a normal amount of water is not a concern.","possibleCauses":[{"name":"Normal variation, unlikely to need a vet visit","whyItFits":"These signs are common and typically resolve on their own."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Continue normal care and watch for changes"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: rea-d17
+    description: Dog licked a paw briefly then stopped on its own.
+    input:
+      species: DOG
+      ageMonths: 78
+    expectedTier: REASSURE
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"REASSURE","confidence":"high","summary":"Briefly licking a paw and then stopping on its own is not a concern.","possibleCauses":[{"name":"Normal variation, unlikely to need a vet visit","whyItFits":"These signs are common and typically resolve on their own."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Continue normal care and watch for changes"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: rea-d18
+    description: Owner has a general question after a single yawn.
+    input:
+      species: DOG
+      ageMonths: 12
+    expectedTier: REASSURE
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"REASSURE","confidence":"high","summary":"A single yawn in an otherwise well dog is not a concern.","possibleCauses":[{"name":"Normal variation, unlikely to need a vet visit","whyItFits":"These signs are common and typically resolve on their own."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Continue normal care and watch for changes"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: rea-d19
+    description: Dog's ears look clean at a routine check.
+    input:
+      species: DOG
+      ageMonths: 108
+    expectedTier: REASSURE
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"REASSURE","confidence":"high","summary":"Clean ears at a routine check are not a concern.","possibleCauses":[{"name":"Normal variation, unlikely to need a vet visit","whyItFits":"These signs are common and typically resolve on their own."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Continue normal care and watch for changes"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: rea-d20
+    description: Dog had a brief scratch and moved on.
+    input:
+      species: DOG
+      ageMonths: 30
+    expectedTier: REASSURE
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"REASSURE","confidence":"high","summary":"A brief scratch followed by normal behavior is not a concern.","possibleCauses":[{"name":"Normal variation, unlikely to need a vet visit","whyItFits":"These signs are common and typically resolve on their own."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Continue normal care and watch for changes"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: rea-d21
+    description: Dog has mild seasonal shedding.
+    input:
+      species: DOG
+      ageMonths: 46
+    expectedTier: REASSURE
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"REASSURE","confidence":"high","summary":"Mild seasonal shedding in a dog is not a concern.","possibleCauses":[{"name":"Normal variation, unlikely to need a vet visit","whyItFits":"These signs are common and typically resolve on their own."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Continue normal care and watch for changes"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: rea-d22
+    description: Dog's stool looks entirely normal today.
+    input:
+      species: DOG
+      ageMonths: 20
+    expectedTier: REASSURE
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"REASSURE","confidence":"high","summary":"A normal stool today is not a concern.","possibleCauses":[{"name":"Normal variation, unlikely to need a vet visit","whyItFits":"These signs are common and typically resolve on their own."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Continue normal care and watch for changes"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: rea-d23
+    description: Dog is playful and active as usual.
+    input:
+      species: DOG
+      ageMonths: 33
+    expectedTier: REASSURE
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"REASSURE","confidence":"high","summary":"A playful, active dog behaving as usual is not a concern.","possibleCauses":[{"name":"Normal variation, unlikely to need a vet visit","whyItFits":"These signs are common and typically resolve on their own."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Continue normal care and watch for changes"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: rea-d24
+    description: Dog ate its normal kibble with a good appetite.
+    input:
+      species: DOG
+      ageMonths: 27
+    expectedTier: REASSURE
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"REASSURE","confidence":"high","summary":"Eating normal kibble with a good appetite is not a concern.","possibleCauses":[{"name":"Normal variation, unlikely to need a vet visit","whyItFits":"These signs are common and typically resolve on their own."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Continue normal care and watch for changes"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: rea-d25
+    description: Owner has a routine question about a normal weight check.
+    input:
+      species: DOG
+      ageMonths: 63
+    expectedTier: REASSURE
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"REASSURE","confidence":"high","summary":"A routine, normal weight check is not a concern.","possibleCauses":[{"name":"Normal variation, unlikely to need a vet visit","whyItFits":"These signs are common and typically resolve on their own."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Continue normal care and watch for changes"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: rea-d26
+    description: Dog had a minor lick at its coat and is fine.
+    input:
+      species: DOG
+      ageMonths: 51
+    expectedTier: REASSURE
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"REASSURE","confidence":"high","summary":"A minor lick at the coat with no other signs is not a concern.","possibleCauses":[{"name":"Normal variation, unlikely to need a vet visit","whyItFits":"These signs are common and typically resolve on their own."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Continue normal care and watch for changes"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: rea-d27
+    description: Senior dog with a normal, healthy appetite.
+    input:
+      species: DOG
+      ageMonths: 132
+    expectedTier: REASSURE
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"REASSURE","confidence":"high","summary":"A senior dog with a normal, healthy appetite is not a concern.","possibleCauses":[{"name":"Normal variation, unlikely to need a vet visit","whyItFits":"These signs are common and typically resolve on their own."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Continue normal care and watch for changes"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: rea-d28
+    description: Young dog is bright and behaving entirely normally.
+    input:
+      species: DOG
+      ageMonths: 4
+    expectedTier: REASSURE
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"REASSURE","confidence":"high","summary":"A young dog that is bright and behaving entirely normally is not a concern.","possibleCauses":[{"name":"Normal variation, unlikely to need a vet visit","whyItFits":"These signs are common and typically resolve on their own."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Continue normal care and watch for changes"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  # ---- Ambiguity dog cases (2) — acceptableTiers:[REASSURE,MONITOR], DOG only.
+  - id: rea-amb-dog1
+    description: Dog with an ambiguous presentation between REASSURE and MONITOR; AI settles on REASSURE.
+    input:
+      species: DOG
+      ageMonths: 60
+    acceptableTiers: [REASSURE, MONITOR]
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"REASSURE","confidence":"high","summary":"This presentation is mild and borderline; no vet visit is needed for now.","possibleCauses":[{"name":"Normal variation, unlikely to need a vet visit","whyItFits":"These signs are common and typically resolve on their own."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Continue normal care and watch for changes"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}
+
+  - id: rea-amb-dog2
+    description: Senior dog with an ambiguous presentation between REASSURE and MONITOR; AI settles on MONITOR.
+    input:
+      species: DOG
+      ageMonths: 120
+    acceptableTiers: [REASSURE, MONITOR]
+    expectSource: ai
+    fakeResponse: |
+      {"urgency":"MONITOR","confidence":"high","summary":"This senior dog's presentation is borderline but mild enough to monitor at home for now.","possibleCauses":[{"name":"Mild condition to keep an eye on","whyItFits":"These signs are usually manageable at home with monitoring."}],"redFlagsToWatch":["Symptoms worsening or not improving"],"homeCare":["Rest and monitor; offer bland food"],"doNot":["Do not give human medications to your pet."],"vetQuestions":[],"followUpHours":24}

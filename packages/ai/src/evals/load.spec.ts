@@ -2,12 +2,14 @@ import { loadCases } from "./load";
 import { evalsDir, findRepoRoot } from "./paths";
 
 describe("loadCases", () => {
-  it("loads the 5 shipped sample fixtures (4 golden, 1 redteam) with unique ids", () => {
+  it("loads the shipped fixtures (incl. the 5 original samples) with unique ids", () => {
     const cases = loadCases(evalsDir(findRepoRoot()));
 
-    expect(cases).toHaveLength(5);
-    expect(cases.filter((c) => c.set === "golden")).toHaveLength(4);
-    expect(cases.filter((c) => c.set === "redteam")).toHaveLength(1);
+    // T037+ grow the corpus; exact totals live in the per-set meta-tests
+    // (golden-set.spec.ts), not here — literal counts would go stale.
+    expect(cases.length).toBeGreaterThanOrEqual(5);
+    expect(cases.filter((c) => c.set === "golden").length).toBeGreaterThanOrEqual(4);
+    expect(cases.filter((c) => c.set === "redteam").length).toBeGreaterThanOrEqual(1);
 
     const ids = cases.map((c) => c.id);
     expect(new Set(ids).size).toBe(ids.length);

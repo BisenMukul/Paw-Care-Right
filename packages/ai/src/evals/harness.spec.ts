@@ -32,13 +32,14 @@ function loadedCase(overrides: Partial<LoadedCase> = {}): LoadedCase {
   };
 }
 
-describe("runHarness — 5 shipped samples (AC1)", () => {
-  it("runs green on the 5 sample cases with the fake provider", async () => {
+describe("runHarness — shipped fixtures (AC1)", () => {
+  it("runs green on the full shipped case set with the fake provider", async () => {
     const cases = loadCases(evalsDir(findRepoRoot()));
     const result = await runHarness({ cases, mode: "fake" });
 
     expect(result.thresholdsPassed).toBe(true);
-    expect(result.aggregate.total).toBe(5);
+    // T037+ grow the corpus; the golden-set meta-test owns exact totals.
+    expect(result.aggregate.total).toBeGreaterThanOrEqual(5);
     expect(result.aggregate.emergencyRecall).toBe(1);
 
     const mildVomit = result.cases.find((c) => c.id === "mild-dog-single-vomit");
