@@ -434,3 +434,20 @@
 - Non-blocking (checker): generated eval reports appear as untracked files — do not accidentally stage (gitignore out of T040 scope).
 - No new dependencies. No harness code changes.
 - Commit: ci(evals): T040 CI ai-evals gate (journal rides in the same one-task-one-commit).
+
+## [2026-07-12] 🚩 MILESTONE M3 — Phase 3 (AI Triage Core) COMPLETE
+- **Scope:** T029–T040 all DONE (12 tasks): provider abstraction (Ollama Cloud + Gemini behind the seam, zero SDKs); TriageResult schema + frozen SAFE_FALLBACK (fail-closed refines); 22-rule deterministic red-flag engine (fail-upward sex gate, 0.05ms/eval, +4 checker-probe synonym closures); 12-category intake schema (schema-driven for mobile, R2 mapping contract for T042); triage prompt layer (§5-encoding system prompt, schema-as-text, temp-0, 8 self-validating exemplars, extractJsonCandidate, runTriage with one-repair-then-fallback); vision prep pipeline (≤1024px, EXIF-strip, fail-open unsafe-check seam); 233-item toxin dataset + caution-biased AI fallback (safe→caution floored in return AND cache); eval harness + pure applyPostRules (only-ever-raises, valid-by-construction); 154-case golden set (every rule fired provider-independently); 41-case red-team set + full unsafe-output detector (warning-context drug exemption); quotas + cost logging; CI ai-evals gate (per-push fake + nightly real).
+- **M3 gate (LOOP_PROTOCOL §6):**
+  1. Full suite: typecheck/lint/test/build all exit 0 — api **291 tests (37 suites)**, ai **401 passed / 3 skipped (27 suites)**, types 287, mobile 88, api-client 52, data 63+22, config 4.
+  2. `pnpm test:ai-evals`: **exit 0 — 195 cases (golden 154, redteam 41), ALL thresholds PASS** (Emergency recall 58/58 = 100% · >1-tier-below 0 · exact-or-adjacent 100% · unsafe outputs 0 · rule misses 0).
+  3. Zero in_progress, zero blocked. ✓
+  4. Coverage: all api services ≥ thresholds (QuotaService/CostLogService 100% stmts; VisionPrepService 100%). ✓
+  5. This milestone journal entry. ✓
+- **C1 artifact committed:** `loop/eval-reports/latest.md` (+ timestamped copy) — the eval report for founder review.
+- **Actions:** `milestones.M3 = passed`; status → **paused-awaiting-C1**; tag `milestone/M3` local (tag-ref push 403s under session credentials — lands at PR merge, as M0–M2).
+- **⛔ CHECKPOINT C1 — LOOP PAUSED.** Per docs/PHASES.md:202 and LOOP_PROTOCOL: the founder (ideally with a veterinarian's read-through) reviews `loop/eval-reports/latest.md`, the golden set (`packages/ai/evals/golden/`), and the flagged items below, then sets `loop-state.json → checkpoints.C1.approved = true` with a journal note before Phase 4 (user-facing triage wiring) may start.
+- **Items flagged for the C1 review (accumulated from checker non-blocking notes):**
+  1. Toxin rows to sanity-check: Tums=safe; azalea/rhododendron toxic (vs emergency); macadamia cat=caution (T035 review).
+  2. Golden tier assignments: feline anorexia MONITOR↔VET_24H threshold; AI-path cat emergencies (en-ai-cat-labored/jaundice/severe-lethargy) rely on fake-tier+bias not rules (T037 review).
+  3. Detector limitations: paraphrase bypassable by design (regex layer); output-only scanning; real-provider evals (nightly workflow, needs OLLAMA_CLOUD_API_KEY secret + AI_TEXT_MODEL variable on main) + human review are the backstop (T038 review).
+  4. TRIAGE_SCHEMA_TEXT prose is hand-written (enums interpolated) — revisit on schema evolution; intake freeText serialized verbatim into prompts — treat as sensitive in T041/T042 logging (T033 review).
