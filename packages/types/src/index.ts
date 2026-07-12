@@ -4,3 +4,4 @@ export * from "./branded-ids";
 export * from "./pet";
 export * from "./household";
 export * from "./triage";
+export * from "./intake";
