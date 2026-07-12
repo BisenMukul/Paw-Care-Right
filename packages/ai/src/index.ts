@@ -5,3 +5,4 @@ export * from "./providers/fake";
 export * from "./usage";
 export * from "./rules";
 export * from "./triage";
+export * from "./food";

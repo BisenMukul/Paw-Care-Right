@@ -5,3 +5,4 @@ export * from "./pet";
 export * from "./household";
 export * from "./triage";
 export * from "./intake";
+export * from "./food-safety";

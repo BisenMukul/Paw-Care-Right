@@ -17,7 +17,8 @@
     "test": "jest"
   },
   "dependencies": {
-    "zod": "^4"
+    "zod": "^4",
+    "@pawcareright/types": "workspace:*"
   },
   "devDependencies": {
     "@pawcareright/config": "workspace:*",

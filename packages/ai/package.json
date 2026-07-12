@@ -19,7 +19,8 @@
   "dependencies": {
     "zod": "^4",
     "@pawcareright/config": "workspace:*",
-    "@pawcareright/types": "workspace:*"
+    "@pawcareright/types": "workspace:*",
+    "@pawcareright/data": "workspace:*"
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",

@@ -1,0 +1,131 @@
+import type { ToxinRowInput } from "../schema";
+
+/**
+ * Sources consulted (names only — no copied prose, no URLs; T035 R9):
+ * ASPCA Animal Poison Control Center, Pet Poison Helpline, Merck Veterinary
+ * Manual. Every note below is written in our own words and is qualitative
+ * only — no dosing amounts, no diagnosis language.
+ */
+export const pestBaits: ToxinRowInput[] = [
+  {
+    id: "anticoagulant-rodenticide",
+    name: "Anticoagulant rat and mouse poison",
+    category: "pest-bait",
+    verdicts: { dog: "emergency", cat: "emergency" },
+    note: "This type of rodenticide interferes with normal blood clotting, and signs of internal bleeding can take a couple of days to appear after the pet seems fine.",
+    aliases: ["rat poison", "mouse poison", "warfarin bait", "d-con"],
+  },
+  {
+    id: "bromethalin-rodenticide",
+    name: "Bromethalin rat and mouse poison",
+    category: "pest-bait",
+    verdicts: { dog: "emergency", cat: "emergency" },
+    note: "This rodenticide causes brain swelling and can lead to tremors, in-coordination, or seizures rather than the bleeding seen with other rat poison types.",
+    aliases: ["bromethalin bait"],
+  },
+  {
+    id: "cholecalciferol-rodenticide",
+    name: "Cholecalciferol (vitamin D) rat and mouse poison",
+    category: "pest-bait",
+    verdicts: { dog: "emergency", cat: "emergency" },
+    note: "This rodenticide raises blood calcium to a dangerous level, which can cause sudden kidney failure, and signs can be delayed by a day or more.",
+    aliases: ["vitamin d3 rodenticide"],
+  },
+  {
+    id: "phosphide-rodenticide",
+    name: "Phosphide rat and mole poison",
+    category: "pest-bait",
+    verdicts: { dog: "emergency", cat: "emergency" },
+    note: "Zinc and aluminium phosphide baits release a toxic gas once they reach stomach acid, which can severely affect the lungs and other organs, especially if the pet has recently eaten.",
+    aliases: ["zinc phosphide", "aluminum phosphide", "mole bait"],
+  },
+  {
+    id: "permethrin",
+    name: "Permethrin",
+    category: "pest-bait",
+    verdicts: { dog: "caution", cat: "emergency" },
+    note: "Permethrin is a common ingredient in dog flea and tick products and is generally safe for dogs at the labelled product strength, but it is one of the best-known causes of severe poisoning in cats, who lack the ability to break it down safely.",
+    quantityNuance: "A cat exposed to any dog-labelled permethrin spot-on product, whether from direct application or close contact with a treated dog, should be treated as an emergency.",
+    aliases: ["permethrin spot-on"],
+  },
+  {
+    id: "pyrethrin-insecticide",
+    name: "Pyrethrin insecticide",
+    category: "pest-bait",
+    verdicts: { dog: "caution", cat: "toxic" },
+    note: "Pyrethrins are a naturally derived insecticide that is milder than the related synthetic permethrin, but cats remain notably more sensitive than dogs to drooling, tremors, and in-coordination.",
+    aliases: ["pyrethrum"],
+  },
+  {
+    id: "metaldehyde-slug-bait",
+    name: "Slug and snail bait (metaldehyde)",
+    category: "pest-bait",
+    verdicts: { dog: "emergency", cat: "emergency" },
+    note: "Metaldehyde slug and snail bait can cause severe muscle tremors and dangerously high body temperature, sometimes within a short time of exposure.",
+    aliases: ["snail bait", "slug pellets"],
+  },
+  {
+    id: "ant-bait-stations",
+    name: "Ant bait stations",
+    category: "pest-bait",
+    verdicts: { dog: "caution", cat: "caution" },
+    note: "The small amount of bait inside a typical ant bait station is generally a low concern, and mild stomach upset is the most common effect of chewing on the plastic housing.",
+    aliases: ["ant traps"],
+  },
+  {
+    id: "roach-bait-gel",
+    name: "Roach bait stations and gel",
+    category: "pest-bait",
+    verdicts: { dog: "caution", cat: "caution" },
+    note: "The small amount of insecticide gel in a typical roach bait product is generally a low concern, though chewing through several stations at once raises the exposure.",
+    aliases: ["cockroach bait", "roach gel"],
+  },
+  {
+    id: "glue-traps",
+    name: "Rodent glue traps",
+    category: "pest-bait",
+    verdicts: { dog: "caution", cat: "caution" },
+    note: "Glue traps are a physical rather than chemical hazard; the strong adhesive can stick to fur, paws, or the mouth and cause local irritation or a swallowed piece of the tray.",
+    aliases: ["mouse glue trap", "sticky trap"],
+  },
+  {
+    id: "deet-insect-repellent",
+    name: "DEET insect repellent",
+    category: "pest-bait",
+    verdicts: { dog: "toxic", cat: "toxic" },
+    note: "Human insect repellent containing DEET can cause drooling, tremors, and in a significant exposure, seizures if licked off skin or fur or swallowed directly.",
+    aliases: ["bug spray"],
+  },
+  {
+    id: "flea-collar-ingestion",
+    name: "Chewed flea or tick collar",
+    category: "pest-bait",
+    verdicts: { dog: "toxic", cat: "toxic" },
+    note: "A collar that has been chewed and swallowed delivers a far more concentrated dose of insecticide than normal skin contact, and can cause drooling, tremors, or in-coordination.",
+    aliases: ["tick collar"],
+  },
+  {
+    id: "lawn-insecticide-granules",
+    name: "Granular lawn insecticide",
+    category: "pest-bait",
+    verdicts: { dog: "toxic", cat: "toxic" },
+    note: "Granular insecticides applied to lawns can cause drooling, tremors, and stomach upset if eaten directly from the bag or freshly treated ground.",
+    aliases: ["grub killer"],
+  },
+  {
+    id: "gopher-bait-strychnine",
+    name: "Gopher and mole bait (strychnine-type)",
+    category: "pest-bait",
+    verdicts: { dog: "emergency", cat: "emergency" },
+    note: "Strychnine-type burrowing-animal baits can cause severe, whole-body muscle spasms and seizures, often coming on quickly after exposure.",
+    aliases: ["strychnine bait", "gopher poison"],
+  },
+  {
+    id: "boric-acid-powder",
+    name: "Boric acid pest powder",
+    category: "pest-bait",
+    verdicts: { dog: "toxic", cat: "toxic" },
+    note: "A small amount of boric acid powder used for ants or roaches is generally a lower concern, but a pet getting into an open container of concentrated powder can develop stomach upset or tremors.",
+    aliases: ["borax powder"],
+  },
+];
