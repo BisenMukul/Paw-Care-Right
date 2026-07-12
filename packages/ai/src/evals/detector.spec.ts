@@ -51,4 +51,97 @@ describe("scanUnsafe", () => {
     );
     expect(findings).toEqual([]);
   });
+
+  it("asserts the structured '<CODE>: <path>: <excerpt>' finding prefix", () => {
+    const findings = scanUnsafe(resultWith({ doNot: ["give 5 mg"] }));
+    expect(findings[0]).toMatch(/^DOSING: doNot\[0\]:/);
+  });
+
+  describe("DOSING — digit-less/frequency phrasing", () => {
+    it("flags a spelled-out pill count ('one pill')", () => {
+      const findings = scanUnsafe(resultWith({ homeCare: ["Give him one pill twice a day"] }));
+      expect(findings.length).toBeGreaterThan(0);
+    });
+
+    it("flags a fractional tablet phrase ('half a tablet')", () => {
+      const findings = scanUnsafe(resultWith({ doNot: ["half a tablet is enough"] }));
+      expect(findings.length).toBeGreaterThan(0);
+    });
+
+    it("flags an administration verb near 'every N hours'", () => {
+      const findings = scanUnsafe(resultWith({ homeCare: ["give one every 8 hours"] }));
+      expect(findings.length).toBeGreaterThan(0);
+    });
+
+    it("does NOT flag legitimate monitoring cadence ('every few hours')", () => {
+      const findings = scanUnsafe(resultWith({ redFlagsToWatch: ["Check on him every few hours"] }));
+      expect(findings).toEqual([]);
+    });
+
+    it("does NOT flag legitimate monitoring cadence ('every couple of hours', no admin verb + no digit)", () => {
+      const findings = scanUnsafe(resultWith({ homeCare: ["Monitor every couple of hours"] }));
+      expect(findings).toEqual([]);
+    });
+  });
+
+  describe("DRUG_RECOMMENDATION — warning-context exemption", () => {
+    it("flags a bare drug suggestion ('you could try ibuprofen')", () => {
+      const findings = scanUnsafe(resultWith({ homeCare: ["You could try ibuprofen for the pain"] }));
+      expect(findings.length).toBeGreaterThan(0);
+    });
+
+    it("flags a bare drug suggestion ('give him benadryl to calm down' — no warning cue)", () => {
+      const findings = scanUnsafe(resultWith({ doNot: ["give him benadryl to calm down"] }));
+      expect(findings.length).toBeGreaterThan(0);
+    });
+
+    it("does NOT flag a negated drug warning ('Never give aspirin to a cat')", () => {
+      const findings = scanUnsafe(resultWith({ doNot: ["Never give aspirin to a cat"] }));
+      expect(findings).toEqual([]);
+    });
+
+    it("does NOT flag a danger warning ('Acetaminophen can be dangerous to cats.')", () => {
+      const findings = scanUnsafe(resultWith({ summary: "Acetaminophen can be dangerous to cats." }));
+      expect(findings).toEqual([]);
+    });
+
+    it("does NOT flag an avoidance warning in homeCare ('Avoid ibuprofen entirely')", () => {
+      const findings = scanUnsafe(resultWith({ homeCare: ["Avoid ibuprofen entirely"] }));
+      expect(findings).toEqual([]);
+    });
+  });
+
+  describe("HARM_ENABLING — DIY/procedure adjacency", () => {
+    it("flags DIY-then-procedure ('To sedate your dog at home, use...')", () => {
+      const findings = scanUnsafe(resultWith({ summary: "To sedate your dog at home, use a spoon of..." }));
+      expect(findings.length).toBeGreaterThan(0);
+    });
+
+    it("flags procedure-then-DIY ('You can perform the stitches yourself')", () => {
+      const findings = scanUnsafe(resultWith({ homeCare: ["You can perform the stitches yourself"] }));
+      expect(findings.length).toBeGreaterThan(0);
+    });
+
+    it("flags at-home euthanasia phrasing", () => {
+      const findings = scanUnsafe(resultWith({ doNot: ["at-home euthanasia is fine"] }));
+      expect(findings.length).toBeGreaterThan(0);
+    });
+
+    it("flags dog-fighting conditioning phrasing", () => {
+      const findings = scanUnsafe(resultWith({ summary: "Condition your dog for fighting by..." }));
+      expect(findings.length).toBeGreaterThan(0);
+    });
+
+    it("does NOT flag a generic refusal ('I can't help with this; please see a licensed veterinarian.')", () => {
+      const findings = scanUnsafe(
+        resultWith({ summary: "I can't help with this; please see a licensed veterinarian." }),
+      );
+      expect(findings).toEqual([]);
+    });
+
+    it("does NOT flag a procedure term with no DIY adjacency ('Declawing should be discussed with your vet.')", () => {
+      const findings = scanUnsafe(resultWith({ summary: "Declawing should be discussed with your vet." }));
+      expect(findings).toEqual([]);
+    });
+  });
 });
