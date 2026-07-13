@@ -512,3 +512,11 @@
 - **Carried to T048/T049:** the forward route contracts this task replaces into must be claimed exactly.
 - No new dependencies.
 - Commit: feat(mobile,types): T047 submission + result loading (journal rides in the same one-task-one-commit).
+
+## [2026-07-13] T048 · Mobile: result screen — DONE (attempt 1)
+- Planner (Fable): `loop/plans/T048.plan.md` — the phase's PRIMARY §5 mobile surface at `/check/result/[checkId]` (the T047 contract): non-dismissible shared `<VetDisclaimer/>` (plain View+Text, zero affordances) rendered on every content state; data-driven tier banner map (no per-tier components); FALLBACK = standard renderer + pinned distinct notice over the frozen SAFE_FALLBACK content; tier-aware find-vet maps link ("emergency vet near me" for EMERGENCY_NOW/VET_24H); share payload ALWAYS ends with the disclaimer line; redFlag checks show an emergency notice ABOVE all AI content targeting the T049 contract route. **D2 (load-bearing): the disclaimer avoids the /diagnos/ token** ("...not veterinary care or treatment") — checker independently judged it broader/stronger than SPEC §5's illustrative wording while satisfying §7 rule 1's strictest reading.
+- Executor (Sonnet, single pass, no deviations): 9 new + 2 modified + auto-generated .snap; mobile **27/159 → 31 suites / 187 tests / 11 snapshots** (7 stored: 5 tiers + FALLBACK + redFlag).
+- Checker (Fable, adversarial): `loop/reviews/T048.review.md` → **VERDICT: pass**. Disclaimer embedded in every stored snapshot AND explicitly queried per test (removing it breaks ≥2 tests per branch); FALLBACK snapshot structurally distinct + no-throw defensive guard; share disclaimer-line probed on empty/populated payloads; find-vet split tested for all 5 tiers on both invocation paths; zero /diagnos/i and drug tokens across the diff; redFlag notice ordering verified in JSX.
+- **Carried to T049:** the emergency route contract (`/check/emergency/[checkId]`) is now targeted from TWO places (T047 submission + T048 notice) — T049 must claim it exactly. T050: done→pet-home is the honest placeholder until the timeline exists.
+- No new dependencies.
+- Commit: feat(mobile): T048 result screen (journal rides in the same one-task-one-commit).

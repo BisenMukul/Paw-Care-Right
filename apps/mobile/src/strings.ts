@@ -152,6 +152,36 @@ export const strings = {
       error: "We couldn't send this right now. Please try again.",
       errorRetry: "Retry",
     },
+    result: {
+      disclaimer: (appName: string) =>
+        `${appName} offers general pet-care guidance, not veterinary care or treatment. Always consult a licensed veterinarian.`,
+      tierLabel: {
+        EMERGENCY_NOW: "Emergency — see a vet now",
+        VET_24H: "See a vet within 24 hours",
+        VET_SOON: "See a vet soon",
+        MONITOR: "Monitor closely at home",
+        REASSURE: "Likely not urgent",
+      },
+      sections: {
+        possibleCauses: "What this could be",
+        redFlagsToWatch: "When to get help fast",
+        homeCare: "Caring for them at home",
+        doNot: "What not to do",
+        vetQuestions: "Questions to ask your vet",
+      },
+      fallbackNotice:
+        "We couldn't fully assess this from what you shared. When in doubt, it's safest to have a vet take a look.",
+      emergencyNoticeTitle: "This may be an emergency",
+      emergencyNoticeBody: "Based on what you shared, your pet may need urgent care right away.",
+      emergencyNoticeCta: "See emergency steps",
+      findVet: "Find a vet nearby",
+      share: "Share as text",
+      done: "Done",
+      loading: "Loading your result…",
+      error: "We couldn't load this result.",
+      errorHint: "If you're worried about your pet, contact a vet.",
+      retry: "Retry",
+    },
   },
   family: {
     title: "Family",
