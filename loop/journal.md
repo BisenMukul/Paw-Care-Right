@@ -451,3 +451,7 @@
   2. Golden tier assignments: feline anorexia MONITOR↔VET_24H threshold; AI-path cat emergencies (en-ai-cat-labored/jaundice/severe-lethargy) rely on fake-tier+bias not rules (T037 review).
   3. Detector limitations: paraphrase bypassable by design (regex layer); output-only scanning; real-provider evals (nightly workflow, needs OLLAMA_CLOUD_API_KEY secret + AI_TEXT_MODEL variable on main) + human review are the backstop (T038 review).
   4. TRIAGE_SCHEMA_TEXT prose is hand-written (enums interpolated) — revisit on schema evolution; intake freeText serialized verbatim into prompts — treat as sensitive in T041/T042 logging (T033 review).
+
+## [2026-07-13] ✅ CHECKPOINT C1 APPROVED — Phase 4 begins
+- Founder set `checkpoints.C1.approved = true` (received via pull of main, which now carries the full Phase 0–3 history after the fast-forward push + PR #1 reconciliation). Eval-report artifact reviewed per the M3 entry's flagged-items list.
+- Loop status → running; currentPhase → P4 (Symptom Check End-to-End → M4); active task → T041 (Check models + migration).
