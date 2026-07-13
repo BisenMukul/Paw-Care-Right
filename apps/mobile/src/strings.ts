@@ -156,4 +156,22 @@ export const strings = {
     petsPresentError:
       "You have pets in your current household. Remove or rehome them before joining another household.",
   },
+  intake: {
+    stepOf: (step: number, total: number) => `Step ${step} of ${total}`,
+    back: "Back",
+    next: "Next",
+    skip: "Skip",
+    maxSelectionsHint: (n: number) => `Choose up to ${n}`,
+    freeText: {
+      title: "Anything else you'd like to add?",
+      placeholder: "Add any other details in your own words.",
+      optional: "This step is optional.",
+    },
+    photoStub: "You'll be able to add photos in the next step.",
+    review: { title: "Review your answers", edit: "Edit" },
+    submit: "Continue",
+    validationError: "Some answers need attention before continuing.",
+    invalidCategory: "We couldn't find that category. Go back and pick again.",
+    offlineBanner: "You're offline — you can still fill this in.",
+  },
 } as const;

@@ -488,3 +488,11 @@
 - **Carried to T045:** the `/check/[category]` route contract (route doesn't exist yet — the grid pushes to it); handle the undefined-petId deep-link case.
 - No new dependencies.
 - Commit: feat(mobile): T044 check entry + category picker (journal rides in the same one-task-one-commit).
+
+## [2026-07-13] T045 · Mobile: dynamic intake form — DONE (attempt 1)
+- Planner (Fable): `loop/plans/T045.plan.md` — data-driven `QuestionRenderer` (switch on question.type → 5 presentational sub-components driven ONLY by QuestionDef+Answer+onChange; zero per-category/per-id logic); stepped `IntakeForm` ([...questions, freeText, review], progress X of N, required-gating, review with describeAnswer label summaries + edit-jump, **parseIntake fail-closed before onSubmit**); ephemeral in-memory state (justified vs the wizard's MMKV — a check is one short sitting); photoPrompt = honest T046 stub (no answer emitted; all real photo questions are optional so gating holds); **T047 handoff = injected onSubmit callback** (route screen ships a TODO(T047) stub); free-text copy pinned neutral in-plan (§7 — it feeds the T031 keyword channel).
+- Executor (Sonnet, single run, two planned passes, no deviations): 8 new + 2 modified files; mobile **18/96 → 22 suites / 120 tests**.
+- Checker (Fable, adversarial): `loop/reviews/T045.review.md` → **VERDICT: pass**. Emitted answer shapes proven against the zod union end-to-end (ok-path flow test runs parseIntake and asserts the exact CompletedIntake for a real category); AC2 non-vacuous (synthetic def with all 5 types + a `synthetic-extra` id no mobile code hardcodes; totals derive from the injected def); fail-closed non-vacuous (globally-divergent def genuinely rejected; onSubmit never fires; handler re-guards); free-text copy byte-exact; forced non-cached eslint over the new files to defeat stale turbo cache; undefined-petId handled gracefully (carried item closed).
+- **Carried to T046/T047:** photoPrompt stub replacement point; the route screen's onSubmit stub is T047's single insertion point (petId stays in the route closure).
+- No new dependencies.
+- Commit: feat(mobile): T045 dynamic intake form (journal rides in the same one-task-one-commit).
