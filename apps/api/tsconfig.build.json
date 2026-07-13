@@ -5,6 +5,7 @@
     "outDir": "dist",
     "declaration": false,
     "paths": {
+      "@pawcareright/ai": ["../ai/dist/index.d.ts"],
       "@pawcareright/types": ["../types/dist/index.d.ts"],
       "@pawcareright/data": ["../data/dist/index.d.ts"],
       "@pawcareright/config": ["../config/dist/index.d.ts"],

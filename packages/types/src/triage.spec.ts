@@ -3,6 +3,7 @@ import {
   HOME_CARE_ALLOWED_TIERS,
   parseTriage,
   possibleCauseSchema,
+  raiseUrgency,
   SAFE_FALLBACK,
   triageResultSchema,
   URGENCY_TIERS,
@@ -336,6 +337,28 @@ describe("parseTriage never throws on hostile input", () => {
 describe("accepts a well-formed result for every tier", () => {
   it.each(URGENCY_TIERS)("accepts a valid fixture for %s", (tier) => {
     expect(parseTriage(validFixtureFor(tier)).ok).toBe(true);
+  });
+});
+
+describe("raiseUrgency", () => {
+  it.each([
+    ["REASSURE", "MONITOR"],
+    ["MONITOR", "VET_SOON"],
+    ["VET_SOON", "VET_24H"],
+    ["VET_24H", "EMERGENCY_NOW"],
+  ] as const)("raises %s by exactly one tier to %s", (tier, expected) => {
+    expect(raiseUrgency(tier)).toBe(expected);
+  });
+
+  it("no-ops at the EMERGENCY_NOW ceiling", () => {
+    expect(raiseUrgency("EMERGENCY_NOW")).toBe("EMERGENCY_NOW");
+  });
+
+  it("never throws and is pure (repeated calls give the same result)", () => {
+    for (const tier of URGENCY_TIERS) {
+      expect(() => raiseUrgency(tier)).not.toThrow();
+      expect(raiseUrgency(tier)).toBe(raiseUrgency(tier));
+    }
   });
 });
 

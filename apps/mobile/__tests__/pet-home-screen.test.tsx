@@ -158,8 +158,8 @@ describe("pet home screen — 4-state matrix (AC1)", () => {
 
     await fireEvent.press(screen.getByTestId("pet-home-cta"));
     expect(mockPush).toHaveBeenCalledWith({
-      pathname: "/coming-soon",
-      params: { feature: "symptom-check" },
+      pathname: "/check",
+      params: { petId: "pet1" },
     });
 
     await fireEvent.press(screen.getByTestId("quick-action-log-weight"));

@@ -185,3 +185,18 @@ function deepFreeze<T>(value: T): Readonly<T> {
 }
 
 export const SAFE_FALLBACK: Readonly<TriageResult> = deepFreeze(SAFE_FALLBACK_DATA);
+
+/**
+ * Raises `tier` by exactly one severity step (no-op at `EMERGENCY_NOW` --
+ * the fail-upward ceiling, PRODUCT_SPEC §5 rule 3 / CLAUDE §7). `URGENCY_TIERS`
+ * is ordered most->least urgent, so severity === index. Pure, total, never
+ * throws. Semantically identical to the private `raiseOne` in
+ * `packages/ai/src/post-rules/apply-post-rules.ts` (T051 plan "Escalation
+ * semantics" / risk #3 — deliberately duplicated rather than exporting from
+ * that §5-critical file; both are independently unit-tested).
+ */
+export function raiseUrgency(tier: Urgency): Urgency {
+  const severity = URGENCY_SEVERITY[tier];
+  if (severity === 0) return tier;
+  return URGENCY_TIERS[severity - 1] ?? tier;
+}

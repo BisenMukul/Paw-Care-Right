@@ -1,8 +1,8 @@
 {
   "project": "Paw Care Right +",
   "version": 6,
-  "status": "paused-awaiting-C1",
-  "currentPhase": "P3",
+  "status": "running",
+  "currentPhase": "P4",
   "phases": {
     "P0": {
       "tasks": [
@@ -346,48 +346,48 @@
       "attempts": 1
     },
     "T041": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 1
     },
     "T042": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 1
     },
     "T043": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 1
     },
     "T044": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 1
     },
     "T045": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 1
     },
     "T046": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 1
     },
     "T047": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 1
     },
     "T048": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 1
     },
     "T049": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 1
     },
     "T050": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 1
     },
     "T051": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 1
     },
     "T052": {
       "status": "pending",

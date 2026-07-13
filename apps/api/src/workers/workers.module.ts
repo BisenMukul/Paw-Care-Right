@@ -1,13 +1,31 @@
 import { BullModule } from "@nestjs/bullmq";
 import { Module } from "@nestjs/common";
+import { getTextProvider, loadAiEnv } from "@pawcareright/ai";
 
+import { CHECKS_QUEUE } from "../checks/checks.contract";
 import { PrismaModule } from "../prisma/prisma.module";
+import { QuotaModule } from "../quota/quota.module";
 import { StorageModule } from "../storage/storage.module";
+import { VisionModule } from "../vision/vision.module";
+import { TRIAGE_TEXT_MODEL_ID, TRIAGE_TEXT_PROVIDER } from "./check-runner.tokens";
+import { CheckRunnerProcessor } from "./check-runner.processor";
+import { FOLLOWUPS_QUEUE } from "./followups.contract";
 import { IMAGES_QUEUE } from "./images.contract";
 import { ImagesProcessor } from "./images.processor";
 
 @Module({
-  imports: [StorageModule, PrismaModule, BullModule.registerQueue({ name: IMAGES_QUEUE })],
-  providers: [ImagesProcessor],
+  imports: [
+    StorageModule,
+    PrismaModule,
+    VisionModule,
+    QuotaModule,
+    BullModule.registerQueue({ name: IMAGES_QUEUE }, { name: CHECKS_QUEUE }, { name: FOLLOWUPS_QUEUE }),
+  ],
+  providers: [
+    ImagesProcessor,
+    CheckRunnerProcessor,
+    { provide: TRIAGE_TEXT_PROVIDER, useFactory: () => getTextProvider() },
+    { provide: TRIAGE_TEXT_MODEL_ID, useFactory: () => loadAiEnv().AI_TEXT_MODEL },
+  ],
 })
 export class WorkersModule {}

@@ -23,6 +23,13 @@ enum Sex {
   UNKNOWN
 }
 
+enum CheckStatus {
+  QUEUED
+  RUNNING
+  DONE
+  FALLBACK
+}
+
 model User {
   id        String   @id @default(uuid())
   email     String   @unique
@@ -33,12 +40,13 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  ownedHouseholds Household[]  @relation("HouseholdOwner")
+  ownedHouseholds Household[]       @relation("HouseholdOwner")
   memberships     Membership[]
   devices         Device[]
   refreshTokens   RefreshToken[]
   createdInvites  HouseholdInvite[] @relation("InviteCreator")
   acceptedInvites HouseholdInvite[] @relation("InviteAcceptor")
+  createdChecks   SymptomCheck[]
 }
 
 model Household {
@@ -57,13 +65,13 @@ model Household {
 }
 
 model Membership {
-  id          String   @id @default(uuid())
+  id          String    @id @default(uuid())
   userId      String
   householdId String
-  role        Role     @default(MEMBER)
+  role        Role      @default(MEMBER)
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   household   Household @relation(fields: [householdId], references: [id], onDelete: Cascade)
-  createdAt   DateTime @default(now())
+  createdAt   DateTime  @default(now())
 
   @@unique([userId, householdId])
   @@index([userId])
@@ -99,21 +107,22 @@ model RefreshToken {
 }
 
 model Pet {
-  id                String    @id @default(uuid())
+  id                String         @id @default(uuid())
   householdId       String
   species           Species
   breedSlug         String?
   name              String
-  sex               Sex       @default(UNKNOWN)
-  neutered          Boolean   @default(false)
+  sex               Sex            @default(UNKNOWN)
+  neutered          Boolean        @default(false)
   birthDate         DateTime?
   ageEstimateMonths Int?
   weightGrams       Int?
   photoKey          String?
   deletedAt         DateTime?
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-  household         Household @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  household         Household      @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  checks            SymptomCheck[]
 
   @@index([householdId, deletedAt])
 }
@@ -133,4 +142,57 @@ model HouseholdInvite {
 
   @@index([householdId])
   @@index([expiresAt])
+}
+
+model SymptomCheck {
+  id                String      @id @default(uuid())
+  petId             String
+  createdById       String
+  status            CheckStatus @default(QUEUED)
+  category          String
+  intakeJson        Json
+  photoKeys         String[]    @default([])
+  redFlagHit        Boolean     @default(false)
+  redFlagRuleId     String?
+  redFlagPayloadKey String?
+  costMicroUsd      Int         @default(0)
+  failureReason     String?
+  idempotencyKey    String?
+  createdAt         DateTime    @default(now())
+  startedAt         DateTime?
+  completedAt       DateTime?
+  updatedAt         DateTime    @updatedAt
+
+  pet       Pet             @relation(fields: [petId], references: [id], onDelete: Cascade)
+  createdBy User            @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  result    TriageResult?
+  followUp  CheckFollowUp?
+
+  // idempotencyKey is nullable; Postgres treats NULLs as distinct for a
+  // unique index, so multiple non-idempotent (NULL-key) checks per user are
+  // unconstrained by design (plan R5 / index justification table).
+  @@unique([createdById, idempotencyKey])
+  @@index([petId, createdAt(sort: Desc)])
+  @@index([createdById])
+}
+
+model TriageResult {
+  checkId       String   @id
+  urgency       String
+  confidence    String
+  resultJson    Json
+  modelId       String
+  promptVersion String
+  createdAt     DateTime @default(now())
+
+  check SymptomCheck @relation(fields: [checkId], references: [id], onDelete: Cascade)
+}
+
+model CheckFollowUp {
+  checkId       String   @id
+  response      String // "better" | "same" | "worse" (validated by Zod at the boundary; String mirrors TriageResult.urgency)
+  escalatedTier String? // an Urgency value, set ONLY when response == "worse"
+  createdAt     DateTime @default(now())
+
+  check SymptomCheck @relation(fields: [checkId], references: [id], onDelete: Cascade)
 }

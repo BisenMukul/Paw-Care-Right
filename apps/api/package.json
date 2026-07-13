@@ -24,6 +24,7 @@
     "@nestjs/platform-express": "^11",
     "@nestjs/swagger": "^11",
     "@nestjs/throttler": "^6.5.0",
+    "@pawcareright/ai": "workspace:*",
     "@pawcareright/config": "workspace:*",
     "@pawcareright/data": "workspace:*",
     "@pawcareright/types": "workspace:*",
