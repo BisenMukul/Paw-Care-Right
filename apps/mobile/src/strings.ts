@@ -130,6 +130,13 @@ export const strings = {
     title: "Coming soon",
     body: "This part of the app isn't ready yet. Check back soon.",
   },
+  check: {
+    title: "What's going on?",
+    subtitle: "Pick what you've noticed and we'll ask a few quick questions.",
+    recentTitle: "Recent checks",
+    recentEmpty: "Your recent checks will show up here.",
+    offlineBanner: "You're offline — you can still start a check.",
+  },
   family: {
     title: "Family",
     loading: "Loading…",

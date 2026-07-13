@@ -65,6 +65,7 @@ export default function RootLayout() {
           <Stack.Screen name="push-rationale" />
           <Stack.Screen name="add-pet" options={{ presentation: "modal" }} />
           <Stack.Screen name="pets/[id]" />
+          <Stack.Screen name="check/index" />
           <Stack.Screen name="family" />
           <Stack.Screen name="join/[code]" />
         </Stack>

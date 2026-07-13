@@ -480,3 +480,11 @@
 - Non-blocking: coverage glob (`*.service.ts`) excludes processors from the mechanical 80% gate (15 tests exercise it); a dedicated SAFE_FALLBACK-on-red-flag test would harden further.
 - No new dependencies.
 - Commit: feat(api): T043 check-runner worker (journal rides in the same one-task-one-commit).
+
+## [2026-07-13] T044 · Mobile: check entry + category picker — DONE (attempt 1)
+- Planner (Fable): `loop/plans/T044.plan.md` — entry UI only (no §5 surface): pet-home CTA repointed from /coming-soon to `/check` carrying petId; presentational `CategoryGrid` with a `categories` prop defaulting to INTAKE_CATEGORIES (mutation-resistance provable by injection); emoji icons via `Partial<Record<SymptomCategory,string>>` + fallback so a new category in packages/types renders with ZERO mobile edits; recent-checks = honest empty placeholder (no checks client hooks exist — live list is T050); nav contract documented for T045: push `/check/[category]` with {category, petId}.
+- Executor (Sonnet, single pass): 5 new + 4 modified files; mobile **16/88 → 18 suites / 96 tests**. One mechanical deviation: `toHaveTextContent(label, {exact:false})` (cells render emoji+label).
+- Checker (Fable, adversarial): `loop/reviews/T044.review.md` → **VERDICT: pass**. Grid maps its prop (no hardcoded list — injected-3 test non-vacuous; counts derive from the import); nav carries category+petId verified in both layers; pet-home diff is exactly the CTA repoint; deviation safe (per-cell testID lookup eliminates cross-cell substring false-positives); strings externalized, §1a/§7 clean; no snapshot churn.
+- **Carried to T045:** the `/check/[category]` route contract (route doesn't exist yet — the grid pushes to it); handle the undefined-petId deep-link case.
+- No new dependencies.
+- Commit: feat(mobile): T044 check entry + category picker (journal rides in the same one-task-one-commit).

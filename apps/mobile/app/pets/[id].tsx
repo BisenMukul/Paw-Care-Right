@@ -83,7 +83,7 @@ export default function PetHomeScreen() {
         <PetHeaderCard pet={pet} {...(localPhoto ? { localPhoto } : {})} />
         <Pressable
           testID="pet-home-cta"
-          onPress={() => goToComingSoon("symptom-check")}
+          onPress={() => router.push({ pathname: "/check", params: { petId: id } })}
           accessibilityRole="button"
           style={{ minHeight: CTA_HEIGHT }}
           className="items-center justify-center rounded-lg bg-brand-700 px-6"
