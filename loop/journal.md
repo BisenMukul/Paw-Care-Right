@@ -504,3 +504,11 @@
 - **Carried to T047:** the intake now emits real photoKeys; the route screen's onSubmit stub is the insertion point.
 - No new dependencies.
 - Commit: feat(mobile): T046 photo capture/pick step (journal rides in the same one-task-one-commit).
+
+## [2026-07-13] T047 · Mobile: submission + result loading — DONE (attempt 1)
+- Planner (Fable): `loop/plans/T047.plan.md` — replaces the T045 onSubmit stub: `useCheckSubmission` (offline guard blocks BEFORE the mutation, clear message + retry; Idempotency-Key reused across retries of an attempt, regenerated per fresh submission; 402 → pinned quota copy) → **201 with redFlag → emergency route, polling NEVER mounts (§7 rule 4, the mobile half of emergency-before-AI)** → else `/check/waiting/[checkId]` polling via pure `checkRefetchInterval` (1500ms while QUEUED/RUNNING, false on DONE/FALLBACK), cancel-safe, both terminal statuses → result route (T048 renders the FALLBACK safe screen). D1: hooks in apps/mobile/src/api (the established pets-api pattern; packages/api-client deliberately untouched); D2: `CheckResponse` zod schema in packages/types (SSoT, matches the API field-by-field incl. Date→ISO). Forward route contracts pinned for T048 (`/check/result/[checkId]`) and T049 (`/check/emergency/[checkId]`).
+- Executor (Sonnet, 2 passes): 8 new + 7 modified (one beyond the plan's list: intake-screen.test.tsx — necessary to keep T045's render-only tests provider-free after the rewire; substance intact). types **301 → 308**, mobile **24/140 → 27 suites / 159 tests**.
+- Checker (Fable, adversarial): `loop/reviews/T047.review.md` → **VERDICT: pass**. §7 rule 4 structurally verified (useCheck lives ONLY in the waiting route; test asserts router.replace never called with the waiting path on red-flag — regression-sensitive); interval fn tested all statuses; offline mutation-uncalled non-vacuous; idempotency header reaches the POST; all 11 pinned strings verbatim; schema tolerates the API's serialization.
+- **Carried to T048/T049:** the forward route contracts this task replaces into must be claimed exactly.
+- No new dependencies.
+- Commit: feat(mobile,types): T047 submission + result loading (journal rides in the same one-task-one-commit).

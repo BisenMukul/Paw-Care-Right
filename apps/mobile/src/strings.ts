@@ -136,6 +136,22 @@ export const strings = {
     recentTitle: "Recent checks",
     recentEmpty: "Your recent checks will show up here.",
     offlineBanner: "You're offline — you can still start a check.",
+    waiting: {
+      title: "Looking into it…",
+      body: "We're reviewing what you shared. This usually takes a few moments.",
+      cancel: "Cancel",
+    },
+    submit: {
+      submitting: "Sending your answers…",
+      offlineBlocked: "You're offline. Reconnect to send this check.",
+      offlineRetry: "Retry",
+      quotaTitle: "You've used your free checks",
+      quotaBody:
+        "You've reached this month's free symptom checks. You can still reach a vet anytime.",
+      quotaUpgrade: "See plans",
+      error: "We couldn't send this right now. Please try again.",
+      errorRetry: "Retry",
+    },
   },
   family: {
     title: "Family",

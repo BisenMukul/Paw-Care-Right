@@ -1,4 +1,4 @@
-import type { Answer, CategoryDef, QuestionDef } from "@pawcareright/types";
+import type { Answer, CategoryDef, CompletedIntake, QuestionDef } from "@pawcareright/types";
 
 /**
  * Pure, framework-free helpers for the dynamic symptom-intake flow (T045
@@ -61,4 +61,20 @@ export function describeAnswer(question: QuestionDef, answer: Answer): string {
   }
 
   return "";
+}
+
+/**
+ * Flattens every `photoPrompt` answer's `photoKeys` into a single top-level
+ * array, in `intake.answers` order (T047 plan D8). The POST DTO takes a
+ * top-level `photoKeys` array; the keys otherwise live nested inside
+ * individual answers.
+ */
+export function extractPhotoKeys(intake: CompletedIntake): string[] {
+  const keys: string[] = [];
+  for (const answer of intake.answers) {
+    if (answer.type === "photoPrompt") {
+      keys.push(...answer.photoKeys);
+    }
+  }
+  return keys;
 }

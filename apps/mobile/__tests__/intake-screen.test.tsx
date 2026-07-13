@@ -6,13 +6,23 @@ import IntakeScreen from "../app/check/[category]";
 // Route screen tests (T045 plan "Route screen tests"). `expo-router` is
 // mocked like the T044 test; offline is driven by the REAL shared store
 // (`setOnline`), reset to online in `afterEach`. RNTL v14 — every render
-// awaited.
+// awaited. T047 wires the real `useCheckSubmission` into this screen, which
+// calls `useCreateCheck` (checks-api) — a real TanStack `useMutation`/
+// `useQueryClient` that requires a `QueryClientProvider` ancestor none of
+// these render-only tests exercise (they never submit). `checks-api` is
+// mocked here (same idiom as `add-pet-done.test.tsx` mocking `pets-api`) so
+// this pre-existing render/offline/back-button coverage stays a lightweight,
+// provider-free test.
 const mockBack = jest.fn();
 let mockParams: { category?: string; petId?: string } = { category: "vomiting", petId: "pet1" };
 
 jest.mock("expo-router", () => ({
-  useRouter: () => ({ back: mockBack }),
+  useRouter: () => ({ back: mockBack, replace: jest.fn() }),
   useLocalSearchParams: () => mockParams,
+}));
+
+jest.mock("../src/api/checks-api", () => ({
+  useCreateCheck: () => ({ mutateAsync: jest.fn() }),
 }));
 
 describe("intake route screen", () => {
