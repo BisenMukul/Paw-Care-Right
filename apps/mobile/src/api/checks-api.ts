@@ -1,6 +1,6 @@
 import { isTerminalCheckStatus, type CheckResponse, type CompletedIntake } from "@pawcareright/types";
 import type { Query } from "@tanstack/react-query";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { apiClient } from "./client";
 
@@ -52,5 +52,32 @@ export function useCreateCheck(petId: string) {
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: checksKeys.list(petId) });
     },
+  });
+}
+
+/** A single page of `GET /v1/pets/:petId/checks` (T050 plan D2). */
+export interface CheckListPage {
+  items: CheckResponse[];
+  nextCursor: string | null;
+}
+
+export const CHECKS_LIST_PAGE_SIZE = 20;
+
+/**
+ * Cursor-paginated check history for a pet (T050 plan). Shares
+ * `checksKeys.list(petId)` with `useCreateCheck`'s invalidation, so a newly
+ * created check refetches all loaded pages of this list.
+ */
+export function useChecksList(petId: string) {
+  return useInfiniteQuery({
+    queryKey: checksKeys.list(petId),
+    queryFn: ({ pageParam }: { pageParam: string | undefined }) => {
+      const params = new URLSearchParams({ limit: String(CHECKS_LIST_PAGE_SIZE) });
+      if (pageParam !== undefined) params.set("cursor", pageParam);
+      return apiClient.get<CheckListPage>(`/v1/pets/${petId}/checks?${params.toString()}`);
+    },
+    initialPageParam: undefined as string | undefined,
+    getNextPageParam: (lastPage: CheckListPage) => lastPage.nextCursor ?? undefined,
+    enabled: petId.length > 0,
   });
 }

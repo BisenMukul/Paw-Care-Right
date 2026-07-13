@@ -528,3 +528,11 @@
 - **Dependency justification (§2 rule 7):** `expo-localization` — first-party Expo SDK module (57.0.0, matches installed SDK 57), the standard device-region source; region-awareness is a hard card requirement with no existing source. Plus internal workspace dep mobile→@pawcareright/data.
 - **Carried to M4 checkpoint list (R7):** founder verification of the 5 hotline numbers (fail-safe direction already correct). **Carried to T050:** end-to-end region assertions for CA/GB/AU/NZ.
 - Commit: feat(mobile,data): T049 emergency interstitial (journal rides in the same one-task-one-commit).
+
+## [2026-07-13] T050 · Mobile: check history + detail — DONE (attempt 1)
+- Planner (Fable): `loop/plans/T050.plan.md` — deep link `pawcareright://checks/:id` → alias route `app/checks/[id].tsx` → Redirect to the UNMODIFIED §5-reviewed result screen (detail = reuse, not duplication); `useChecksList` TanStack v5 infinite query on the T042 cursor endpoint; pure `deriveCheckChip` failing UPWARD (redFlag → EMERGENCY chip regardless of status; DONE/FALLBACK without urgency → VET_SOON floor; QUEUED/RUNNING → in-progress); history screen with all states; T044's recent-checks placeholder goes LIVE (top-3 + see-all).
+- Executor (Sonnet, single run): 7 new + 5 modified; mobile **32/219 → 35 suites / 240 tests**.
+- Checker (Fable, adversarial): `loop/reviews/T050.review.md` → **VERDICT: pass**. Result screen diff EMPTY (redirect alias, no duplicated safety surface); chip table fully tested incl. redFlag-while-RUNNING (non-vacuous); pagination/cursor threading verified; query keys non-colliding; scheme `pawcareright` per §1a; on-device native link resolution honestly deferred (journaled).
+- **T052 candidates (checker nits):** direct runtime test of useChecksList; two-page flatMap append fixture; UTC formatCheckDate; + the carried CA/GB/AU/NZ region assertions (T049) and the e2e worker-override hygiene (T043).
+- No new dependencies.
+- Commit: feat(mobile): T050 check history + detail (journal rides in the same one-task-one-commit).

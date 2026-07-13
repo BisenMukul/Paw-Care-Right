@@ -135,6 +135,7 @@ export const strings = {
     subtitle: "Pick what you've noticed and we'll ask a few quick questions.",
     recentTitle: "Recent checks",
     recentEmpty: "Your recent checks will show up here.",
+    recentSeeAll: "See all",
     offlineBanner: "You're offline — you can still start a check.",
     waiting: {
       title: "Looking into it…",
@@ -192,6 +193,17 @@ export const strings = {
         "We don't have a pet poison helpline listed for your area. If poisoning is possible, contact your nearest emergency vet right away.",
       findVet: "Find an emergency vet",
       acknowledge: "I understand — continue",
+    },
+    history: {
+      title: "Check history",
+      empty: "No checks yet. When you run a symptom check, it'll show up here.",
+      error: "We couldn't load your check history.",
+      retry: "Retry",
+      loadMore: "Load more",
+      loadingMore: "Loading more…",
+      inProgress: "In progress",
+      offlineBanner: "You're offline — showing your saved checks.",
+      dateA11y: (date: string) => `Checked on ${date}`,
     },
   },
   family: {

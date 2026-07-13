@@ -70,6 +70,8 @@ export default function RootLayout() {
           <Stack.Screen name="check/waiting/[checkId]" />
           <Stack.Screen name="check/result/[checkId]" />
           <Stack.Screen name="check/emergency/[checkId]" options={{ gestureEnabled: false }} />
+          <Stack.Screen name="check/history/[petId]" />
+          <Stack.Screen name="checks/[id]" />
           <Stack.Screen name="family" />
           <Stack.Screen name="join/[code]" />
         </Stack>
