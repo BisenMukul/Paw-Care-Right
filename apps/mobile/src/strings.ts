@@ -182,6 +182,17 @@ export const strings = {
       errorHint: "If you're worried about your pet, contact a vet.",
       retry: "Retry",
     },
+    emergency: {
+      goNowBadge: "Emergency",
+      detectedHeading: "What we noticed",
+      guidanceHeading: "What to do now",
+      hotlineHeading: "Pet poison helpline",
+      callHotline: "Call the poison helpline",
+      hotlineFallback:
+        "We don't have a pet poison helpline listed for your area. If poisoning is possible, contact your nearest emergency vet right away.",
+      findVet: "Find an emergency vet",
+      acknowledge: "I understand — continue",
+    },
   },
   family: {
     title: "Family",
