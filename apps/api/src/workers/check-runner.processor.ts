@@ -1,4 +1,4 @@
-import { Processor, WorkerHost } from "@nestjs/bullmq";
+import { InjectQueue, Processor, WorkerHost } from "@nestjs/bullmq";
 import { Inject, Injectable, Logger } from "@nestjs/common";
 import {
   applyPostRules,
@@ -8,8 +8,8 @@ import {
   type TextProvider,
   type TriagePetContext,
 } from "@pawcareright/ai";
-import { SAFE_FALLBACK, parseIntake, type CheckStatus, type Urgency } from "@pawcareright/types";
-import type { Job } from "bullmq";
+import { SAFE_FALLBACK, parseIntake, type CheckStatus, type TriageResult, type Urgency } from "@pawcareright/types";
+import type { Job, Queue } from "bullmq";
 
 import { assertTransition, isTerminalCheckStatus } from "../checks/check-status";
 import { CHECKS_QUEUE, type ChecksJobData } from "../checks/checks.contract";
@@ -18,6 +18,7 @@ import { PrismaService } from "../prisma/prisma.service";
 import { CostLogService } from "../quota/cost-log.service";
 import { VisionPrepService } from "../vision/vision-prep.service";
 import { TRIAGE_TEXT_MODEL_ID, TRIAGE_TEXT_PROVIDER } from "./check-runner.tokens";
+import { FOLLOWUP_JOB_NAME, FOLLOWUPS_QUEUE, type FollowUpJobData } from "./followups.contract";
 
 /**
  * Pure helper (T043 plan "Error/retry semantics" #1): a job is on its final
@@ -59,8 +60,32 @@ export class CheckRunnerProcessor extends WorkerHost {
     private readonly costLog: CostLogService,
     @Inject(TRIAGE_TEXT_PROVIDER) private readonly textProvider: TextProvider,
     @Inject(TRIAGE_TEXT_MODEL_ID) private readonly textModelId: string,
+    @InjectQueue(FOLLOWUPS_QUEUE) private readonly followUpQueue: Queue<FollowUpJobData>,
   ) {
     super();
+  }
+
+  /**
+   * Best-effort follow-up scheduling (T051 plan "Scheduling spec"): a queue
+   * failure never fails the (already-persisted) triage job -- this is
+   * called AFTER the persist/cost-log transaction, wrapped in its own
+   * try/catch. `jobId = checkId` makes re-enqueue idempotent.
+   */
+  private async scheduleFollowUp(checkId: string, result: TriageResult): Promise<void> {
+    const hours = result.followUpHours;
+    if (hours === null) return;
+
+    const delay = hours * 3_600_000;
+    try {
+      await this.followUpQueue.add(
+        FOLLOWUP_JOB_NAME,
+        { checkId },
+        { jobId: checkId, delay, removeOnComplete: true, removeOnFail: false },
+      );
+      this.logger.log({ event: "followup_scheduled", checkId, delay });
+    } catch {
+      this.logger.warn({ event: "followup_schedule_failed", checkId });
+    }
   }
 
   async process(job: Job<ChecksJobData>): Promise<void> {
@@ -218,6 +243,8 @@ export class CheckRunnerProcessor extends WorkerHost {
         attempts: run.attempts,
         costMicroUsd,
       });
+
+      await this.scheduleFollowUp(checkId, outcome.result);
     } catch (err) {
       // Infra errors ARE retried. A provider timeout never reaches here
       // (absorbed inside `runTriage` above) -- only throws from
@@ -281,6 +308,8 @@ export class CheckRunnerProcessor extends WorkerHost {
       });
 
       this.logger.error({ event: "triage_infra_fallback", checkId, message });
+
+      await this.scheduleFollowUp(checkId, outcome.result);
       return;
     }
   }

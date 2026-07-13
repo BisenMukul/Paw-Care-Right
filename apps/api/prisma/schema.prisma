@@ -163,9 +163,10 @@ model SymptomCheck {
   completedAt       DateTime?
   updatedAt         DateTime    @updatedAt
 
-  pet       Pet           @relation(fields: [petId], references: [id], onDelete: Cascade)
-  createdBy User          @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  pet       Pet             @relation(fields: [petId], references: [id], onDelete: Cascade)
+  createdBy User            @relation(fields: [createdById], references: [id], onDelete: Restrict)
   result    TriageResult?
+  followUp  CheckFollowUp?
 
   // idempotencyKey is nullable; Postgres treats NULLs as distinct for a
   // unique index, so multiple non-idempotent (NULL-key) checks per user are
@@ -182,6 +183,15 @@ model TriageResult {
   resultJson    Json
   modelId       String
   promptVersion String
+  createdAt     DateTime @default(now())
+
+  check SymptomCheck @relation(fields: [checkId], references: [id], onDelete: Cascade)
+}
+
+model CheckFollowUp {
+  checkId       String   @id
+  response      String // "better" | "same" | "worse" (validated by Zod at the boundary; String mirrors TriageResult.urgency)
+  escalatedTier String? // an Urgency value, set ONLY when response == "worse"
   createdAt     DateTime @default(now())
 
   check SymptomCheck @relation(fields: [checkId], references: [id], onDelete: Cascade)

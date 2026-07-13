@@ -1,6 +1,7 @@
-import { Body, Controller, Get, Headers, Param, Post, Query } from "@nestjs/common";
+import { Body, Controller, Get, Headers, HttpCode, Param, Post, Query } from "@nestjs/common";
 import {
   ApiBadRequestResponse,
+  ApiConflictResponse,
   ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -15,6 +16,7 @@ import { CurrentHousehold, HouseholdFromMembership } from "../common/household-s
 import type { CheckListResponse, CheckResponse } from "./checks.service";
 import { ChecksService } from "./checks.service";
 import { CreateCheckDto } from "./dto/create-check.dto";
+import { FollowUpDto } from "./dto/follow-up.dto";
 import { ListChecksQueryDto } from "./dto/list-checks-query.dto";
 
 /**
@@ -69,5 +71,19 @@ export class ChecksController {
   @ApiNotFoundResponse({ description: "No resolved household for the caller, or the check does not exist in it." })
   findOne(@CurrentHousehold() scope: HouseholdScope, @Param("id") id: string): Promise<CheckResponse> {
     return this.checksService.findOne(scope.householdId, id);
+  }
+
+  @Post("checks/:id/followup")
+  @HttpCode(200)
+  @ApiOkResponse({ description: "The updated symptom check, carrying the follow-up (idempotent on replay)." })
+  @ApiBadRequestResponse({ description: "Invalid `response` value." })
+  @ApiConflictResponse({ description: "The check is not yet terminal, or has no schema-valid result." })
+  @ApiNotFoundResponse({ description: "No resolved household for the caller, or the check does not exist in it." })
+  submitFollowUp(
+    @CurrentHousehold() scope: HouseholdScope,
+    @Param("id") id: string,
+    @Body() dto: FollowUpDto,
+  ): Promise<CheckResponse> {
+    return this.checksService.submitFollowUp(scope.householdId, id, dto.response);
   }
 }

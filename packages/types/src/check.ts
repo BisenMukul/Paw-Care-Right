@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import { checkStatusSchema } from "./check-status";
-import { triageResultSchema } from "./triage";
+import { triageResultSchema, urgencySchema } from "./triage";
 
 /**
  * CheckResponse — the client-visible symptom-check resource shape (T047 plan
@@ -20,6 +20,22 @@ export const checkRedFlagSchema = z.object({
 });
 export type CheckRedFlag = z.infer<typeof checkRedFlagSchema>;
 
+/**
+ * Follow-up loop (T051 plan "Interfaces / contracts the executor must
+ * match"). Wire values are the lowercase `better|same|worse` strings; the
+ * `escalatedTier` is only ever present when `response === "worse"` (set by
+ * the API's `raiseUrgency`, never authored/lowered client-side).
+ */
+export const FOLLOW_UP_RESPONSES = ["better", "same", "worse"] as const;
+export const followUpResponseSchema = z.enum(FOLLOW_UP_RESPONSES);
+export type FollowUpResponse = z.infer<typeof followUpResponseSchema>;
+
+export const followUpSchema = z.object({
+  response: followUpResponseSchema,
+  escalatedTier: urgencySchema.optional(),
+});
+export type FollowUp = z.infer<typeof followUpSchema>;
+
 export const checkResponseSchema = z.object({
   id: z.string(),
   status: checkStatusSchema,
@@ -27,5 +43,6 @@ export const checkResponseSchema = z.object({
   createdAt: z.string(),
   redFlag: checkRedFlagSchema.optional(),
   result: triageResultSchema.optional(),
+  followUp: followUpSchema.optional(),
 });
 export type CheckResponse = z.infer<typeof checkResponseSchema>;

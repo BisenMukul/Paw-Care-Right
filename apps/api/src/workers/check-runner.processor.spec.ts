@@ -1,13 +1,14 @@
 import { Logger } from "@nestjs/common";
 import { FakeTextProvider, ProviderError, TRIAGE_PROMPT_VERSION, type TextProvider, type TextResult } from "@pawcareright/ai";
 import { parseIntake, type CompletedIntake, type Sex, type Species } from "@pawcareright/types";
-import type { Job } from "bullmq";
+import type { Job, Queue } from "bullmq";
 
 import type { ChecksJobData } from "../checks/checks.contract";
 import type { PrismaService } from "../prisma/prisma.service";
 import type { CostLogService } from "../quota/cost-log.service";
 import type { VisionPrepService } from "../vision/vision-prep.service";
 import { CheckRunnerProcessor, isFinalAttempt } from "./check-runner.processor";
+import type { FollowUpJobData } from "./followups.contract";
 
 /**
  * Direct-invoke integration tests (T043 plan "Tests to write"): construct
@@ -116,7 +117,7 @@ describe("CheckRunnerProcessor", () => {
     } as unknown as Job<ChecksJobData>;
   }
 
-  function triageResultText(overrides: { urgency?: string; confidence?: string } = {}): string {
+  function triageResultText(overrides: { urgency?: string; confidence?: string; followUpHours?: number | null } = {}): string {
     return JSON.stringify({
       urgency: overrides.urgency ?? "MONITOR",
       confidence: overrides.confidence ?? "medium",
@@ -126,7 +127,7 @@ describe("CheckRunnerProcessor", () => {
       homeCare: ["Offer small amounts of water", "Monitor appetite"],
       doNot: ["Do not give human medications to your pet without a veterinarian's guidance."],
       vetQuestions: ["How long has this been going on?"],
-      followUpHours: 24,
+      followUpHours: overrides.followUpHours === undefined ? 24 : overrides.followUpHours,
     });
   }
 
@@ -170,13 +171,19 @@ describe("CheckRunnerProcessor", () => {
     return { costLog: { record } as unknown as CostLogService, record };
   }
 
+  function buildFollowUpQueue(overrides: { add?: jest.Mock } = {}) {
+    const add = overrides.add ?? jest.fn().mockResolvedValue(undefined);
+    return { followUpQueue: { add } as unknown as Queue<FollowUpJobData>, add };
+  }
+
   it("happy path: QUEUED non-red-flag DOG check persists DONE + result + cost, no retry", async () => {
     const { prisma, update, upsert, transaction } = buildPrisma({ check: buildCheckRow({ status: "QUEUED" }) });
     const { visionPrep, prepare } = buildVisionPrep();
     const { costLog, record } = buildCostLog();
+    const { followUpQueue, add } = buildFollowUpQueue();
     const provider = new FakeTextProvider({ script: [textResult(triageResultText({ urgency: "MONITOR" }))] });
     const generateSpy = jest.spyOn(provider, "generate");
-    const processor = new CheckRunnerProcessor(prisma, visionPrep, costLog, provider, MODEL_ID);
+    const processor = new CheckRunnerProcessor(prisma, visionPrep, costLog, provider, MODEL_ID, followUpQueue);
 
     await processor.process(buildJob({ attemptsMade: 0, attempts: 3 }));
 
@@ -210,17 +217,27 @@ describe("CheckRunnerProcessor", () => {
     expect(record).toHaveBeenCalledWith(
       expect.objectContaining({ checkId: CHECK_ID, userId: USER_ID, status: "OK", costMicroUsd: 3 }),
     );
+
+    // followUpHours: 24 -> a delayed follow-up job is enqueued (T051 plan
+    // "Scheduling spec"), jobId-keyed for idempotent re-enqueue.
+    expect(add).toHaveBeenCalledTimes(1);
+    expect(add).toHaveBeenCalledWith(
+      "followup-prompt",
+      { checkId: CHECK_ID },
+      expect.objectContaining({ jobId: CHECK_ID, delay: 86_400_000 }),
+    );
   });
 
   it("malformed provider output (both attempts) -> persists FALLBACK, no BullMQ retry", async () => {
     const { prisma, update, upsert } = buildPrisma({ check: buildCheckRow({ status: "QUEUED" }) });
     const { visionPrep } = buildVisionPrep();
     const { costLog } = buildCostLog();
+    const { followUpQueue } = buildFollowUpQueue();
     const provider = new FakeTextProvider({
       script: [textResult("not json at all"), textResult("still not json")],
     });
     const generateSpy = jest.spyOn(provider, "generate");
-    const processor = new CheckRunnerProcessor(prisma, visionPrep, costLog, provider, MODEL_ID);
+    const processor = new CheckRunnerProcessor(prisma, visionPrep, costLog, provider, MODEL_ID, followUpQueue);
 
     await expect(processor.process(buildJob({ attemptsMade: 0, attempts: 3 }))).resolves.toBeUndefined();
 
@@ -246,9 +263,10 @@ describe("CheckRunnerProcessor", () => {
     const { prisma, update } = buildPrisma({ check: buildCheckRow({ status: "QUEUED" }) });
     const { visionPrep } = buildVisionPrep();
     const { costLog } = buildCostLog();
+    const { followUpQueue } = buildFollowUpQueue();
     const generate = jest.fn().mockRejectedValue(new ProviderError("ollama", "timeout", "request timed out"));
     const provider: TextProvider = { generate };
-    const processor = new CheckRunnerProcessor(prisma, visionPrep, costLog, provider, MODEL_ID);
+    const processor = new CheckRunnerProcessor(prisma, visionPrep, costLog, provider, MODEL_ID, followUpQueue);
 
     await expect(processor.process(buildJob({ attemptsMade: 0, attempts: 3 }))).resolves.toBeUndefined();
 
@@ -269,14 +287,16 @@ describe("CheckRunnerProcessor", () => {
     const { prisma } = buildPrisma({ check: buildCheckRow({ status: "QUEUED" }), update });
     const { visionPrep } = buildVisionPrep();
     const { costLog, record } = buildCostLog();
+    const { followUpQueue, add } = buildFollowUpQueue();
     const provider = new FakeTextProvider({ script: [textResult(triageResultText())] });
-    const processor = new CheckRunnerProcessor(prisma, visionPrep, costLog, provider, MODEL_ID);
+    const processor = new CheckRunnerProcessor(prisma, visionPrep, costLog, provider, MODEL_ID, followUpQueue);
 
     await expect(processor.process(buildJob({ attemptsMade: 0, attempts: 3 }))).rejects.toThrow("db down");
 
     expect(update).toHaveBeenCalledTimes(1);
     expect(prisma.triageResult.upsert).not.toHaveBeenCalled();
     expect(record).not.toHaveBeenCalled();
+    expect(add).not.toHaveBeenCalled();
   });
 
   it("infra failure: final attempt writes floored FALLBACK and resolves (no rethrow)", async () => {
@@ -284,8 +304,9 @@ describe("CheckRunnerProcessor", () => {
     const { prisma } = buildPrisma({ check: buildCheckRow({ status: "QUEUED" }), update });
     const { visionPrep } = buildVisionPrep();
     const { costLog, record } = buildCostLog();
+    const { followUpQueue, add } = buildFollowUpQueue();
     const provider = new FakeTextProvider({ script: [textResult(triageResultText())] });
-    const processor = new CheckRunnerProcessor(prisma, visionPrep, costLog, provider, MODEL_ID);
+    const processor = new CheckRunnerProcessor(prisma, visionPrep, costLog, provider, MODEL_ID, followUpQueue);
 
     await expect(processor.process(buildJob({ attemptsMade: 2, attempts: 3 }))).resolves.toBeUndefined();
 
@@ -299,6 +320,13 @@ describe("CheckRunnerProcessor", () => {
     expect(record).toHaveBeenCalledWith(
       expect.objectContaining({ checkId: CHECK_ID, userId: USER_ID, status: "SAFE_FALLBACK", costMicroUsd: 0 }),
     );
+    // The catch-path fallback also schedules a follow-up (SAFE_FALLBACK's
+    // `followUpHours` is 24).
+    expect(add).toHaveBeenCalledWith(
+      "followup-prompt",
+      { checkId: CHECK_ID },
+      expect.objectContaining({ jobId: CHECK_ID, delay: 86_400_000 }),
+    );
   });
 
   it("rules floor is preserved even when the AI says REASSURE (red-flag DOG check)", async () => {
@@ -307,10 +335,11 @@ describe("CheckRunnerProcessor", () => {
     });
     const { visionPrep } = buildVisionPrep();
     const { costLog } = buildCostLog();
+    const { followUpQueue } = buildFollowUpQueue();
     const provider = new FakeTextProvider({
       script: [textResult(triageResultText({ urgency: "REASSURE", confidence: "high" }))],
     });
-    const processor = new CheckRunnerProcessor(prisma, visionPrep, costLog, provider, MODEL_ID);
+    const processor = new CheckRunnerProcessor(prisma, visionPrep, costLog, provider, MODEL_ID, followUpQueue);
 
     await processor.process(buildJob({ attemptsMade: 0, attempts: 3 }));
 
@@ -332,9 +361,10 @@ describe("CheckRunnerProcessor", () => {
     });
     const { visionPrep, prepare } = buildVisionPrep();
     const { costLog, record } = buildCostLog();
+    const { followUpQueue, add } = buildFollowUpQueue();
     const generate = jest.fn();
     const provider: TextProvider = { generate };
-    const processor = new CheckRunnerProcessor(prisma, visionPrep, costLog, provider, MODEL_ID);
+    const processor = new CheckRunnerProcessor(prisma, visionPrep, costLog, provider, MODEL_ID, followUpQueue);
 
     await processor.process(buildJob());
 
@@ -345,19 +375,22 @@ describe("CheckRunnerProcessor", () => {
     expect(record).not.toHaveBeenCalled();
     expect(generate).not.toHaveBeenCalled();
     expect(prepare).not.toHaveBeenCalled();
+    expect(add).not.toHaveBeenCalled();
   });
 
   it("missing check row is a no-op ack (row deleted / redelivered)", async () => {
     const { prisma, update, upsert } = buildPrisma({ check: null });
     const { visionPrep } = buildVisionPrep();
     const { costLog } = buildCostLog();
+    const { followUpQueue, add } = buildFollowUpQueue();
     const provider = new FakeTextProvider();
-    const processor = new CheckRunnerProcessor(prisma, visionPrep, costLog, provider, MODEL_ID);
+    const processor = new CheckRunnerProcessor(prisma, visionPrep, costLog, provider, MODEL_ID, followUpQueue);
 
     await expect(processor.process(buildJob())).resolves.toBeUndefined();
 
     expect(update).not.toHaveBeenCalled();
     expect(upsert).not.toHaveBeenCalled();
+    expect(add).not.toHaveBeenCalled();
   });
 
   it("logs are checkId-keyed and never carry intakeJson/freeText/photoKeys", async () => {
@@ -371,8 +404,9 @@ describe("CheckRunnerProcessor", () => {
         .mockResolvedValue({ images: [], requestedCount: 1, includedCount: 1, truncated: false, totalBase64Bytes: 10 }),
     });
     const { costLog } = buildCostLog();
+    const { followUpQueue } = buildFollowUpQueue();
     const provider = new FakeTextProvider({ script: [textResult(triageResultText())] });
-    const processor = new CheckRunnerProcessor(prisma, visionPrep, costLog, provider, MODEL_ID);
+    const processor = new CheckRunnerProcessor(prisma, visionPrep, costLog, provider, MODEL_ID, followUpQueue);
 
     const logSpy = jest.spyOn(Logger.prototype, "log").mockImplementation(() => undefined);
     const warnSpy = jest.spyOn(Logger.prototype, "warn").mockImplementation(() => undefined);
@@ -409,8 +443,16 @@ describe("CheckRunnerProcessor", () => {
         .mockResolvedValue({ images: [], requestedCount: 1, includedCount: 1, truncated: false, totalBase64Bytes: 5 }),
     });
     const { costLog: costLog1 } = buildCostLog();
+    const { followUpQueue: followUpQueue1 } = buildFollowUpQueue();
     const provider1 = new FakeTextProvider({ script: [textResult(triageResultText())] });
-    const processorWithPhotos = new CheckRunnerProcessor(prismaWithPhotos, visionWithPhotos, costLog1, provider1, MODEL_ID);
+    const processorWithPhotos = new CheckRunnerProcessor(
+      prismaWithPhotos,
+      visionWithPhotos,
+      costLog1,
+      provider1,
+      MODEL_ID,
+      followUpQueue1,
+    );
 
     await processorWithPhotos.process(buildJob());
 
@@ -419,12 +461,77 @@ describe("CheckRunnerProcessor", () => {
     const { prisma: prismaNoPhotos } = buildPrisma({ check: buildCheckRow({ status: "QUEUED", photoKeys: [] }) });
     const { visionPrep: visionNoPhotos, prepare: prepareNoPhotos } = buildVisionPrep();
     const { costLog: costLog2 } = buildCostLog();
+    const { followUpQueue: followUpQueue2 } = buildFollowUpQueue();
     const provider2 = new FakeTextProvider({ script: [textResult(triageResultText())] });
-    const processorNoPhotos = new CheckRunnerProcessor(prismaNoPhotos, visionNoPhotos, costLog2, provider2, MODEL_ID);
+    const processorNoPhotos = new CheckRunnerProcessor(
+      prismaNoPhotos,
+      visionNoPhotos,
+      costLog2,
+      provider2,
+      MODEL_ID,
+      followUpQueue2,
+    );
 
     await processorNoPhotos.process(buildJob());
 
     expect(prepareNoPhotos).not.toHaveBeenCalled();
+  });
+
+  describe("follow-up scheduling (T051 plan 'Scheduling spec')", () => {
+    it("followUpHours: null -> no follow-up job is enqueued", async () => {
+      const { prisma } = buildPrisma({ check: buildCheckRow({ status: "QUEUED" }) });
+      const { visionPrep } = buildVisionPrep();
+      const { costLog } = buildCostLog();
+      const { followUpQueue, add } = buildFollowUpQueue();
+      const provider = new FakeTextProvider({ script: [textResult(triageResultText({ followUpHours: null }))] });
+      const processor = new CheckRunnerProcessor(prisma, visionPrep, costLog, provider, MODEL_ID, followUpQueue);
+
+      await processor.process(buildJob({ attemptsMade: 0, attempts: 3 }));
+
+      expect(add).not.toHaveBeenCalled();
+    });
+
+    it("scheduling failure (queue.add rejects) never fails the job -- the DONE $transaction already ran", async () => {
+      const { prisma, update, transaction } = buildPrisma({ check: buildCheckRow({ status: "QUEUED" }) });
+      const { visionPrep } = buildVisionPrep();
+      const { costLog, record } = buildCostLog();
+      const { followUpQueue, add } = buildFollowUpQueue({ add: jest.fn().mockRejectedValue(new Error("redis down")) });
+      const provider = new FakeTextProvider({ script: [textResult(triageResultText({ urgency: "MONITOR" }))] });
+      const processor = new CheckRunnerProcessor(prisma, visionPrep, costLog, provider, MODEL_ID, followUpQueue);
+
+      await expect(processor.process(buildJob({ attemptsMade: 0, attempts: 3 }))).resolves.toBeUndefined();
+
+      expect(add).toHaveBeenCalledTimes(1);
+      expect(transaction).toHaveBeenCalledTimes(1);
+      expect(update).toHaveBeenNthCalledWith(2, {
+        where: { id: CHECK_ID },
+        data: { status: "DONE", completedAt: expect.any(Date) as Date, costMicroUsd: 3, failureReason: null },
+      });
+      expect(record).toHaveBeenCalledWith(
+        expect.objectContaining({ checkId: CHECK_ID, userId: USER_ID, status: "OK", costMicroUsd: 3 }),
+      );
+    });
+
+    it("scheduling failure on the catch-path FALLBACK never fails the job -- the FALLBACK $transaction already ran", async () => {
+      const update = jest.fn().mockRejectedValueOnce(new Error("db down"));
+      const { prisma } = buildPrisma({ check: buildCheckRow({ status: "QUEUED" }), update });
+      const { visionPrep } = buildVisionPrep();
+      const { costLog, record } = buildCostLog();
+      const { followUpQueue, add } = buildFollowUpQueue({ add: jest.fn().mockRejectedValue(new Error("redis down")) });
+      const provider = new FakeTextProvider({ script: [textResult(triageResultText())] });
+      const processor = new CheckRunnerProcessor(prisma, visionPrep, costLog, provider, MODEL_ID, followUpQueue);
+
+      await expect(processor.process(buildJob({ attemptsMade: 2, attempts: 3 }))).resolves.toBeUndefined();
+
+      expect(add).toHaveBeenCalledTimes(1);
+      expect(update).toHaveBeenNthCalledWith(3, {
+        where: { id: CHECK_ID },
+        data: { status: "FALLBACK", completedAt: expect.any(Date) as Date, costMicroUsd: 0, failureReason: "db down" },
+      });
+      expect(record).toHaveBeenCalledWith(
+        expect.objectContaining({ checkId: CHECK_ID, userId: USER_ID, status: "SAFE_FALLBACK", costMicroUsd: 0 }),
+      );
+    });
   });
 
   describe("isFinalAttempt", () => {

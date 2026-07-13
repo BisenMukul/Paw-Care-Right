@@ -1,8 +1,29 @@
 import { InjectQueue } from "@nestjs/bullmq";
-import { BadRequestException, HttpException, HttpStatus, Inject, Injectable, NotFoundException } from "@nestjs/common";
+import {
+  BadRequestException,
+  ConflictException,
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
 import { evaluateRedFlags } from "@pawcareright/ai";
-import { parseIntake, parseTriage, type CheckStatus, type TriageResult } from "@pawcareright/types";
-import { Prisma, type SymptomCheck, type TriageResult as PrismaTriageResult } from "@prisma/client";
+import {
+  parseIntake,
+  parseTriage,
+  raiseUrgency,
+  type CheckStatus,
+  type FollowUpResponse,
+  type TriageResult,
+  type Urgency,
+} from "@pawcareright/types";
+import {
+  Prisma,
+  type CheckFollowUp,
+  type SymptomCheck,
+  type TriageResult as PrismaTriageResult,
+} from "@prisma/client";
 import type { Queue } from "bullmq";
 
 import { PetsService } from "../pets/pets.service";
@@ -28,6 +49,7 @@ export interface CheckResponse {
   createdAt: Date;
   redFlag?: CheckRedFlag;
   result?: TriageResult;
+  followUp?: { response: FollowUpResponse; escalatedTier?: Urgency };
 }
 
 export interface CheckListResponse {
@@ -35,8 +57,12 @@ export interface CheckListResponse {
   nextCursor: string | null;
 }
 
-/** A `SymptomCheck` row, optionally joined to its `TriageResult` (present on `findOne`/`list`, absent right after `create`). */
-type CheckRow = SymptomCheck & { result?: PrismaTriageResult | null };
+/**
+ * A `SymptomCheck` row, optionally joined to its `TriageResult`/
+ * `CheckFollowUp` (present on `findOne`/`list`, absent right after
+ * `create`).
+ */
+type CheckRow = SymptomCheck & { result?: PrismaTriageResult | null; followUp?: CheckFollowUp | null };
 
 const JOB_NAME = "triage";
 const JOB_ATTEMPTS = 3;
@@ -145,13 +171,67 @@ export class ChecksService {
   async findOne(householdId: string, id: string): Promise<CheckResponse> {
     const check = await this.prisma.symptomCheck.findFirst({
       where: { id, pet: { householdId, deletedAt: null } },
-      include: { result: true },
+      include: { result: true, followUp: true },
     });
 
     if (!check) {
       throw new NotFoundException();
     }
 
+    return this.toResponse(check);
+  }
+
+  /**
+   * `POST /checks/:id/followup` (T051 plan "Endpoint spec"). Order is
+   * §5-critical: household-scoped 404 (no leak) -> idempotent first-write-
+   * wins short-circuit -> terminal + schema-valid precondition (409) ->
+   * compute `escalatedTier` (raises urgency by exactly one tier on `worse`,
+   * never lowers) -> create, with P2002 (concurrent duplicate) re-fetched
+   * and returned rather than raced.
+   */
+  async submitFollowUp(householdId: string, id: string, response: FollowUpResponse): Promise<CheckResponse> {
+    const check = await this.prisma.symptomCheck.findFirst({
+      where: { id, pet: { householdId, deletedAt: null } },
+      include: { result: true, followUp: true },
+    });
+
+    if (!check) {
+      throw new NotFoundException();
+    }
+
+    // First-write-wins idempotency (§5 never-downward) — before any
+    // precondition check, so a later differing response never mutates a
+    // prior escalation.
+    if (check.followUp) {
+      return this.toResponse(check);
+    }
+
+    const parsed = check.result ? parseTriage(check.result.resultJson) : { ok: false as const, reason: "no result" };
+    if (!isTerminalCheckStatus(check.status) || !check.result || !parsed.ok) {
+      throw new ConflictException("check is not ready for follow-up");
+    }
+
+    const escalatedTier = response === "worse" ? raiseUrgency(parsed.result.urgency) : null;
+
+    let created: CheckFollowUp;
+    try {
+      created = await this.prisma.checkFollowUp.create({
+        data: { checkId: id, response, escalatedTier },
+      });
+    } catch (err) {
+      if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") {
+        const existing = await this.prisma.symptomCheck.findFirst({
+          where: { id, pet: { householdId, deletedAt: null } },
+          include: { result: true, followUp: true },
+        });
+        if (existing) {
+          return this.toResponse(existing);
+        }
+      }
+      throw err;
+    }
+
+    check.followUp = created;
     return this.toResponse(check);
   }
 
@@ -164,7 +244,7 @@ export class ChecksService {
       where: { petId },
       orderBy: { createdAt: "desc" },
       take: limit + 1,
-      include: { result: true },
+      include: { result: true, followUp: true },
       ...(query.cursor !== undefined ? { cursor: { id: query.cursor }, skip: 1 } : {}),
     });
 
@@ -245,6 +325,13 @@ export class ChecksService {
       if (parsed.ok) {
         response.result = parsed.result;
       }
+    }
+
+    if (check.followUp) {
+      response.followUp = {
+        response: check.followUp.response as FollowUpResponse,
+        ...(check.followUp.escalatedTier ? { escalatedTier: check.followUp.escalatedTier as Urgency } : {}),
+      };
     }
 
     return response;

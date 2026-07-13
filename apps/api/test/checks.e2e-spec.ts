@@ -2,7 +2,7 @@ import { getQueueToken } from "@nestjs/bullmq";
 import type { INestApplication } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { Test } from "@nestjs/testing";
-import { errorResponseSchema, SAFE_FALLBACK } from "@pawcareright/types";
+import { errorResponseSchema, SAFE_FALLBACK, type Urgency } from "@pawcareright/types";
 import { PrismaClient } from "@prisma/client";
 import type { Queue } from "bullmq";
 import request from "supertest";
@@ -389,6 +389,183 @@ describe("Checks (e2e)", () => {
       const petId = await createPet(ownerA, "A's Dog");
 
       const res = await ownerB.authedAgent("get", `/v1/pets/${petId}/checks`);
+      expect(res.status).toBe(404);
+      expect(errorResponseSchema.parse(res.body).error.code).toBe("NOT_FOUND");
+    });
+  });
+
+  describe("POST /checks/:id/followup (T051)", () => {
+    /** A minimal, schema-valid `TriageResult` fixture for the given tier (mirrors packages/types/src/triage.spec.ts's validFixtureFor). */
+    function triageFixture(urgency: Urgency): Record<string, unknown> {
+      const allowsHomeCare = (["VET_SOON", "MONITOR", "REASSURE"] as Urgency[]).includes(urgency);
+      return {
+        urgency,
+        confidence: "high",
+        summary: "General guidance based on the information provided.",
+        possibleCauses: [{ name: "Mild issue", whyItFits: "Fits the reported symptoms." }],
+        redFlagsToWatch: ["Worsening symptoms"],
+        homeCare: allowsHomeCare ? ["Offer small amounts of water"] : [],
+        doNot: ["Do not give human medications without veterinary guidance."],
+        vetQuestions: ["How long has this been going on?"],
+        followUpHours: 24,
+      };
+    }
+
+    /** Stages a terminal (DONE), schema-valid check: create -> force DONE -> attach a TriageResult row. */
+    async function stageTerminalCheck(ctx: AuthedContext, petId: string, urgency: Urgency = "MONITOR"): Promise<string> {
+      const created = await ctx.authedAgent("post", `/v1/pets/${petId}/checks`).send({ intake: benignIntake() });
+      expect(created.status).toBe(201);
+      const checkId = created.body.id as string;
+
+      await prisma.symptomCheck.update({ where: { id: checkId }, data: { status: "DONE" } });
+      await prisma.triageResult.create({
+        data: {
+          checkId,
+          urgency,
+          confidence: "high",
+          resultJson: triageFixture(urgency),
+          modelId: "test-model",
+          promptVersion: "v1",
+        },
+      });
+
+      return checkId;
+    }
+
+    it("better -> 200, no escalatedTier", async () => {
+      const ctx = await owner();
+      const petId = await createPet(ctx);
+      const checkId = await stageTerminalCheck(ctx, petId, "MONITOR");
+
+      const res = await ctx.authedAgent("post", `/v1/checks/${checkId}/followup`).send({ response: "better" });
+
+      expect(res.status).toBe(200);
+      expect(res.body.followUp.response).toBe("better");
+      expect(res.body.followUp.escalatedTier).toBeUndefined();
+    });
+
+    it("same -> 200, no escalatedTier", async () => {
+      const ctx = await owner();
+      const petId = await createPet(ctx);
+      const checkId = await stageTerminalCheck(ctx, petId, "MONITOR");
+
+      const res = await ctx.authedAgent("post", `/v1/checks/${checkId}/followup`).send({ response: "same" });
+
+      expect(res.status).toBe(200);
+      expect(res.body.followUp.response).toBe("same");
+      expect(res.body.followUp.escalatedTier).toBeUndefined();
+    });
+
+    it("worse -> 200, escalatedTier present and raised exactly one tier (MONITOR -> VET_SOON)", async () => {
+      const ctx = await owner();
+      const petId = await createPet(ctx);
+      const checkId = await stageTerminalCheck(ctx, petId, "MONITOR");
+
+      const res = await ctx.authedAgent("post", `/v1/checks/${checkId}/followup`).send({ response: "worse" });
+
+      expect(res.status).toBe(200);
+      expect(res.body.followUp.response).toBe("worse");
+      expect(res.body.followUp.escalatedTier).toBe("VET_SOON");
+    });
+
+    it("worse on an EMERGENCY_NOW result -> escalatedTier stays at the EMERGENCY_NOW ceiling", async () => {
+      const ctx = await owner();
+      const petId = await createPet(ctx);
+      const checkId = await stageTerminalCheck(ctx, petId, "EMERGENCY_NOW");
+
+      const res = await ctx.authedAgent("post", `/v1/checks/${checkId}/followup`).send({ response: "worse" });
+
+      expect(res.status).toBe(200);
+      expect(res.body.followUp.escalatedTier).toBe("EMERGENCY_NOW");
+    });
+
+    it("GET /checks/:id after a worse follow-up surfaces the same followUp/escalatedTier", async () => {
+      const ctx = await owner();
+      const petId = await createPet(ctx);
+      const checkId = await stageTerminalCheck(ctx, petId, "MONITOR");
+
+      const followUpRes = await ctx.authedAgent("post", `/v1/checks/${checkId}/followup`).send({ response: "worse" });
+      expect(followUpRes.status).toBe(200);
+
+      const res = await ctx.authedAgent("get", `/v1/checks/${checkId}`);
+      expect(res.status).toBe(200);
+      expect(res.body.followUp).toEqual({ response: "worse", escalatedTier: "VET_SOON" });
+    });
+
+    it("duplicate follow-up (same response twice) is idempotent", async () => {
+      const ctx = await owner();
+      const petId = await createPet(ctx);
+      const checkId = await stageTerminalCheck(ctx, petId, "MONITOR");
+
+      const first = await ctx.authedAgent("post", `/v1/checks/${checkId}/followup`).send({ response: "worse" });
+      expect(first.status).toBe(200);
+
+      const second = await ctx.authedAgent("post", `/v1/checks/${checkId}/followup`).send({ response: "worse" });
+      expect(second.status).toBe(200);
+      expect(second.body.followUp).toEqual(first.body.followUp);
+
+      const count = await prisma.checkFollowUp.count({ where: { checkId } });
+      expect(count).toBe(1);
+    });
+
+    it("first worse then better -> second call still returns worse + unchanged escalatedTier (never un-escalates, §5)", async () => {
+      const ctx = await owner();
+      const petId = await createPet(ctx);
+      const checkId = await stageTerminalCheck(ctx, petId, "MONITOR");
+
+      const first = await ctx.authedAgent("post", `/v1/checks/${checkId}/followup`).send({ response: "worse" });
+      expect(first.status).toBe(200);
+      expect(first.body.followUp.escalatedTier).toBe("VET_SOON");
+
+      const second = await ctx.authedAgent("post", `/v1/checks/${checkId}/followup`).send({ response: "better" });
+      expect(second.status).toBe(200);
+      expect(second.body.followUp.response).toBe("worse");
+      expect(second.body.followUp.escalatedTier).toBe("VET_SOON");
+
+      const count = await prisma.checkFollowUp.count({ where: { checkId } });
+      expect(count).toBe(1);
+    });
+
+    it("worse on a non-terminal (QUEUED) check -> 409 CONFLICT", async () => {
+      const ctx = await owner();
+      const petId = await createPet(ctx);
+      const created = await ctx.authedAgent("post", `/v1/pets/${petId}/checks`).send({ intake: benignIntake() });
+      expect(created.status).toBe(201);
+
+      const res = await ctx.authedAgent("post", `/v1/checks/${created.body.id}/followup`).send({ response: "worse" });
+
+      expect(res.status).toBe(409);
+      expect(errorResponseSchema.parse(res.body).error.code).toBe("CONFLICT");
+    });
+
+    it("invalid response value -> 400 VALIDATION_FAILED", async () => {
+      const ctx = await owner();
+      const petId = await createPet(ctx);
+      const checkId = await stageTerminalCheck(ctx, petId, "MONITOR");
+
+      const res = await ctx.authedAgent("post", `/v1/checks/${checkId}/followup`).send({ response: "worst" });
+
+      expect(res.status).toBe(400);
+      expect(errorResponseSchema.parse(res.body).error.code).toBe("VALIDATION_FAILED");
+    });
+
+    it("no token -> 401 UNAUTHORIZED", async () => {
+      const res = await request(app.getHttpServer())
+        .post("/v1/checks/some-check-id/followup")
+        .send({ response: "better" });
+
+      expect(res.status).toBe(401);
+      expect(errorResponseSchema.parse(res.body).error.code).toBe("UNAUTHORIZED");
+    });
+
+    it("another household's check -> 404 NOT_FOUND", async () => {
+      const ownerA = await owner();
+      const ownerB = await owner();
+      const petId = await createPet(ownerA, "A's Dog");
+      const checkId = await stageTerminalCheck(ownerA, petId, "MONITOR");
+
+      const res = await ownerB.authedAgent("post", `/v1/checks/${checkId}/followup`).send({ response: "better" });
+
       expect(res.status).toBe(404);
       expect(errorResponseSchema.parse(res.body).error.code).toBe("NOT_FOUND");
     });

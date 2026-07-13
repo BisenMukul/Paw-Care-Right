@@ -536,3 +536,11 @@
 - **T052 candidates (checker nits):** direct runtime test of useChecksList; two-page flatMap append fixture; UTC formatCheckDate; + the carried CA/GB/AU/NZ region assertions (T049) and the e2e worker-override hygiene (T043).
 - No new dependencies.
 - Commit: feat(mobile): T050 check history + detail (journal rides in the same one-task-one-commit).
+
+## [2026-07-13] T051 · Follow-up loop — DONE (attempt 1)
+- Planner (Fable): `loop/plans/T051.plan.md` — 1:1 `CheckFollowUp` table (migration `20260713152239_add_check_followup`, CheckFollowUp only, CASCADE FK); `POST /checks/:id/followup` better|same|worse (terminal-only → 409 otherwise; household-scoped 404-no-leak; **first-write-wins idempotency** — duplicate same → 200 no-op; differing second → 200 with original state, never un-escalates); **worse → escalatedTier = raiseUrgency(final urgency)** — new pure helper in packages/types (one tier more urgent, EMERGENCY_NOW ceiling), persisted + surfaced in CheckResponse.followUp; scheduling = best-effort delayed enqueue on `pawcareright-followups` (delay = followUpHours·3600·1000, jobId-deduped, NO processor — P5's push sender consumes) hooked AFTER both worker persist paths; mobile/timeline rendering out of scope.
+- Executor (Sonnet, 2 passes): 3 new + 11 modified; types **308 → 324**, api **410 → 424 tests** (3 processor scheduling tests keeping all 15 prior green + 11 followup e2e).
+- Checker (Fable, adversarial): `loop/reviews/T051.review.md` → **VERDICT: pass**. raiseUrgency structurally cannot lower a tier (every branch same-or-more-urgent; ceiling tested); worse-then-better never un-escalates (first-write-wins short-circuit sits BEFORE preconditions; e2e asserts count===1); worker `process()` diff has ZERO deleted lines (two additive scheduleFollowUp calls after their transactions); **best-effort proven non-vacuously** (queue.add-rejects test asserts exactly one transaction — a rethrow would double-run the fallback and fail); migration nothing-destructive; 409/401/404/400 guards all covered.
+- **Accepted plan risks (carried):** raiseUrgency/raiseOne duplication (types can't import ai); silent-drop on followups-queue outage (P5 revisits); String columns vs enums (matches TriageResult precedent).
+- No new dependencies.
+- Commit: feat(api,types): T051 follow-up loop (journal rides in the same one-task-one-commit).

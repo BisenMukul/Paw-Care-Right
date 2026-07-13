@@ -9,6 +9,7 @@ import { StorageModule } from "../storage/storage.module";
 import { VisionModule } from "../vision/vision.module";
 import { TRIAGE_TEXT_MODEL_ID, TRIAGE_TEXT_PROVIDER } from "./check-runner.tokens";
 import { CheckRunnerProcessor } from "./check-runner.processor";
+import { FOLLOWUPS_QUEUE } from "./followups.contract";
 import { IMAGES_QUEUE } from "./images.contract";
 import { ImagesProcessor } from "./images.processor";
 
@@ -18,7 +19,7 @@ import { ImagesProcessor } from "./images.processor";
     PrismaModule,
     VisionModule,
     QuotaModule,
-    BullModule.registerQueue({ name: IMAGES_QUEUE }, { name: CHECKS_QUEUE }),
+    BullModule.registerQueue({ name: IMAGES_QUEUE }, { name: CHECKS_QUEUE }, { name: FOLLOWUPS_QUEUE }),
   ],
   providers: [
     ImagesProcessor,

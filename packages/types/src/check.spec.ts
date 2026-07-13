@@ -1,4 +1,4 @@
-import { checkResponseSchema } from "./check";
+import { checkResponseSchema, followUpResponseSchema } from "./check";
 import { isTerminalCheckStatus } from "./check-status";
 import type { TriageResult } from "./triage";
 
@@ -57,6 +57,45 @@ describe("checkResponseSchema", () => {
     };
 
     expect(checkResponseSchema.safeParse(body).success).toBe(false);
+  });
+
+  it("parses a body carrying followUp with an escalatedTier", () => {
+    const body = {
+      id: "c4",
+      status: "DONE",
+      category: "vomiting",
+      createdAt: "2024-01-01T00:00:00.000Z",
+      result: SAMPLE_RESULT,
+      followUp: { response: "worse", escalatedTier: "VET_SOON" },
+    };
+
+    const parsed = checkResponseSchema.parse(body);
+    expect(parsed).toEqual(body);
+  });
+
+  it("parses a body carrying followUp without an escalatedTier (better/same)", () => {
+    const body = {
+      id: "c5",
+      status: "DONE",
+      category: "vomiting",
+      createdAt: "2024-01-01T00:00:00.000Z",
+      result: SAMPLE_RESULT,
+      followUp: { response: "better" },
+    };
+
+    const parsed = checkResponseSchema.parse(body);
+    expect(parsed).toEqual(body);
+    expect(parsed.followUp?.escalatedTier).toBeUndefined();
+  });
+});
+
+describe("followUpResponseSchema", () => {
+  it.each(["better", "same", "worse"] as const)("accepts %s", (value) => {
+    expect(followUpResponseSchema.safeParse(value).success).toBe(true);
+  });
+
+  it.each(["Better", "worst", "", "SAME", 1])("rejects %p", (value) => {
+    expect(followUpResponseSchema.safeParse(value).success).toBe(false);
   });
 });
 
