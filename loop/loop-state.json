@@ -707,7 +707,7 @@
   "checkpoints": {
     "C1": {
       "afterMilestone": "M3",
-      "approved": false,
+      "approved": true,
       "gate": "Founder (ideally + veterinarian) reviews AI eval report before user-facing triage wiring"
     },
     "C2": {
