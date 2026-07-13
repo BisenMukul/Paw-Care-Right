@@ -4,6 +4,7 @@ import { useState } from "react";
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import type { PhotoUploadCapability } from "../../api/intake-photos-api";
 import { strings } from "../../strings";
 import { buildIntakeCandidate, describeAnswer } from "../../checks/intake";
 import { PrimaryButton } from "../primary-button";
@@ -13,6 +14,8 @@ export interface IntakeFormProps {
   categoryDef: CategoryDef;
   onExit: () => void;
   onSubmit: (intake: CompletedIntake) => void;
+  /** T046: pet-scoped photo upload seam, passed through to `QuestionRenderer`. */
+  photoUpload?: PhotoUploadCapability | undefined;
 }
 
 function omitKey(record: Record<string, Answer>, key: string): Record<string, Answer> {
@@ -27,7 +30,7 @@ function omitKey(record: Record<string, Answer>, key: string): Record<string, An
  * question step renders via `QuestionRenderer` — ZERO per-category logic.
  * Ephemeral local state only (plan Risk R2): no store, no persistence.
  */
-export function IntakeForm({ categoryDef, onExit, onSubmit }: IntakeFormProps) {
+export function IntakeForm({ categoryDef, onExit, onSubmit, photoUpload }: IntakeFormProps) {
   const questions = categoryDef.questions;
   const total = questions.length + 2;
   const freeTextStepIndex = questions.length;
@@ -74,6 +77,7 @@ export function IntakeForm({ categoryDef, onExit, onSubmit }: IntakeFormProps) {
                   question={currentQuestion}
                   answer={answers[currentQuestion.id]}
                   onChange={(answer) => handleAnswerChange(currentQuestion, answer)}
+                  photoUpload={photoUpload}
                 />
               ) : null}
 

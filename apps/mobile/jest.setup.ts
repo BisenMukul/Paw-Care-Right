@@ -80,14 +80,19 @@ jest.mock("expo-network", () => ({
   addNetworkStateListener: jest.fn(() => ({ remove: jest.fn() })),
 }));
 
-// expo-image-picker (T024) — granted permission + a single non-canceled
-// asset by default; individual tests may override with
+// expo-image-picker (T024, camera fns added T046) — granted permission + a
+// single non-canceled asset by default; individual tests may override with
 // `mockResolvedValueOnce`.
 jest.mock("expo-image-picker", () => ({
   requestMediaLibraryPermissionsAsync: jest.fn(async () => ({ status: "granted" })),
   launchImageLibraryAsync: jest.fn(async () => ({
     canceled: false,
     assets: [{ uri: "file:///pick.jpg", width: 2000, height: 1500 }],
+  })),
+  requestCameraPermissionsAsync: jest.fn(async () => ({ status: "granted" })),
+  launchCameraAsync: jest.fn(async () => ({
+    canceled: false,
+    assets: [{ uri: "file:///camera.jpg", width: 2000, height: 1500 }],
   })),
 }));
 

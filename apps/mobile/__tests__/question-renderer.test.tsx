@@ -176,15 +176,17 @@ describe("QuestionRenderer", () => {
     expect(onChange).toHaveBeenLastCalledWith(undefined);
   });
 
-  it("photoPrompt: renders stub + prompt, never calls onChange", async () => {
+  it("photoPrompt: with no photoUpload capability, renders the unavailable note + prompt, never calls onChange", async () => {
     const onChange = jest.fn();
     await render(
       <QuestionRenderer question={photoPromptQuestion} answer={undefined} onChange={onChange} />,
     );
 
-    expect(screen.getByTestId("intake-photo-stub-q-photo")).toBeTruthy();
+    expect(screen.getByTestId("intake-photo-unavailable-q-photo")).toBeTruthy();
     expect(screen.getByTestId("intake-question-prompt")).toHaveTextContent("Photo prompt");
-    expect(screen.getByText(strings.intake.photoStub)).toBeTruthy();
+    expect(screen.getByText(strings.intake.photo.unavailable)).toBeTruthy();
+    expect(screen.getByTestId("intake-photo-camera-q-photo").props.accessibilityState.disabled).toBe(true);
+    expect(screen.getByTestId("intake-photo-library-q-photo").props.accessibilityState.disabled).toBe(true);
     expect(onChange).not.toHaveBeenCalled();
   });
 });

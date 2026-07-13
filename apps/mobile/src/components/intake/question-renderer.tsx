@@ -2,19 +2,22 @@ import type { Answer, QuestionDef } from "@pawcareright/types";
 import { useState } from "react";
 import { Pressable, Text, TextInput, View } from "react-native";
 
+import type { PhotoUploadCapability } from "../../api/intake-photos-api";
 import { strings } from "../../strings";
+import { PhotoPromptQuestion } from "./photo-prompt-question";
 
 export interface QuestionRendererProps {
   question: QuestionDef;
   answer: Answer | undefined;
   onChange: (answer: Answer | undefined) => void;
+  /** T046: pet-scoped upload seam, threaded only into the `photoPrompt` case. */
+  photoUpload?: PhotoUploadCapability | undefined;
 }
 
 type SingleQuestionDef = Extract<QuestionDef, { type: "single" }>;
 type MultiQuestionDef = Extract<QuestionDef, { type: "multi" }>;
 type ScaleQuestionDef = Extract<QuestionDef, { type: "scale" }>;
 type DurationQuestionDef = Extract<QuestionDef, { type: "duration" }>;
-type PhotoPromptQuestionDef = Extract<QuestionDef, { type: "photoPrompt" }>;
 
 type SingleAnswer = Extract<Answer, { type: "single" }>;
 type MultiAnswer = Extract<Answer, { type: "multi" }>;
@@ -230,26 +233,13 @@ export function DurationQuestion({ question, answer, onChange }: DurationQuestio
   );
 }
 
-export interface PhotoPromptQuestionProps {
-  question: PhotoPromptQuestionDef;
-}
-
-/** T046 stub (plan Renderer spec §5 / Risk R4): no camera/picker/upload, emits no answer. */
-export function PhotoPromptQuestion({ question }: PhotoPromptQuestionProps) {
-  return (
-    <View testID={`intake-photo-stub-${question.id}`} className="gap-2 rounded-lg bg-brand-50 p-4">
-      <Text className="text-sm text-brand-700">{strings.intake.photoStub}</Text>
-    </View>
-  );
-}
-
 /**
  * Data-driven switch on `question.type` (plan Key decision 1). Renders the
  * shared prompt/helpText chrome once, then delegates to the matching
  * presentational sub-component. A defensive fallback returns `null` for a
  * malformed/unknown type — never throws.
  */
-export function QuestionRenderer({ question, answer, onChange }: QuestionRendererProps) {
+export function QuestionRenderer({ question, answer, onChange, photoUpload }: QuestionRendererProps) {
   return (
     <View className="gap-3">
       <Text testID="intake-question-prompt" className="text-lg font-semibold text-brand-900">
@@ -258,7 +248,7 @@ export function QuestionRenderer({ question, answer, onChange }: QuestionRendere
       {question.helpText !== undefined ? (
         <Text className="text-sm text-brand-700">{question.helpText}</Text>
       ) : null}
-      {renderByType(question, answer, onChange)}
+      {renderByType(question, answer, onChange, photoUpload)}
     </View>
   );
 }
@@ -267,6 +257,7 @@ function renderByType(
   question: QuestionDef,
   answer: Answer | undefined,
   onChange: (answer: Answer | undefined) => void,
+  photoUpload: PhotoUploadCapability | undefined,
 ) {
   switch (question.type) {
     case "single":
@@ -302,7 +293,14 @@ function renderByType(
         />
       );
     case "photoPrompt":
-      return <PhotoPromptQuestion question={question} />;
+      return (
+        <PhotoPromptQuestion
+          question={question}
+          answer={answer?.type === "photoPrompt" ? answer : undefined}
+          onChange={onChange}
+          photoUpload={photoUpload}
+        />
+      );
     default:
       return null;
   }

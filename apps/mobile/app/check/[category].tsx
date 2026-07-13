@@ -1,9 +1,11 @@
 import { useIsOffline } from "@pawcareright/api-client";
 import { getCategoryDef, type CompletedIntake } from "@pawcareright/types";
 import { useLocalSearchParams, useRouter } from "expo-router";
+import { useMemo } from "react";
 import { Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { uploadIntakePhoto } from "../../src/api/intake-photos-api";
 import { IntakeForm } from "../../src/components/intake/intake-form";
 import { strings } from "../../src/strings";
 
@@ -22,6 +24,17 @@ export default function IntakeScreen() {
   const isOffline = useIsOffline();
 
   const categoryDef = category !== undefined ? getCategoryDef(category) : undefined;
+
+  // T046: the pet-scoped upload capability, built from this route's own
+  // `petId` param — the schema-driven `IntakeForm`/`QuestionRenderer` never
+  // learn `petId` themselves (plan §"petId / capability seam design").
+  const photoUpload = useMemo(
+    () =>
+      petId !== undefined
+        ? { upload: (uri: string, onProgress: (progress: number) => void) => uploadIntakePhoto(petId, uri, onProgress) }
+        : undefined,
+    [petId],
+  );
 
   if (categoryDef === undefined) {
     return (
@@ -44,7 +57,12 @@ export default function IntakeScreen() {
           {strings.intake.offlineBanner}
         </Text>
       ) : null}
-      <IntakeForm categoryDef={categoryDef} onExit={() => router.back()} onSubmit={handleSubmit} />
+      <IntakeForm
+        categoryDef={categoryDef}
+        onExit={() => router.back()}
+        onSubmit={handleSubmit}
+        photoUpload={photoUpload}
+      />
     </View>
   );
 }

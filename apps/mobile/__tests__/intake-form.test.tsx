@@ -110,8 +110,9 @@ describe("IntakeForm — mutation-resistance (AC2)", () => {
     await fireEvent.press(screen.getByTestId("intake-duration-unit-d1-hours"));
     await fireEvent.press(screen.getByTestId("intake-next"));
 
-    // step 4: photoPrompt p1 — skip (stub emits no answer)
-    expect(screen.getByTestId("intake-photo-stub-p1")).toBeTruthy();
+    // step 4: photoPrompt p1 — no photoUpload capability passed to IntakeForm,
+    // so it renders the disabled "unavailable" state and emits no answer.
+    expect(screen.getByTestId("intake-photo-unavailable-p1")).toBeTruthy();
     await fireEvent.press(screen.getByTestId("intake-next"));
 
     // step 5: the extra question no mobile code hardcodes

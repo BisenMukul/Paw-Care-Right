@@ -496,3 +496,11 @@
 - **Carried to T046/T047:** photoPrompt stub replacement point; the route screen's onSubmit stub is T047's single insertion point (petId stays in the route closure).
 - No new dependencies.
 - Commit: feat(mobile): T045 dynamic intake form (journal rides in the same one-task-one-commit).
+
+## [2026-07-13] T046 · Mobile: photo capture/pick step — DONE (attempt 1)
+- Planner (Fable): `loop/plans/T046.plan.md` — replaces the T045 photoPrompt stub: pure `photoUploadReducer` state machine (pending/uploading/uploaded/failed; illegal transitions are same-reference no-ops); `PhotoPromptQuestion` with camera/library CTAs (just-in-time permission + rationale, T024 pattern), thumbnails/remove, limit = question.maxPhotos, per-slot progress/retry; **photoKeys answer = UPLOADED keys only** (failed slots never leak); upload = T023 presign→XHR-PUT-with-progress→confirm reusing the existing ≤1600px `compressImage`; **optional `photoUpload` capability prop** threaded route→form→renderer so the schema-driven renderer stays pure and no-capability degrades gracefully (emits nothing).
+- Executor (Sonnet, 2 passes — turn-limited at the last assertion update): 5 new + 7 modified; mobile **22/120 → 24 suites / 140 tests**. exactOptionalPropertyTypes handled via explicit `| undefined`.
+- Checker (Fable, adversarial): `loop/reviews/T046.review.md` → **VERDICT: pass**. Machine purity (zero imports) + full legal/illegal transition coverage probed; limit test uses synthetic maxPhotos:2 (not hardcoded 3); failed slots structurally cannot carry keys; T045 mutation-resistance intact in substance (only stub-testID swaps); upload flow verified as reuse-by-import; the single test-only `as any` justified+eslint-disabled.
+- **Carried to T047:** the intake now emits real photoKeys; the route screen's onSubmit stub is the insertion point.
+- No new dependencies.
+- Commit: feat(mobile): T046 photo capture/pick step (journal rides in the same one-task-one-commit).
