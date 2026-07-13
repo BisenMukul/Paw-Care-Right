@@ -5,6 +5,7 @@ import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 import { AuthModule } from "./auth/auth.module";
 import { JwtAuthGuard } from "./auth/jwt-auth.guard";
 import { BreedsModule } from "./breeds/breeds.module";
+import { ChecksModule } from "./checks/checks.module";
 import { HouseholdScopeGuard } from "./common/household-scope.guard";
 import { RolesGuard } from "./common/roles.guard";
 import { THROTTLE_DEFAULT } from "./common/throttle.config";
@@ -34,6 +35,7 @@ import { WorkersModule } from "./workers/workers.module";
     QueueModule,
     PhotosModule,
     QuotaModule,
+    ChecksModule,
     WorkersModule,
     ThrottlerModule.forRoot([{ name: "default", ...THROTTLE_DEFAULT }]),
   ],
