@@ -12,14 +12,25 @@ import { configureApp } from "../src/app.setup";
 import type { ChecksJobData } from "../src/checks/checks.contract";
 import { CHECKS_QUEUE } from "../src/checks/checks.contract";
 import { ENTITLEMENT_RESOLVER } from "../src/quota/entitlement";
+import { CheckRunnerProcessor } from "../src/workers/check-runner.processor";
 import { cleanupUsers, createOwnerContext, createUser, mintAccessToken, resolveJwtService, type AuthedContext } from "./factories";
 
 /**
- * Real Postgres + real Redis/BullMQ round-trip — no `@Processor` is
- * registered for `pawcareright-checks` in T042 (T043 consumes it), so this
- * suite only ever asserts a job was *enqueued*, never that it finished.
- * FREE `checks` quota is a persistent (`total`) Redis counter, so every
- * quota-sensitive test uses a FRESH user (see plan Traps).
+ * Real Postgres + real Redis/BullMQ round-trip. `CheckRunnerProcessor`
+ * (T043) is registered in `WorkersModule`/`AppModule`, but this suite
+ * overrides it with a no-op `useValue` so the BullMQ explorer's
+ * `isProcessor` scan (which keys off `@Processor` reflect-metadata on the
+ * resolved instance's constructor) finds nothing to attach a real `Worker`
+ * to for `pawcareright-checks` here -- this suite only ever asserts a job
+ * was *enqueued*, and several tests manually stage `SymptomCheck.status`/
+ * `TriageResult` rows to exercise the GET read-path in isolation; a live
+ * worker racing those manual writes against T043's real (network-calling by
+ * default, `AI_TEXT_PROVIDER=ollama`) triage pipeline would make this whole
+ * suite non-deterministic. `CheckRunnerProcessor`'s own real behavior is
+ * covered by its direct-invoke unit suite
+ * (`src/workers/check-runner.processor.spec.ts`). FREE `checks` quota is a
+ * persistent (`total`) Redis counter, so every quota-sensitive test uses a
+ * FRESH user (see plan Traps).
  */
 describe("Checks (e2e)", () => {
   let app: INestApplication;
@@ -31,7 +42,10 @@ describe("Checks (e2e)", () => {
   const userIds: string[] = [];
 
   beforeAll(async () => {
-    const moduleRef = await Test.createTestingModule({ imports: [AppModule] }).compile();
+    const moduleRef = await Test.createTestingModule({ imports: [AppModule] })
+      .overrideProvider(CheckRunnerProcessor)
+      .useValue({ process: async () => undefined })
+      .compile();
     app = moduleRef.createNestApplication();
     configureApp(app);
     await app.init();
@@ -39,6 +53,8 @@ describe("Checks (e2e)", () => {
     const premiumModuleRef = await Test.createTestingModule({ imports: [AppModule] })
       .overrideProvider(ENTITLEMENT_RESOLVER)
       .useValue({ resolve: async () => ({ tier: "PREMIUM", bypassQuota: true }) })
+      .overrideProvider(CheckRunnerProcessor)
+      .useValue({ process: async () => undefined })
       .compile();
     premiumApp = premiumModuleRef.createNestApplication();
     configureApp(premiumApp);
