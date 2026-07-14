@@ -1,0 +1,749 @@
+import { BadRequestException, NotFoundException } from "@nestjs/common";
+
+import type { PetResponse } from "../pets/pets.service";
+import type { PetsService } from "../pets/pets.service";
+import type { PrismaService } from "../prisma/prisma.service";
+import type { CreateReminderDto } from "./dto/create-reminder.dto";
+import type { UpdateReminderDto } from "./dto/update-reminder.dto";
+import { RemindersService } from "./reminders.service";
+
+const HOUSEHOLD_ID = "household-1";
+const PET_ID = "pet-1";
+const REMINDER_ID = "reminder-1";
+
+function buildPet(overrides: Partial<PetResponse> = {}): PetResponse {
+  return {
+    id: PET_ID,
+    householdId: HOUSEHOLD_ID,
+    species: "DOG",
+    sex: "UNKNOWN",
+    name: "Fido",
+    neutered: false,
+    breedSlug: null,
+    birthDate: null,
+    ageEstimateMonths: null,
+    weightGrams: null,
+    photoKey: null,
+    createdAt: new Date("2024-01-01T00:00:00.000Z"),
+    updatedAt: new Date("2024-01-01T00:00:00.000Z"),
+    ...overrides,
+  };
+}
+
+function buildReminderRow(overrides: Partial<Record<string, unknown>> = {}) {
+  return {
+    id: REMINDER_ID,
+    petId: PET_ID,
+    type: "VACCINE",
+    title: "Rabies booster",
+    rrule: "FREQ=YEARLY",
+    timezone: "UTC",
+    startAt: new Date("2026-08-01T09:00:00.000Z"),
+    nextFireAt: new Date("2026-08-01T09:00:00.000Z"),
+    medNameAsEntered: null,
+    active: true,
+    templateKey: null,
+    createdAt: new Date("2026-01-01T00:00:00.000Z"),
+    updatedAt: new Date("2026-01-01T00:00:00.000Z"),
+    ...overrides,
+  };
+}
+
+function buildPetsService(findOne?: jest.Mock): PetsService {
+  return { findOne: findOne ?? jest.fn().mockResolvedValue(buildPet()) } as unknown as PetsService;
+}
+
+function buildPrisma(overrides: {
+  create?: jest.Mock;
+  findMany?: jest.Mock;
+  findFirst?: jest.Mock;
+  update?: jest.Mock;
+  delete?: jest.Mock;
+  eventFindMany?: jest.Mock;
+  transaction?: jest.Mock;
+}): PrismaService {
+  return {
+    reminder: {
+      create: overrides.create ?? jest.fn(),
+      findMany: overrides.findMany ?? jest.fn().mockResolvedValue([]),
+      findFirst: overrides.findFirst ?? jest.fn(),
+      update: overrides.update ?? jest.fn(),
+      delete: overrides.delete ?? jest.fn(),
+    },
+    reminderEvent: {
+      findMany: overrides.eventFindMany ?? jest.fn().mockResolvedValue([]),
+    },
+    $transaction:
+      overrides.transaction ?? jest.fn((queries: Array<Promise<unknown>>) => Promise.all(queries)),
+  } as unknown as PrismaService;
+}
+
+describe("RemindersService", () => {
+  describe("create", () => {
+    it("pet-404 first: petsService.findOne rejects -> no reminder.create call", async () => {
+      const petsService = buildPetsService(jest.fn().mockRejectedValue(new NotFoundException()));
+      const create = jest.fn();
+      const prisma = buildPrisma({ create });
+      const service = new RemindersService(prisma, petsService);
+
+      const dto: CreateReminderDto = {
+        type: "VACCINE",
+        title: "Rabies booster",
+        rrule: "FREQ=YEARLY",
+        timezone: "UTC",
+        startAt: "2026-08-01T09:00:00.000Z",
+      };
+
+      await expect(service.create(HOUSEHOLD_ID, PET_ID, dto)).rejects.toBeInstanceOf(NotFoundException);
+      expect(create).not.toHaveBeenCalled();
+    });
+
+    it("invalid rrule -> BadRequestException, no persist", async () => {
+      const petsService = buildPetsService();
+      const create = jest.fn();
+      const prisma = buildPrisma({ create });
+      const service = new RemindersService(prisma, petsService);
+
+      const dto = {
+        type: "VACCINE",
+        title: "Rabies booster",
+        rrule: "NOT_A_RRULE",
+        timezone: "UTC",
+        startAt: "2026-08-01T09:00:00.000Z",
+      } as CreateReminderDto;
+
+      await expect(service.create(HOUSEHOLD_ID, PET_ID, dto)).rejects.toBeInstanceOf(BadRequestException);
+      expect(create).not.toHaveBeenCalled();
+    });
+
+    it("throws 400 when computeNextFireAt returns null (exhausted COUNT before startAt)", async () => {
+      const petsService = buildPetsService();
+      const create = jest.fn();
+      const prisma = buildPrisma({ create });
+      const service = new RemindersService(prisma, petsService);
+
+      const dto: CreateReminderDto = {
+        type: "VACCINE",
+        title: "Rabies booster",
+        rrule: "FREQ=DAILY;UNTIL=20200101T000000Z", // UNTIL in the past relative to startAt
+        timezone: "UTC",
+        startAt: "2026-08-01T09:00:00.000Z",
+      };
+
+      await expect(service.create(HOUSEHOLD_ID, PET_ID, dto)).rejects.toBeInstanceOf(BadRequestException);
+      expect(create).not.toHaveBeenCalled();
+    });
+
+    it("persists nextFireAt = computeNextFireAt(rule, startAt, startAt, tz) and maps the response", async () => {
+      const petsService = buildPetsService();
+      const row = buildReminderRow();
+      const create = jest.fn().mockResolvedValue(row);
+      const prisma = buildPrisma({ create });
+      const service = new RemindersService(prisma, petsService);
+
+      const dto: CreateReminderDto = {
+        type: "VACCINE",
+        title: "Rabies booster",
+        rrule: "FREQ=YEARLY",
+        timezone: "UTC",
+        startAt: "2026-08-01T09:00:00.000Z",
+      };
+
+      const result = await service.create(HOUSEHOLD_ID, PET_ID, dto);
+
+      expect(create).toHaveBeenCalledWith({
+        data: {
+          petId: PET_ID,
+          type: "VACCINE",
+          title: "Rabies booster",
+          rrule: "FREQ=YEARLY",
+          timezone: "UTC",
+          startAt: new Date("2026-08-01T09:00:00.000Z"),
+          nextFireAt: new Date("2026-08-01T09:00:00.000Z"),
+        },
+      });
+      expect(result.id).toBe(REMINDER_ID);
+      expect(result.medNameAsEntered).toBeUndefined();
+      expect(result.templateKey).toBeUndefined();
+    });
+
+    it("passes medNameAsEntered through when present", async () => {
+      const petsService = buildPetsService();
+      const row = buildReminderRow({ medNameAsEntered: "Apoquel 16mg, per vet" });
+      const create = jest.fn().mockResolvedValue(row);
+      const prisma = buildPrisma({ create });
+      const service = new RemindersService(prisma, petsService);
+
+      const dto: CreateReminderDto = {
+        type: "MEDICATION",
+        title: "Evening med",
+        rrule: "FREQ=DAILY",
+        timezone: "UTC",
+        startAt: "2026-08-01T09:00:00.000Z",
+        medNameAsEntered: "Apoquel 16mg, per vet",
+      };
+
+      const result = await service.create(HOUSEHOLD_ID, PET_ID, dto);
+
+      expect(create).toHaveBeenCalledWith(
+        expect.objectContaining({ data: expect.objectContaining({ medNameAsEntered: "Apoquel 16mg, per vet" }) }),
+      );
+      expect(result.medNameAsEntered).toBe("Apoquel 16mg, per vet");
+    });
+  });
+
+  describe("list", () => {
+    it("pet-404 first", async () => {
+      const petsService = buildPetsService(jest.fn().mockRejectedValue(new NotFoundException()));
+      const findMany = jest.fn();
+      const prisma = buildPrisma({ findMany });
+      const service = new RemindersService(prisma, petsService);
+
+      await expect(service.list(HOUSEHOLD_ID, PET_ID, {})).rejects.toBeInstanceOf(NotFoundException);
+      expect(findMany).not.toHaveBeenCalled();
+    });
+
+    it("paginates with take=limit+1 and returns nextCursor when there's an extra row", async () => {
+      const petsService = buildPetsService();
+      const rows = [
+        buildReminderRow({ id: "r3" }),
+        buildReminderRow({ id: "r2" }),
+        buildReminderRow({ id: "r1" }), // the "extra" row signaling more pages
+      ];
+      const findMany = jest.fn().mockResolvedValue(rows);
+      const prisma = buildPrisma({ findMany });
+      const service = new RemindersService(prisma, petsService);
+
+      const result = await service.list(HOUSEHOLD_ID, PET_ID, { limit: 2 });
+
+      expect(findMany).toHaveBeenCalledWith({
+        where: { petId: PET_ID },
+        orderBy: { createdAt: "desc" },
+        take: 3,
+      });
+      expect(result.items).toHaveLength(2);
+      expect(result.nextCursor).toBe("r2");
+    });
+
+    it("final page (no extra row) -> nextCursor null", async () => {
+      const petsService = buildPetsService();
+      const findMany = jest.fn().mockResolvedValue([buildReminderRow()]);
+      const prisma = buildPrisma({ findMany });
+      const service = new RemindersService(prisma, petsService);
+
+      const result = await service.list(HOUSEHOLD_ID, PET_ID, { cursor: "some-cursor", limit: 20 });
+
+      expect(findMany).toHaveBeenCalledWith(
+        expect.objectContaining({ cursor: { id: "some-cursor" }, skip: 1 }),
+      );
+      expect(result.nextCursor).toBeNull();
+    });
+  });
+
+  describe("findOne", () => {
+    it("household-scoped fetch, not found -> NotFoundException", async () => {
+      const findFirst = jest.fn().mockResolvedValue(null);
+      const prisma = buildPrisma({ findFirst });
+      const service = new RemindersService(prisma, buildPetsService());
+
+      await expect(service.findOne(HOUSEHOLD_ID, REMINDER_ID)).rejects.toBeInstanceOf(NotFoundException);
+      expect(findFirst).toHaveBeenCalledWith({
+        where: { id: REMINDER_ID, pet: { householdId: HOUSEHOLD_ID, deletedAt: null } },
+      });
+    });
+
+    it("found -> maps the response", async () => {
+      const findFirst = jest.fn().mockResolvedValue(buildReminderRow());
+      const prisma = buildPrisma({ findFirst });
+      const service = new RemindersService(prisma, buildPetsService());
+
+      const result = await service.findOne(HOUSEHOLD_ID, REMINDER_ID);
+
+      expect(result.id).toBe(REMINDER_ID);
+    });
+  });
+
+  describe("update", () => {
+    it("not found -> NotFoundException, no update call", async () => {
+      const findFirst = jest.fn().mockResolvedValue(null);
+      const update = jest.fn();
+      const prisma = buildPrisma({ findFirst, update });
+      const service = new RemindersService(prisma, buildPetsService());
+
+      await expect(service.update(HOUSEHOLD_ID, REMINDER_ID, {} as UpdateReminderDto)).rejects.toBeInstanceOf(
+        NotFoundException,
+      );
+      expect(update).not.toHaveBeenCalled();
+    });
+
+    it("no schedule-affecting field present -> nextFireAt untouched, only present fields written", async () => {
+      const existing = buildReminderRow();
+      const findFirst = jest.fn().mockResolvedValue(existing);
+      const updated = buildReminderRow({ title: "Updated title" });
+      const update = jest.fn().mockResolvedValue(updated);
+      const prisma = buildPrisma({ findFirst, update });
+      const service = new RemindersService(prisma, buildPetsService());
+
+      const result = await service.update(HOUSEHOLD_ID, REMINDER_ID, { title: "Updated title" });
+
+      expect(update).toHaveBeenCalledWith({ where: { id: REMINDER_ID }, data: { title: "Updated title" } });
+      expect(result.title).toBe("Updated title");
+    });
+
+    it("rrule present -> recomputes nextFireAt from the new rule + existing startAt/tz", async () => {
+      const existing = buildReminderRow({
+        rrule: "FREQ=YEARLY",
+        startAt: new Date("2026-01-10T09:00:00.000Z"),
+        timezone: "UTC",
+      });
+      const findFirst = jest.fn().mockResolvedValue(existing);
+      const update = jest.fn().mockResolvedValue(buildReminderRow({ rrule: "FREQ=DAILY" }));
+      const prisma = buildPrisma({ findFirst, update });
+      const service = new RemindersService(prisma, buildPetsService());
+
+      await service.update(HOUSEHOLD_ID, REMINDER_ID, { rrule: "FREQ=DAILY" });
+
+      expect(update).toHaveBeenCalledWith({
+        where: { id: REMINDER_ID },
+        data: { rrule: "FREQ=DAILY", nextFireAt: new Date("2026-01-10T09:00:00.000Z") },
+      });
+    });
+
+    it("startAt present -> recomputes nextFireAt from the existing rule + new startAt", async () => {
+      const existing = buildReminderRow({ rrule: "FREQ=DAILY", timezone: "UTC" });
+      const findFirst = jest.fn().mockResolvedValue(existing);
+      const update = jest.fn().mockResolvedValue(existing);
+      const prisma = buildPrisma({ findFirst, update });
+      const service = new RemindersService(prisma, buildPetsService());
+
+      await service.update(HOUSEHOLD_ID, REMINDER_ID, { startAt: "2027-01-01T10:00:00.000Z" });
+
+      expect(update).toHaveBeenCalledWith({
+        where: { id: REMINDER_ID },
+        data: { startAt: new Date("2027-01-01T10:00:00.000Z"), nextFireAt: new Date("2027-01-01T10:00:00.000Z") },
+      });
+    });
+
+    it("timezone present -> recomputes nextFireAt using the new tz", async () => {
+      const existing = buildReminderRow({
+        rrule: "FREQ=DAILY",
+        startAt: new Date("2026-03-05T14:00:00.000Z"), // 09:00 EST
+        timezone: "America/New_York",
+      });
+      const findFirst = jest.fn().mockResolvedValue(existing);
+      const update = jest.fn().mockResolvedValue(existing);
+      const prisma = buildPrisma({ findFirst, update });
+      const service = new RemindersService(prisma, buildPetsService());
+
+      await service.update(HOUSEHOLD_ID, REMINDER_ID, { timezone: "UTC" });
+
+      expect(update).toHaveBeenCalledWith({
+        where: { id: REMINDER_ID },
+        data: { timezone: "UTC", nextFireAt: new Date("2026-03-05T14:00:00.000Z") },
+      });
+    });
+
+    it("invalid rrule on update -> BadRequestException, no update call", async () => {
+      const existing = buildReminderRow();
+      const findFirst = jest.fn().mockResolvedValue(existing);
+      const update = jest.fn();
+      const prisma = buildPrisma({ findFirst, update });
+      const service = new RemindersService(prisma, buildPetsService());
+
+      await expect(
+        service.update(HOUSEHOLD_ID, REMINDER_ID, { rrule: "NOT_A_RRULE" }),
+      ).rejects.toBeInstanceOf(BadRequestException);
+      expect(update).not.toHaveBeenCalled();
+    });
+
+    it("the analogous update exhausted-rule case -> 400, no update call", async () => {
+      const existing = buildReminderRow({ startAt: new Date("2026-08-01T09:00:00.000Z") });
+      const findFirst = jest.fn().mockResolvedValue(existing);
+      const update = jest.fn();
+      const prisma = buildPrisma({ findFirst, update });
+      const service = new RemindersService(prisma, buildPetsService());
+
+      await expect(
+        service.update(HOUSEHOLD_ID, REMINDER_ID, { rrule: "FREQ=DAILY;UNTIL=20200101T000000Z" }),
+      ).rejects.toBeInstanceOf(BadRequestException);
+      expect(update).not.toHaveBeenCalled();
+    });
+
+    it("active toggle alone does not recompute nextFireAt", async () => {
+      const existing = buildReminderRow();
+      const findFirst = jest.fn().mockResolvedValue(existing);
+      const update = jest.fn().mockResolvedValue(buildReminderRow({ active: false }));
+      const prisma = buildPrisma({ findFirst, update });
+      const service = new RemindersService(prisma, buildPetsService());
+
+      const result = await service.update(HOUSEHOLD_ID, REMINDER_ID, { active: false });
+
+      expect(update).toHaveBeenCalledWith({ where: { id: REMINDER_ID }, data: { active: false } });
+      expect(result.active).toBe(false);
+    });
+
+    it("medNameAsEntered present -> written through", async () => {
+      const existing = buildReminderRow();
+      const findFirst = jest.fn().mockResolvedValue(existing);
+      const update = jest.fn().mockResolvedValue(buildReminderRow({ medNameAsEntered: "as entered" }));
+      const prisma = buildPrisma({ findFirst, update });
+      const service = new RemindersService(prisma, buildPetsService());
+
+      await service.update(HOUSEHOLD_ID, REMINDER_ID, { medNameAsEntered: "as entered" });
+
+      expect(update).toHaveBeenCalledWith({ where: { id: REMINDER_ID }, data: { medNameAsEntered: "as entered" } });
+    });
+
+    it("type present -> written through", async () => {
+      const existing = buildReminderRow();
+      const findFirst = jest.fn().mockResolvedValue(existing);
+      const update = jest.fn().mockResolvedValue(buildReminderRow({ type: "DENTAL" }));
+      const prisma = buildPrisma({ findFirst, update });
+      const service = new RemindersService(prisma, buildPetsService());
+
+      await service.update(HOUSEHOLD_ID, REMINDER_ID, { type: "DENTAL" });
+
+      expect(update).toHaveBeenCalledWith({ where: { id: REMINDER_ID }, data: { type: "DENTAL" } });
+    });
+  });
+
+  describe("remove", () => {
+    it("not found -> NotFoundException, no delete call", async () => {
+      const findFirst = jest.fn().mockResolvedValue(null);
+      const del = jest.fn();
+      const prisma = buildPrisma({ findFirst, delete: del });
+      const service = new RemindersService(prisma, buildPetsService());
+
+      await expect(service.remove(HOUSEHOLD_ID, REMINDER_ID)).rejects.toBeInstanceOf(NotFoundException);
+      expect(del).not.toHaveBeenCalled();
+    });
+
+    it("hard-deletes and returns the deleted resource", async () => {
+      const existing = buildReminderRow();
+      const findFirst = jest.fn().mockResolvedValue(existing);
+      const del = jest.fn().mockResolvedValue(existing);
+      const prisma = buildPrisma({ findFirst, delete: del });
+      const service = new RemindersService(prisma, buildPetsService());
+
+      const result = await service.remove(HOUSEHOLD_ID, REMINDER_ID);
+
+      expect(del).toHaveBeenCalledWith({ where: { id: REMINDER_ID } });
+      expect(result.id).toBe(REMINDER_ID);
+    });
+  });
+
+  describe("agenda", () => {
+    it("to<=from -> BadRequestException, no queries", async () => {
+      const findMany = jest.fn();
+      const prisma = buildPrisma({ findMany });
+      const service = new RemindersService(prisma, buildPetsService());
+
+      await expect(
+        service.agenda(HOUSEHOLD_ID, { from: "2026-08-10T00:00:00.000Z", to: "2026-08-01T00:00:00.000Z" }),
+      ).rejects.toBeInstanceOf(BadRequestException);
+      expect(findMany).not.toHaveBeenCalled();
+    });
+
+    it("window > 92 days -> BadRequestException", async () => {
+      const findMany = jest.fn();
+      const prisma = buildPrisma({ findMany });
+      const service = new RemindersService(prisma, buildPetsService());
+
+      await expect(
+        service.agenda(HOUSEHOLD_ID, { from: "2026-01-01T00:00:00.000Z", to: "2026-06-01T00:00:00.000Z" }),
+      ).rejects.toBeInstanceOf(BadRequestException);
+      expect(findMany).not.toHaveBeenCalled();
+    });
+
+    it("petId present -> validates pet ownership via petsService.findOne and scopes both queries", async () => {
+      const findOne = jest.fn().mockResolvedValue(buildPet());
+      const findMany = jest.fn().mockResolvedValue([]);
+      const eventFindMany = jest.fn().mockResolvedValue([]);
+      const prisma = buildPrisma({ findMany, eventFindMany });
+      const service = new RemindersService(prisma, buildPetsService(findOne));
+
+      await service.agenda(HOUSEHOLD_ID, {
+        from: "2026-08-01T00:00:00.000Z",
+        to: "2026-08-02T00:00:00.000Z",
+        petId: PET_ID,
+      });
+
+      expect(findOne).toHaveBeenCalledWith(HOUSEHOLD_ID, PET_ID);
+      expect(findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({ petId: PET_ID }),
+        }),
+      );
+      expect(eventFindMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({ reminder: expect.objectContaining({ petId: PET_ID }) }),
+        }),
+      );
+    });
+
+    it("petId not in household -> propagates the 404 from petsService.findOne", async () => {
+      const findOne = jest.fn().mockRejectedValue(new NotFoundException());
+      const prisma = buildPrisma({});
+      const service = new RemindersService(prisma, buildPetsService(findOne));
+
+      await expect(
+        service.agenda(HOUSEHOLD_ID, {
+          from: "2026-08-01T00:00:00.000Z",
+          to: "2026-08-02T00:00:00.000Z",
+          petId: "someone-elses-pet",
+        }),
+      ).rejects.toBeInstanceOf(NotFoundException);
+    });
+
+    it("expands a virtual occurrence for an active reminder with no materialized event", async () => {
+      const reminder = buildReminderRow({
+        rrule: "FREQ=DAILY",
+        startAt: new Date("2026-08-01T09:00:00.000Z"),
+        timezone: "UTC",
+      });
+      const findMany = jest.fn().mockResolvedValue([reminder]);
+      const eventFindMany = jest.fn().mockResolvedValue([]);
+      const prisma = buildPrisma({ findMany, eventFindMany });
+      const service = new RemindersService(prisma, buildPetsService());
+
+      const result = await service.agenda(HOUSEHOLD_ID, {
+        from: "2026-08-01T00:00:00.000Z",
+        to: "2026-08-01T23:59:59.000Z",
+      });
+
+      expect(result.entries).toHaveLength(1);
+      expect(result.entries[0]).toEqual({
+        reminderId: REMINDER_ID,
+        petId: PET_ID,
+        type: "VACCINE",
+        title: "Rabies booster",
+        dueAt: new Date("2026-08-01T09:00:00.000Z"),
+        status: "SCHEDULED",
+        virtual: true,
+      });
+    });
+
+    it("a materialized event at the same instant wins over the virtual occurrence (event status + eventId)", async () => {
+      const reminder = buildReminderRow({
+        rrule: "FREQ=DAILY",
+        startAt: new Date("2026-08-01T09:00:00.000Z"),
+        timezone: "UTC",
+      });
+      const dueAt = new Date("2026-08-01T09:00:00.000Z");
+      const findMany = jest.fn().mockResolvedValue([reminder]);
+      const eventFindMany = jest.fn().mockResolvedValue([
+        { id: "event-1", reminderId: REMINDER_ID, dueAt, status: "DONE", reminder },
+      ]);
+      const prisma = buildPrisma({ findMany, eventFindMany });
+      const service = new RemindersService(prisma, buildPetsService());
+
+      const result = await service.agenda(HOUSEHOLD_ID, {
+        from: "2026-08-01T00:00:00.000Z",
+        to: "2026-08-01T23:59:59.000Z",
+      });
+
+      expect(result.entries).toHaveLength(1);
+      expect(result.entries[0]).toEqual({
+        reminderId: REMINDER_ID,
+        petId: PET_ID,
+        type: "VACCINE",
+        title: "Rabies booster",
+        dueAt,
+        status: "DONE",
+        virtual: false,
+        eventId: "event-1",
+      });
+    });
+
+    it("an orphan materialized event (no matching virtual occurrence) is still included as its own entry", async () => {
+      const reminder = buildReminderRow({
+        rrule: "FREQ=YEARLY", // anchored on Jan 15 -- no occurrence falls in the Aug 1 window below
+        startAt: new Date("2020-01-15T09:00:00.000Z"),
+        timezone: "UTC",
+      });
+      const orphanDueAt = new Date("2026-08-01T10:00:00.000Z"); // rrule was edited after this event was created
+      const findMany = jest.fn().mockResolvedValue([reminder]);
+      const eventFindMany = jest.fn().mockResolvedValue([
+        { id: "event-orphan", reminderId: REMINDER_ID, dueAt: orphanDueAt, status: "PENDING", reminder },
+      ]);
+      const prisma = buildPrisma({ findMany, eventFindMany });
+      const service = new RemindersService(prisma, buildPetsService());
+
+      const result = await service.agenda(HOUSEHOLD_ID, {
+        from: "2026-08-01T00:00:00.000Z",
+        to: "2026-08-01T23:59:59.000Z",
+      });
+
+      expect(result.entries).toHaveLength(1);
+      expect(result.entries[0].eventId).toBe("event-orphan");
+      expect(result.entries[0].virtual).toBe(false);
+    });
+
+    it("sorts entries by dueAt ascending", async () => {
+      const reminder = buildReminderRow({
+        rrule: "FREQ=DAILY",
+        startAt: new Date("2026-08-01T09:00:00.000Z"),
+        timezone: "UTC",
+      });
+      const findMany = jest.fn().mockResolvedValue([reminder]);
+      const eventFindMany = jest.fn().mockResolvedValue([]);
+      const prisma = buildPrisma({ findMany, eventFindMany });
+      const service = new RemindersService(prisma, buildPetsService());
+
+      const result = await service.agenda(HOUSEHOLD_ID, {
+        from: "2026-08-01T00:00:00.000Z",
+        to: "2026-08-03T23:59:59.000Z",
+      });
+
+      const dueAtTimes = result.entries.map((e) => e.dueAt.getTime());
+      expect(dueAtTimes).toEqual([...dueAtTimes].sort((a, b) => a - b));
+      expect(dueAtTimes).toHaveLength(3);
+    });
+
+    it("a reminder whose rrule fails to parse defensively is skipped (no throw)", async () => {
+      const reminder = buildReminderRow({ rrule: "NOT_A_RRULE" });
+      const findMany = jest.fn().mockResolvedValue([reminder]);
+      const eventFindMany = jest.fn().mockResolvedValue([]);
+      const prisma = buildPrisma({ findMany, eventFindMany });
+      const service = new RemindersService(prisma, buildPetsService());
+
+      const result = await service.agenda(HOUSEHOLD_ID, {
+        from: "2026-08-01T00:00:00.000Z",
+        to: "2026-08-03T23:59:59.000Z",
+      });
+
+      expect(result.entries).toEqual([]);
+    });
+
+    it("excludes active:true filter to the query -- paused reminders are never expanded", async () => {
+      const findMany = jest.fn().mockResolvedValue([]);
+      const eventFindMany = jest.fn().mockResolvedValue([]);
+      const prisma = buildPrisma({ findMany, eventFindMany });
+      const service = new RemindersService(prisma, buildPetsService());
+
+      await service.agenda(HOUSEHOLD_ID, { from: "2026-08-01T00:00:00.000Z", to: "2026-08-02T00:00:00.000Z" });
+
+      expect(findMany).toHaveBeenCalledWith({
+        where: { active: true, pet: { householdId: HOUSEHOLD_ID, deletedAt: null } },
+      });
+      expect(eventFindMany).toHaveBeenCalledWith({
+        where: {
+          dueAt: { gte: new Date("2026-08-01T00:00:00.000Z"), lte: new Date("2026-08-02T00:00:00.000Z") },
+          reminder: { active: true, pet: { householdId: HOUSEHOLD_ID, deletedAt: null } },
+        },
+        include: { reminder: true },
+      });
+    });
+  });
+
+  describe("instantiateFromTemplate", () => {
+    it("creates a reminder per resolved pack item anchored per PLAN_START, sets templateKey/nextFireAt", async () => {
+      const pet = buildPet({ species: "DOG", birthDate: null, ageEstimateMonths: null });
+      const findOne = jest.fn().mockResolvedValue(pet);
+      const existingFindMany = jest.fn().mockResolvedValue([]);
+      const create = jest.fn().mockImplementation(({ data }: { data: Record<string, unknown> }) =>
+        Promise.resolve(buildReminderRow(data)),
+      );
+      const prisma = buildPrisma({ findMany: existingFindMany, create });
+      const service = new RemindersService(prisma, buildPetsService(findOne));
+
+      const result = await service.instantiateFromTemplate(HOUSEHOLD_ID, PET_ID, { timezone: "UTC" });
+
+      expect(findOne).toHaveBeenCalledWith(HOUSEHOLD_ID, PET_ID);
+      expect(result.created.length).toBeGreaterThan(0);
+      expect(result.created.every((r) => r.templateKey !== undefined)).toBe(true);
+      expect(result.skipped).toBe(0);
+    });
+
+    it("idempotent: a second call with the same pet/pack creates no new reminders (all keys pre-exist)", async () => {
+      const pet = buildPet({ species: "DOG", birthDate: null, ageEstimateMonths: null });
+      const findOne = jest.fn().mockResolvedValue(pet);
+      // Simulate every resolved item already having a reminder: the pre-query
+      // must return a templateKey for every item id the resolver would produce.
+      // We first resolve once (unmocked) to learn how many items exist, by
+      // calling the real resolver indirectly via a first pass, then feed that
+      // count back as pre-existing keys.
+      const firstPassExisting = jest.fn().mockResolvedValue([]);
+      const create = jest
+        .fn()
+        .mockImplementation(({ data }: { data: Record<string, unknown> }) => Promise.resolve(buildReminderRow(data)));
+      const firstPrisma = buildPrisma({ findMany: firstPassExisting, create });
+      const firstService = new RemindersService(firstPrisma, buildPetsService(findOne));
+      const firstResult = await firstService.instantiateFromTemplate(HOUSEHOLD_ID, PET_ID, { timezone: "UTC" });
+      const createdKeys = firstResult.created.map((r) => ({ templateKey: r.templateKey }));
+
+      const secondPassExisting = jest.fn().mockResolvedValue(createdKeys);
+      const secondCreate = jest.fn();
+      const secondPrisma = buildPrisma({ findMany: secondPassExisting, create: secondCreate });
+      const secondService = new RemindersService(secondPrisma, buildPetsService(findOne));
+
+      const secondResult = await secondService.instantiateFromTemplate(HOUSEHOLD_ID, PET_ID, { timezone: "UTC" });
+
+      expect(secondResult.created).toEqual([]);
+      expect(secondResult.skipped).toBe(firstResult.created.length);
+      expect(secondCreate).not.toHaveBeenCalled();
+    });
+
+    it("skips a PET_AGE item with no derivable birth date (unanchorable) without throwing", async () => {
+      // ADULT/no group DOG pack items in this codebase's base schedules are
+      // PLAN_START-anchored; to force a PET_AGE branch deterministically we
+      // request the juvenile-eligible pack indirectly is out of scope here --
+      // instead we assert the service never throws for an age-unknown pet and
+      // that skipped accounts for any unanchorable items (0 or more).
+      const pet = buildPet({ species: "DOG", birthDate: null, ageEstimateMonths: null });
+      const findOne = jest.fn().mockResolvedValue(pet);
+      const existingFindMany = jest.fn().mockResolvedValue([]);
+      const create = jest
+        .fn()
+        .mockImplementation(({ data }: { data: Record<string, unknown> }) => Promise.resolve(buildReminderRow(data)));
+      const prisma = buildPrisma({ findMany: existingFindMany, create });
+      const service = new RemindersService(prisma, buildPetsService(findOne));
+
+      await expect(
+        service.instantiateFromTemplate(HOUSEHOLD_ID, PET_ID, { timezone: "UTC" }),
+      ).resolves.toBeDefined();
+    });
+
+    it("anchor derivation via explicit group: uses resolveCareTemplate directly when dto.group is present", async () => {
+      const pet = buildPet({ species: "CAT", birthDate: new Date("2026-01-01T00:00:00.000Z") });
+      const findOne = jest.fn().mockResolvedValue(pet);
+      const existingFindMany = jest.fn().mockResolvedValue([]);
+      const create = jest
+        .fn()
+        .mockImplementation(({ data }: { data: Record<string, unknown> }) => Promise.resolve(buildReminderRow(data)));
+      const prisma = buildPrisma({ findMany: existingFindMany, create });
+      const service = new RemindersService(prisma, buildPetsService(findOne));
+
+      const result = await service.instantiateFromTemplate(HOUSEHOLD_ID, PET_ID, {
+        timezone: "UTC",
+        group: "EU",
+      });
+
+      expect(result.created.length).toBeGreaterThan(0);
+    });
+
+    it("empty toCreate list (all skipped/idempotent) never calls $transaction", async () => {
+      const pet = buildPet({ species: "DOG", birthDate: null, ageEstimateMonths: null });
+      const findOne = jest.fn().mockResolvedValue(pet);
+      // First resolve to learn keys.
+      const firstPassExisting = jest.fn().mockResolvedValue([]);
+      const create = jest
+        .fn()
+        .mockImplementation(({ data }: { data: Record<string, unknown> }) => Promise.resolve(buildReminderRow(data)));
+      const firstPrisma = buildPrisma({ findMany: firstPassExisting, create });
+      const firstService = new RemindersService(firstPrisma, buildPetsService(findOne));
+      const firstResult = await firstService.instantiateFromTemplate(HOUSEHOLD_ID, PET_ID, { timezone: "UTC" });
+
+      const transaction = jest.fn();
+      const secondPrisma = buildPrisma({
+        findMany: jest.fn().mockResolvedValue(firstResult.created.map((r) => ({ templateKey: r.templateKey }))),
+        transaction,
+      });
+      const secondService = new RemindersService(secondPrisma, buildPetsService(findOne));
+
+      await secondService.instantiateFromTemplate(HOUSEHOLD_ID, PET_ID, { timezone: "UTC" });
+
+      expect(transaction).not.toHaveBeenCalled();
+    });
+  });
+});

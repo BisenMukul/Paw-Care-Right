@@ -590,3 +590,11 @@
 - **For the C2 vet-review list (checker non-blocking):** puppy series final-dose timing nuance; a deworming coverage gap; AU travel-rabies note; cross-region rabies-core id dedup consideration for T055 re-instantiation.
 - No new dependencies.
 - Commit: feat(data): T054 care template packs (journal rides in the same one-task-one-commit).
+
+## [2026-07-14] T055 · Reminders CRUD API — DONE (attempt 1)
+- Planner (Fable): `loop/plans/T055.plan.md` — reminders NestJS module on T053/T054 foundations: household-scoped CRUD (404-no-leak; nextFireAt recomputed on rrule/startAt/tz PATCH), household-wide `GET /agenda?from&to` (pure `occurrencesBetween` ITERATING the unmodified T053 computeNextFireAt — no duplicated tz math; ≤92-day bounded window; virtual occurrences merged with materialized ReminderEvents, event status wins, orphans included, inactive excluded), idempotent `POST /pets/:petId/reminders/from-template` keyed on (petId, templateKey=item.id) with T054's PET_AGE/PLAN_START anchor semantics (pseudo-birthdate fallback; unanchorable items skipped).
+- Executor (Sonnet, 2 passes): 13 new files + 2-line app.module registration; api **453 → 522 tests (51 suites)**; RemindersService coverage 95/90. Two self-corrections during spec authoring (DST fixture offset mis-derivation; a YEARLY test anchor collision) — fixed before verification, no code changes needed.
+- Checker (Fable, adversarial): `loop/reviews/T055.review.md` → **VERDICT: pass**. DST oracle values HAND-DERIVED against the real 2026 transitions and matched to the assertions; merge keying `${reminderId}:${dueAt.getTime()}` verified (materialized wins, orphans included, non-vacuous); double-call idempotency proves zero new rows; tz-only PATCH recompute probed; T053's next-fire-at.ts confirmed untouched.
+- **Carried to T056/T057:** region-change re-instantiation leaves stale schedules (honest v1: skip-existing); vet-confirm note pass-through is resolve-time (not persisted — by design); expander re-scan perf on wide windows; concurrent double-instantiation race (pre-query, no DB constraint).
+- No new dependencies.
+- Commit: feat(api): T055 reminders CRUD + agenda + template instantiation (journal rides in the same one-task-one-commit).

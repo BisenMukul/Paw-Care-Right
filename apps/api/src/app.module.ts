@@ -19,6 +19,7 @@ import { PrismaModule } from "./prisma/prisma.module";
 import { QueueModule } from "./queue/queue.module";
 import { QuotaModule } from "./quota/quota.module";
 import { RedisModule } from "./redis/redis.module";
+import { RemindersModule } from "./reminders/reminders.module";
 import { WorkersModule } from "./workers/workers.module";
 
 @Module({
@@ -36,6 +37,7 @@ import { WorkersModule } from "./workers/workers.module";
     PhotosModule,
     QuotaModule,
     ChecksModule,
+    RemindersModule,
     WorkersModule,
     ThrottlerModule.forRoot([{ name: "default", ...THROTTLE_DEFAULT }]),
   ],
