@@ -624,3 +624,8 @@
 - **Carried to T059+/T062:** deferred jobs are fire-and-forget BullMQ delay (no persistence of the defer decision — a redis flush drops them; accepted v1); quiet-hours evaluated at SEND time only (a pref change mid-defer doesn't recall the queued job); e2e T062 should walk prefs → defer → window-end targeted send.
 - No new dependencies.
 - Commit: feat(api,mobile,types): T058 notification preferences + quiet hours (journal rides in the same one-task-one-commit).
+
+## [2026-07-14] HOTFIX · Restore `pnpm typecheck` after main merge (orchestrator, Amendment A1 pattern)
+- Founder's main commit (`edc47e3` Mobile issues and Dev setup md) added `"ignoreDeprecations": "6.0"` to `apps/mobile/tsconfig.json` + `packages/data/tsconfig.json` — invalid on the workspace's pinned TypeScript ^5.9.3 (TS5103), breaking the §5 root command `pnpm typecheck` (implicit P0). Removed the two entries; everything else from the founder commit (docs/DEV_SETUP.md, .gitignore) kept intact. Verified with a forced-fresh `pnpm typecheck --force`: 14/14 green.
+- **Founder note 1:** the `"6.0"` value suggests an editor running a newer TS — point VS Code at the workspace TS version (`typescript.tsdk: node_modules/typescript/lib`) instead of suppressing.
+- **Founder note 2 (needs a decision):** the same commit added `pnpm-lock.yaml` to `.gitignore`. The lockfile is still TRACKED so CI reproducibility is unaffected today, but if it's ever untracked, installs stop being reproducible (§3 stack assumes committed lockfile). Recommend reverting that line; left as-is pending founder confirmation.

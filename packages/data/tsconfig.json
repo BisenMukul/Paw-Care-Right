@@ -1,8 +1,7 @@
 {
   "extends": "@pawcareright/config/tsconfig.base.json",
   "compilerOptions": {
-    "noEmit": true,
-    "ignoreDeprecations": "6.0"
+    "noEmit": true
   },
   "include": ["src"]
 }
