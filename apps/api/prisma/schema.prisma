@@ -30,6 +30,14 @@ enum CheckStatus {
   FALLBACK
 }
 
+enum ReminderEventStatus {
+  PENDING
+  SENT
+  DONE
+  SNOOZED
+  MISSED
+}
+
 model User {
   id        String   @id @default(uuid())
   email     String   @unique
@@ -123,6 +131,7 @@ model Pet {
   updatedAt         DateTime       @updatedAt
   household         Household      @relation(fields: [householdId], references: [id], onDelete: Cascade)
   checks            SymptomCheck[]
+  reminders         Reminder[]
 
   @@index([householdId, deletedAt])
 }
@@ -195,4 +204,41 @@ model CheckFollowUp {
   createdAt     DateTime @default(now())
 
   check SymptomCheck @relation(fields: [checkId], references: [id], onDelete: Cascade)
+}
+
+model Reminder {
+  id               String   @id @default(uuid())
+  petId            String
+  type             String // validated by reminderTypeSchema at the DTO boundary (String mirrors TriageResult.urgency)
+  title            String
+  rrule            String // RFC5545 subset, validated by @IsRRule at the DTO boundary
+  timezone         String // IANA tz id (e.g. "Europe/Paris")
+  startAt          DateTime // DTSTART anchor (UTC) — recurrence origin; nextFireAt/agenda computed from this
+  nextFireAt       DateTime // UTC; set on create (first occurrence >= startAt), advanced by the T056 worker
+  medNameAsEntered String? // T061 med subtype: name as entered; never suggested
+  active           Boolean  @default(true) // T058/T060 pause/disable
+  templateKey      String? // T054/T055/T059 template-pack provenance + instantiation idempotency
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  pet    Pet             @relation(fields: [petId], references: [id], onDelete: Cascade)
+  events ReminderEvent[]
+
+  @@index([petId])
+}
+
+model ReminderEvent {
+  id          String              @id @default(uuid())
+  reminderId  String
+  dueAt       DateTime // UTC
+  status      ReminderEventStatus @default(PENDING)
+  sentAt      DateTime? // set by T056/T057 on push
+  completedAt DateTime? // set by T055 complete endpoint / T061 MED_GIVEN
+  createdAt   DateTime            @default(now())
+
+  reminder Reminder @relation(fields: [reminderId], references: [id], onDelete: Cascade)
+
+  @@unique([reminderId, dueAt])
+  @@index([dueAt, status])
+  @@index([reminderId])
 }
