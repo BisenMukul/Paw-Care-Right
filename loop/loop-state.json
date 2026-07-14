@@ -414,8 +414,8 @@
       "attempts": 1
     },
     "T058": {
-      "status": "pending",
-      "attempts": 0
+      "status": "in_progress",
+      "attempts": 1
     },
     "T059": {
       "status": "pending",
