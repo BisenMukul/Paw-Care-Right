@@ -225,6 +225,7 @@ model Reminder {
   events ReminderEvent[]
 
   @@index([petId])
+  @@index([active, nextFireAt])
 }
 
 model ReminderEvent {
