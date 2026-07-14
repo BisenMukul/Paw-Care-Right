@@ -95,7 +95,13 @@ export class ReminderSchedulerService {
             await this.pushQueue.add(
               PUSH_JOB_NAME,
               { reminderEventId: createdEventId },
-              { jobId: createdEventId, removeOnComplete: true, removeOnFail: false },
+              {
+                jobId: createdEventId,
+                removeOnComplete: true,
+                removeOnFail: false,
+                attempts: 5,
+                backoff: { type: "exponential", delay: 30_000 },
+              },
             );
           } catch {
             // Best-effort: a queue failure never undoes the already-created

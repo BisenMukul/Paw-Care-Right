@@ -19,6 +19,12 @@ export class RedisService implements OnModuleDestroy {
     await this.client.set(key, value, "EX", ttlSeconds);
   }
 
+  /** Atomic claim (T057 "Collapse spec"): `true` iff this call set the key (first claimant). */
+  async setNx(key: string, value: string, ttlSeconds: number): Promise<boolean> {
+    const r = await this.client.set(key, value, "EX", ttlSeconds, "NX");
+    return r === "OK";
+  }
+
   async get(key: string): Promise<string | null> {
     return this.client.get(key);
   }

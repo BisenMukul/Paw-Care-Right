@@ -33,6 +33,7 @@
     "bullmq": "^5",
     "class-transformer": "^0.5",
     "class-validator": "^0.14",
+    "expo-server-sdk": "^5.0.0",
     "helmet": "^8.2.0",
     "ioredis": "^5",
     "jose": "^5",

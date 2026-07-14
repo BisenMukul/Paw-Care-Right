@@ -56,6 +56,21 @@ describe("RedisService", () => {
     expect(client.set).toHaveBeenCalledWith("key", "value", "EX", 60);
   });
 
+  it("setNx returns true on OK and passes EX ttl NX", async () => {
+    const { service, client } = buildService();
+    client.set.mockResolvedValue("OK");
+
+    await expect(service.setNx("key", "value", 60)).resolves.toBe(true);
+    expect(client.set).toHaveBeenCalledWith("key", "value", "EX", 60, "NX");
+  });
+
+  it("setNx returns false on null", async () => {
+    const { service, client } = buildService();
+    client.set.mockResolvedValue(null);
+
+    await expect(service.setNx("key", "value", 60)).resolves.toBe(false);
+  });
+
   it("get delegates to the client", async () => {
     const { service, client } = buildService();
 
