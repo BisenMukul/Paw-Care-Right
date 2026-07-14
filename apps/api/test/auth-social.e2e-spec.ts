@@ -14,7 +14,7 @@ import { configureApp } from "../src/app.setup";
 import { APPLE_ISSUER, APPLE_JWKS_RESOLVER } from "../src/auth/social/apple-token-verifier";
 import { GOOGLE_ISSUERS, GOOGLE_JWKS_RESOLVER } from "../src/auth/social/google-token-verifier";
 import { DEFAULT_LOCALE, DEFAULT_REGION } from "../src/auth/auth.constants";
-import { cleanupUsers, createHousehold, createUser } from "./factories";
+import { cleanupUsers, createHousehold, createUser, overrideCheckRunner } from "./factories";
 
 const TEST_AUDIENCE = "com.pawcareright.app"; // APPLE_CLIENT_ID default
 const KEY_ID = "e2e-test-key-1";
@@ -56,12 +56,13 @@ describe("Auth social (e2e)", () => {
 
     const googleLocalResolver = createLocalJWKSet({ keys: [googlePublicJwk] });
 
-    const moduleRef = await Test.createTestingModule({ imports: [AppModule] })
-      .overrideProvider(APPLE_JWKS_RESOLVER)
-      .useValue(localResolver)
-      .overrideProvider(GOOGLE_JWKS_RESOLVER)
-      .useValue(googleLocalResolver)
-      .compile();
+    const moduleRef = await overrideCheckRunner(
+      Test.createTestingModule({ imports: [AppModule] })
+        .overrideProvider(APPLE_JWKS_RESOLVER)
+        .useValue(localResolver)
+        .overrideProvider(GOOGLE_JWKS_RESOLVER)
+        .useValue(googleLocalResolver),
+    ).compile();
 
     app = moduleRef.createNestApplication();
     configureApp(app);

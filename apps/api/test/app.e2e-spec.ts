@@ -6,16 +6,19 @@ import request from "supertest";
 import { AppModule } from "../src/app.module";
 import { configureApp } from "../src/app.setup";
 import { REQUEST_ID_HEADER } from "../src/common/request-id.middleware";
+import { overrideCheckRunner } from "./factories";
 import { TestThrowController } from "./test-throw.controller";
 
 describe("AppModule (e2e)", () => {
   let app: INestApplication;
 
   beforeAll(async () => {
-    const moduleRef = await Test.createTestingModule({
-      imports: [AppModule],
-      controllers: [TestThrowController],
-    }).compile();
+    const moduleRef = await overrideCheckRunner(
+      Test.createTestingModule({
+        imports: [AppModule],
+        controllers: [TestThrowController],
+      }),
+    ).compile();
 
     app = moduleRef.createNestApplication();
     configureApp(app);

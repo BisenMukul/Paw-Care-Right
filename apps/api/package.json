@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "test": "jest",
     "test:cov": "jest --coverage",
+    "load:sanity": "tsx test/load/checks-load-sanity.ts",
     "prisma:generate": "prisma generate",
     "prisma:migrate:dev": "prisma migrate dev",
     "prisma:seed": "prisma db seed",

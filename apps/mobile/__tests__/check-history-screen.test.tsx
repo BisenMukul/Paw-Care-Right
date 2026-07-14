@@ -137,6 +137,25 @@ describe("check history screen", () => {
     expect(refetch).toHaveBeenCalled();
   });
 
+  it("renders rows from both pages of a two-page result set (pages.flatMap appends)", async () => {
+    const pageTwoItem = { ...MONITOR_ITEM, id: "c3" } as unknown as CheckResponse;
+    mockUseChecksList.mockReturnValue({
+      ...BASE_MOCK,
+      data: {
+        pages: [
+          { items: [MONITOR_ITEM], nextCursor: "c1" },
+          { items: [pageTwoItem], nextCursor: null },
+        ],
+        pageParams: [undefined, "c1"],
+      },
+    });
+
+    await render(<CheckHistoryScreen />);
+
+    expect(screen.getByTestId("check-history-row-c1")).toBeTruthy();
+    expect(screen.getByTestId("check-history-row-c3")).toBeTruthy();
+  });
+
   it("row press pushes the result route", async () => {
     mockUseChecksList.mockReturnValue({ ...BASE_MOCK, ...page([MONITOR_ITEM]) });
 

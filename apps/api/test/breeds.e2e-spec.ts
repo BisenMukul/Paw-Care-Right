@@ -6,6 +6,7 @@ import request from "supertest";
 
 import { AppModule } from "../src/app.module";
 import { configureApp } from "../src/app.setup";
+import { overrideCheckRunner } from "./factories";
 
 // Public, unauthenticated, cached breed lookup/autocomplete
 // (`GET /v1/breeds?species=&q=`). No auth guard bypass needed: `@Public()`
@@ -20,7 +21,7 @@ describe("Breeds (e2e)", () => {
   let app: INestApplication;
 
   beforeAll(async () => {
-    const moduleRef = await Test.createTestingModule({ imports: [AppModule] }).compile();
+    const moduleRef = await overrideCheckRunner(Test.createTestingModule({ imports: [AppModule] })).compile();
 
     app = moduleRef.createNestApplication();
     configureApp(app);
@@ -105,10 +106,11 @@ describe("Breeds (e2e) — p95 latency", () => {
   let app: INestApplication;
 
   beforeAll(async () => {
-    const moduleRef = await Test.createTestingModule({ imports: [AppModule] })
-      .overrideProvider(getOptionsToken())
-      .useValue([{ name: "default", ttl: 60_000, limit: 1_000_000 }])
-      .compile();
+    const moduleRef = await overrideCheckRunner(
+      Test.createTestingModule({ imports: [AppModule] })
+        .overrideProvider(getOptionsToken())
+        .useValue([{ name: "default", ttl: 60_000, limit: 1_000_000 }]),
+    ).compile();
 
     app = moduleRef.createNestApplication();
     configureApp(app);

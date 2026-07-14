@@ -544,3 +544,25 @@
 - **Accepted plan risks (carried):** raiseUrgency/raiseOne duplication (types can't import ai); silent-drop on followups-queue outage (P5 revisits); String columns vs enums (matches TriageResult precedent).
 - No new dependencies.
 - Commit: feat(api,types): T051 follow-up loop (journal rides in the same one-task-one-commit).
+
+## [2026-07-14] T052 · Phase 4 E2E + load sanity — DONE (attempt 1)
+- Planner (Fable, 2 passes): `loop/plans/T052.plan.md` — full-lifecycle e2e booting AppModule with the REAL check-runner worker (only TRIAGE_TEXT_PROVIDER overridden with a scripted FakeTextProvider), isolated on Redis DB 15 (defineEnv reads process.env per-call — the pin holds through compile()); text + photo (real MinIO seed) variants poll-to-terminal and assert DONE + schema-valid result + cost + the delayed follow-up job. Carried hygiene folded in: **the T043 cross-file race fix** (shared `overrideCheckRunner` no-op helper applied to all 10 AppModule-booting suites), T049's CA/GB/AU/NZ region assertions, T050's two-page flatMap fixture. Load tool = **zero-dep tsx script** (`pnpm --filter api load:sanity`; tsx already a devDep) — 50 concurrent sustained 20s, thresholds p95<400/p99<1000/0-errors + checks-queue drain; committed, NOT in CI (manual + journaled).
+- Executor (Sonnet, multiple passes through turn limits + a transient server error + a docker stale-pid env fix): 2 new + 14 modified; api **43/424 → 44 suites / 426 tests**, mobile **240 → 241**, data 89. One in-plan deviation: the OPTIONAL rules-bench dropped from the load script (a tsx-loader-only import quirk in packages/ai — require() and native ESM both fine; out of scope to touch; the plan said "only if trivial").
+- **LOAD RUN RESULTS (journaled per the AC):**
+  concurrency=50 duration=20s provider=fake · requests=42702 errors=0 · p50=21.5ms p95=37.9ms p99=52.4ms max=541.6ms · thresholds p95<400 p99<1000 errorRate=0 → PASS · checks-queue drained (waiting+active==0) in 0.0s → PASS. The p99 52.4ms under 50-concurrent load confirms no event-loop blocking >50ms sustained (rules layer 0.05ms/eval per the T031 bench).
+- Checker (Fable, adversarial): `loop/reviews/T052.review.md` → **VERDICT: pass**. api suite run TWICE clean (the direct evidence the T043 race is eliminated); tsx dependency BLOCKING check passed; Redis db-15 pin verified against packages/config source; photo variant non-vacuity proven (a VisionPrep throw lands FALLBACK, failing the DONE assertion); all 10 hygiene wraps diffed line-by-line (zero assertion changes); load numbers internally consistent.
+- No new dependencies.
+- Commit: test(api,mobile,data): T052 phase-4 E2E + load sanity (journal rides in the same one-task-one-commit).
+
+## [2026-07-14] 🚩 MILESTONE M4 — Phase 4 (Symptom Check End-to-End) COMPLETE
+- **Scope:** T041–T052 all DONE (12 tasks): check models + migration (status transitions, idempotency, indexes); POST /checks with rules-before-quota + emergency-in-201; the check-runner worker applying the §5 floors on all three result paths; mobile end-to-end — category grid → dynamic schema-driven intake → photo capture/upload → submission with the red-flag-bypasses-polling guarantee → calm polling → result screen with non-dismissible VetDisclaimer → acknowledge-gated emergency interstitial with region hotlines → history + deep link; follow-up loop (better/same/worse, fail-upward escalation, delayed push queue for P5); lifecycle E2E + load sanity.
+- **M4 gate (LOOP_PROTOCOL §6):**
+  1. Full suite: typecheck/lint/test/build all exit 0 — api **44 suites / 426 tests** (run twice clean), mobile **35 suites / 241 tests / 11 snapshots**, types 324, ai 425+3, data 89, api-client 52, config 4.
+  2. `pnpm test:ai-evals`: exit 0 — **195 cases, thresholdsPassed=true** (re-run at gate).
+  3. Zero in_progress, zero blocked. ✓
+  4. Load sanity journaled above (T052 AC). ✓
+  5. This milestone journal entry. ✓
+- **Deferred device verification (headless container, as at M2):** the PHASES M4 line "device demo of full check (journal + screenshots)" is deferred to the first on-device session. Automated stand-ins passed: the full-lifecycle e2e (submit→worker→result incl. photo variant against real MinIO), the mobile flow tests (red-flag branch, interstitial acknowledge-gating, result snapshots), and the load run. Manual demo script: pet home → Something wrong? → category → intake → (photos) → submit → [red-flag: interstitial → acknowledge] → waiting → result → follow-up.
+- **Items awaiting founder attention (accumulated):** the 5 region hotline numbers (T049 R7 — verify before store submission); milestone tags M0–M4 local-only (403 on tag push; land at PR merge).
+- **Actions:** `milestones.M4 = passed`; `currentPhase P4 → P5` (Care Reminders & Timeline → M5); active task → T053; tag `milestone/M4` local.
+- **Next:** Phase 5 — reminders engine, push infra (consuming the pawcareright-followups queue), health timeline → M5. No checkpoint at M4 (C2 comes after M7).

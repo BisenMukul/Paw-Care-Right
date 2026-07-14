@@ -14,6 +14,7 @@ import {
   createHousehold,
   createUser,
   mintAccessToken,
+  overrideCheckRunner,
   resolveJwtService,
 } from "./factories";
 
@@ -38,10 +39,12 @@ describe("Guards (e2e)", () => {
   let otherOwnerToken: string;
 
   beforeAll(async () => {
-    const moduleRef = await Test.createTestingModule({
-      imports: [AppModule],
-      controllers: [HouseholdScopedTestController],
-    }).compile();
+    const moduleRef = await overrideCheckRunner(
+      Test.createTestingModule({
+        imports: [AppModule],
+        controllers: [HouseholdScopedTestController],
+      }),
+    ).compile();
 
     app = moduleRef.createNestApplication();
     configureApp(app);

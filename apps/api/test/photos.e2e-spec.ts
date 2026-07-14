@@ -21,6 +21,7 @@ import {
   createOwnerContext,
   createUser,
   mintAccessToken,
+  overrideCheckRunner,
   resolveJwtService,
   type AuthedContext,
 } from "./factories";
@@ -46,7 +47,7 @@ describe("Photos (e2e)", () => {
   const objectKeysToCleanup: string[] = [];
 
   beforeAll(async () => {
-    const moduleRef = await Test.createTestingModule({ imports: [AppModule] }).compile();
+    const moduleRef = await overrideCheckRunner(Test.createTestingModule({ imports: [AppModule] })).compile();
 
     app = moduleRef.createNestApplication();
     configureApp(app);

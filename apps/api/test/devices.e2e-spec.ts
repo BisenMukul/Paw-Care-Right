@@ -14,6 +14,7 @@ import {
   cleanupUsers,
   createUser as createFactoryUser,
   mintAccessToken,
+  overrideCheckRunner,
   resolveJwtService,
   uniqueEmail,
 } from "./factories";
@@ -45,7 +46,7 @@ describe("Devices (e2e)", () => {
   }
 
   beforeAll(async () => {
-    const moduleRef = await Test.createTestingModule({ imports: [AppModule] }).compile();
+    const moduleRef = await overrideCheckRunner(Test.createTestingModule({ imports: [AppModule] })).compile();
 
     app = moduleRef.createNestApplication();
     configureApp(app);

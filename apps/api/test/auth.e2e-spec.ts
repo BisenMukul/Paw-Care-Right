@@ -13,6 +13,7 @@ import { configureApp } from "../src/app.setup";
 import { OTP_MAX_ATTEMPTS, RATE_LIMIT_MAX } from "../src/auth/auth.constants";
 import { OTP_TRANSPORT, type OtpTransport } from "../src/auth/otp-transport";
 import { AppConfigService } from "../src/config/app-config.service";
+import { overrideCheckRunner } from "./factories";
 
 class CapturingOtpTransport implements OtpTransport {
   private readonly codes = new Map<string, string>();
@@ -46,10 +47,9 @@ describe("Auth (e2e)", () => {
   beforeAll(async () => {
     transport = new CapturingOtpTransport();
 
-    const moduleRef = await Test.createTestingModule({ imports: [AppModule] })
-      .overrideProvider(OTP_TRANSPORT)
-      .useValue(transport)
-      .compile();
+    const moduleRef = await overrideCheckRunner(
+      Test.createTestingModule({ imports: [AppModule] }).overrideProvider(OTP_TRANSPORT).useValue(transport),
+    ).compile();
 
     app = moduleRef.createNestApplication();
     configureApp(app);

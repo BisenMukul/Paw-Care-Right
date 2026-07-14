@@ -5,6 +5,7 @@ import request from "supertest";
 
 import { AppModule } from "../src/app.module";
 import { configureApp } from "../src/app.setup";
+import { overrideCheckRunner } from "./factories";
 import { TestThrowController } from "./test-throw.controller";
 import { ThrottleTestController } from "./throttle-test.controller";
 
@@ -18,10 +19,12 @@ describe("Security baseline (e2e)", () => {
   let app: INestApplication;
 
   beforeAll(async () => {
-    const moduleRef = await Test.createTestingModule({
-      imports: [AppModule],
-      controllers: [ThrottleTestController, TestThrowController],
-    }).compile();
+    const moduleRef = await overrideCheckRunner(
+      Test.createTestingModule({
+        imports: [AppModule],
+        controllers: [ThrottleTestController, TestThrowController],
+      }),
+    ).compile();
 
     // `{ bodyParser: false }` mirrors main.ts exactly, so `configureApp`'s
     // 1 MB parsers are the only ones active and the 413 boundary is exact.

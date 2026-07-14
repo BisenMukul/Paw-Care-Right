@@ -15,6 +15,7 @@ import {
   createPet,
   createUser,
   mintAccessToken,
+  overrideCheckRunner,
   resolveJwtService,
   type AuthedContext,
 } from "./factories";
@@ -32,7 +33,7 @@ describe("Households — invites (e2e)", () => {
   const userIds: string[] = [];
 
   beforeAll(async () => {
-    const moduleRef = await Test.createTestingModule({ imports: [AppModule] }).compile();
+    const moduleRef = await overrideCheckRunner(Test.createTestingModule({ imports: [AppModule] })).compile();
 
     app = moduleRef.createNestApplication();
     configureApp(app);

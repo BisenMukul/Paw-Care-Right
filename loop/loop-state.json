@@ -2,7 +2,7 @@
   "project": "Paw Care Right +",
   "version": 6,
   "status": "running",
-  "currentPhase": "P4",
+  "currentPhase": "P5",
   "phases": {
     "P0": {
       "tasks": [
@@ -390,7 +390,7 @@
       "attempts": 1
     },
     "T052": {
-      "status": "in_progress",
+      "status": "done",
       "attempts": 1
     },
     "T053": {
@@ -680,7 +680,8 @@
       "taggedAt": "2026-07-12"
     },
     "M4": {
-      "status": "pending"
+      "status": "passed",
+      "taggedAt": "2026-07-14"
     },
     "M5": {
       "status": "pending"

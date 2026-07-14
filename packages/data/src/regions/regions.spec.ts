@@ -13,6 +13,20 @@ describe("region hotline dataset — resolution", () => {
     expect(resolveRegionHotline("us")).toEqual(resolveRegionHotline("US"));
   });
 
+  // T049 carried hygiene (T052 plan "Key decisions" #5): end-to-end
+  // resolution assertions for the remaining pinned regions beyond US.
+  it.each(["CA", "GB", "AU", "NZ"] as const)("resolves a known region (%s) with a real dial number", (code) => {
+    const resolved = resolveRegionHotline(code);
+    expect(resolved.known).toBe(true);
+    expect(resolved.dialNumber).toMatch(/^[+0-9]+$/);
+    expect(resolved.poisonHotlineName).not.toBeNull();
+    expect(resolved.regionCode).toBe(code);
+  });
+
+  it("is case-insensitive on a non-US region code (GB)", () => {
+    expect(resolveRegionHotline("gb")).toEqual(resolveRegionHotline("GB"));
+  });
+
   it("resolves undefined region to the fallback (no fabricated number)", () => {
     expect(resolveRegionHotline(undefined)).toEqual(FALLBACK_REGION_HOTLINE);
   });

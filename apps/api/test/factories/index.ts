@@ -2,11 +2,13 @@ import { randomUUID } from "node:crypto";
 
 import type { INestApplication } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
+import type { TestingModuleBuilder } from "@nestjs/testing";
 import type { Household, Membership, Pet, PrismaClient, Role, Species, User } from "@prisma/client";
 import request from "supertest";
 
 import { DEFAULT_LOCALE, DEFAULT_REGION } from "../../src/auth/auth.constants";
 import { AppConfigService } from "../../src/config/app-config.service";
+import { CheckRunnerProcessor } from "../../src/workers/check-runner.processor";
 
 /**
  * Shared e2e test factories. Plain functions (no fixtures framework) that
@@ -17,6 +19,13 @@ import { AppConfigService } from "../../src/config/app-config.service";
 
 export function uniqueEmail(prefix = "user"): string {
   return `${prefix}-${randomUUID()}@pawcareright.local`;
+}
+
+/** Registers a no-op CheckRunnerProcessor so BullMQ attaches NO live `pawcareright-checks`
+ *  Worker for this app instance (the explorer keys off @Processor metadata on the resolved
+ *  instance's constructor; a plain object has none). Only the T052 lifecycle suite omits this. */
+export function overrideCheckRunner(builder: TestingModuleBuilder): TestingModuleBuilder {
+  return builder.overrideProvider(CheckRunnerProcessor).useValue({ process: async () => undefined });
 }
 
 export function resolveJwtService(app: INestApplication): JwtService {
