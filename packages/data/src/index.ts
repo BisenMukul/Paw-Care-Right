@@ -8,3 +8,5 @@ export * from "./regions/schema";
 export * from "./regions";
 export * from "./emergency/schema";
 export * from "./emergency";
+export * from "./care-templates/schema";
+export * from "./care-templates";

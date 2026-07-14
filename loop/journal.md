@@ -582,3 +582,11 @@
 - **Carried to T054/T055/T056:** YEARLY Feb-29 leap-only behavior (pin it when templates author yearly rules); 20k-day scan cost on far-future `after`; unused @IsTimeZone fallback path.
 - No new dependencies.
 - Commit: feat(api,types): T053 reminder models + migration (journal rides in the same one-task-one-commit).
+
+## [2026-07-14] T054 · Care template packs — DONE (attempt 1)
+- Planner (Fable): `loop/plans/T054.plan.md` — `packages/data/care-templates`: base species×life-stage schedules (DOG/CAT × PUPPY-KITTEN/ADULT/SENIOR × 5 categories) + regional VACCINE OVERLAYS merged at resolve (avoids 54 flat copies, keeps content auditable); the confirm-with-your-vet sentence **schema-ENFORCED via a zod refine** (not convention); every schedule expressed as T053-validated RRULE strings; ISO-country → protocol-group map (NA/EU/UK/IN/BR/MENA/SEA/AU + DEFAULT); **R6 safety call: unknown life-stage → ADULT** (juvenile fallback would risk harmful over-vaccination); test assertions limited to the IN rabies-emphasis AC + DEFAULT contrast — finer per-region medicine deferred to the C2 vet review (no brittle/wrong assertions).
+- Executor (Sonnet, single pass): 7 new files + 2 barrel lines; 30 base items + rabies overlays (IN emphasis + BR/MENA/SEA endemic notes; AU empty overlay — rabies-free; NA/EU/UK inherit DEFAULT via undefined). data **89 → 178 tests**. Content choices within plan latitude (undefined-inherit; shared rabies-core id where unpinned; optional lepto item skipped to minimize new vet content).
+- Checker (Fable, adversarial vet-content sweep): `loop/reviews/T054.review.md` → **VERDICT: pass**. Antigen sets correct (DHPP/FVRCP); series/deworming/flea-tick cadences clinically sane, qualitative-only; zero brand names/dosing/diagnos*/Feb-29 anchors; all 54 cells probed non-empty with zero duplicate ids; refine and §7 scans proven non-vacuous (a planted "give 5mg" would fail); forced uncached typecheck/lint to defeat stale turbo cache.
+- **For the C2 vet-review list (checker non-blocking):** puppy series final-dose timing nuance; a deworming coverage gap; AU travel-rabies note; cross-region rabies-core id dedup consideration for T055 re-instantiation.
+- No new dependencies.
+- Commit: feat(data): T054 care template packs (journal rides in the same one-task-one-commit).
