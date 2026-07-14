@@ -33,6 +33,8 @@ export const strings = {
   },
   care: {
     body: "Care reminders and templates will live here.",
+    setupCta: "Set up a care plan",
+    noPet: "Add a pet to set up a care plan.",
   },
   timeline: {
     body: "Your pet's health timeline will live here.",
@@ -260,6 +262,31 @@ export const strings = {
     },
     save: "Save",
     saveError: "We couldn't save your changes. Please try again.",
+  },
+  carePlan: {
+    title: "Set up a care plan",
+    subtitle:
+      "We've put together a suggested schedule based on your pet's age, species, and region. Review it and adjust anything you like before adding it to your reminders.",
+    loading: "Loading…",
+    error: "We couldn't load your care plan suggestions.",
+    retry: "Retry",
+    empty: "No suggestions are available for this pet yet.",
+    offline: "You're offline. Reconnect to load care plan suggestions.",
+    offlineBanner: "You're offline — showing your last saved suggestions.",
+    // The item note itself is rendered verbatim from the resolved
+    // care-template data, not from a string here (CLAUDE §7 / plan Safety
+    // statement) -- these are labels around it.
+    emphasisBadge: "Especially recommended in your region",
+    alreadyAddedBadge: "Already added",
+    dateEdit: {
+      earlier1w: "-1w",
+      earlier1d: "-1d",
+      later1d: "+1d",
+      later1w: "+1w",
+    },
+    confirm: "Confirm plan",
+    skip: "Not now",
+    confirmError: "We couldn't save your care plan. Please try again.",
   },
   intake: {
     stepOf: (step: number, total: number) => `Step ${step} of ${total}`,

@@ -57,8 +57,8 @@ describe("add-pet done screen (submit + progress orchestration)", () => {
     expect(mockUploadPetPhoto).not.toHaveBeenCalled();
     expect(mockInvalidateQueries).toHaveBeenCalledWith({ queryKey: ["pets"] });
     expect(mockReplace).toHaveBeenCalledWith({
-      pathname: "/pets/[id]",
-      params: { id: "pet1", localPhoto: "" },
+      pathname: "/care-plan/[petId]",
+      params: { petId: "pet1", localPhoto: "" },
     });
 
     const state = useAddPetStore.getState();
@@ -95,8 +95,8 @@ describe("add-pet done screen (submit + progress orchestration)", () => {
     // ever created (idempotent: no duplicate create for the same draft).
     expect(mockMutateAsync).toHaveBeenCalledTimes(2);
     expect(mockReplace).toHaveBeenCalledWith({
-      pathname: "/pets/[id]",
-      params: { id: "pet1", localPhoto: "" },
+      pathname: "/care-plan/[petId]",
+      params: { petId: "pet1", localPhoto: "" },
     });
   });
 
@@ -112,8 +112,8 @@ describe("add-pet done screen (submit + progress orchestration)", () => {
     expect(mockMutateAsync).not.toHaveBeenCalled();
     expect(mockInvalidateQueries).toHaveBeenCalledWith({ queryKey: ["pets"] });
     expect(mockReplace).toHaveBeenCalledWith({
-      pathname: "/pets/[id]",
-      params: { id: "pet-existing", localPhoto: "" },
+      pathname: "/care-plan/[petId]",
+      params: { petId: "pet-existing", localPhoto: "" },
     });
   });
 
@@ -131,8 +131,8 @@ describe("add-pet done screen (submit + progress orchestration)", () => {
     expect(mockUploadPetPhoto).toHaveBeenCalledWith("pet1", "file:///out.jpg");
     expect(mockInvalidateQueries).toHaveBeenCalledWith({ queryKey: ["pets"] });
     expect(mockReplace).toHaveBeenCalledWith({
-      pathname: "/pets/[id]",
-      params: { id: "pet1", localPhoto: "file:///out.jpg" },
+      pathname: "/care-plan/[petId]",
+      params: { petId: "pet1", localPhoto: "file:///out.jpg" },
     });
 
     const state = useAddPetStore.getState();

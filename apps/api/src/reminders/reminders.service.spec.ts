@@ -1,4 +1,5 @@
 import { BadRequestException, NotFoundException } from "@nestjs/common";
+import { resolveCareTemplate } from "@pawcareright/data";
 
 import type { PetResponse } from "../pets/pets.service";
 import type { PetsService } from "../pets/pets.service";
@@ -744,6 +745,142 @@ describe("RemindersService", () => {
       await secondService.instantiateFromTemplate(HOUSEHOLD_ID, PET_ID, { timezone: "UTC" });
 
       expect(transaction).not.toHaveBeenCalled();
+    });
+
+    describe("selections (T059)", () => {
+      it("only the listed templateKey is created; a provided startAt override is used verbatim", async () => {
+        const pet = buildPet({ species: "DOG", birthDate: null, ageEstimateMonths: 3 });
+        const findOne = jest.fn().mockResolvedValue(pet);
+        const pack = resolveCareTemplate("DOG", "PUPPY_KITTEN", "IN");
+        const targetItem = pack.items[0];
+        if (!targetItem) throw new Error("fixture pack has no items");
+
+        const existingFindMany = jest.fn().mockResolvedValue([]);
+        const create = jest
+          .fn()
+          .mockImplementation(({ data }: { data: Record<string, unknown> }) => Promise.resolve(buildReminderRow(data)));
+        const prisma = buildPrisma({ findMany: existingFindMany, create });
+        const service = new RemindersService(prisma, buildPetsService(findOne));
+
+        const result = await service.instantiateFromTemplate(HOUSEHOLD_ID, PET_ID, {
+          timezone: "UTC",
+          countryCode: "IN",
+          selections: [{ templateKey: targetItem.id, startAt: "2026-09-01T09:00:00.000Z" }],
+        });
+
+        expect(create).toHaveBeenCalledTimes(1);
+        expect(create).toHaveBeenCalledWith(
+          expect.objectContaining({
+            data: expect.objectContaining({
+              templateKey: targetItem.id,
+              startAt: new Date("2026-09-01T09:00:00.000Z"),
+            }),
+          }),
+        );
+        expect(result.created).toHaveLength(1);
+        expect(result.created[0]?.templateKey).toBe(targetItem.id);
+      });
+
+      it("a repeat with the same selection creates nothing and counts it as skipped (idempotency preserved)", async () => {
+        const pet = buildPet({ species: "DOG", birthDate: null, ageEstimateMonths: 3 });
+        const findOne = jest.fn().mockResolvedValue(pet);
+        const pack = resolveCareTemplate("DOG", "PUPPY_KITTEN", "IN");
+        const targetItem = pack.items[0];
+        if (!targetItem) throw new Error("fixture pack has no items");
+
+        const existingFindMany = jest.fn().mockResolvedValue([{ templateKey: targetItem.id }]);
+        const create = jest.fn();
+        const prisma = buildPrisma({ findMany: existingFindMany, create });
+        const service = new RemindersService(prisma, buildPetsService(findOne));
+
+        const result = await service.instantiateFromTemplate(HOUSEHOLD_ID, PET_ID, {
+          timezone: "UTC",
+          countryCode: "IN",
+          selections: [{ templateKey: targetItem.id, startAt: "2026-09-01T09:00:00.000Z" }],
+        });
+
+        expect(result.created).toEqual([]);
+        expect(result.skipped).toBe(1);
+        expect(create).not.toHaveBeenCalled();
+      });
+
+      it("selections omitted path still creates the full pack (regression)", async () => {
+        const pet = buildPet({ species: "DOG", birthDate: null, ageEstimateMonths: 3 });
+        const findOne = jest.fn().mockResolvedValue(pet);
+        const pack = resolveCareTemplate("DOG", "PUPPY_KITTEN", "IN");
+
+        const existingFindMany = jest.fn().mockResolvedValue([]);
+        const create = jest
+          .fn()
+          .mockImplementation(({ data }: { data: Record<string, unknown> }) => Promise.resolve(buildReminderRow(data)));
+        const prisma = buildPrisma({ findMany: existingFindMany, create });
+        const service = new RemindersService(prisma, buildPetsService(findOne));
+
+        const result = await service.instantiateFromTemplate(HOUSEHOLD_ID, PET_ID, {
+          timezone: "UTC",
+          countryCode: "IN",
+        });
+
+        expect(result.created).toHaveLength(pack.items.length);
+      });
+    });
+  });
+
+  describe("templateSuggestions", () => {
+    it("DOG puppy / IN: items map 1:1 (templateKey/title/note) to resolveCareTemplate; species/lifeStage/group match; alreadyExists reflects existing reminders", async () => {
+      const pet = buildPet({ species: "DOG", birthDate: null, ageEstimateMonths: 3 });
+      const findOne = jest.fn().mockResolvedValue(pet);
+      const expectedPack = resolveCareTemplate("DOG", "PUPPY_KITTEN", "IN");
+      const firstItem = expectedPack.items[0];
+      if (!firstItem) throw new Error("fixture pack has no items");
+
+      const existingFindMany = jest.fn().mockResolvedValue([{ templateKey: firstItem.id }]);
+      const prisma = buildPrisma({ findMany: existingFindMany });
+      const service = new RemindersService(prisma, buildPetsService(findOne));
+
+      const result = await service.templateSuggestions(HOUSEHOLD_ID, PET_ID, { countryCode: "IN" });
+
+      expect(result.species).toBe(expectedPack.species);
+      expect(result.lifeStage).toBe(expectedPack.lifeStage);
+      expect(result.group).toBe(expectedPack.group);
+      expect(result.items).toHaveLength(expectedPack.items.length);
+      expectedPack.items.forEach((item, i) => {
+        expect(result.items[i]?.templateKey).toBe(item.id);
+        expect(result.items[i]?.title).toBe(item.title);
+        expect(result.items[i]?.note).toBe(item.note);
+      });
+      expect(result.items.find((item) => item.templateKey === firstItem.id)?.alreadyExists).toBe(true);
+      expect(
+        result.items.filter((item) => item.templateKey !== firstItem.id).every((item) => item.alreadyExists === false),
+      ).toBe(true);
+    });
+
+    it("CAT adult / DEFAULT: same 1:1 mapping, none pre-existing", async () => {
+      const pet = buildPet({ species: "CAT", birthDate: null, ageEstimateMonths: null });
+      const findOne = jest.fn().mockResolvedValue(pet);
+      const expectedPack = resolveCareTemplate("CAT", "ADULT", "DEFAULT");
+
+      const existingFindMany = jest.fn().mockResolvedValue([]);
+      const prisma = buildPrisma({ findMany: existingFindMany });
+      const service = new RemindersService(prisma, buildPetsService(findOne));
+
+      const result = await service.templateSuggestions(HOUSEHOLD_ID, PET_ID, {});
+
+      expect(result.species).toBe("CAT");
+      expect(result.lifeStage).toBe("ADULT");
+      expect(result.group).toBe("DEFAULT");
+      expect(result.items.map((item) => item.templateKey)).toEqual(expectedPack.items.map((item) => item.id));
+      expect(result.items.every((item) => item.alreadyExists === false)).toBe(true);
+    });
+
+    it("pet-404 first: petsService.findOne rejects -> no reminder.findMany call", async () => {
+      const petsService = buildPetsService(jest.fn().mockRejectedValue(new NotFoundException()));
+      const findMany = jest.fn();
+      const prisma = buildPrisma({ findMany });
+      const service = new RemindersService(prisma, petsService);
+
+      await expect(service.templateSuggestions(HOUSEHOLD_ID, PET_ID, {})).rejects.toBeInstanceOf(NotFoundException);
+      expect(findMany).not.toHaveBeenCalled();
     });
   });
 });

@@ -418,12 +418,12 @@
       "attempts": 2
     },
     "T059": {
-      "status": "in_progress",
+      "status": "done",
       "attempts": 1
     },
     "T060": {
-      "status": "pending",
-      "attempts": 0
+      "status": "in_progress",
+      "attempts": 1
     },
     "T061": {
       "status": "pending",

@@ -11,3 +11,4 @@ export * from "./check";
 export * from "./rrule";
 export * from "./reminder";
 export * from "./notification-prefs";
+export * from "./care-plan";

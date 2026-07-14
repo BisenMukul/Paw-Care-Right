@@ -1,6 +1,33 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { PROTOCOL_GROUPS, type ProtocolGroup } from "@pawcareright/data";
-import { IsIn, IsOptional, IsString, IsTimeZone } from "class-validator";
+import { Type } from "class-transformer";
+import {
+  IsArray,
+  IsDateString,
+  IsIn,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsTimeZone,
+  ValidateNested,
+} from "class-validator";
+
+/**
+ * A single reviewed item from the T059 wizard: which resolved pack item
+ * (`templateKey` = item id) to instantiate, and an optional per-item
+ * `startAt` override of the server-derived default.
+ */
+export class TemplateSelectionDto {
+  @ApiProperty({ example: "rabies-core", description: "The resolved pack item id to instantiate." })
+  @IsString()
+  @IsNotEmpty()
+  templateKey!: string;
+
+  @ApiPropertyOptional({ description: "ISO-8601 start date override; defaults to the server-derived start when omitted." })
+  @IsOptional()
+  @IsDateString()
+  startAt?: string;
+}
 
 /**
  * `POST /pets/:petId/reminders/from-template` body (plan "Instantiation
@@ -24,4 +51,15 @@ export class InstantiateTemplateDto {
   @IsOptional()
   @IsString()
   countryCode?: string;
+
+  @ApiPropertyOptional({
+    type: [TemplateSelectionDto],
+    description:
+      "T059 wizard review: when present, only the listed templateKeys are instantiated (per-item startAt overrides the derived default); when absent, the entire resolved pack is instantiated with server-derived dates (unchanged behaviour).",
+  })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => TemplateSelectionDto)
+  selections?: TemplateSelectionDto[];
 }

@@ -330,4 +330,75 @@ describe("Reminders (e2e)", () => {
       expect(afterSecond.body.items.length).toBe(countAfterFirst);
     });
   });
+
+  describe("template-suggestions (T059)", () => {
+    it("GET returns 200 with noted items", async () => {
+      const ctx = await owner();
+      const petId = await createPet(ctx);
+
+      const res = await ctx.authedAgent("get", `/v1/pets/${petId}/reminders/template-suggestions`);
+
+      expect(res.status).toBe(200);
+      expect(Array.isArray(res.body.items)).toBe(true);
+      expect(res.body.items.length).toBeGreaterThan(0);
+      for (const item of res.body.items as Array<{ note: string }>) {
+        expect(item.note.length).toBeGreaterThan(0);
+      }
+    });
+
+    it("GET with no token -> 401 UNAUTHORIZED", async () => {
+      const res = await request(app.getHttpServer()).get(
+        "/v1/pets/some-pet-id/reminders/template-suggestions",
+      );
+
+      expect(res.status).toBe(401);
+      expect(errorResponseSchema.parse(res.body).error.code).toBe("UNAUTHORIZED");
+    });
+
+    it("GET on another household's pet -> 404 NOT_FOUND", async () => {
+      const ownerA = await owner();
+      const ownerB = await owner();
+      const petId = await createPet(ownerA, "A's Dog");
+
+      const res = await ownerB.authedAgent("get", `/v1/pets/${petId}/reminders/template-suggestions`);
+
+      expect(res.status).toBe(404);
+      expect(errorResponseSchema.parse(res.body).error.code).toBe("NOT_FOUND");
+    });
+
+    it("POST with selections:[oneKey] creates one reminder; a repeat is idempotent (skipped)", async () => {
+      const ctx = await owner();
+      const petId = await createPet(ctx);
+
+      const suggestions = await ctx.authedAgent("get", `/v1/pets/${petId}/reminders/template-suggestions`);
+      expect(suggestions.status).toBe(200);
+      const targetKey = suggestions.body.items[0].templateKey as string;
+
+      const first = await ctx
+        .authedAgent("post", `/v1/pets/${petId}/reminders/from-template`)
+        .send({ timezone: "UTC", selections: [{ templateKey: targetKey, startAt: "2026-09-01T09:00:00.000Z" }] });
+      expect(first.status).toBe(201);
+      expect(first.body.created).toHaveLength(1);
+      expect(first.body.created[0].templateKey).toBe(targetKey);
+
+      const second = await ctx
+        .authedAgent("post", `/v1/pets/${petId}/reminders/from-template`)
+        .send({ timezone: "UTC", selections: [{ templateKey: targetKey, startAt: "2026-09-01T09:00:00.000Z" }] });
+      expect(second.status).toBe(201);
+      expect(second.body.created).toEqual([]);
+      expect(second.body.skipped).toBe(1);
+    });
+
+    it("a bad selections[].startAt (non-ISO) -> 400 VALIDATION_FAILED", async () => {
+      const ctx = await owner();
+      const petId = await createPet(ctx);
+
+      const res = await ctx
+        .authedAgent("post", `/v1/pets/${petId}/reminders/from-template`)
+        .send({ timezone: "UTC", selections: [{ templateKey: "rabies-core", startAt: "not-a-date" }] });
+
+      expect(res.status).toBe(400);
+      expect(errorResponseSchema.parse(res.body).error.code).toBe("VALIDATION_FAILED");
+    });
+  });
 });

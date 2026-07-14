@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { resolveCareTemplate, resolveCareTemplateForPet, resolveLifeStage } from "@pawcareright/data";
-import { parseRRule, type ReminderEventStatus, type Species } from "@pawcareright/types";
+import { parseRRule, type CareTemplateSuggestions, type ReminderEventStatus, type Species } from "@pawcareright/types";
 import type { Reminder } from "@prisma/client";
 
 import { PetsService } from "../pets/pets.service";
@@ -9,6 +9,7 @@ import type { AgendaQueryDto } from "./dto/agenda-query.dto";
 import type { CreateReminderDto } from "./dto/create-reminder.dto";
 import type { InstantiateTemplateDto } from "./dto/instantiate-template.dto";
 import type { ListRemindersQueryDto } from "./dto/list-reminders-query.dto";
+import type { TemplateSuggestionsQueryDto } from "./dto/template-suggestions-query.dto";
 import type { UpdateReminderDto } from "./dto/update-reminder.dto";
 import { computeNextFireAt } from "./next-fire-at";
 import { occurrencesBetween } from "./occurrences-between";
@@ -274,6 +275,62 @@ export class RemindersService {
     return { from, to, entries: sortedEntries };
   }
 
+  /**
+   * `GET /pets/:petId/reminders/template-suggestions` (T059 plan): the
+   * read-only review list the wizard renders. Resolves the pack through the
+   * IDENTICAL branch logic `instantiateFromTemplate` uses below (same
+   * `resolveCareTemplate`/`resolveCareTemplateForPet` choice, same
+   * `deriveTemplateStartAt`/`petAgeMonths`, same `templateKey`-in
+   * existing-reminder query) so the reviewed list lines up 1:1 with what a
+   * subsequent `from-template` POST (with matching `group`/`countryCode`)
+   * would create (plan decision 1).
+   */
+  async templateSuggestions(
+    householdId: string,
+    petId: string,
+    query: TemplateSuggestionsQueryDto,
+  ): Promise<CareTemplateSuggestions> {
+    const pet = await this.petsService.findOne(householdId, petId);
+
+    const now = new Date();
+    const ageMonths = petAgeMonths({ birthDate: pet.birthDate, ageEstimateMonths: pet.ageEstimateMonths }, now);
+
+    const pack =
+      query.group !== undefined
+        ? resolveCareTemplate(pet.species as Species, resolveLifeStage(pet.species as Species, ageMonths), query.group)
+        : resolveCareTemplateForPet({
+            species: pet.species as Species,
+            ageMonths,
+            countryCode: query.countryCode ?? null,
+          });
+
+    const existing = await this.prisma.reminder.findMany({
+      where: { petId, templateKey: { in: pack.items.map((item) => item.id) } },
+      select: { templateKey: true },
+    });
+    const existingKeys = new Set(existing.map((row) => row.templateKey));
+
+    return {
+      species: pack.species,
+      lifeStage: pack.lifeStage,
+      group: pack.group,
+      items: pack.items.map((item) => ({
+        templateKey: item.id,
+        title: item.title,
+        note: item.note,
+        reminderType: item.reminderType,
+        defaultStartAt:
+          deriveTemplateStartAt(
+            item,
+            { birthDate: pet.birthDate, ageEstimateMonths: pet.ageEstimateMonths },
+            now,
+          )?.toISOString() ?? null,
+        emphasis: item.emphasis,
+        alreadyExists: existingKeys.has(item.id),
+      })),
+    };
+  }
+
   async instantiateFromTemplate(
     householdId: string,
     petId: string,
@@ -292,6 +349,15 @@ export class RemindersService {
             ageMonths,
             countryCode: dto.countryCode ?? null,
           });
+
+    // T059 plan decision 2: when present, only the listed templateKeys are
+    // instantiated and a provided per-item `startAt` overrides the derived
+    // default; when absent, behaviour below is byte-for-byte unchanged (all
+    // items, derived dates).
+    const selectionMap =
+      dto.selections !== undefined
+        ? new Map(dto.selections.map((selection) => [selection.templateKey, selection]))
+        : null;
 
     const existing = await this.prisma.reminder.findMany({
       where: { petId, templateKey: { in: pack.items.map((item) => item.id) } },
@@ -313,16 +379,24 @@ export class RemindersService {
     let skipped = 0;
 
     for (const item of pack.items) {
+      const selection = selectionMap?.get(item.id);
+      if (selectionMap !== null && selection === undefined) {
+        continue; // not reviewed/selected by the wizard -- not a "skip", simply not requested
+      }
+
       if (existingKeys.has(item.id)) {
         skipped += 1;
         continue;
       }
 
-      const startAt = deriveTemplateStartAt(
-        item,
-        { birthDate: pet.birthDate, ageEstimateMonths: pet.ageEstimateMonths },
-        now,
-      );
+      const startAt =
+        selection?.startAt !== undefined
+          ? new Date(selection.startAt)
+          : deriveTemplateStartAt(
+              item,
+              { birthDate: pet.birthDate, ageEstimateMonths: pet.ageEstimateMonths },
+              now,
+            );
       if (startAt === null) {
         skipped += 1; // unanchorable PET_AGE item (plan Risk R8)
         continue;

@@ -52,7 +52,10 @@ export default function DoneScreen() {
     void queryClient.invalidateQueries({ queryKey: petsKeys.all });
     const localPhoto = draft.photoUri;
     reset();
-    router.replace({ pathname: "/pets/[id]", params: { id: petId, localPhoto: localPhoto ?? "" } });
+    // T059 plan decision 4: the post-creation prompt is the care-plan
+    // wizard, not pet home directly; the wizard's Confirm/Skip both forward
+    // on to `/pets/[id]` with the same `localPhoto` handoff.
+    router.replace({ pathname: "/care-plan/[petId]", params: { petId, localPhoto: localPhoto ?? "" } });
   }
 
   // Run once on mount; `run` re-reads the latest draft/store state on every

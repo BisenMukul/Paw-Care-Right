@@ -7,6 +7,7 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from "@nestjs/swagger";
+import type { CareTemplateSuggestions } from "@pawcareright/types";
 
 import type { HouseholdScope } from "../common/authenticated-request";
 import { CurrentHousehold, HouseholdFromMembership } from "../common/household-scope.decorators";
@@ -14,6 +15,7 @@ import { AgendaQueryDto } from "./dto/agenda-query.dto";
 import { CreateReminderDto } from "./dto/create-reminder.dto";
 import { InstantiateTemplateDto } from "./dto/instantiate-template.dto";
 import { ListRemindersQueryDto } from "./dto/list-reminders-query.dto";
+import { TemplateSuggestionsQueryDto } from "./dto/template-suggestions-query.dto";
 import { UpdateReminderDto } from "./dto/update-reminder.dto";
 import type {
   AgendaResponse,
@@ -59,6 +61,17 @@ export class RemindersController {
     @Query() query: ListRemindersQueryDto,
   ): Promise<ReminderListResponse> {
     return this.remindersService.list(scope.householdId, petId, query);
+  }
+
+  @Get("pets/:petId/reminders/template-suggestions")
+  @ApiOkResponse({ description: "The resolved care-template pack, projected as a reviewable suggestion list (read-only)." })
+  @ApiNotFoundResponse({ description: "No resolved household for the caller, or the pet does not exist in it." })
+  templateSuggestions(
+    @CurrentHousehold() scope: HouseholdScope,
+    @Param("petId") petId: string,
+    @Query() query: TemplateSuggestionsQueryDto,
+  ): Promise<CareTemplateSuggestions> {
+    return this.remindersService.templateSuggestions(scope.householdId, petId, query);
   }
 
   @Post("pets/:petId/reminders/from-template")
