@@ -55,6 +55,7 @@ model User {
   createdInvites  HouseholdInvite[] @relation("InviteCreator")
   acceptedInvites HouseholdInvite[] @relation("InviteAcceptor")
   createdChecks   SymptomCheck[]
+  notificationPrefs UserNotificationPrefs?
 }
 
 model Household {
@@ -96,6 +97,22 @@ model Device {
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+}
+
+// Per-user notification preferences (T058): per-type on/off + an optional
+// all-or-nothing quiet-hours window. A missing row means "all defaults"
+// (every type on, no quiet window) — see plan decision 1 — so no backfill
+// is needed for existing users; the service creates the row lazily via
+// `upsert` on first `PUT`.
+model UserNotificationPrefs {
+  userId        String    @id
+  disabledTypes String[]  @default([])
+  quietStart    String?
+  quietEnd      String?
+  timezone      String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model RefreshToken {

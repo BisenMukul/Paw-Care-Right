@@ -5,13 +5,15 @@ import type { RedisService } from "../redis/redis.service";
 import type { ExpoPushClient, PushMessage, PushReceipt, PushTicket } from "./expo-push.client";
 import { PUSH_RECEIPT_JOB_NAME, RECEIPT_CHECK_DELAY_MS, type PushReceiptJobData } from "./push-receipts.contract";
 import { buildReminderPushBody, collapseKey, PushSenderService } from "./push-sender.service";
+import type { PushJobData } from "./push.contract";
 
 /**
- * Direct-construct unit tests (T057 plan "Tests to write"): hand-built mock
- * Prisma/ExpoPushClient/RedisService/receipts-queue, `new
- * PushSenderService(prisma, expoClient, redis, receiptsQueue)` -- mirrors
- * `reminder-scheduler.service.spec.ts` / `redis.service.spec.ts` mocking
- * style. The Expo SDK is NEVER invoked for real -- only the mocked
+ * Direct-construct unit tests (T057 plan "Tests to write"; extended by T058
+ * "prefs respected in sender tests"): hand-built mock
+ * Prisma/ExpoPushClient/RedisService/receipts-queue/push-queue, `new
+ * PushSenderService(prisma, expoClient, redis, receiptsQueue, pushQueue)` --
+ * mirrors `reminder-scheduler.service.spec.ts` / `redis.service.spec.ts`
+ * mocking style. The Expo SDK is NEVER invoked for real -- only the mocked
  * `ExpoPushClient` port.
  */
 describe("PushSenderService", () => {
@@ -53,12 +55,19 @@ describe("PushSenderService", () => {
 
   interface GroupRow {
     id: string;
-    reminder: { title: string };
+    reminder: { title: string; type: string };
   }
 
   interface DeviceRow {
     id: string;
     expoPushToken: string;
+  }
+
+  interface PrefsRow {
+    disabledTypes: string[];
+    quietStart: string | null;
+    quietEnd: string | null;
+    timezone: string | null;
   }
 
   interface GroupFindManyArgs {
@@ -69,10 +78,16 @@ describe("PushSenderService", () => {
     where: { userId: string };
   }
 
+  /** Every fixture row defaults to an enabled type ("CUSTOM") unless a test overrides it (T058 plan). */
+  function groupRow(id: string, title: string, type = "CUSTOM"): GroupRow {
+    return { id, reminder: { title, type } };
+  }
+
   function buildPrisma(opts: {
     event?: FakeEvent | null;
     groupByUser?: Record<string, GroupRow[]>;
     devicesByUser?: Record<string, DeviceRow[]>;
+    prefsByUser?: Record<string, PrefsRow | null>;
   }) {
     const findUnique = jest.fn().mockResolvedValue(opts.event === undefined ? buildEvent() : opts.event);
     const findMany = jest.fn().mockImplementation((args: GroupFindManyArgs) => {
@@ -83,13 +98,19 @@ describe("PushSenderService", () => {
       return Promise.resolve(opts.devicesByUser?.[args.where.userId] ?? []);
     });
     const deleteMany = jest.fn().mockResolvedValue({ count: 0 });
+    const prefsFindUnique = jest
+      .fn()
+      .mockImplementation((args: { where: { userId: string } }) =>
+        Promise.resolve(opts.prefsByUser?.[args.where.userId] ?? null),
+      );
 
     const prisma = {
       reminderEvent: { findUnique, findMany },
       device: { findMany: deviceFindMany, deleteMany },
+      userNotificationPrefs: { findUnique: prefsFindUnique },
     } as unknown as PrismaService;
 
-    return { prisma, findUnique, findMany, deviceFindMany, deleteMany };
+    return { prisma, findUnique, findMany, deviceFindMany, deleteMany, prefsFindUnique };
   }
 
   function buildExpoClient(
@@ -121,8 +142,15 @@ describe("PushSenderService", () => {
     return { queue, add };
   }
 
+  function buildPushQueue(overrides: { add?: jest.Mock } = {}) {
+    const add = overrides.add ?? jest.fn().mockResolvedValue(undefined);
+    const queue = { add } as unknown as Queue<PushJobData>;
+    return { queue, add };
+  }
+
   afterEach(() => {
     jest.clearAllMocks();
+    jest.useRealTimers();
   });
 
   describe("batching", () => {
@@ -130,7 +158,7 @@ describe("PushSenderService", () => {
       const devices = Array.from({ length: 250 }, (_, i) => ({ id: `device-${i}`, expoPushToken: `token-${i}` }));
       const { prisma, deleteMany } = buildPrisma({
         event: buildEvent(),
-        groupByUser: { "user-1": [{ id: "event-1", reminder: { title: "Feed" } }] },
+        groupByUser: { "user-1": [groupRow("event-1", "Feed")] },
         devicesByUser: { "user-1": devices },
       });
       const sendChunk = jest.fn((messages: PushMessage[]) =>
@@ -143,7 +171,8 @@ describe("PushSenderService", () => {
       const { client } = buildExpoClient({ sendChunk });
       const { redis } = buildRedis();
       const { queue } = buildReceiptsQueue();
-      const service = new PushSenderService(prisma, client, redis, queue);
+      const { queue: pushQueue } = buildPushQueue();
+      const service = new PushSenderService(prisma, client, redis, queue, pushQueue);
 
       await service.sendForEvent(EVENT_ID);
 
@@ -161,18 +190,15 @@ describe("PushSenderService", () => {
       const { prisma } = buildPrisma({
         event: buildEvent(),
         groupByUser: {
-          "user-1": [
-            { id: "e1", reminder: { title: "A" } },
-            { id: "e2", reminder: { title: "B" } },
-            { id: "e3", reminder: { title: "C" } },
-          ],
+          "user-1": [groupRow("e1", "A"), groupRow("e2", "B"), groupRow("e3", "C")],
         },
         devicesByUser: { "user-1": [{ id: "device-1", expoPushToken: "token-1" }] },
       });
       const { client, sendChunk } = buildExpoClient();
       const { redis } = buildRedis({ setNx: jest.fn().mockResolvedValue(true) });
       const { queue } = buildReceiptsQueue();
-      const service = new PushSenderService(prisma, client, redis, queue);
+      const { queue: pushQueue } = buildPushQueue();
+      const service = new PushSenderService(prisma, client, redis, queue, pushQueue);
 
       await service.sendForEvent(EVENT_ID);
 
@@ -191,7 +217,8 @@ describe("PushSenderService", () => {
         get: jest.fn().mockResolvedValue("other-event"),
       });
       const { queue } = buildReceiptsQueue();
-      const service = new PushSenderService(prisma, client, redis, queue);
+      const { queue: pushQueue } = buildPushQueue();
+      const service = new PushSenderService(prisma, client, redis, queue, pushQueue);
 
       await service.sendForEvent(EVENT_ID);
 
@@ -201,7 +228,7 @@ describe("PushSenderService", () => {
     it("the winning event's retry re-enters (setNx false but owner === self) and sends", async () => {
       const { prisma } = buildPrisma({
         event: buildEvent(),
-        groupByUser: { "user-1": [{ id: "event-1", reminder: { title: "Feed" } }] },
+        groupByUser: { "user-1": [groupRow("event-1", "Feed")] },
         devicesByUser: { "user-1": [{ id: "device-1", expoPushToken: "token-1" }] },
       });
       const { client, sendChunk } = buildExpoClient();
@@ -210,7 +237,8 @@ describe("PushSenderService", () => {
         get: jest.fn().mockResolvedValue(EVENT_ID),
       });
       const { queue } = buildReceiptsQueue();
-      const service = new PushSenderService(prisma, client, redis, queue);
+      const { queue: pushQueue } = buildPushQueue();
+      const service = new PushSenderService(prisma, client, redis, queue, pushQueue);
 
       await service.sendForEvent(EVENT_ID);
 
@@ -220,13 +248,14 @@ describe("PushSenderService", () => {
     it("single reminder renders 'Care reminder: {title}' with count 1", async () => {
       const { prisma } = buildPrisma({
         event: buildEvent(),
-        groupByUser: { "user-1": [{ id: "event-1", reminder: { title: "Give heartworm chewable" } }] },
+        groupByUser: { "user-1": [groupRow("event-1", "Give heartworm chewable")] },
         devicesByUser: { "user-1": [{ id: "device-1", expoPushToken: "token-1" }] },
       });
       const { client, sendChunk } = buildExpoClient();
       const { redis } = buildRedis();
       const { queue } = buildReceiptsQueue();
-      const service = new PushSenderService(prisma, client, redis, queue);
+      const { queue: pushQueue } = buildPushQueue();
+      const service = new PushSenderService(prisma, client, redis, queue, pushQueue);
 
       await service.sendForEvent(EVENT_ID);
 
@@ -238,8 +267,8 @@ describe("PushSenderService", () => {
       const { prisma } = buildPrisma({
         event: buildEvent({ memberships: [{ userId: "user-1" }, { userId: "user-2" }] }),
         groupByUser: {
-          "user-1": [{ id: "event-1", reminder: { title: "Feed" } }],
-          "user-2": [{ id: "event-1", reminder: { title: "Feed" } }],
+          "user-1": [groupRow("event-1", "Feed")],
+          "user-2": [groupRow("event-1", "Feed")],
         },
         devicesByUser: {
           "user-1": [{ id: "device-1", expoPushToken: "token-1" }],
@@ -250,7 +279,8 @@ describe("PushSenderService", () => {
       const setNx = jest.fn().mockResolvedValue(true);
       const { redis } = buildRedis({ setNx });
       const { queue } = buildReceiptsQueue();
-      const service = new PushSenderService(prisma, client, redis, queue);
+      const { queue: pushQueue } = buildPushQueue();
+      const service = new PushSenderService(prisma, client, redis, queue, pushQueue);
 
       await service.sendForEvent(EVENT_ID);
 
@@ -269,14 +299,15 @@ describe("PushSenderService", () => {
       const minuteEpoch = Math.floor(dueAt.getTime() / 60_000);
       const { prisma } = buildPrisma({
         event: buildEvent({ dueAt }),
-        groupByUser: { "user-1": [{ id: "event-1", reminder: { title: "Feed" } }] },
+        groupByUser: { "user-1": [groupRow("event-1", "Feed")] },
         devicesByUser: { "user-1": [{ id: "device-1", expoPushToken: "token-1" }] },
       });
       const { client } = buildExpoClient();
       const setNx = jest.fn().mockResolvedValue(true);
       const { redis } = buildRedis({ setNx });
       const { queue } = buildReceiptsQueue();
-      const service = new PushSenderService(prisma, client, redis, queue);
+      const { queue: pushQueue } = buildPushQueue();
+      const service = new PushSenderService(prisma, client, redis, queue, pushQueue);
 
       await service.sendForEvent(EVENT_ID);
 
@@ -288,7 +319,7 @@ describe("PushSenderService", () => {
     it("prunes the device when a TICKET is DeviceNotRegistered and collects no receipt for it", async () => {
       const { prisma, deleteMany } = buildPrisma({
         event: buildEvent(),
-        groupByUser: { "user-1": [{ id: "event-1", reminder: { title: "Feed" } }] },
+        groupByUser: { "user-1": [groupRow("event-1", "Feed")] },
         devicesByUser: { "user-1": [{ id: "device-1", expoPushToken: "token-1" }] },
       });
       const sendChunk = jest.fn().mockResolvedValue([{ status: "error", errorCode: "DeviceNotRegistered" }]);
@@ -296,7 +327,8 @@ describe("PushSenderService", () => {
       const { redis } = buildRedis();
       const add = jest.fn().mockResolvedValue(undefined);
       const { queue } = buildReceiptsQueue({ add });
-      const service = new PushSenderService(prisma, client, redis, queue);
+      const { queue: pushQueue } = buildPushQueue();
+      const service = new PushSenderService(prisma, client, redis, queue, pushQueue);
 
       await service.sendForEvent(EVENT_ID);
 
@@ -312,7 +344,8 @@ describe("PushSenderService", () => {
       const { client } = buildExpoClient({ getReceipts });
       const { redis } = buildRedis();
       const { queue } = buildReceiptsQueue();
-      const service = new PushSenderService(prisma, client, redis, queue);
+      const { queue: pushQueue } = buildPushQueue();
+      const service = new PushSenderService(prisma, client, redis, queue, pushQueue);
 
       await service.checkReceipts([{ ticketId: "ticket-1", deviceId: "device-1" }]);
 
@@ -327,7 +360,8 @@ describe("PushSenderService", () => {
       const { client } = buildExpoClient({ getReceipts });
       const { redis } = buildRedis();
       const { queue } = buildReceiptsQueue();
-      const service = new PushSenderService(prisma, client, redis, queue);
+      const { queue: pushQueue } = buildPushQueue();
+      const service = new PushSenderService(prisma, client, redis, queue, pushQueue);
 
       await service.checkReceipts([{ ticketId: "ticket-1", deviceId: "device-1" }]);
 
@@ -339,7 +373,7 @@ describe("PushSenderService", () => {
     it("enqueues a delayed receipt-check job for ok tickets", async () => {
       const { prisma } = buildPrisma({
         event: buildEvent(),
-        groupByUser: { "user-1": [{ id: "event-1", reminder: { title: "Feed" } }] },
+        groupByUser: { "user-1": [groupRow("event-1", "Feed")] },
         devicesByUser: { "user-1": [{ id: "device-1", expoPushToken: "token-1" }] },
       });
       const sendChunk = jest.fn().mockResolvedValue([{ status: "ok", id: "ticket-1" }]);
@@ -347,7 +381,8 @@ describe("PushSenderService", () => {
       const { redis } = buildRedis();
       const add = jest.fn().mockResolvedValue(undefined);
       const { queue } = buildReceiptsQueue({ add });
-      const service = new PushSenderService(prisma, client, redis, queue);
+      const { queue: pushQueue } = buildPushQueue();
+      const service = new PushSenderService(prisma, client, redis, queue, pushQueue);
 
       await service.sendForEvent(EVENT_ID);
 
@@ -362,14 +397,15 @@ describe("PushSenderService", () => {
       const { client, sendChunk } = buildExpoClient();
       const { redis } = buildRedis();
       const { queue } = buildReceiptsQueue();
+      const { queue: pushQueue } = buildPushQueue();
 
       const { prisma: prismaMissing } = buildPrisma({ event: null });
-      const serviceMissing = new PushSenderService(prismaMissing, client, redis, queue);
+      const serviceMissing = new PushSenderService(prismaMissing, client, redis, queue, pushQueue);
       await serviceMissing.sendForEvent(EVENT_ID);
       expect(sendChunk).not.toHaveBeenCalled();
 
       const { prisma: prismaDone } = buildPrisma({ event: buildEvent({ status: "DONE" }) });
-      const serviceDone = new PushSenderService(prismaDone, client, redis, queue);
+      const serviceDone = new PushSenderService(prismaDone, client, redis, queue, pushQueue);
       await serviceDone.sendForEvent(EVENT_ID);
       expect(sendChunk).not.toHaveBeenCalled();
     });
@@ -377,13 +413,14 @@ describe("PushSenderService", () => {
     it("no-ops cleanly when the user has no devices", async () => {
       const { prisma } = buildPrisma({
         event: buildEvent(),
-        groupByUser: { "user-1": [{ id: "event-1", reminder: { title: "Feed" } }] },
+        groupByUser: { "user-1": [groupRow("event-1", "Feed")] },
         devicesByUser: { "user-1": [] },
       });
       const { client, sendChunk } = buildExpoClient();
       const { redis } = buildRedis();
       const { queue } = buildReceiptsQueue();
-      const service = new PushSenderService(prisma, client, redis, queue);
+      const { queue: pushQueue } = buildPushQueue();
+      const service = new PushSenderService(prisma, client, redis, queue, pushQueue);
 
       await expect(service.sendForEvent(EVENT_ID)).resolves.toBeUndefined();
       expect(sendChunk).not.toHaveBeenCalled();
@@ -393,7 +430,7 @@ describe("PushSenderService", () => {
       const devices = Array.from({ length: 150 }, (_, i) => ({ id: `device-${i}`, expoPushToken: `token-${i}` }));
       const { prisma } = buildPrisma({
         event: buildEvent(),
-        groupByUser: { "user-1": [{ id: "event-1", reminder: { title: "Feed" } }] },
+        groupByUser: { "user-1": [groupRow("event-1", "Feed")] },
         devicesByUser: { "user-1": devices },
       });
       const sendChunk = jest
@@ -405,10 +442,184 @@ describe("PushSenderService", () => {
       const { client } = buildExpoClient({ sendChunk });
       const { redis } = buildRedis();
       const { queue } = buildReceiptsQueue();
-      const service = new PushSenderService(prisma, client, redis, queue);
+      const { queue: pushQueue } = buildPushQueue();
+      const service = new PushSenderService(prisma, client, redis, queue, pushQueue);
 
       await expect(service.sendForEvent(EVENT_ID)).rejects.toThrow("expo_send_transient_failure");
       expect(sendChunk).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe("notification prefs (T058)", () => {
+    it("suppresses a push when the only due type is disabled -- no send, no prune", async () => {
+      const { prisma, deviceFindMany, deleteMany } = buildPrisma({
+        event: buildEvent(),
+        groupByUser: { "user-1": [groupRow("event-1", "Give heartworm chewable", "CUSTOM")] },
+        devicesByUser: { "user-1": [{ id: "device-1", expoPushToken: "token-1" }] },
+        prefsByUser: { "user-1": { disabledTypes: ["CUSTOM"], quietStart: null, quietEnd: null, timezone: null } },
+      });
+      const { client, sendChunk } = buildExpoClient();
+      const { redis } = buildRedis();
+      const { queue } = buildReceiptsQueue();
+      const { queue: pushQueue, add: pushAdd } = buildPushQueue();
+      const service = new PushSenderService(prisma, client, redis, queue, pushQueue);
+
+      await service.sendForEvent(EVENT_ID);
+
+      expect(sendChunk).not.toHaveBeenCalled();
+      expect(deviceFindMany).not.toHaveBeenCalled();
+      expect(deleteMany).not.toHaveBeenCalled();
+      expect(pushAdd).not.toHaveBeenCalled();
+    });
+
+    it("still sends the enabled sibling when a mixed group has one disabled type, with adjusted count", async () => {
+      const { prisma } = buildPrisma({
+        event: buildEvent(),
+        groupByUser: {
+          "user-1": [groupRow("e-custom", "Custom thing", "CUSTOM"), groupRow("e-vaccine", "Rabies booster", "VACCINE")],
+        },
+        devicesByUser: { "user-1": [{ id: "device-1", expoPushToken: "token-1" }] },
+        prefsByUser: { "user-1": { disabledTypes: ["CUSTOM"], quietStart: null, quietEnd: null, timezone: null } },
+      });
+      const { client, sendChunk } = buildExpoClient();
+      const { redis } = buildRedis();
+      const { queue } = buildReceiptsQueue();
+      const { queue: pushQueue } = buildPushQueue();
+      const service = new PushSenderService(prisma, client, redis, queue, pushQueue);
+
+      await service.sendForEvent(EVENT_ID);
+
+      expect(sendChunk).toHaveBeenCalledTimes(1);
+      const messages = sendChunk.mock.calls[0]?.[0] as PushMessage[];
+      expect(messages).toHaveLength(1);
+      expect(messages[0]?.data.count).toBe(1);
+      expect(messages[0]?.body).toBe("Care reminder: Rabies booster");
+    });
+
+    it("defers a push inside the quiet window to window-end and does not send", async () => {
+      const fixedNow = new Date("2026-06-15T03:00:00.000Z"); // 2026-06-14 23:00 EDT
+      jest.useFakeTimers().setSystemTime(fixedNow);
+
+      const { prisma } = buildPrisma({
+        event: buildEvent(),
+        groupByUser: { "user-1": [groupRow("event-1", "Feed")] },
+        devicesByUser: { "user-1": [{ id: "device-1", expoPushToken: "token-1" }] },
+        prefsByUser: {
+          "user-1": { disabledTypes: [], quietStart: "22:00", quietEnd: "07:00", timezone: "America/New_York" },
+        },
+      });
+      const { client, sendChunk } = buildExpoClient();
+      const setNx = jest.fn().mockResolvedValue(true);
+      const { redis } = buildRedis({ setNx });
+      const { queue } = buildReceiptsQueue();
+      const { queue: pushQueue, add: pushAdd } = buildPushQueue();
+      const service = new PushSenderService(prisma, client, redis, queue, pushQueue);
+
+      await service.sendForEvent(EVENT_ID);
+
+      expect(sendChunk).not.toHaveBeenCalled();
+      expect(setNx).not.toHaveBeenCalled();
+      expect(pushAdd).toHaveBeenCalledTimes(1);
+      const [, payload, options] = pushAdd.mock.calls[0] as [string, PushJobData, { jobId: string; delay: number }];
+      expect(payload).toEqual({ reminderEventId: EVENT_ID, userId: "user-1" });
+      expect(options.jobId.startsWith(`${EVENT_ID}:defer:user-1:`)).toBe(true);
+      // window-end = 2026-06-15 07:00 EDT = 2026-06-15T11:00:00.000Z
+      const expectedDelay = new Date("2026-06-15T11:00:00.000Z").getTime() - fixedNow.getTime();
+      expect(options.delay).toBe(expectedDelay);
+    });
+
+    it("sends normally when outside the quiet window", async () => {
+      const fixedNow = new Date("2026-06-15T16:00:00.000Z"); // 2026-06-15 12:00 EDT -- outside 22:00-07:00
+      jest.useFakeTimers().setSystemTime(fixedNow);
+
+      const { prisma } = buildPrisma({
+        event: buildEvent(),
+        groupByUser: { "user-1": [groupRow("event-1", "Feed")] },
+        devicesByUser: { "user-1": [{ id: "device-1", expoPushToken: "token-1" }] },
+        prefsByUser: {
+          "user-1": { disabledTypes: [], quietStart: "22:00", quietEnd: "07:00", timezone: "America/New_York" },
+        },
+      });
+      const { client, sendChunk } = buildExpoClient();
+      const { redis } = buildRedis();
+      const { queue } = buildReceiptsQueue();
+      const { queue: pushQueue, add: pushAdd } = buildPushQueue();
+      const service = new PushSenderService(prisma, client, redis, queue, pushQueue);
+
+      await service.sendForEvent(EVENT_ID);
+
+      expect(sendChunk).toHaveBeenCalledTimes(1);
+      expect(pushAdd).not.toHaveBeenCalled();
+    });
+
+    it("[checker regression] multi-member household: a quiet-houred member's deferred re-run does NOT double-push the non-quiet co-member", async () => {
+      // t=23:00 EDT: user-A is inside its 22:00-07:00 quiet window; user-B has no prefs row.
+      const atDeferTime = new Date("2026-06-15T03:00:00.000Z");
+      jest.useFakeTimers().setSystemTime(atDeferTime);
+
+      const { prisma, deviceFindMany } = buildPrisma({
+        event: buildEvent({ memberships: [{ userId: "user-A" }, { userId: "user-B" }] }),
+        groupByUser: {
+          "user-A": [groupRow("event-1", "Feed A")],
+          "user-B": [groupRow("event-1", "Feed B")],
+        },
+        devicesByUser: {
+          "user-A": [{ id: "device-a", expoPushToken: "token-a" }],
+          "user-B": [{ id: "device-b", expoPushToken: "token-b" }],
+        },
+        prefsByUser: {
+          "user-A": { disabledTypes: [], quietStart: "22:00", quietEnd: "07:00", timezone: "America/New_York" },
+          // user-B: no row -> defaults -> never deferred.
+        },
+      });
+      const { client, sendChunk } = buildExpoClient();
+      const setNx = jest.fn().mockResolvedValue(true);
+      const { redis } = buildRedis({ setNx });
+      const { queue } = buildReceiptsQueue();
+      const { queue: pushQueue, add: pushAdd } = buildPushQueue();
+      const service = new PushSenderService(prisma, client, redis, queue, pushQueue);
+
+      // Original scheduler run (no targetUserId, the T056 producer's job shape):
+      // user-A defers, user-B is sent immediately.
+      await service.sendForEvent(EVENT_ID);
+
+      expect(pushAdd).toHaveBeenCalledTimes(1);
+      const [, deferredPayload] = pushAdd.mock.calls[0] as [string, PushJobData];
+      expect(deferredPayload).toEqual({ reminderEventId: EVENT_ID, userId: "user-A" });
+      expect(sendChunk).toHaveBeenCalledTimes(1);
+      const firstRunMessages = sendChunk.mock.calls[0]?.[0] as PushMessage[];
+      expect(firstRunMessages.map((m) => m.to)).toEqual(["token-b"]);
+
+      const deviceFetchesBeforeReplay = deviceFindMany.mock.calls.length;
+
+      // Window-end deferred re-run: `PushProcessor` invokes with ONLY the
+      // deferred userId (T058 checker fix) -- exactly at the window end
+      // (end-exclusive: user-A now delivers instead of re-deferring).
+      jest.setSystemTime(new Date("2026-06-15T11:00:00.000Z"));
+      await service.sendForEvent(EVENT_ID, "user-A");
+
+      // user-A is sent exactly once, in this second run.
+      expect(sendChunk).toHaveBeenCalledTimes(2);
+      const secondRunMessages = sendChunk.mock.calls[1]?.[0] as PushMessage[];
+      expect(secondRunMessages.map((m) => m.to)).toEqual(["token-a"]);
+
+      // user-B must NOT be reprocessed at all on the targeted re-run: no new
+      // device fetch, no second send, no duplicate collapse claim.
+      expect(deviceFindMany.mock.calls.length).toBe(deviceFetchesBeforeReplay + 1);
+      const deviceFetchesDuringReplay = deviceFindMany.mock.calls.slice(deviceFetchesBeforeReplay);
+      expect(
+        deviceFetchesDuringReplay.some((call) => (call[0] as { where: { userId: string } }).where.userId === "user-B"),
+      ).toBe(false);
+
+      // user-B's total sends across BOTH runs == 1 (the checker's exact assertion).
+      const allSentTokens = sendChunk.mock.calls.flatMap((call) => (call[0] as PushMessage[]).map((m) => m.to));
+      expect(allSentTokens.filter((to) => to === "token-b")).toHaveLength(1);
+      expect(allSentTokens.filter((to) => to === "token-a")).toHaveLength(1);
+
+      // Two distinct collapse claims total (one per user), never a repeat for the same user.
+      expect(setNx).toHaveBeenCalledTimes(2);
+      const claimKeys = setNx.mock.calls.map((c) => c[0] as string);
+      expect(new Set(claimKeys).size).toBe(2);
     });
   });
 

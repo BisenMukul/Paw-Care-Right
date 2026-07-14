@@ -10,3 +10,4 @@ export * from "./check-status";
 export * from "./check";
 export * from "./rrule";
 export * from "./reminder";
+export * from "./notification-prefs";

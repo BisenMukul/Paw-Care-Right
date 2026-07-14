@@ -1,6 +1,21 @@
+import type { ReminderType } from "@pawcareright/types";
+
 // Centralized user-facing copy for apps/mobile (CLAUDE.md §6).
 // The product display name is never hardcoded here — it is injected at
 // render time from the shared `APP_DISPLAY_NAME` constant.
+
+// Care-scheduling labels only (T058 plan Safety statement) -- no medical
+// advice, no diagnosis language.
+const NOTIFICATION_TYPE_LABELS: Record<ReminderType, string> = {
+  VACCINE: "Vaccines",
+  PARASITE: "Parasite prevention",
+  MEDICATION: "Medications",
+  GROOMING: "Grooming",
+  DENTAL: "Dental care",
+  VET_VISIT: "Vet visits",
+  CUSTOM: "Custom reminders",
+};
+
 export const strings = {
   tabs: {
     home: "Home",
@@ -25,6 +40,7 @@ export const strings = {
   settings: {
     body: "Account and household settings will live here.",
     family: "Family",
+    notifications: "Notifications",
   },
   auth: {
     welcome: {
@@ -224,6 +240,26 @@ export const strings = {
     invalidError: "This invite link is invalid or has expired.",
     petsPresentError:
       "You have pets in your current household. Remove or rehome them before joining another household.",
+  },
+  notifications: {
+    title: "Notifications",
+    loading: "Loading…",
+    error: "We couldn't load your notification settings.",
+    empty: "We couldn't find your notification settings.",
+    retry: "Retry",
+    offlineBanner: "You're offline — showing your last saved settings.",
+    offline: "You're offline. Reconnect to change notification settings.",
+    typesHeading: "Care reminder types",
+    typeLabel: (type: ReminderType): string => NOTIFICATION_TYPE_LABELS[type],
+    quietHours: {
+      heading: "Quiet hours",
+      enable: "Enable quiet hours",
+      body: "We'll hold care reminders during this window and deliver them right after it ends.",
+      start: "Start",
+      end: "End",
+    },
+    save: "Save",
+    saveError: "We couldn't save your changes. Please try again.",
   },
   intake: {
     stepOf: (step: number, total: number) => `Step ${step} of ${total}`,

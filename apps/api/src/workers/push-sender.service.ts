@@ -12,6 +12,8 @@ import {
   RECEIPT_CHECK_DELAY_MS,
   type PushReceiptJobData,
 } from "./push-receipts.contract";
+import { PUSH_JOB_NAME, PUSH_QUEUE, type PushJobData } from "./push.contract";
+import { computeDeferUntil } from "./quiet-hours";
 
 /** Expo's per-request send limit; also our collapse-group chunk size (plan decision 1). */
 export const EXPO_PUSH_CHUNK_SIZE = 100;
@@ -62,9 +64,27 @@ export class PushSenderService {
     @Inject(EXPO_PUSH_CLIENT) private readonly expoClient: ExpoPushClient,
     private readonly redis: RedisService,
     @InjectQueue(PUSH_RECEIPTS_QUEUE) private readonly receiptsQueue: Queue<PushReceiptJobData>,
+    @InjectQueue(PUSH_QUEUE) private readonly pushQueue: Queue<PushJobData>,
   ) {}
 
-  async sendForEvent(reminderEventId: string): Promise<void> {
+  /**
+   * `targetUserId` (T058 checker fix): set ONLY when this call is the
+   * window-end re-run of a quiet-hours deferred job
+   * (`push.processor.ts` <- `PushJobData.userId`). When present, ONLY that
+   * one household member is (re)processed -- every other co-household
+   * member, already handled in the original run, is skipped entirely. This
+   * prevents the deferred re-run from re-notifying members who were never
+   * deferred (BLOCKING checker finding: without this, a household with one
+   * quiet-houred member and one non-quiet member would double-push the
+   * non-quiet member). The targeted user still goes through the same
+   * type-off / quiet-window re-check (so it re-defers again if still
+   * inside the window) and its own collapse claim, unchanged.
+   */
+  async sendForEvent(reminderEventId: string, targetUserId?: string): Promise<void> {
+    // Captured once so a single instant drives both the quiet-hours
+    // in-window test and the deferred job's `delay` (plan "Defer semantics").
+    const now = new Date();
+
     const event = await this.prisma.reminderEvent.findUnique({
       where: { id: reminderEventId },
       include: {
@@ -100,11 +120,49 @@ export class PushSenderService {
     const minuteStart = new Date(minuteEpoch * 60_000);
     const minuteEnd = new Date((minuteEpoch + 1) * 60_000);
 
-    const recipientUserIds = Array.from(new Set(event.reminder.pet.household.memberships.map((m) => m.userId)));
+    const allRecipientUserIds = Array.from(new Set(event.reminder.pet.household.memberships.map((m) => m.userId)));
+    // A targeted deferred re-run only ever touches its own user -- never
+    // the rest of the household (plan Decision-2 "no path double-pushes a
+    // user"; T058 checker fix).
+    const recipientUserIds =
+      targetUserId !== undefined ? allRecipientUserIds.filter((id) => id === targetUserId) : allRecipientUserIds;
 
     const outgoing: OutgoingMessage[] = [];
 
     for (const userId of recipientUserIds) {
+      const prefsRow = await this.prisma.userNotificationPrefs.findUnique({ where: { userId } });
+      const disabledTypes = prefsRow?.disabledTypes ?? [];
+      const deferUntil = computeDeferUntil(
+        {
+          quietStart: prefsRow?.quietStart ?? null,
+          quietEnd: prefsRow?.quietEnd ?? null,
+          timezone: prefsRow?.timezone ?? null,
+        },
+        now,
+      );
+
+      if (deferUntil !== null) {
+        // Never take the collapse claim while deferred -- the deferred job
+        // re-runs `sendForEvent` at window-end, where `computeDeferUntil`
+        // returns null and collapse proceeds normally (plan decision 2).
+        // `userId` is carried on the payload (T058 checker fix) so the
+        // window-end re-run targets ONLY this user, never the rest of the
+        // household.
+        const windowEndMinuteEpoch = Math.floor(deferUntil.getTime() / 60_000);
+        await this.pushQueue.add(
+          PUSH_JOB_NAME,
+          { reminderEventId: event.id, userId },
+          {
+            jobId: `${event.id}:defer:${userId}:${windowEndMinuteEpoch}`,
+            delay: deferUntil.getTime() - now.getTime(),
+            removeOnComplete: true,
+            removeOnFail: false,
+          },
+        );
+        this.logger.log({ event: "push_deferred", reminderEventId: event.id, userId, windowEndMinuteEpoch });
+        continue;
+      }
+
       const key = collapseKey(userId, minuteEpoch);
       const won = await this.redis.setNx(key, event.id, COLLAPSE_CLAIM_TTL_SECONDS);
       if (!won) {
@@ -122,10 +180,20 @@ export class PushSenderService {
           dueAt: { gte: minuteStart, lt: minuteEnd },
           reminder: { pet: { household: { memberships: { some: { userId } } } } },
         },
-        include: { reminder: { select: { title: true } } },
+        include: { reminder: { select: { title: true, type: true } } },
       });
-      const count = group.length;
-      const singleTitle = group[0]?.reminder.title ?? "";
+      const enabledGroup = group.filter((g) => !disabledTypes.includes(g.reminder.type));
+      const count = enabledGroup.length;
+
+      if (count === 0) {
+        // Every due event for this user+minute is for a disabled type --
+        // suppress with zero side effects (no device fetch, no send, no
+        // prune, no defer).
+        this.logger.log({ event: "push_type_suppressed", reminderEventId: event.id, userId });
+        continue;
+      }
+
+      const singleTitle = enabledGroup[0]?.reminder.title ?? "";
 
       const devices = await this.prisma.device.findMany({
         where: { userId },

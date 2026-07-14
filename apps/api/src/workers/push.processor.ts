@@ -20,6 +20,9 @@ export class PushProcessor extends WorkerHost {
 
   async process(job: Job<PushJobData>): Promise<void> {
     this.logger.log({ event: "push_job_start", jobId: job.id });
-    await this.sender.sendForEvent(job.data.reminderEventId);
+    // `userId` is set only on a quiet-hours deferred re-enqueue (T058
+    // checker fix) -- when present, only that one member is (re)processed,
+    // never the whole household (see `push.contract.ts`).
+    await this.sender.sendForEvent(job.data.reminderEventId, job.data.userId);
   }
 }

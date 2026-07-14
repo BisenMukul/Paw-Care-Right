@@ -13,6 +13,7 @@ import { ConfigModule } from "./config/config.module";
 import { DevicesModule } from "./devices/devices.module";
 import { HealthModule } from "./health/health.module";
 import { HouseholdsModule } from "./households/households.module";
+import { NotificationPrefsModule } from "./notifications/notification-prefs.module";
 import { PetsModule } from "./pets/pets.module";
 import { PhotosModule } from "./photos/photos.module";
 import { PrismaModule } from "./prisma/prisma.module";
@@ -38,6 +39,7 @@ import { WorkersModule } from "./workers/workers.module";
     QuotaModule,
     ChecksModule,
     RemindersModule,
+    NotificationPrefsModule,
     WorkersModule,
     ThrottlerModule.forRoot([{ name: "default", ...THROTTLE_DEFAULT }]),
   ],

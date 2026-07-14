@@ -20,6 +20,14 @@ export default function SettingsScreen() {
       >
         <Text className="text-base font-semibold text-white">{strings.settings.family}</Text>
       </Pressable>
+      <Pressable
+        testID="settings-notifications"
+        onPress={() => router.push("/settings/notifications")}
+        accessibilityRole="button"
+        className="items-center rounded-lg bg-brand-700 px-6 py-3"
+      >
+        <Text className="text-base font-semibold text-white">{strings.settings.notifications}</Text>
+      </Pressable>
     </SafeAreaView>
   );
 }
