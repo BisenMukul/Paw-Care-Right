@@ -149,7 +149,7 @@ describe("useAddVetVisit", () => {
     jest.clearAllMocks();
   });
 
-  it("posts kind:VET_VISIT with the validated value and an occurredAt close to now", async () => {
+  it("posts kind:VET_VISIT with the validated value, no photoKeys, and an occurredAt close to now", async () => {
     mockedPost.mockResolvedValue({ id: "log1" });
     const before = Date.now();
     const value: VetVisitValue = { reason: "Annual checkup" };
@@ -157,27 +157,46 @@ describe("useAddVetVisit", () => {
     const client = createQueryClient();
     const { result } = await renderHook(() => useAddVetVisit("pet1"), { wrapper: makeWrapper(client) });
 
-    await result.current.mutateAsync(value);
+    await result.current.mutateAsync({ value, photoKeys: [] });
 
     expect(mockedPost).toHaveBeenCalledTimes(1);
-    const [path, body] = mockedPost.mock.calls[0] as [string, { kind: string; occurredAt: string; value: unknown }];
+    const [path, body] = mockedPost.mock.calls[0] as [
+      string,
+      { kind: string; occurredAt: string; value: unknown; photoKeys?: string[] },
+    ];
     expect(path).toBe("/v1/pets/pet1/logs");
     expect(body.kind).toBe("VET_VISIT");
     expect(body.value).toEqual(value);
+    expect(body.photoKeys).toBeUndefined();
     expect(Math.abs(new Date(body.occurredAt).getTime() - before)).toBeLessThan(5000);
   });
 
-  it("posts optional fields only when supplied", async () => {
+  it("posts optional value fields only when supplied", async () => {
     mockedPost.mockResolvedValue({ id: "log1" });
     const value: VetVisitValue = { reason: "Annual checkup", clinicName: "Maple Vet" };
 
     const client = createQueryClient();
     const { result } = await renderHook(() => useAddVetVisit("pet1"), { wrapper: makeWrapper(client) });
 
-    await result.current.mutateAsync(value);
+    await result.current.mutateAsync({ value, photoKeys: [] });
 
     const [, body] = mockedPost.mock.calls[0] as [string, { value: unknown }];
     expect(body.value).toEqual(value);
+  });
+
+  it("includes photoKeys only when non-empty (upload-reuse AC)", async () => {
+    mockedPost.mockResolvedValue({ id: "log1" });
+
+    const client = createQueryClient();
+    const { result } = await renderHook(() => useAddVetVisit("pet1"), { wrapper: makeWrapper(client) });
+
+    await result.current.mutateAsync({
+      value: { reason: "Annual checkup" },
+      photoKeys: ["pets/pet1/original/a.jpg"],
+    });
+
+    const [, body] = mockedPost.mock.calls[0] as [string, { photoKeys?: string[] }];
+    expect(body.photoKeys).toEqual(["pets/pet1/original/a.jpg"]);
   });
 
   it("invalidates healthTimelineKeys.pet(petId) on success", async () => {
@@ -187,7 +206,7 @@ describe("useAddVetVisit", () => {
     const invalidateSpy = jest.spyOn(client, "invalidateQueries");
     const { result } = await renderHook(() => useAddVetVisit("pet1"), { wrapper: makeWrapper(client) });
 
-    await result.current.mutateAsync({ reason: "Annual checkup" });
+    await result.current.mutateAsync({ value: { reason: "Annual checkup" }, photoKeys: [] });
 
     await waitFor(() => {
       expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: healthTimelineKeys.pet("pet1") });

@@ -93,13 +93,17 @@ export function useAddNote(petId: string) {
   });
 }
 
-export type AddVetVisitVars = VetVisitValue;
+export interface AddVetVisitVars {
+  value: VetVisitValue;
+  photoKeys: string[];
+}
 
 /**
- * `POST /v1/pets/:petId/logs` with `kind: "VET_VISIT"`. The vars type is
- * exactly the shared `VetVisitValue` (already validated client-side by
+ * `POST /v1/pets/:petId/logs` with `kind: "VET_VISIT"`. `value` is exactly
+ * the shared `VetVisitValue` (already validated client-side by
  * `validateVetVisitForm`) — no cost/med/dose field is added here (T066 plan
- * decision 5 / CLAUDE §7).
+ * decision 5 / CLAUDE §7). `photoKeys` is included only when non-empty
+ * (T069 plan decision 8 — mirrors `useAddNote`'s pattern exactly).
  */
 export function useAddVetVisit(petId: string) {
   const queryClient = useQueryClient();
@@ -108,7 +112,8 @@ export function useAddVetVisit(petId: string) {
       apiClient.post(`/v1/pets/${petId}/logs`, {
         kind: "VET_VISIT",
         occurredAt: new Date().toISOString(),
-        value: vars,
+        value: vars.value,
+        ...(vars.photoKeys.length > 0 ? { photoKeys: vars.photoKeys } : {}),
       }),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: healthTimelineKeys.pet(petId) });

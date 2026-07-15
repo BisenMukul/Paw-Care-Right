@@ -45,6 +45,15 @@ export class StorageService {
     return getSignedUrl(this.client, command, { expiresIn: PRESIGN_EXPIRY_SECONDS });
   }
 
+  async getPresignedGetUrl(args: { key: string }): Promise<string> {
+    const command = new GetObjectCommand({
+      Bucket: this.config.s3Bucket,
+      Key: args.key,
+    });
+
+    return getSignedUrl(this.client, command, { expiresIn: PRESIGN_EXPIRY_SECONDS });
+  }
+
   async getObject(key: string): Promise<Buffer> {
     const result = await this.client.send(
       new GetObjectCommand({ Bucket: this.config.s3Bucket, Key: key }),

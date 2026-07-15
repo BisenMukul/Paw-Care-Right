@@ -64,10 +64,13 @@ export default function VetVisitScreen() {
     );
   }
 
-  function handleSubmit(value: VetVisitValue) {
-    addVetVisit.mutate(value, {
-      onSuccess: () => router.back(),
-    });
+  function handleSubmit(value: VetVisitValue, photoKeys: string[]) {
+    addVetVisit.mutate(
+      { value, photoKeys },
+      {
+        onSuccess: () => router.back(),
+      },
+    );
   }
 
   return (
@@ -80,7 +83,7 @@ export default function VetVisitScreen() {
       <View className="px-6 pt-4">
         <Text className="text-xl font-semibold text-brand-900">{strings.vetVisit.title}</Text>
       </View>
-      <AddVetVisitForm submitting={addVetVisit.isPending} onSubmit={handleSubmit} />
+      <AddVetVisitForm petId={petId} submitting={addVetVisit.isPending} onSubmit={handleSubmit} />
     </SafeAreaView>
   );
 }

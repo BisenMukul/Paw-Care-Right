@@ -12,7 +12,12 @@ import type { HouseholdScope } from "../common/authenticated-request";
 import { CurrentHousehold, HouseholdFromMembership } from "../common/household-scope.decorators";
 import { ConfirmPhotoUploadDto } from "./dto/confirm-photo-upload.dto";
 import { CreatePhotoUploadUrlDto } from "./dto/create-photo-upload-url.dto";
-import type { ConfirmPhotoUploadResponse, PhotoUploadUrlResponse } from "./photos.service";
+import { PhotoViewUrlsDto } from "./dto/photo-view-urls.dto";
+import type {
+  ConfirmPhotoUploadResponse,
+  PhotoUploadUrlResponse,
+  PhotoViewUrlsResponse,
+} from "./photos.service";
 import { PhotosService } from "./photos.service";
 
 /**
@@ -53,5 +58,17 @@ export class PhotosController {
     @Body() dto: ConfirmPhotoUploadDto,
   ): Promise<ConfirmPhotoUploadResponse> {
     return this.photosService.confirmUpload(scope.householdId, petId, dto);
+  }
+
+  @Post(":id/photo-view-urls")
+  @HttpCode(200)
+  @ApiOkResponse({ description: "Presigned thumb/main view URLs for each requested key." })
+  @ApiBadRequestResponse({ description: "A requested key is not under this pet's original-upload namespace." })
+  viewUrls(
+    @CurrentHousehold() scope: HouseholdScope,
+    @Param("id") petId: string,
+    @Body() dto: PhotoViewUrlsDto,
+  ): Promise<PhotoViewUrlsResponse> {
+    return this.photosService.viewUrls(scope.householdId, petId, dto);
   }
 }

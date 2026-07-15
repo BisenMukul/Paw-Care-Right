@@ -237,6 +237,93 @@ describe("Photos (e2e)", () => {
     }, JOB_WAIT_TIMEOUT_MS + 10_000);
   });
 
+  describe("photo-view-urls", () => {
+    it("no token → 401 UNAUTHORIZED", async () => {
+      const res = await request(app.getHttpServer())
+        .post("/v1/pets/some-pet-id/photo-view-urls")
+        .send({ keys: [`${originalKeyPrefix("some-pet-id")}x.jpg`] });
+
+      expect(res.status).toBe(401);
+      expect(errorResponseSchema.parse(res.body).error.code).toBe("UNAUTHORIZED");
+    });
+
+    it("cross-household pet → 404 NOT_FOUND", async () => {
+      const ownerA = await owner();
+      const ownerB = await owner();
+      const petId = await createPet(ownerA, "A's Dog");
+      const key = `${originalKeyPrefix(petId)}x.jpg`;
+
+      const res = await ownerB.authedAgent("post", `/v1/pets/${petId}/photo-view-urls`).send({ keys: [key] });
+
+      expect(res.status).toBe(404);
+      expect(errorResponseSchema.parse(res.body).error.code).toBe("NOT_FOUND");
+    });
+
+    it("a key outside the pet's original-upload namespace → 400 VALIDATION_FAILED", async () => {
+      const ctx = await owner();
+      const petId = await createPet(ctx);
+
+      const res = await ctx
+        .authedAgent("post", `/v1/pets/${petId}/photo-view-urls`)
+        .send({ keys: [`${originalKeyPrefix("some-other-pet-id")}x.jpg`] });
+
+      expect(res.status).toBe(400);
+      expect(errorResponseSchema.parse(res.body).error.code).toBe("VALIDATION_FAILED");
+    });
+
+    it("an empty keys array → 400 VALIDATION_FAILED", async () => {
+      const ctx = await owner();
+      const petId = await createPet(ctx);
+
+      const res = await ctx.authedAgent("post", `/v1/pets/${petId}/photo-view-urls`).send({ keys: [] });
+
+      expect(res.status).toBe(400);
+      expect(errorResponseSchema.parse(res.body).error.code).toBe("VALIDATION_FAILED");
+    });
+
+    it("real round-trip: presign → PUT → confirm → worker renditions, then view-urls returns working GET URLs for both renditions", async () => {
+      const ctx = await owner();
+      const petId = await createPet(ctx, "Milo");
+      const fixture = await buildExifJpegFixture();
+
+      const presignRes = await ctx
+        .authedAgent("post", `/v1/pets/${petId}/photo-upload-url`)
+        .send({ contentType: "image/jpeg", contentLength: fixture.length });
+      expect(presignRes.status).toBe(200);
+      const { uploadUrl, key } = presignRes.body as { uploadUrl: string; key: string };
+      objectKeysToCleanup.push(key, deriveMainKey(key), deriveThumbKey(key));
+
+      const putRes = await fetch(uploadUrl, {
+        method: "PUT",
+        body: fixture,
+        headers: { "Content-Type": "image/jpeg" },
+      });
+      expect(putRes.ok).toBe(true);
+
+      const confirmRes = await ctx.authedAgent("post", `/v1/pets/${petId}/photo-upload-confirm`).send({ key });
+      expect(confirmRes.status).toBe(202);
+      const { jobId } = confirmRes.body as { jobId: string };
+      const job = (await queue.getJob(jobId)) as Job<ImagesJobData>;
+      await job.waitUntilFinished(queueEvents, JOB_WAIT_TIMEOUT_MS);
+
+      const viewRes = await ctx.authedAgent("post", `/v1/pets/${petId}/photo-view-urls`).send({ keys: [key] });
+
+      expect(viewRes.status).toBe(200);
+      expect(viewRes.body).toEqual({
+        items: [{ key, thumbUrl: expect.any(String), mainUrl: expect.any(String) }],
+      });
+      const { thumbUrl, mainUrl } = viewRes.body.items[0] as { thumbUrl: string; mainUrl: string };
+
+      const thumbGetRes = await fetch(thumbUrl);
+      expect(thumbGetRes.status).toBe(200);
+      expect(thumbGetRes.headers.get("content-type")).toContain("image");
+
+      const mainGetRes = await fetch(mainUrl);
+      expect(mainGetRes.status).toBe(200);
+      expect(mainGetRes.headers.get("content-type")).toContain("image");
+    }, JOB_WAIT_TIMEOUT_MS + 10_000);
+  });
+
   describe("no household for the caller", () => {
     it("presign for a bare user with no household → 404 NOT_FOUND", async () => {
       const bareUser = await createUser(prisma);

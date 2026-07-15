@@ -1,14 +1,20 @@
 import { setOnline } from "@pawcareright/api-client";
 import { petIdSchema, type Pet } from "@pawcareright/types";
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react-native";
+import { useEffect } from "react";
 
 import VetVisitScreen from "../app/vet-visit/[petId]";
 import { useAddVetVisit } from "../src/api/health-logs-api";
 import { usePet } from "../src/api/pets-api";
+import { HealthLogPhotoPicker } from "../src/components/health-log-photo-picker";
 
 /**
  * Vet-visit screen (T066 plan "Tests to write" — vet-visit-screen.test.tsx).
- * Same skeleton as `note-screen.test.tsx`.
+ * Same skeleton as `note-screen.test.tsx`. `HealthLogPhotoPicker` is mocked
+ * (T069 plan "Modify" list) -- default is a no-op stub (proves an untouched
+ * picker posts an empty `photoKeys`); one test overrides the mock to invoke
+ * `onKeysChange` on mount (proves the picker's keys reach the mutation, the
+ * AC "upload reuse tests").
  */
 jest.mock("expo-router", () => ({
   useLocalSearchParams: () => ({ petId: "pet1" }),
@@ -23,8 +29,13 @@ jest.mock("../src/api/health-logs-api", () => ({
   useAddVetVisit: jest.fn(),
 }));
 
+jest.mock("../src/components/health-log-photo-picker", () => ({
+  HealthLogPhotoPicker: jest.fn(() => null),
+}));
+
 const mockedUsePet = usePet as unknown as jest.Mock;
 const mockedUseAddVetVisit = useAddVetVisit as unknown as jest.Mock;
+const mockedHealthLogPhotoPicker = HealthLogPhotoPicker as unknown as jest.Mock;
 
 const mockRefetch = jest.fn();
 const mockMutate = jest.fn();
@@ -50,6 +61,7 @@ describe("vet visit screen", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockedUseAddVetVisit.mockReturnValue({ mutate: mockMutate, isPending: false });
+    mockedHealthLogPhotoPicker.mockImplementation(() => null);
   });
 
   afterEach(async () => {
@@ -118,11 +130,40 @@ describe("vet visit screen", () => {
 
     await waitFor(() => {
       expect(mockMutate).toHaveBeenCalledWith(
-        { reason: "Annual checkup", clinicName: "Maple Vet" },
+        { value: { reason: "Annual checkup", clinicName: "Maple Vet" }, photoKeys: [] },
         expect.anything(),
       );
     });
     expect(mockBack).toHaveBeenCalledTimes(1);
+  });
+
+  // AC "Upload reuse tests" (VET_VISIT) -- T069 plan. The picker's own
+  // upload machinery is covered by `health-log-photo-picker.test.tsx`; this
+  // proves the T066 picker's `onKeysChange` output reaches the VET_VISIT
+  // mutation unchanged.
+  it("a valid save posts the entered value and the picker's photoKeys", async () => {
+    mockedUsePet.mockReturnValue({ data: FIXTURE_PET, isLoading: false, isError: false, refetch: mockRefetch });
+    mockedHealthLogPhotoPicker.mockImplementation(({ onKeysChange }: { onKeysChange: (keys: string[]) => void }) => {
+      useEffect(() => {
+        onKeysChange(["vk1"]);
+      }, []);
+      return null;
+    });
+    mockMutate.mockImplementation((_vars, options: { onSuccess?: () => void }) => {
+      options.onSuccess?.();
+    });
+
+    await render(<VetVisitScreen />);
+
+    await fireEvent.changeText(screen.getByTestId("add-vet-visit-reason"), "Annual checkup");
+    await fireEvent.press(screen.getByTestId("add-vet-visit-save"));
+
+    await waitFor(() => {
+      expect(mockMutate).toHaveBeenCalledWith(
+        { value: { reason: "Annual checkup" }, photoKeys: ["vk1"] },
+        expect.anything(),
+      );
+    });
   });
 
   it("an empty reason shows the inline error and does not call the mutation", async () => {

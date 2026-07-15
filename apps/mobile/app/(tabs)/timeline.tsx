@@ -8,10 +8,17 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useHealthTimeline, usePrepareVetSummary, type TimelineItem } from "../../src/api/health-logs-api";
 import { PrimaryButton } from "../../src/components/primary-button";
 import { TimelineFilterChips } from "../../src/components/timeline-filter-chips";
+import { TimelinePhotoViewer } from "../../src/components/timeline-photo-viewer";
 import { TimelineRow } from "../../src/components/timeline-row";
 import { groupTimelineByMonth, type TimelineSection } from "../../src/health-logs/timeline-sections";
 import { useActivePetStore } from "../../src/pets/active-pet-store";
 import { strings } from "../../src/strings";
+
+interface PhotoViewerState {
+  petId: string;
+  photoKeys: string[];
+  index: number;
+}
 
 /**
  * Timeline tab (T067 plan): an infinite, virtualized `SectionList` of the
@@ -27,6 +34,7 @@ export default function TimelineScreen() {
   const activePetId = useActivePetStore((state) => state.activePetId);
   const [kind, setKind] = useState<HealthLogKind | null>(null);
   const [vetSummaryError, setVetSummaryError] = useState(false);
+  const [photoViewer, setPhotoViewer] = useState<PhotoViewerState | null>(null);
   const isOffline = useIsOffline();
 
   const { data, isLoading, isError, refetch, hasNextPage, fetchNextPage, isFetchingNextPage } = useHealthTimeline(
@@ -56,6 +64,13 @@ export default function TimelineScreen() {
     },
     [router],
   );
+
+  // Stable across re-renders (required for `TimelineRow`'s `React.memo` to
+  // bail out on unchanged rows -- T069 plan decision 4, same discipline as
+  // `handlePressCheck` above).
+  const handleOpenPhoto = useCallback((args: PhotoViewerState) => {
+    setPhotoViewer(args);
+  }, []);
 
   if (activePetId === null) {
     return (
@@ -101,7 +116,9 @@ export default function TimelineScreen() {
         testID="timeline-list"
         sections={sections}
         keyExtractor={(item) => `${item.kind}:${item.id}`}
-        renderItem={({ item }) => <TimelineRow item={item} onPressCheck={handlePressCheck} />}
+        renderItem={({ item }) => (
+          <TimelineRow item={item} petId={activePetId} onPressCheck={handlePressCheck} onOpenPhoto={handleOpenPhoto} />
+        )}
         renderSectionHeader={({ section }) => (
           <Text
             testID={`timeline-section-${section.title}`}
@@ -146,6 +163,15 @@ export default function TimelineScreen() {
         }
         ListFooterComponent={<View className="h-8" />}
       />
+      {photoViewer !== null ? (
+        <TimelinePhotoViewer
+          visible
+          petId={photoViewer.petId}
+          photoKeys={photoViewer.photoKeys}
+          initialIndex={photoViewer.index}
+          onClose={() => setPhotoViewer(null)}
+        />
+      ) : null}
     </SafeAreaView>
   );
 }

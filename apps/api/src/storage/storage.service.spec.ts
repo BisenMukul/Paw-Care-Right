@@ -54,6 +54,29 @@ describe("StorageService", () => {
     });
   });
 
+  describe("getPresignedGetUrl", () => {
+    it("returns a URL containing the bucket, key, and X-Amz-Signature — runs offline, no network", async () => {
+      // Mirrors `getPresignedPutUrl`'s test: presigning a GET is also a
+      // local computation, no `send` call.
+      const client = new S3Client({
+        endpoint: config.s3Endpoint,
+        region: config.s3Region,
+        credentials: {
+          accessKeyId: config.s3AccessKey,
+          secretAccessKey: config.s3SecretKey,
+        },
+        forcePathStyle: true,
+      });
+      const service = new StorageService(client, config);
+
+      const url = await service.getPresignedGetUrl({ key: "pets/pet-1/thumb/abc.jpg" });
+
+      expect(url).toContain(config.s3Bucket);
+      expect(url).toContain("pets/pet-1/thumb/abc.jpg");
+      expect(url).toContain("X-Amz-Signature");
+    });
+  });
+
   describe("getObject", () => {
     it("sends a GetObjectCommand bound to the bucket + key and concatenates the streamed body", async () => {
       const send = jest.fn().mockResolvedValue({ Body: await bufferBody("hello world") });

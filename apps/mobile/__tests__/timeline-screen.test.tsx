@@ -36,6 +36,25 @@ jest.mock("../src/api/health-logs-api", () => ({
   usePrepareVetSummary: (petId: string) => mockUsePrepareVetSummary(petId),
 }));
 
+// T069: the photo strip/viewer's shared query is mocked at the data
+// boundary -- `TimelineRow`/`TimelinePhotoStrip`/`TimelinePhotoViewer`
+// themselves are the REAL components, so this proves the full row->strip->
+// viewer wiring (the AC "thumbnails in timeline" + viewer open path).
+jest.mock("../src/api/pet-photos-api", () => ({
+  usePhotoViewUrls: jest.fn(() => ({
+    data: {
+      items: [
+        {
+          key: "pets/pet1/original/a.jpg",
+          thumbUrl: "https://signed.example/thumb-a",
+          mainUrl: "https://signed.example/main-a",
+        },
+      ],
+    },
+    isLoading: false,
+  })),
+}));
+
 function page(items: TimelineItem[], nextCursor: string | null = null) {
   return { data: { pages: [{ items, nextCursor }], pageParams: [undefined] } };
 }
@@ -71,6 +90,14 @@ const MALFORMED_CHECK_ITEM: TimelineItem = {
   occurredAt: "2024-03-08T00:00:00.000Z",
   value: { checkId: "not-a-uuid" },
   photoKeys: [],
+};
+
+const PHOTO_ITEM: TimelineItem = {
+  id: "p1",
+  kind: "NOTE",
+  occurredAt: "2024-03-07T00:00:00.000Z",
+  value: { text: "With a photo" },
+  photoKeys: ["pets/pet1/original/a.jpg"],
 };
 
 describe("timeline screen", () => {
@@ -282,6 +309,21 @@ describe("timeline screen", () => {
     // "WEIGHT") never appear again, proving their rows were not re-rendered.
     expect(spy).toHaveBeenCalledTimes(2);
     expect(spy.mock.calls.map((call) => call[0])).toEqual(["VET_VISIT", "MEAL"]);
+  });
+
+  // T069 plan "Tests to write" -> "implied" thumbnails + AC (viewer opens).
+  it("a row with photoKeys renders the strip; tapping a thumb opens the viewer", async () => {
+    mockUseHealthTimeline.mockReturnValue({ ...BASE_MOCK, ...page([PHOTO_ITEM]) });
+
+    await render(<TimelineScreen />);
+
+    expect(screen.getByTestId("timeline-photo-thumb-p1-0")).toBeTruthy();
+    expect(screen.queryByTestId("timeline-photo-viewer-page-0")).toBeNull();
+
+    await fireEvent.press(screen.getByTestId("timeline-photo-thumb-p1-0"));
+
+    expect(screen.getByTestId("timeline-photo-viewer-page-0")).toBeTruthy();
+    expect(screen.getByLabelText("Close photo viewer")).toBeTruthy();
   });
 
   // T068 "Tests to write": share flow mocked at both the Share boundary and

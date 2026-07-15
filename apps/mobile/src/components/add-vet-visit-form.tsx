@@ -4,11 +4,13 @@ import { KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, View } fro
 
 import { validateVetVisitForm, type VetVisitFormErrors } from "../health-logs/health-log-forms";
 import { strings } from "../strings";
+import { HealthLogPhotoPicker } from "./health-log-photo-picker";
 import { PrimaryButton } from "./primary-button";
 
 export interface AddVetVisitFormProps {
+  petId: string;
   submitting: boolean;
-  onSubmit: (value: VetVisitValue) => void;
+  onSubmit: (value: VetVisitValue, photoKeys: string[]) => void;
 }
 
 const FIELD_ERROR_STRINGS = {
@@ -24,10 +26,11 @@ const FIELD_ERROR_STRINGS = {
  * shared `vetVisitValueSchema` (`validateVetVisitForm`) before ever calling
  * `onSubmit`.
  */
-export function AddVetVisitForm({ submitting, onSubmit }: AddVetVisitFormProps) {
+export function AddVetVisitForm({ petId, submitting, onSubmit }: AddVetVisitFormProps) {
   const [reason, setReason] = useState("");
   const [clinicName, setClinicName] = useState("");
   const [notes, setNotes] = useState("");
+  const [photoKeys, setPhotoKeys] = useState<string[]>([]);
   const [errors, setErrors] = useState<VetVisitFormErrors>({});
 
   function handleSave() {
@@ -37,7 +40,7 @@ export function AddVetVisitForm({ submitting, onSubmit }: AddVetVisitFormProps) 
       return;
     }
     setErrors({});
-    onSubmit(result.value);
+    onSubmit(result.value, photoKeys);
   }
 
   return (
@@ -83,6 +86,8 @@ export function AddVetVisitForm({ submitting, onSubmit }: AddVetVisitFormProps) 
               {FIELD_ERROR_STRINGS.notes[errors.notes]}
             </Text>
           ) : null}
+
+          <HealthLogPhotoPicker petId={petId} onKeysChange={setPhotoKeys} />
 
           <PrimaryButton
             testID="add-vet-visit-save"

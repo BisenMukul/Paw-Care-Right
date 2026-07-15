@@ -93,6 +93,10 @@ export const strings = {
     dateA11y: (date: string) => `Entry on ${date}`,
     vetSummary: "Prepare vet summary",
     vetSummaryError: "We couldn't prepare the summary. Please try again.",
+    photoThumbA11y: (index: number, count: number, kindLabel: string, date: string) =>
+      `Photo ${index} of ${count} for ${kindLabel} on ${date}`,
+    photoViewerPageA11y: (index: number, count: number) => `Photo ${index} of ${count}`,
+    photoViewerClose: "Close photo viewer",
   },
   settings: {
     body: "Account and household settings will live here.",

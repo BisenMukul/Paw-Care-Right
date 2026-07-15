@@ -5,10 +5,13 @@ import type { TimelineItem } from "../api/health-logs-api";
 import { getKindDisplay } from "../health-logs/kind-display";
 import { extractCheckRefId, summarizeTimelineValue } from "../health-logs/timeline-value";
 import { strings } from "../strings";
+import { TimelinePhotoStrip } from "./timeline-photo-strip";
 
 export interface TimelineRowProps {
   item: TimelineItem;
+  petId: string;
   onPressCheck: (checkId: string) => void;
+  onOpenPhoto: (args: { petId: string; photoKeys: string[]; index: number }) => void;
 }
 
 function pad2(n: number): string {
@@ -34,7 +37,7 @@ function localDateKey(iso: string): string {
  * -- no crash, and the destination result screen already fails upward on a
  * deleted check.
  */
-export const TimelineRow = memo(function TimelineRow({ item, onPressCheck }: TimelineRowProps) {
+export const TimelineRow = memo(function TimelineRow({ item, petId, onPressCheck, onOpenPhoto }: TimelineRowProps) {
   const display = getKindDisplay(item.kind);
   const date = localDateKey(item.occurredAt);
   const summary = summarizeTimelineValue(item);
@@ -53,13 +56,33 @@ export const TimelineRow = memo(function TimelineRow({ item, onPressCheck }: Tim
     </View>
   );
 
+  // A separate, independently-memoized component (T069 plan decision 4) --
+  // its query resolving re-renders only the strip, never this row's body.
+  const photoStrip =
+    item.photoKeys.length > 0 ? (
+      <TimelinePhotoStrip
+        petId={petId}
+        entryId={item.id}
+        photoKeys={item.photoKeys}
+        kindLabel={strings.timeline.kindLabel[item.kind]}
+        date={date}
+        onOpenPhoto={onOpenPhoto}
+      />
+    ) : null;
+
   if (checkId !== null) {
     return (
       <Pressable testID={`timeline-row-${item.id}`} accessibilityRole="button" onPress={() => onPressCheck(checkId)}>
         {content}
+        {photoStrip}
       </Pressable>
     );
   }
 
-  return <View testID={`timeline-row-${item.id}`}>{content}</View>;
+  return (
+    <View testID={`timeline-row-${item.id}`}>
+      {content}
+      {photoStrip}
+    </View>
+  );
 });

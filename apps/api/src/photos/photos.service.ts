@@ -10,7 +10,14 @@ import type { ImagesJobData } from "../workers/images.contract";
 import { IMAGES_QUEUE } from "../workers/images.contract";
 import type { ConfirmPhotoUploadDto } from "./dto/confirm-photo-upload.dto";
 import type { CreatePhotoUploadUrlDto } from "./dto/create-photo-upload-url.dto";
-import { buildOriginalKey, contentTypeToExt, originalKeyPrefix } from "./photos.constants";
+import type { PhotoViewUrlsDto } from "./dto/photo-view-urls.dto";
+import {
+  buildOriginalKey,
+  contentTypeToExt,
+  deriveMainKey,
+  deriveThumbKey,
+  originalKeyPrefix,
+} from "./photos.constants";
 
 export interface PhotoUploadUrlResponse {
   uploadUrl: string;
@@ -20,6 +27,10 @@ export interface PhotoUploadUrlResponse {
 export interface ConfirmPhotoUploadResponse {
   queued: true;
   jobId: string;
+}
+
+export interface PhotoViewUrlsResponse {
+  items: Array<{ key: string; thumbUrl: string; mainUrl: string }>;
 }
 
 const JOB_NAME = "process";
@@ -88,5 +99,40 @@ export class PhotosService {
     );
 
     return { queued: true, jobId };
+  }
+
+  /**
+   * Presigns GET (view) URLs for both the thumb and main renditions of each
+   * requested key, household- and namespace-scoped exactly like
+   * `confirmUpload` (plan decision 3): `findOne` 404s a pet outside the
+   * caller's household, and every key must live under this pet's
+   * original-upload namespace or the request is rejected — the client never
+   * learns the rendition key scheme, only the signed URLs.
+   */
+  async viewUrls(
+    householdId: string,
+    petId: string,
+    dto: PhotoViewUrlsDto,
+  ): Promise<PhotoViewUrlsResponse> {
+    await this.petsService.findOne(householdId, petId);
+
+    const prefix = originalKeyPrefix(petId);
+    for (const key of dto.keys) {
+      if (!key.startsWith(prefix)) {
+        throw new BadRequestException("key does not belong to this pet's original-upload namespace");
+      }
+    }
+
+    const items = await Promise.all(
+      dto.keys.map(async (key) => {
+        const [thumbUrl, mainUrl] = await Promise.all([
+          this.storage.getPresignedGetUrl({ key: deriveThumbKey(key) }),
+          this.storage.getPresignedGetUrl({ key: deriveMainKey(key) }),
+        ]);
+        return { key, thumbUrl, mainUrl };
+      }),
+    );
+
+    return { items };
   }
 }
