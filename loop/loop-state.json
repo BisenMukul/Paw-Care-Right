@@ -446,12 +446,12 @@
       "attempts": 1
     },
     "T066": {
-      "status": "in_progress",
+      "status": "done",
       "attempts": 1
     },
     "T067": {
-      "status": "pending",
-      "attempts": 0
+      "status": "in_progress",
+      "attempts": 1
     },
     "T068": {
       "status": "pending",

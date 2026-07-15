@@ -95,6 +95,8 @@ export default function PetHomeScreen() {
         <View className="gap-4 px-6 pb-8 pt-4">
           <QuickActions
             onLogWeight={() => router.push({ pathname: "/weight/[petId]", params: { petId: id } })}
+            onLogNote={() => router.push({ pathname: "/note/[petId]", params: { petId: id } })}
+            onLogVetVisit={() => router.push({ pathname: "/vet-visit/[petId]", params: { petId: id } })}
             onReminders={() => goToComingSoon("reminders")}
           />
         </View>

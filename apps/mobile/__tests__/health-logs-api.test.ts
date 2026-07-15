@@ -5,7 +5,17 @@ import { renderHook, waitFor } from "@testing-library/react-native";
 import type { ReactNode } from "react";
 import React from "react";
 
-import { useAddWeight, useWeightSeries, weightSeriesKeys, type WeightSeriesResponse } from "../src/api/health-logs-api";
+import type { VetVisitValue } from "@pawcareright/types";
+
+import {
+  healthTimelineKeys,
+  useAddNote,
+  useAddVetVisit,
+  useAddWeight,
+  useWeightSeries,
+  weightSeriesKeys,
+  type WeightSeriesResponse,
+} from "../src/api/health-logs-api";
 import { apiClient } from "../src/api/client";
 
 // Mirrors `checks-api.test.ts`'s mocked-client pattern.
@@ -77,6 +87,110 @@ describe("useAddWeight", () => {
 
     await waitFor(() => {
       expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: weightSeriesKeys.pet("pet1") });
+    });
+  });
+});
+
+describe("useAddNote", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("posts kind:NOTE with value.text, no photoKeys, and an occurredAt close to now", async () => {
+    mockedPost.mockResolvedValue({ id: "log1" });
+    const before = Date.now();
+
+    const client = createQueryClient();
+    const { result } = await renderHook(() => useAddNote("pet1"), { wrapper: makeWrapper(client) });
+
+    await result.current.mutateAsync({ text: "Ate a bug", photoKeys: [] });
+
+    expect(mockedPost).toHaveBeenCalledTimes(1);
+    const [path, body] = mockedPost.mock.calls[0] as [
+      string,
+      { kind: string; occurredAt: string; value: unknown; photoKeys?: string[] },
+    ];
+    expect(path).toBe("/v1/pets/pet1/logs");
+    expect(body.kind).toBe("NOTE");
+    expect(body.value).toEqual({ text: "Ate a bug" });
+    expect(body.photoKeys).toBeUndefined();
+    expect(Math.abs(new Date(body.occurredAt).getTime() - before)).toBeLessThan(5000);
+  });
+
+  it("includes photoKeys only when non-empty", async () => {
+    mockedPost.mockResolvedValue({ id: "log1" });
+
+    const client = createQueryClient();
+    const { result } = await renderHook(() => useAddNote("pet1"), { wrapper: makeWrapper(client) });
+
+    await result.current.mutateAsync({ text: "Ate a bug", photoKeys: ["pets/pet1/original/a.jpg"] });
+
+    const [, body] = mockedPost.mock.calls[0] as [string, { photoKeys?: string[] }];
+    expect(body.photoKeys).toEqual(["pets/pet1/original/a.jpg"]);
+  });
+
+  it("invalidates healthTimelineKeys.pet(petId) on success", async () => {
+    mockedPost.mockResolvedValue({ id: "log1" });
+
+    const client = createQueryClient();
+    const invalidateSpy = jest.spyOn(client, "invalidateQueries");
+    const { result } = await renderHook(() => useAddNote("pet1"), { wrapper: makeWrapper(client) });
+
+    await result.current.mutateAsync({ text: "Ate a bug", photoKeys: [] });
+
+    await waitFor(() => {
+      expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: healthTimelineKeys.pet("pet1") });
+    });
+  });
+});
+
+describe("useAddVetVisit", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("posts kind:VET_VISIT with the validated value and an occurredAt close to now", async () => {
+    mockedPost.mockResolvedValue({ id: "log1" });
+    const before = Date.now();
+    const value: VetVisitValue = { reason: "Annual checkup" };
+
+    const client = createQueryClient();
+    const { result } = await renderHook(() => useAddVetVisit("pet1"), { wrapper: makeWrapper(client) });
+
+    await result.current.mutateAsync(value);
+
+    expect(mockedPost).toHaveBeenCalledTimes(1);
+    const [path, body] = mockedPost.mock.calls[0] as [string, { kind: string; occurredAt: string; value: unknown }];
+    expect(path).toBe("/v1/pets/pet1/logs");
+    expect(body.kind).toBe("VET_VISIT");
+    expect(body.value).toEqual(value);
+    expect(Math.abs(new Date(body.occurredAt).getTime() - before)).toBeLessThan(5000);
+  });
+
+  it("posts optional fields only when supplied", async () => {
+    mockedPost.mockResolvedValue({ id: "log1" });
+    const value: VetVisitValue = { reason: "Annual checkup", clinicName: "Maple Vet" };
+
+    const client = createQueryClient();
+    const { result } = await renderHook(() => useAddVetVisit("pet1"), { wrapper: makeWrapper(client) });
+
+    await result.current.mutateAsync(value);
+
+    const [, body] = mockedPost.mock.calls[0] as [string, { value: unknown }];
+    expect(body.value).toEqual(value);
+  });
+
+  it("invalidates healthTimelineKeys.pet(petId) on success", async () => {
+    mockedPost.mockResolvedValue({ id: "log1" });
+
+    const client = createQueryClient();
+    const invalidateSpy = jest.spyOn(client, "invalidateQueries");
+    const { result } = await renderHook(() => useAddVetVisit("pet1"), { wrapper: makeWrapper(client) });
+
+    await result.current.mutateAsync({ reason: "Annual checkup" });
+
+    await waitFor(() => {
+      expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: healthTimelineKeys.pet("pet1") });
     });
   });
 });

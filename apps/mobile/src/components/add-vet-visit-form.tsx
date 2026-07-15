@@ -1,0 +1,97 @@
+import type { VetVisitValue } from "@pawcareright/types";
+import { useState } from "react";
+import { KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, View } from "react-native";
+
+import { validateVetVisitForm, type VetVisitFormErrors } from "../health-logs/health-log-forms";
+import { strings } from "../strings";
+import { PrimaryButton } from "./primary-button";
+
+export interface AddVetVisitFormProps {
+  submitting: boolean;
+  onSubmit: (value: VetVisitValue) => void;
+}
+
+const FIELD_ERROR_STRINGS = {
+  reason: { empty: strings.vetVisit.errorReasonEmpty, tooLong: strings.vetVisit.errorTooLong },
+  clinicName: { empty: strings.vetVisit.errorTooLong, tooLong: strings.vetVisit.errorTooLong },
+  notes: { empty: strings.vetVisit.errorTooLong, tooLong: strings.vetVisit.errorTooLong },
+} as const;
+
+/**
+ * The "vet visit" quick-action form body (T066 plan) — record-only fields,
+ * no cost/med/dose field (decision 5 / CLAUDE §7). Owns keyboard-avoidance
+ * (§6); the screen already provides the safe-area. Validates through the
+ * shared `vetVisitValueSchema` (`validateVetVisitForm`) before ever calling
+ * `onSubmit`.
+ */
+export function AddVetVisitForm({ submitting, onSubmit }: AddVetVisitFormProps) {
+  const [reason, setReason] = useState("");
+  const [clinicName, setClinicName] = useState("");
+  const [notes, setNotes] = useState("");
+  const [errors, setErrors] = useState<VetVisitFormErrors>({});
+
+  function handleSave() {
+    const result = validateVetVisitForm({ reason, clinicName, notes });
+    if (!result.ok) {
+      setErrors(result.errors);
+      return;
+    }
+    setErrors({});
+    onSubmit(result.value);
+  }
+
+  return (
+    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} className="flex-1">
+      <ScrollView className="flex-1">
+        <View className="gap-4 px-6 pb-8 pt-4">
+          <TextInput
+            testID="add-vet-visit-reason"
+            value={reason}
+            onChangeText={setReason}
+            placeholder={strings.vetVisit.reasonPlaceholder}
+            className="rounded-lg border border-brand-300 px-4 py-3 text-base text-brand-900"
+          />
+          {errors.reason !== undefined ? (
+            <Text testID="add-vet-visit-error-reason" className="text-sm text-red-600">
+              {FIELD_ERROR_STRINGS.reason[errors.reason]}
+            </Text>
+          ) : null}
+
+          <TextInput
+            testID="add-vet-visit-clinic"
+            value={clinicName}
+            onChangeText={setClinicName}
+            placeholder={strings.vetVisit.clinicPlaceholder}
+            className="rounded-lg border border-brand-300 px-4 py-3 text-base text-brand-900"
+          />
+          {errors.clinicName !== undefined ? (
+            <Text testID="add-vet-visit-error-clinic" className="text-sm text-red-600">
+              {FIELD_ERROR_STRINGS.clinicName[errors.clinicName]}
+            </Text>
+          ) : null}
+
+          <TextInput
+            testID="add-vet-visit-notes"
+            value={notes}
+            onChangeText={setNotes}
+            multiline
+            placeholder={strings.vetVisit.notesPlaceholder}
+            className="min-h-[100px] rounded-lg border border-brand-300 px-4 py-3 text-base text-brand-900"
+          />
+          {errors.notes !== undefined ? (
+            <Text testID="add-vet-visit-error-notes" className="text-sm text-red-600">
+              {FIELD_ERROR_STRINGS.notes[errors.notes]}
+            </Text>
+          ) : null}
+
+          <PrimaryButton
+            testID="add-vet-visit-save"
+            label={strings.vetVisit.save}
+            onPress={handleSave}
+            loading={submitting}
+          />
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
+  );
+}

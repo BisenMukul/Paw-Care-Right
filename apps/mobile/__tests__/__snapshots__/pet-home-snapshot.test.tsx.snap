@@ -194,7 +194,7 @@ exports[`pet home screen snapshots loaded 1`] = `
         className="gap-4 px-6 pb-8 pt-4"
       >
         <View
-          className="flex-row gap-3"
+          className="flex-row flex-wrap gap-3"
         >
           <View
             accessibilityRole="button"
@@ -216,7 +216,7 @@ exports[`pet home screen snapshots loaded 1`] = `
               }
             }
             accessible={true}
-            className="flex-1 items-center rounded-lg bg-brand-100 px-4 py-3"
+            className="min-w-[45%] flex-1 basis-[45%] items-center rounded-lg bg-brand-100 px-4 py-3"
             collapsable={false}
             focusable={true}
             onBlur={[Function]}
@@ -256,7 +256,87 @@ exports[`pet home screen snapshots loaded 1`] = `
               }
             }
             accessible={true}
-            className="flex-1 items-center rounded-lg bg-brand-100 px-4 py-3"
+            className="min-w-[45%] flex-1 basis-[45%] items-center rounded-lg bg-brand-100 px-4 py-3"
+            collapsable={false}
+            focusable={true}
+            onBlur={[Function]}
+            onClick={[Function]}
+            onFocus={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            testID="quick-action-log-note"
+          >
+            <Text
+              className="text-base font-semibold text-brand-900"
+            >
+              Log note
+            </Text>
+          </View>
+          <View
+            accessibilityRole="button"
+            accessibilityState={
+              {
+                "busy": undefined,
+                "checked": undefined,
+                "disabled": undefined,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            className="min-w-[45%] flex-1 basis-[45%] items-center rounded-lg bg-brand-100 px-4 py-3"
+            collapsable={false}
+            focusable={true}
+            onBlur={[Function]}
+            onClick={[Function]}
+            onFocus={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            testID="quick-action-log-vet-visit"
+          >
+            <Text
+              className="text-base font-semibold text-brand-900"
+            >
+              Vet visit
+            </Text>
+          </View>
+          <View
+            accessibilityRole="button"
+            accessibilityState={
+              {
+                "busy": undefined,
+                "checked": undefined,
+                "disabled": undefined,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            className="min-w-[45%] flex-1 basis-[45%] items-center rounded-lg bg-brand-100 px-4 py-3"
             collapsable={false}
             focusable={true}
             onBlur={[Function]}
