@@ -15,3 +15,4 @@ export * from "./care-plan";
 export * from "./agenda";
 export * from "./medication-copy";
 export * from "./medication-course";
+export * from "./health-log";

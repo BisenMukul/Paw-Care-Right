@@ -38,6 +38,15 @@ enum ReminderEventStatus {
   MISSED
 }
 
+enum HealthLogKind {
+  WEIGHT
+  MEAL
+  NOTE
+  VET_VISIT
+  MED_GIVEN
+  CHECK_REF
+}
+
 model User {
   id        String   @id @default(uuid())
   email     String   @unique
@@ -149,6 +158,7 @@ model Pet {
   household         Household      @relation(fields: [householdId], references: [id], onDelete: Cascade)
   checks            SymptomCheck[]
   reminders         Reminder[]
+  healthLogs        HealthLog[]
 
   @@index([householdId, deletedAt])
 }
@@ -263,4 +273,27 @@ model ReminderEvent {
   @@index([dueAt, status])
   @@index([reminderId])
   @@index([status, snoozedUntil])
+}
+
+// HealthLog (T063): a pet's health timeline entry. `kind` selects which
+// `packages/types` `valueJson` shape applies (validated at write & read by
+// `parseHealthLogValue`, single source of truth). Backlinks for CHECK_REF
+// (-> SymptomCheck) and MED_GIVEN (-> ReminderEvent) live INSIDE valueJson,
+// not as dedicated FK columns -- ARCHITECTURE §3's authoritative field list
+// is exactly (id, petId, kind, valueJson, photoKeys[], occurredAt) (plan
+// decision 2 / risk R1). `photoKeys` reuses the existing T023 upload
+// pipeline's keys -- no new upload code here.
+model HealthLog {
+  id          String        @id @default(uuid())
+  petId       String
+  kind        HealthLogKind
+  valueJson   Json
+  photoKeys   String[]      @default([])
+  occurredAt  DateTime
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  pet Pet @relation(fields: [petId], references: [id], onDelete: Cascade)
+
+  @@index([petId, occurredAt(sort: Desc)])
 }
