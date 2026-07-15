@@ -12,6 +12,7 @@ import { THROTTLE_DEFAULT } from "./common/throttle.config";
 import { ConfigModule } from "./config/config.module";
 import { DevicesModule } from "./devices/devices.module";
 import { HealthModule } from "./health/health.module";
+import { HealthLogsModule } from "./health-logs/health-logs.module";
 import { HouseholdsModule } from "./households/households.module";
 import { NotificationPrefsModule } from "./notifications/notification-prefs.module";
 import { PetsModule } from "./pets/pets.module";
@@ -39,6 +40,7 @@ import { WorkersModule } from "./workers/workers.module";
     QuotaModule,
     ChecksModule,
     RemindersModule,
+    HealthLogsModule,
     NotificationPrefsModule,
     WorkersModule,
     ThrottlerModule.forRoot([{ name: "default", ...THROTTLE_DEFAULT }]),

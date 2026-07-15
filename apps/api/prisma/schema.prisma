@@ -273,6 +273,10 @@ model ReminderEvent {
   @@index([dueAt, status])
   @@index([reminderId])
   @@index([status, snoozedUntil])
+  // T064: powers the MED_GIVEN read-time projection query (DONE events,
+  // newest completedAt first, for a reminder). Additive index only -- no
+  // column/behavior change to this T060-owned model (plan §4 / risk R6).
+  @@index([reminderId, status, completedAt(sort: Desc)])
 }
 
 // HealthLog (T063): a pet's health timeline entry. `kind` selects which
@@ -296,4 +300,6 @@ model HealthLog {
   pet Pet @relation(fields: [petId], references: [id], onDelete: Cascade)
 
   @@index([petId, occurredAt(sort: Desc)])
+  // T064: powers the single-kind filtered timeline list page.
+  @@index([petId, kind, occurredAt(sort: Desc)])
 }
