@@ -1,4 +1,5 @@
 import { BadRequestException } from "@nestjs/common";
+import { VET_SUMMARY_DISCLAIMER, VET_SUMMARY_MAX_CHARS } from "@pawcareright/types";
 
 import type { PetResponse } from "../pets/pets.service";
 import type { PetsService } from "../pets/pets.service";
@@ -68,14 +69,15 @@ function buildReminderEventRow(overrides: Partial<Record<string, unknown>> = {})
 function buildHarness(opts: { petFindOne?: jest.Mock } = {}) {
   const healthLog = { create: jest.fn(), findMany: jest.fn() };
   const reminderEvent = { findMany: jest.fn() };
-  const prisma = { healthLog, reminderEvent } as unknown as PrismaService;
+  const symptomCheck = { findMany: jest.fn() };
+  const prisma = { healthLog, reminderEvent, symptomCheck } as unknown as PrismaService;
 
   const petFindOne = opts.petFindOne ?? jest.fn().mockResolvedValue(buildPet());
   const petsService = { findOne: petFindOne } as unknown as PetsService;
 
   const service = new HealthLogsService(prisma, petsService);
 
-  return { service, healthLog, reminderEvent, petFindOne };
+  return { service, healthLog, reminderEvent, symptomCheck, petFindOne };
 }
 
 describe("HealthLogsService.create", () => {
@@ -296,5 +298,85 @@ describe("HealthLogsService.weightSeries", () => {
 
     expect(result.sampled).toBe(false);
     expect(result.points).toHaveLength(50);
+  });
+});
+
+describe("HealthLogsService.vetSummary", () => {
+  function mockGatheringQueries(
+    healthLog: jest.Mock,
+    symptomCheck: { findMany: jest.Mock },
+    reminderEvent: { findMany: jest.Mock },
+  ) {
+    healthLog.mockImplementation(async (args: { where: { kind: string } }) => {
+      if (args.where.kind === "WEIGHT") {
+        return [buildHealthLogRow({ id: "w1", kind: "WEIGHT", valueJson: { weightGrams: 10_000 } })];
+      }
+      if (args.where.kind === "NOTE") {
+        return [buildHealthLogRow({ id: "n1", kind: "NOTE", valueJson: { text: "Ate a full bowl." } })];
+      }
+      return [];
+    });
+
+    symptomCheck.findMany.mockResolvedValue([
+      {
+        id: "check-1",
+        createdAt: new Date("2026-07-10T00:00:00.000Z"),
+        result: {
+          checkId: "check-1",
+          resultJson: {
+            urgency: "VET_SOON",
+            confidence: "medium",
+            summary: "A minor issue.",
+            possibleCauses: [],
+            redFlagsToWatch: [],
+            homeCare: [],
+            doNot: [],
+            vetQuestions: [],
+            followUpHours: 24,
+          },
+        },
+      },
+    ]);
+
+    reminderEvent.findMany.mockResolvedValue([buildReminderEventRow()]);
+  }
+
+  it("returns a footer-terminated summary containing the pet name and a recorded tier", async () => {
+    const { service, healthLog, symptomCheck, reminderEvent } = buildHarness();
+    mockGatheringQueries(healthLog.findMany, symptomCheck, reminderEvent);
+
+    const result = await service.vetSummary(HOUSEHOLD_ID, PET_ID);
+
+    expect(result.summary).toContain("Fido");
+    expect(result.summary).toContain("vet soon");
+    expect(result.summary.endsWith(VET_SUMMARY_DISCLAIMER)).toBe(true);
+    expect(result.summary.length).toBeLessThanOrEqual(VET_SUMMARY_MAX_CHARS);
+  });
+
+  it("scopes the gathering queries to the last 90 days (windowStart passed as gte)", async () => {
+    const { service, healthLog, symptomCheck, reminderEvent } = buildHarness();
+    mockGatheringQueries(healthLog.findMany, symptomCheck, reminderEvent);
+
+    await service.vetSummary(HOUSEHOLD_ID, PET_ID);
+
+    const healthLogWheres = healthLog.findMany.mock.calls.map(
+      (call) => (call[0] as { where: { occurredAt: { gte: Date } } }).where,
+    );
+    expect(healthLogWheres.every((where) => where.occurredAt.gte instanceof Date)).toBe(true);
+
+    const checkWhere = symptomCheck.findMany.mock.calls[0]?.[0] as { where: { createdAt: { gte: Date } } };
+    expect(checkWhere.where.createdAt.gte).toBeInstanceOf(Date);
+
+    const medWhere = reminderEvent.findMany.mock.calls[0]?.[0] as {
+      where: { completedAt: { gte: Date; not: null } };
+    };
+    expect(medWhere.where.completedAt.gte).toBeInstanceOf(Date);
+  });
+
+  it("404s when the pet is not in the caller's household (pet-scope guard reused)", async () => {
+    const petFindOne = jest.fn().mockRejectedValue(new Error("not found stand-in"));
+    const { service } = buildHarness({ petFindOne });
+
+    await expect(service.vetSummary(HOUSEHOLD_ID, PET_ID)).rejects.toThrow();
   });
 });

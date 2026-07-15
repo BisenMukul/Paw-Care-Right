@@ -1,5 +1,6 @@
 import { createQueryClient, setOnline } from "@pawcareright/api-client";
-import { act, fireEvent, render, screen } from "@testing-library/react-native";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react-native";
+import { Share } from "react-native";
 
 import TimelineScreen from "../app/(tabs)/timeline";
 import type { TimelineItem } from "../src/api/health-logs-api";
@@ -21,10 +22,18 @@ jest.mock("expo-router", () => ({
 }));
 
 const mockUseHealthTimeline = jest.fn();
+// T068: `usePrepareVetSummary` is mocked at the mutation boundary (the
+// share flow itself is exercised via a `jest.spyOn(Share, "share")` on the
+// REAL `react-native` `Share` module below). Defaults to a non-pending,
+// never-resolving-on-its-own mock so every pre-existing test in this file
+// (which never presses the new button) is unaffected.
+const mockUsePrepareVetSummary = jest.fn();
+mockUsePrepareVetSummary.mockReturnValue({ mutateAsync: jest.fn(), isPending: false });
 
 jest.mock("../src/api/health-logs-api", () => ({
   ...jest.requireActual("../src/api/health-logs-api"),
   useHealthTimeline: (petId: string, kind: string | null) => mockUseHealthTimeline(petId, kind),
+  usePrepareVetSummary: (petId: string) => mockUsePrepareVetSummary(petId),
 }));
 
 function page(items: TimelineItem[], nextCursor: string | null = null) {
@@ -273,6 +282,26 @@ describe("timeline screen", () => {
     // "WEIGHT") never appear again, proving their rows were not re-rendered.
     expect(spy).toHaveBeenCalledTimes(2);
     expect(spy.mock.calls.map((call) => call[0])).toEqual(["VET_VISIT", "MEAL"]);
+  });
+
+  // T068 "Tests to write": share flow mocked at both the Share boundary and
+  // the mutation boundary.
+  it("Prepare vet summary shares the fetched summary", async () => {
+    const summary = "…record digest…This is a record summary generated from entries you logged in the app.";
+    const mutateAsync = jest.fn().mockResolvedValue({ summary });
+    mockUsePrepareVetSummary.mockReturnValue({ mutateAsync, isPending: false });
+    mockUseHealthTimeline.mockReturnValue({ ...BASE_MOCK, ...page([]) });
+    const shareSpy = jest.spyOn(Share, "share").mockResolvedValue({ action: "sharedAction", activityType: undefined });
+
+    await render(<TimelineScreen />);
+    await fireEvent.press(screen.getByTestId("timeline-vet-summary"));
+
+    await waitFor(() => {
+      expect(mutateAsync).toHaveBeenCalledTimes(1);
+      expect(shareSpy).toHaveBeenCalledWith({ message: summary });
+    });
+
+    shareSpy.mockRestore();
   });
 });
 

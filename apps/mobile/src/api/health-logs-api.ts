@@ -157,3 +157,23 @@ export function useHealthTimeline(petId: string, kind: HealthLogKind | null) {
     enabled: petId.length > 0,
   });
 }
+
+/**
+ * Local mirror (T068 plan -- mirrors `WeightSeriesResponse`'s precedent
+ * above) of the api's `HealthLogsService.VetSummaryResponse` — no import
+ * across the api/mobile boundary.
+ */
+export interface VetSummaryResponse {
+  summary: string;
+}
+
+/**
+ * `GET /v1/pets/:petId/vet-summary` (T068's endpoint) — an on-demand
+ * fetch-then-share mutation (not a query: the digest is prepared once,
+ * when the owner taps "Prepare vet summary", never cached/refetched).
+ */
+export function usePrepareVetSummary(petId: string) {
+  return useMutation({
+    mutationFn: () => apiClient.get<VetSummaryResponse>(`/v1/pets/${petId}/vet-summary`),
+  });
+}

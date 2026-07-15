@@ -91,6 +91,8 @@ export const strings = {
     kindLabel: TIMELINE_KIND_LABELS,
     medGivenFallback: "Medication given",
     dateA11y: (date: string) => `Entry on ${date}`,
+    vetSummary: "Prepare vet summary",
+    vetSummaryError: "We couldn't prepare the summary. Please try again.",
   },
   settings: {
     body: "Account and household settings will live here.",

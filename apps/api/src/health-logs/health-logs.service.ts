@@ -1,9 +1,18 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
-import { healthLogPhotoKeysSchema, parseHealthLogValue, weightValueSchema, type HealthLogKind } from "@pawcareright/types";
+import {
+  healthLogPhotoKeysSchema,
+  noteValueSchema,
+  parseHealthLogValue,
+  parseTriage,
+  weightValueSchema,
+  type HealthLogKind,
+  type Urgency,
+} from "@pawcareright/types";
 import { Prisma, type HealthLog } from "@prisma/client";
 
 import { PetsService } from "../pets/pets.service";
 import { PrismaService } from "../prisma/prisma.service";
+import { buildVetSummary, type VetSummaryInput } from "./build-vet-summary";
 import { CREATABLE_HEALTH_LOG_KINDS, type CreateLogDto } from "./dto/create-log.dto";
 import type { ListLogsQueryDto } from "./dto/list-logs-query.dto";
 import type { WeightSeriesQueryDto } from "./dto/weight-series-query.dto";
@@ -33,7 +42,14 @@ export interface WeightSeriesResponse {
   sampled: boolean;
 }
 
+/** `GET /pets/:petId/vet-summary` response (T068 plan decision 8). */
+export interface VetSummaryResponse {
+  summary: string;
+}
+
 const DEFAULT_LIST_LIMIT = 20;
+const VET_SUMMARY_WINDOW_DAYS = 90;
+const MS_PER_DAY = 86_400_000;
 
 /** One row of either merge source, normalized to a common shape for the total-order merge (plan §6). */
 interface MergedRow {
@@ -172,6 +188,85 @@ export class HealthLogsService {
       points: downsampled.map((point) => ({ t: new Date(point.t).toISOString(), grams: point.grams })),
       sampled,
     };
+  }
+
+  /**
+   * `GET /pets/:petId/vet-summary` (T068). Gathers the pet + the last
+   * `VET_SUMMARY_WINDOW_DAYS` days of weight/note/symptom-check/completed-
+   * medication rows, maps them to `VetSummaryInput`, and hands them to the
+   * PURE `buildVetSummary` (plan decision 6) -- `Date.now()` is read exactly
+   * once, here, to compute `windowStart`; the builder itself never touches
+   * the clock (plan decision 4). Checks read `symptomCheck`/`reminderEvent`
+   * directly (plan decision 7), the same posture as this service's existing
+   * direct `reminderEvent` read for the MED_GIVEN projection above --
+   * household scope is already enforced by the leading `petsService.findOne`
+   * (404, no leak).
+   */
+  async vetSummary(householdId: string, petId: string): Promise<VetSummaryResponse> {
+    const pet = await this.petsService.findOne(householdId, petId);
+
+    const windowStart = new Date(Date.now() - VET_SUMMARY_WINDOW_DAYS * MS_PER_DAY);
+
+    const [weightRows, noteRows, checkRows, medRows] = await Promise.all([
+      this.prisma.healthLog.findMany({
+        where: { petId, kind: "WEIGHT", occurredAt: { gte: windowStart } },
+        orderBy: { occurredAt: "asc" },
+      }),
+      this.prisma.healthLog.findMany({
+        where: { petId, kind: "NOTE", occurredAt: { gte: windowStart } },
+        orderBy: { occurredAt: "desc" },
+      }),
+      this.prisma.symptomCheck.findMany({
+        where: { petId, createdAt: { gte: windowStart } },
+        orderBy: { createdAt: "desc" },
+        include: { result: true },
+      }),
+      this.prisma.reminderEvent.findMany({
+        where: {
+          status: "DONE",
+          completedAt: { not: null, gte: windowStart },
+          reminder: { petId, type: "MEDICATION" },
+        },
+        orderBy: { completedAt: "desc" },
+        include: { reminder: true },
+      }),
+    ]);
+
+    const input: VetSummaryInput = {
+      pet: {
+        name: pet.name,
+        species: pet.species,
+        ageEstimateMonths: pet.ageEstimateMonths,
+        birthDate: pet.birthDate,
+      },
+      weights: weightRows.flatMap((row) => {
+        const parsed = weightValueSchema.safeParse(row.valueJson);
+        return parsed.success ? [{ occurredAt: row.occurredAt, grams: parsed.data.weightGrams }] : [];
+      }),
+      checks: checkRows.map((check) => {
+        let tier: Urgency | null = null;
+        if (check.result) {
+          const parsed = parseTriage(check.result.resultJson);
+          if (parsed.ok) {
+            tier = parsed.result.urgency;
+          }
+        }
+        return { createdAt: check.createdAt, tier };
+      }),
+      medsGiven: medRows.map((event) => ({
+        // `completedAt` is guaranteed non-null by the `status: "DONE"` +
+        // `completedAt: { not: null }` filter above.
+        occurredAt: event.completedAt as Date,
+        nameAsEntered: event.reminder.medNameAsEntered,
+        doseAsEntered: event.reminder.medDoseAsEntered,
+      })),
+      notes: noteRows.flatMap((row) => {
+        const parsed = noteValueSchema.safeParse(row.valueJson);
+        return parsed.success ? [{ occurredAt: row.occurredAt, text: parsed.data.text }] : [];
+      }),
+    };
+
+    return { summary: buildVetSummary(input) };
   }
 
   private async fetchHealthLogRows(

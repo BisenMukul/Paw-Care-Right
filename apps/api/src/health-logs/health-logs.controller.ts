@@ -13,7 +13,12 @@ import { CurrentHousehold, HouseholdFromMembership } from "../common/household-s
 import { CreateLogDto } from "./dto/create-log.dto";
 import { ListLogsQueryDto } from "./dto/list-logs-query.dto";
 import { WeightSeriesQueryDto } from "./dto/weight-series-query.dto";
-import type { HealthLogResponse, TimelineListResponse, WeightSeriesResponse } from "./health-logs.service";
+import type {
+  HealthLogResponse,
+  TimelineListResponse,
+  VetSummaryResponse,
+  WeightSeriesResponse,
+} from "./health-logs.service";
 import { HealthLogsService } from "./health-logs.service";
 
 /**
@@ -63,5 +68,18 @@ export class HealthLogsController {
     @Query() query: WeightSeriesQueryDto,
   ): Promise<WeightSeriesResponse> {
     return this.healthLogsService.weightSeries(scope.householdId, petId, query);
+  }
+
+  @Get("pets/:petId/vet-summary")
+  @ApiOkResponse({
+    description:
+      "A plain-text, disclaimer-terminated record digest of the pet's last 90 days (weight trend, symptom checks, medications given, notes), capped at 2,500 characters.",
+  })
+  @ApiNotFoundResponse({ description: "No resolved household for the caller, or the pet does not exist in it." })
+  vetSummary(
+    @CurrentHousehold() scope: HouseholdScope,
+    @Param("petId") petId: string,
+  ): Promise<VetSummaryResponse> {
+    return this.healthLogsService.vetSummary(scope.householdId, petId);
   }
 }

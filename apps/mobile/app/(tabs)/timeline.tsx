@@ -2,10 +2,10 @@ import { useIsOffline } from "@pawcareright/api-client";
 import type { HealthLogKind } from "@pawcareright/types";
 import { useRouter } from "expo-router";
 import { useCallback, useState } from "react";
-import { ActivityIndicator, SectionList, Text, View } from "react-native";
+import { ActivityIndicator, SectionList, Share, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { useHealthTimeline, type TimelineItem } from "../../src/api/health-logs-api";
+import { useHealthTimeline, usePrepareVetSummary, type TimelineItem } from "../../src/api/health-logs-api";
 import { PrimaryButton } from "../../src/components/primary-button";
 import { TimelineFilterChips } from "../../src/components/timeline-filter-chips";
 import { TimelineRow } from "../../src/components/timeline-row";
@@ -26,12 +26,27 @@ export default function TimelineScreen() {
   const router = useRouter();
   const activePetId = useActivePetStore((state) => state.activePetId);
   const [kind, setKind] = useState<HealthLogKind | null>(null);
+  const [vetSummaryError, setVetSummaryError] = useState(false);
   const isOffline = useIsOffline();
 
   const { data, isLoading, isError, refetch, hasNextPage, fetchNextPage, isFetchingNextPage } = useHealthTimeline(
     activePetId ?? "",
     kind,
   );
+  const prepareVetSummary = usePrepareVetSummary(activePetId ?? "");
+
+  // T068: on-demand fetch-then-share -- no throw surfaces to the user, a
+  // neutral inline error string is shown instead (CLAUDE §7 -- record
+  // digest only, no interpretive copy).
+  const handlePrepareVetSummary = async () => {
+    setVetSummaryError(false);
+    try {
+      const { summary } = await prepareVetSummary.mutateAsync();
+      await Share.share({ message: summary });
+    } catch {
+      setVetSummaryError(true);
+    }
+  };
 
   // Stable across re-renders (required for `TimelineRow`'s `React.memo` to
   // bail out on unchanged rows when a page is appended -- plan decision 2).
@@ -110,6 +125,17 @@ export default function TimelineScreen() {
               </Text>
             ) : null}
             <Text className="text-xl font-semibold text-brand-900">{strings.timeline.title}</Text>
+            <PrimaryButton
+              testID="timeline-vet-summary"
+              label={strings.timeline.vetSummary}
+              onPress={() => void handlePrepareVetSummary()}
+              disabled={prepareVetSummary.isPending}
+            />
+            {vetSummaryError ? (
+              <Text testID="timeline-vet-summary-error" className="text-center text-sm text-red-600">
+                {strings.timeline.vetSummaryError}
+              </Text>
+            ) : null}
             <TimelineFilterChips value={kind} onChange={setKind} />
           </View>
         }

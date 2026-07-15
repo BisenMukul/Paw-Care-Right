@@ -1,7 +1,7 @@
 import type { INestApplication } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { Test } from "@nestjs/testing";
-import { errorResponseSchema } from "@pawcareright/types";
+import { errorResponseSchema, VET_SUMMARY_DISCLAIMER, VET_SUMMARY_MAX_CHARS } from "@pawcareright/types";
 import { PrismaClient } from "@prisma/client";
 import request from "supertest";
 
@@ -419,6 +419,97 @@ describe("Health logs (e2e)", () => {
       const pet = await createPet(prisma, ownerA.household.id);
 
       const res = await ownerB.authedAgent("get", `/v1/pets/${pet.id}/weight-series`);
+
+      expect(res.status).toBe(404);
+      expect(errorResponseSchema.parse(res.body).error.code).toBe("NOT_FOUND");
+    });
+  });
+
+  describe("vet-summary (happy + auth)", () => {
+    it("GET returns a 200 with a disclaimer-terminated, <=2500-char summary", async () => {
+      const ctx = await owner();
+      const pet = await createPet(prisma, ctx.household.id);
+      const recent = (daysAgo: number) => new Date(Date.now() - daysAgo * 86_400_000).toISOString();
+
+      await createLog(ctx, pet.id, { kind: "WEIGHT", occurredAt: recent(10), value: { weightGrams: 12_000 } });
+      await createLog(ctx, pet.id, { kind: "NOTE", occurredAt: recent(2), value: { text: "Ate normally today." } });
+
+      // A completed MEDICATION ReminderEvent -- read-time MED_GIVEN projection (reused pattern from filter_by_each_kind).
+      const reminder = await prisma.reminder.create({
+        data: {
+          petId: pet.id,
+          type: "MEDICATION",
+          title: "Antibiotic",
+          rrule: "FREQ=DAILY",
+          timezone: "UTC",
+          startAt: new Date(recent(5)),
+          nextFireAt: new Date(recent(5)),
+          medNameAsEntered: "Amoxicillin",
+          medDoseAsEntered: "As prescribed",
+        },
+      });
+      await prisma.reminderEvent.create({
+        data: {
+          reminderId: reminder.id,
+          dueAt: new Date(recent(5)),
+          status: "DONE",
+          completedAt: new Date(recent(5)),
+        },
+      });
+
+      // A terminal SymptomCheck + TriageResult -- seeded directly (no queue/AI provider round-trip in this suite).
+      const check = await prisma.symptomCheck.create({
+        data: {
+          petId: pet.id,
+          createdById: ctx.user.id,
+          status: "DONE",
+          category: "digestive",
+          intakeJson: { category: "digestive" },
+          createdAt: new Date(recent(3)),
+        },
+      });
+      await prisma.triageResult.create({
+        data: {
+          checkId: check.id,
+          urgency: "VET_SOON",
+          confidence: "medium",
+          resultJson: {
+            urgency: "VET_SOON",
+            confidence: "medium",
+            summary: "A minor issue that should be checked.",
+            possibleCauses: [],
+            redFlagsToWatch: [],
+            homeCare: [],
+            doNot: [],
+            vetQuestions: [],
+            followUpHours: 24,
+          },
+          modelId: "test-model",
+          promptVersion: "v1",
+        },
+      });
+
+      const res = await ctx.authedAgent("get", `/v1/pets/${pet.id}/vet-summary`);
+
+      expect(res.status).toBe(200);
+      expect(typeof res.body.summary).toBe("string");
+      expect((res.body.summary as string).endsWith(VET_SUMMARY_DISCLAIMER)).toBe(true);
+      expect((res.body.summary as string).length).toBeLessThanOrEqual(VET_SUMMARY_MAX_CHARS);
+    });
+
+    it("no token -> 401 UNAUTHORIZED", async () => {
+      const res = await request(app.getHttpServer()).get("/v1/pets/some-pet-id/vet-summary");
+
+      expect(res.status).toBe(401);
+      expect(errorResponseSchema.parse(res.body).error.code).toBe("UNAUTHORIZED");
+    });
+
+    it("pet in another household -> 404 NOT_FOUND (no leak)", async () => {
+      const ownerA = await owner();
+      const ownerB = await owner();
+      const pet = await createPet(prisma, ownerA.household.id);
+
+      const res = await ownerB.authedAgent("get", `/v1/pets/${pet.id}/vet-summary`);
 
       expect(res.status).toBe(404);
       expect(errorResponseSchema.parse(res.body).error.code).toBe("NOT_FOUND");

@@ -1,0 +1,20 @@
+Health record summary — last 90 days
+Pet: Fido (DOG, ~34 months)
+
+Weight trend:
+First: 10.00 kg on 2026-04-17.
+Latest: 10.50 kg on 2026-07-14 (+0.50 kg since first).
+
+Symptom checks:
+2026-07-10: vet soon
+2026-06-01: monitor at home
+
+Medications given:
+2026-07-12: Amoxicillin — 1 tablet, twice daily
+2026-06-15: Medication given
+
+Notes:
+2026-07-13: Ate less than usual this morning.
+2026-06-20: Seemed extra playful at the park.
+
+This is a record summary generated from entries you logged in the app. It is not veterinary advice, an assessment, or a treatment plan. Please review it with a licensed veterinarian.
