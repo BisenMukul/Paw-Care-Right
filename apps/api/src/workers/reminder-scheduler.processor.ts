@@ -33,6 +33,7 @@ export class ReminderSchedulerProcessor extends WorkerHost implements OnApplicat
   async process(job: Job): Promise<void> {
     this.logger.log({ event: "reminder_tick_job_start", jobId: job.id });
     await this.scheduler.tick(new Date());
+    await this.scheduler.refireSnoozed(new Date());
   }
 
   async onApplicationBootstrap(): Promise<void> {

@@ -61,6 +61,7 @@ function buildPrisma(overrides: {
   update?: jest.Mock;
   delete?: jest.Mock;
   eventFindMany?: jest.Mock;
+  eventUpsert?: jest.Mock;
   transaction?: jest.Mock;
 }): PrismaService {
   return {
@@ -73,6 +74,7 @@ function buildPrisma(overrides: {
     },
     reminderEvent: {
       findMany: overrides.eventFindMany ?? jest.fn().mockResolvedValue([]),
+      upsert: overrides.eventUpsert ?? jest.fn(),
     },
     $transaction:
       overrides.transaction ?? jest.fn((queries: Array<Promise<unknown>>) => Promise.all(queries)),
@@ -634,6 +636,257 @@ describe("RemindersService", () => {
         },
         include: { reminder: true },
       });
+    });
+  });
+
+  describe("completeOccurrence", () => {
+    it("reminder not in household -> NotFoundException, no occurrence check/upsert", async () => {
+      const findFirst = jest.fn().mockResolvedValue(null);
+      const upsert = jest.fn();
+      const prisma = buildPrisma({ findFirst, eventUpsert: upsert });
+      const service = new RemindersService(prisma, buildPetsService());
+
+      await expect(
+        service.completeOccurrence(HOUSEHOLD_ID, REMINDER_ID, { dueAt: "2026-08-01T09:00:00.000Z" }),
+      ).rejects.toBeInstanceOf(NotFoundException);
+      expect(upsert).not.toHaveBeenCalled();
+    });
+
+    it("dueAt not a genuine occurrence -> BadRequestException, no upsert", async () => {
+      const reminder = buildReminderRow({
+        rrule: "FREQ=DAILY",
+        startAt: new Date("2026-08-01T09:00:00.000Z"),
+        timezone: "UTC",
+      });
+      const findFirst = jest.fn().mockResolvedValue(reminder);
+      const upsert = jest.fn();
+      const prisma = buildPrisma({ findFirst, eventUpsert: upsert });
+      const service = new RemindersService(prisma, buildPetsService());
+
+      await expect(
+        service.completeOccurrence(HOUSEHOLD_ID, REMINDER_ID, { dueAt: "2026-08-01T10:00:00.000Z" }),
+      ).rejects.toBeInstanceOf(BadRequestException);
+      expect(upsert).not.toHaveBeenCalled();
+    });
+
+    it("completes a genuine (virtual) occurrence: upserts DONE at the EXACT posted dueAt (epoch-equal), clears snoozedUntil", async () => {
+      const reminder = buildReminderRow({
+        rrule: "FREQ=DAILY",
+        startAt: new Date("2026-08-01T09:00:00.000Z"),
+        timezone: "UTC",
+      });
+      const dueAt = new Date("2026-08-02T09:00:00.000Z"); // second daily occurrence
+      const findFirst = jest.fn().mockResolvedValue(reminder);
+      const upsertedEvent = {
+        id: "event-1",
+        reminderId: REMINDER_ID,
+        dueAt,
+        status: "DONE",
+        completedAt: new Date(),
+        snoozedUntil: null,
+      };
+      const upsert = jest.fn().mockResolvedValue(upsertedEvent);
+      const prisma = buildPrisma({ findFirst, eventUpsert: upsert });
+      const service = new RemindersService(prisma, buildPetsService());
+
+      const result = await service.completeOccurrence(HOUSEHOLD_ID, REMINDER_ID, { dueAt: dueAt.toISOString() });
+
+      expect(upsert).toHaveBeenCalledWith({
+        where: { reminderId_dueAt: { reminderId: REMINDER_ID, dueAt } },
+        create: { reminderId: REMINDER_ID, dueAt, status: "DONE", completedAt: expect.any(Date), snoozedUntil: null },
+        update: { status: "DONE", completedAt: expect.any(Date), snoozedUntil: null },
+      });
+      expect(result).toEqual({
+        reminderId: REMINDER_ID,
+        petId: PET_ID,
+        type: "VACCINE",
+        title: "Rabies booster",
+        dueAt,
+        status: "DONE",
+        virtual: false,
+        eventId: "event-1",
+      });
+    });
+
+    it("a second identical call is idempotent (same upsert key both times)", async () => {
+      const reminder = buildReminderRow({
+        rrule: "FREQ=DAILY",
+        startAt: new Date("2026-08-01T09:00:00.000Z"),
+        timezone: "UTC",
+      });
+      const dueAt = new Date("2026-08-01T09:00:00.000Z");
+      const findFirst = jest.fn().mockResolvedValue(reminder);
+      const upsert = jest.fn().mockResolvedValue({
+        id: "event-1",
+        reminderId: REMINDER_ID,
+        dueAt,
+        status: "DONE",
+        completedAt: new Date(),
+        snoozedUntil: null,
+      });
+      const prisma = buildPrisma({ findFirst, eventUpsert: upsert });
+      const service = new RemindersService(prisma, buildPetsService());
+
+      await service.completeOccurrence(HOUSEHOLD_ID, REMINDER_ID, { dueAt: dueAt.toISOString() });
+      await service.completeOccurrence(HOUSEHOLD_ID, REMINDER_ID, { dueAt: dueAt.toISOString() });
+
+      expect(upsert).toHaveBeenCalledTimes(2);
+      const firstWhere = (upsert.mock.calls[0] as [{ where: unknown }])[0].where;
+      const secondWhere = (upsert.mock.calls[1] as [{ where: unknown }])[0].where;
+      expect(firstWhere).toEqual(secondWhere);
+    });
+
+    it("completing an already-MISSED event flips it to DONE (update branch reached, status DONE returned)", async () => {
+      const reminder = buildReminderRow({
+        rrule: "FREQ=DAILY",
+        startAt: new Date("2026-08-01T09:00:00.000Z"),
+        timezone: "UTC",
+      });
+      const dueAt = new Date("2026-08-01T09:00:00.000Z");
+      const findFirst = jest.fn().mockResolvedValue(reminder);
+      const upsert = jest.fn().mockResolvedValue({
+        id: "event-1",
+        reminderId: REMINDER_ID,
+        dueAt,
+        status: "DONE",
+        completedAt: new Date(),
+        snoozedUntil: null,
+      });
+      const prisma = buildPrisma({ findFirst, eventUpsert: upsert });
+      const service = new RemindersService(prisma, buildPetsService());
+
+      const result = await service.completeOccurrence(HOUSEHOLD_ID, REMINDER_ID, { dueAt: dueAt.toISOString() });
+
+      expect(result.status).toBe("DONE");
+      const call = upsert.mock.calls[0] as [{ update: unknown }];
+      expect(call[0].update).toEqual({ status: "DONE", completedAt: expect.any(Date), snoozedUntil: null });
+    });
+  });
+
+  describe("snoozeOccurrence", () => {
+    it("reminder not in household -> NotFoundException, no upsert", async () => {
+      const findFirst = jest.fn().mockResolvedValue(null);
+      const upsert = jest.fn();
+      const prisma = buildPrisma({ findFirst, eventUpsert: upsert });
+      const service = new RemindersService(prisma, buildPetsService());
+
+      await expect(
+        service.snoozeOccurrence(HOUSEHOLD_ID, REMINDER_ID, {
+          dueAt: "2026-08-01T09:00:00.000Z",
+          snoozeUntil: "2026-08-02T09:00:00.000Z",
+        }),
+      ).rejects.toBeInstanceOf(NotFoundException);
+      expect(upsert).not.toHaveBeenCalled();
+    });
+
+    it("dueAt not a genuine occurrence -> BadRequestException, no upsert", async () => {
+      const reminder = buildReminderRow({
+        rrule: "FREQ=DAILY",
+        startAt: new Date("2026-08-01T09:00:00.000Z"),
+        timezone: "UTC",
+      });
+      const findFirst = jest.fn().mockResolvedValue(reminder);
+      const upsert = jest.fn();
+      const prisma = buildPrisma({ findFirst, eventUpsert: upsert });
+      const service = new RemindersService(prisma, buildPetsService());
+
+      await expect(
+        service.snoozeOccurrence(HOUSEHOLD_ID, REMINDER_ID, {
+          dueAt: "2026-08-01T10:00:00.000Z",
+          snoozeUntil: "2026-08-02T09:00:00.000Z",
+        }),
+      ).rejects.toBeInstanceOf(BadRequestException);
+      expect(upsert).not.toHaveBeenCalled();
+    });
+
+    it("snoozeUntil in the past -> BadRequestException, no upsert", async () => {
+      const reminder = buildReminderRow({
+        rrule: "FREQ=DAILY",
+        startAt: new Date("2026-08-01T09:00:00.000Z"),
+        timezone: "UTC",
+      });
+      const findFirst = jest.fn().mockResolvedValue(reminder);
+      const upsert = jest.fn();
+      const prisma = buildPrisma({ findFirst, eventUpsert: upsert });
+      const service = new RemindersService(prisma, buildPetsService());
+
+      await expect(
+        service.snoozeOccurrence(HOUSEHOLD_ID, REMINDER_ID, {
+          dueAt: "2026-08-01T09:00:00.000Z",
+          snoozeUntil: "2020-01-01T00:00:00.000Z",
+        }),
+      ).rejects.toBeInstanceOf(BadRequestException);
+      expect(upsert).not.toHaveBeenCalled();
+    });
+
+    it("sets SNOOZED + snoozedUntil, clears completedAt, and never touches Reminder.nextFireAt (reminder.update not called)", async () => {
+      const reminder = buildReminderRow({
+        rrule: "FREQ=DAILY",
+        startAt: new Date("2026-08-01T09:00:00.000Z"),
+        timezone: "UTC",
+      });
+      const dueAt = new Date("2026-08-01T09:00:00.000Z");
+      const snoozeUntil = new Date(Date.now() + 60 * 60 * 1000);
+      const findFirst = jest.fn().mockResolvedValue(reminder);
+      const reminderUpdate = jest.fn();
+      const upsert = jest.fn().mockResolvedValue({
+        id: "event-1",
+        reminderId: REMINDER_ID,
+        dueAt,
+        status: "SNOOZED",
+        completedAt: null,
+        snoozedUntil: snoozeUntil,
+      });
+      const prisma = buildPrisma({ findFirst, eventUpsert: upsert, update: reminderUpdate });
+      const service = new RemindersService(prisma, buildPetsService());
+
+      const result = await service.snoozeOccurrence(HOUSEHOLD_ID, REMINDER_ID, {
+        dueAt: dueAt.toISOString(),
+        snoozeUntil: snoozeUntil.toISOString(),
+      });
+
+      expect(upsert).toHaveBeenCalledWith({
+        where: { reminderId_dueAt: { reminderId: REMINDER_ID, dueAt } },
+        create: { reminderId: REMINDER_ID, dueAt, status: "SNOOZED", snoozedUntil: snoozeUntil, completedAt: null },
+        update: { status: "SNOOZED", snoozedUntil: snoozeUntil, completedAt: null },
+      });
+      expect(result.status).toBe("SNOOZED");
+      expect(reminderUpdate).not.toHaveBeenCalled();
+    });
+
+    it("a second identical call is idempotent (same upsert key both times)", async () => {
+      const reminder = buildReminderRow({
+        rrule: "FREQ=DAILY",
+        startAt: new Date("2026-08-01T09:00:00.000Z"),
+        timezone: "UTC",
+      });
+      const dueAt = new Date("2026-08-01T09:00:00.000Z");
+      const snoozeUntil = new Date(Date.now() + 60 * 60 * 1000);
+      const findFirst = jest.fn().mockResolvedValue(reminder);
+      const upsert = jest.fn().mockResolvedValue({
+        id: "event-1",
+        reminderId: REMINDER_ID,
+        dueAt,
+        status: "SNOOZED",
+        completedAt: null,
+        snoozedUntil: snoozeUntil,
+      });
+      const prisma = buildPrisma({ findFirst, eventUpsert: upsert });
+      const service = new RemindersService(prisma, buildPetsService());
+
+      await service.snoozeOccurrence(HOUSEHOLD_ID, REMINDER_ID, {
+        dueAt: dueAt.toISOString(),
+        snoozeUntil: snoozeUntil.toISOString(),
+      });
+      await service.snoozeOccurrence(HOUSEHOLD_ID, REMINDER_ID, {
+        dueAt: dueAt.toISOString(),
+        snoozeUntil: snoozeUntil.toISOString(),
+      });
+
+      expect(upsert).toHaveBeenCalledTimes(2);
+      const firstWhere = (upsert.mock.calls[0] as [{ where: unknown }])[0].where;
+      const secondWhere = (upsert.mock.calls[1] as [{ where: unknown }])[0].where;
+      expect(firstWhere).toEqual(secondWhere);
     });
   });
 

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query } from "@nestjs/common";
 import {
   ApiBadRequestResponse,
   ApiCreatedResponse,
@@ -12,12 +12,15 @@ import type { CareTemplateSuggestions } from "@pawcareright/types";
 import type { HouseholdScope } from "../common/authenticated-request";
 import { CurrentHousehold, HouseholdFromMembership } from "../common/household-scope.decorators";
 import { AgendaQueryDto } from "./dto/agenda-query.dto";
+import { CompleteOccurrenceDto } from "./dto/complete-occurrence.dto";
 import { CreateReminderDto } from "./dto/create-reminder.dto";
 import { InstantiateTemplateDto } from "./dto/instantiate-template.dto";
 import { ListRemindersQueryDto } from "./dto/list-reminders-query.dto";
+import { SnoozeOccurrenceDto } from "./dto/snooze-occurrence.dto";
 import { TemplateSuggestionsQueryDto } from "./dto/template-suggestions-query.dto";
 import { UpdateReminderDto } from "./dto/update-reminder.dto";
 import type {
+  AgendaEntry,
   AgendaResponse,
   InstantiateTemplateResponse,
   ReminderListResponse,
@@ -100,6 +103,34 @@ export class RemindersController {
   @ApiNotFoundResponse({ description: "No resolved household for the caller, or the reminder does not exist in it." })
   findOne(@CurrentHousehold() scope: HouseholdScope, @Param("id") id: string): Promise<ReminderResponse> {
     return this.remindersService.findOne(scope.householdId, id);
+  }
+
+  @Post("reminders/:reminderId/complete")
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({ description: "The completed occurrence, as an AgendaEntry (status: DONE)." })
+  @ApiBadRequestResponse({ description: "dueAt is not ISO-8601, or is not a genuine occurrence of this reminder." })
+  @ApiNotFoundResponse({ description: "No resolved household for the caller, or the reminder does not exist in it." })
+  completeOccurrence(
+    @CurrentHousehold() scope: HouseholdScope,
+    @Param("reminderId") reminderId: string,
+    @Body() dto: CompleteOccurrenceDto,
+  ): Promise<AgendaEntry> {
+    return this.remindersService.completeOccurrence(scope.householdId, reminderId, dto);
+  }
+
+  @Post("reminders/:reminderId/snooze")
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({ description: "The snoozed occurrence, as an AgendaEntry (status: SNOOZED)." })
+  @ApiBadRequestResponse({
+    description: "dueAt/snoozeUntil is not ISO-8601, snoozeUntil is not in the future, or dueAt is not a genuine occurrence.",
+  })
+  @ApiNotFoundResponse({ description: "No resolved household for the caller, or the reminder does not exist in it." })
+  snoozeOccurrence(
+    @CurrentHousehold() scope: HouseholdScope,
+    @Param("reminderId") reminderId: string,
+    @Body() dto: SnoozeOccurrenceDto,
+  ): Promise<AgendaEntry> {
+    return this.remindersService.snoozeOccurrence(scope.householdId, reminderId, dto);
   }
 
   @Patch("reminders/:id")

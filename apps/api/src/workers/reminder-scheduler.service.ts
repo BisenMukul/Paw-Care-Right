@@ -196,4 +196,60 @@ export class ReminderSchedulerService {
 
     this.logger.log({ event: "reminder_backfill_done", behind: reminders.length, missedCreated, deactivated });
   }
+
+  /**
+   * Snooze re-fire pass (T060 plan decision 4): scans
+   * `ReminderEvent where status = SNOOZED and snoozedUntil <= now` (backed
+   * by the `[status, snoozedUntil]` index) and, for each, ATOMICALLY flips
+   * `SNOOZED -> SENT` via a guarded `updateMany` keyed on the event's own
+   * `id` + its still-`SNOOZED` status + a due `snoozedUntil`. Only a
+   * `count === 1` result enqueues a push -- a concurrent/duplicate
+   * invocation's flip becomes a 0-row no-op, so this can never double-fire.
+   * Never rewinds/advances `Reminder.nextFireAt` (that column is untouched
+   * here entirely) and never re-derives `dueAt` (the original occurrence
+   * instant is preserved). Per-event try/catch mirrors `tick`/`backfill`;
+   * logs are id/count-keyed only (no title/type/medNameAsEntered).
+   */
+  async refireSnoozed(now: Date): Promise<void> {
+    const snoozed = await this.prisma.reminderEvent.findMany({
+      where: { status: "SNOOZED", snoozedUntil: { lte: now } },
+      select: { id: true },
+    });
+
+    let refired = 0;
+    let failed = 0;
+
+    for (const event of snoozed) {
+      try {
+        const { count } = await this.prisma.reminderEvent.updateMany({
+          where: { id: event.id, status: "SNOOZED", snoozedUntil: { lte: now } },
+          data: { status: "SENT", sentAt: now, snoozedUntil: null },
+        });
+
+        if (count === 1) {
+          try {
+            await this.pushQueue.add(
+              PUSH_JOB_NAME,
+              { reminderEventId: event.id },
+              {
+                jobId: `${event.id}:snooze:${Math.floor(now.getTime() / 60_000)}`,
+                removeOnComplete: true,
+                removeOnFail: false,
+                attempts: 5,
+                backoff: { type: "exponential", delay: 30_000 },
+              },
+            );
+          } catch {
+            this.logger.warn({ event: "push_enqueue_failed", eventId: event.id });
+          }
+          refired += 1;
+        }
+      } catch {
+        failed += 1;
+        this.logger.error({ event: "refire_snoozed_failed", eventId: event.id });
+      }
+    }
+
+    this.logger.log({ event: "refire_snoozed_done", due: snoozed.length, refired, failed });
+  }
 }

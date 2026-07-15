@@ -1,41 +1,190 @@
+import { useIsOffline } from "@pawcareright/api-client";
+import type { AgendaEntry } from "@pawcareright/types";
 import { useRouter } from "expo-router";
-import { Text } from "react-native";
+import { useState } from "react";
+import { ActivityIndicator, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { useAgenda, useCompleteOccurrence, useSnoozeOccurrence } from "../../src/api/agenda-api";
+import { AgendaItem } from "../../src/components/agenda-item";
+import { PetFilterChips } from "../../src/components/pet-filter-chips";
 import { PrimaryButton } from "../../src/components/primary-button";
 import { useActivePetStore } from "../../src/pets/active-pet-store";
 import { strings } from "../../src/strings";
 
+/** Agenda window (T060 plan): 30 days out, well within the api's 92-day cap. */
+const AGENDA_WINDOW_DAYS = 30;
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+/** Local-midnight window start (pure date math -- no `Intl`, mirrors `care-plan/[petId].tsx`'s `shiftIsoDate`). */
+function startOfTodayIso(): string {
+  const now = new Date();
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0).toISOString();
+}
+
+function addDaysIso(iso: string, days: number): string {
+  return new Date(new Date(iso).getTime() + days * DAY_MS).toISOString();
+}
+
+/** Fixed "tomorrow 9:00 local" snooze default (plan "no new dep, fixed default only"). */
+function tomorrowNineAmLocalIso(): string {
+  const now = new Date();
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 9, 0, 0, 0).toISOString();
+}
+
+function localDayKey(date: Date): string {
+  return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+}
+
+function isToday(iso: string, todayKey: string): boolean {
+  return localDayKey(new Date(iso)) === todayKey;
+}
+
 /**
- * Care tab (T059 plan): the second entry point into the care-plan setup
- * wizard, for the household's active pet. No pet-picker built (plan Risk
- * 6, "minimal") -- when no pet is active yet, an empty-state message is
- * shown instead of a CTA that would have nowhere to route.
+ * Care tab (T060 plan): the household-wide agenda -- today/upcoming
+ * occurrences from `GET /agenda`, per-pet filter chips, and complete/snooze
+ * actions per row (optimistic + rollback via `useCompleteOccurrence`/
+ * `useSnoozeOccurrence`). Preserves the T059 care-plan wizard entry point
+ * via the `agenda-care-plan` link for the active pet.
  */
 export default function CareScreen() {
   const router = useRouter();
   const activePetId = useActivePetStore((state) => state.activePetId);
+  const isOffline = useIsOffline();
 
-  if (activePetId === null) {
+  const [selectedPetId, setSelectedPetId] = useState<string | null>(null);
+
+  const from = startOfTodayIso();
+  const to = addDaysIso(from, AGENDA_WINDOW_DAYS);
+  const agendaParams = selectedPetId !== null ? { from, to, petId: selectedPetId } : { from, to };
+  const { data, isLoading, isError, refetch } = useAgenda(agendaParams);
+
+  const completeMutation = useCompleteOccurrence();
+  const snoozeMutation = useSnoozeOccurrence();
+
+  async function handleComplete(entry: AgendaEntry) {
+    try {
+      await completeMutation.mutateAsync({ reminderId: entry.reminderId, dueAt: entry.dueAt });
+    } catch {
+      // The mutation's own onError already rolled the optimistic patch back
+      // (plan decision 6) -- nothing further to do here.
+    }
+  }
+
+  async function handleSnooze(entry: AgendaEntry) {
+    try {
+      await snoozeMutation.mutateAsync({
+        reminderId: entry.reminderId,
+        dueAt: entry.dueAt,
+        snoozeUntil: tomorrowNineAmLocalIso(),
+      });
+    } catch {
+      // Same as above.
+    }
+  }
+
+  const targetPetId = selectedPetId ?? activePetId;
+
+  if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center bg-white px-6">
-        <Text testID="care-tab-no-pet" className="text-center text-base text-brand-900">
-          {strings.care.noPet}
-        </Text>
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-white px-6">
+        <ActivityIndicator testID="agenda-loading" />
+        <Text className="text-center text-base text-brand-900">{strings.agenda.loading}</Text>
       </SafeAreaView>
     );
   }
 
+  if (isOffline && !data) {
+    return (
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-white px-6">
+        <Text testID="agenda-offline" className="text-center text-base text-brand-900">
+          {strings.agenda.offline}
+        </Text>
+        <PrimaryButton testID="agenda-retry" label={strings.agenda.retry} onPress={() => refetch()} />
+      </SafeAreaView>
+    );
+  }
+
+  if (isError) {
+    return (
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-white px-6">
+        <Text testID="agenda-error" className="text-center text-base text-red-600">
+          {strings.agenda.error}
+        </Text>
+        <PrimaryButton testID="agenda-retry" label={strings.agenda.retry} onPress={() => refetch()} />
+      </SafeAreaView>
+    );
+  }
+
+  const todayKey = localDayKey(new Date());
+  const entries = data?.entries ?? [];
+  const todayEntries = entries.filter((entry) => isToday(entry.dueAt, todayKey));
+  const upcomingEntries = entries.filter((entry) => !isToday(entry.dueAt, todayKey));
+
   return (
-    <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-white px-6">
-      <Text className="text-center text-base text-brand-900">{strings.care.body}</Text>
-      <PrimaryButton
-        testID="care-tab-setup"
-        label={strings.care.setupCta}
-        onPress={() =>
-          router.push({ pathname: "/care-plan/[petId]", params: { petId: activePetId } })
-        }
-      />
+    <SafeAreaView className="flex-1 bg-white">
+      <ScrollView testID="agenda-scroll" className="flex-1">
+        <View className="gap-6 px-6 pb-8 pt-4">
+          {isOffline ? (
+            <Text testID="agenda-offline-banner" className="text-center text-sm text-brand-700">
+              {strings.agenda.offlineBanner}
+            </Text>
+          ) : null}
+          <Text className="text-xl font-semibold text-brand-900">{strings.agenda.title}</Text>
+
+          <PetFilterChips value={selectedPetId} onChange={setSelectedPetId} />
+
+          {entries.length === 0 ? (
+            <Text testID="agenda-empty" className="text-center text-base text-brand-900">
+              {strings.agenda.empty}
+            </Text>
+          ) : (
+            <>
+              <View testID="agenda-section-today" className="gap-3">
+                <Text className="text-base font-semibold text-brand-900">{strings.agenda.today}</Text>
+                {todayEntries.map((entry) => (
+                  <AgendaItem
+                    key={`${entry.reminderId}:${entry.dueAt}`}
+                    entry={entry}
+                    onComplete={() => void handleComplete(entry)}
+                    onSnooze={() => void handleSnooze(entry)}
+                  />
+                ))}
+              </View>
+
+              <View testID="agenda-section-upcoming" className="gap-3">
+                <Text className="text-base font-semibold text-brand-900">{strings.agenda.upcoming}</Text>
+                {upcomingEntries.map((entry) => (
+                  <AgendaItem
+                    key={`${entry.reminderId}:${entry.dueAt}`}
+                    entry={entry}
+                    onComplete={() => void handleComplete(entry)}
+                    onSnooze={() => void handleSnooze(entry)}
+                  />
+                ))}
+              </View>
+            </>
+          )}
+
+          {targetPetId !== null ? (
+            <PrimaryButton
+              testID="agenda-new"
+              label={strings.agenda.newReminder}
+              onPress={() => router.push({ pathname: "/reminders/edit", params: { petId: targetPetId } })}
+            />
+          ) : null}
+
+          {activePetId !== null ? (
+            <Text
+              testID="agenda-care-plan"
+              onPress={() => router.push({ pathname: "/care-plan/[petId]", params: { petId: activePetId } })}
+              className="text-center text-sm font-semibold text-brand-700"
+            >
+              {strings.agenda.carePlanLink}
+            </Text>
+          ) : null}
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }

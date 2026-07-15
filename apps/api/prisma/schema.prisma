@@ -246,17 +246,19 @@ model Reminder {
 }
 
 model ReminderEvent {
-  id          String              @id @default(uuid())
-  reminderId  String
-  dueAt       DateTime // UTC
-  status      ReminderEventStatus @default(PENDING)
-  sentAt      DateTime? // set by T056/T057 on push
-  completedAt DateTime? // set by T055 complete endpoint / T061 MED_GIVEN
-  createdAt   DateTime            @default(now())
+  id           String              @id @default(uuid())
+  reminderId   String
+  dueAt        DateTime // UTC
+  status       ReminderEventStatus @default(PENDING)
+  sentAt       DateTime? // set by T056/T057 on push, and by T060 refireSnoozed
+  completedAt  DateTime? // set by T055/T060 complete endpoint / T061 MED_GIVEN
+  snoozedUntil DateTime? // set by T060 snooze endpoint; cleared on complete/refire
+  createdAt    DateTime            @default(now())
 
   reminder Reminder @relation(fields: [reminderId], references: [id], onDelete: Cascade)
 
   @@unique([reminderId, dueAt])
   @@index([dueAt, status])
   @@index([reminderId])
+  @@index([status, snoozedUntil])
 }

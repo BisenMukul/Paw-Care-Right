@@ -1,14 +1,16 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { resolveCareTemplate, resolveCareTemplateForPet, resolveLifeStage } from "@pawcareright/data";
 import { parseRRule, type CareTemplateSuggestions, type ReminderEventStatus, type Species } from "@pawcareright/types";
-import type { Reminder } from "@prisma/client";
+import type { Reminder, ReminderEvent } from "@prisma/client";
 
 import { PetsService } from "../pets/pets.service";
 import { PrismaService } from "../prisma/prisma.service";
 import type { AgendaQueryDto } from "./dto/agenda-query.dto";
+import type { CompleteOccurrenceDto } from "./dto/complete-occurrence.dto";
 import type { CreateReminderDto } from "./dto/create-reminder.dto";
 import type { InstantiateTemplateDto } from "./dto/instantiate-template.dto";
 import type { ListRemindersQueryDto } from "./dto/list-reminders-query.dto";
+import type { SnoozeOccurrenceDto } from "./dto/snooze-occurrence.dto";
 import type { TemplateSuggestionsQueryDto } from "./dto/template-suggestions-query.dto";
 import type { UpdateReminderDto } from "./dto/update-reminder.dto";
 import { computeNextFireAt } from "./next-fire-at";
@@ -276,6 +278,75 @@ export class RemindersService {
   }
 
   /**
+   * `POST /reminders/:reminderId/complete` (T060 plan decisions 1-3):
+   * materializes/updates the `ReminderEvent` for the EXACT posted `dueAt` to
+   * `DONE`, clearing any prior snooze. Idempotent (upsert on
+   * `reminderId_dueAt`) -- a double-tap/replay converges to the same
+   * terminal state. `dueAt` must be a genuine occurrence of the reminder
+   * (`assertOccurrence`) or this throws `400`.
+   */
+  async completeOccurrence(
+    householdId: string,
+    reminderId: string,
+    dto: CompleteOccurrenceDto,
+  ): Promise<AgendaEntry> {
+    const reminder = await this.prisma.reminder.findFirst({
+      where: { id: reminderId, pet: { householdId, deletedAt: null } },
+    });
+    if (!reminder) {
+      throw new NotFoundException();
+    }
+
+    const dueAt = new Date(dto.dueAt);
+    this.assertOccurrence(reminder, dueAt);
+
+    const event = await this.prisma.reminderEvent.upsert({
+      where: { reminderId_dueAt: { reminderId, dueAt } },
+      create: { reminderId, dueAt, status: "DONE", completedAt: new Date(), snoozedUntil: null },
+      update: { status: "DONE", completedAt: new Date(), snoozedUntil: null },
+    });
+
+    return this.toAgendaEntry(reminder, event);
+  }
+
+  /**
+   * `POST /reminders/:reminderId/snooze` (T060 plan decisions 1-3):
+   * materializes/updates the `ReminderEvent` for the EXACT posted `dueAt` to
+   * `SNOOZED`/`snoozedUntil`, clearing any prior completion. Never touches
+   * `Reminder.nextFireAt` -- re-fire is handled by `refireSnoozed` (decision
+   * 4). `snoozeUntil` must be strictly in the future so a snooze never
+   * immediately re-fires.
+   */
+  async snoozeOccurrence(
+    householdId: string,
+    reminderId: string,
+    dto: SnoozeOccurrenceDto,
+  ): Promise<AgendaEntry> {
+    const reminder = await this.prisma.reminder.findFirst({
+      where: { id: reminderId, pet: { householdId, deletedAt: null } },
+    });
+    if (!reminder) {
+      throw new NotFoundException();
+    }
+
+    const dueAt = new Date(dto.dueAt);
+    this.assertOccurrence(reminder, dueAt);
+
+    const snoozeUntil = new Date(dto.snoozeUntil);
+    if (snoozeUntil.getTime() <= Date.now()) {
+      throw new BadRequestException("snoozeUntil must be in the future");
+    }
+
+    const event = await this.prisma.reminderEvent.upsert({
+      where: { reminderId_dueAt: { reminderId, dueAt } },
+      create: { reminderId, dueAt, status: "SNOOZED", snoozedUntil: snoozeUntil, completedAt: null },
+      update: { status: "SNOOZED", snoozedUntil: snoozeUntil, completedAt: null },
+    });
+
+    return this.toAgendaEntry(reminder, event);
+  }
+
+  /**
    * `GET /pets/:petId/reminders/template-suggestions` (T059 plan): the
    * read-only review list the wizard renders. Resolves the pack through the
    * IDENTICAL branch logic `instantiateFromTemplate` uses below (same
@@ -433,6 +504,40 @@ export class RemindersService {
         : [];
 
     return { created: created.map((row) => this.toResponse(row)), skipped };
+  }
+
+  /**
+   * Validates that `dueAt` is a genuine occurrence of `reminder` (T060 plan
+   * decision 2): re-derives occurrences with the SAME `occurrencesBetween`
+   * the agenda uses, requiring an epoch-equal match at `[dueAt, dueAt]` --
+   * not merely a window-membership check. Throws `BadRequestException`
+   * otherwise (invalid rrule, or `dueAt` not on the series).
+   */
+  private assertOccurrence(reminder: Reminder, dueAt: Date): void {
+    const parsed = parseRRule(reminder.rrule);
+    if (!parsed.ok) {
+      throw new BadRequestException(parsed.reason);
+    }
+
+    const occurrences = occurrencesBetween(parsed.value, reminder.startAt, reminder.timezone, dueAt, dueAt);
+    const isGenuineOccurrence = occurrences.some((occurrence) => occurrence.getTime() === dueAt.getTime());
+    if (!isGenuineOccurrence) {
+      throw new BadRequestException("dueAt is not an occurrence of this reminder");
+    }
+  }
+
+  /** Mirrors `agenda()`'s materialized-event mapping (T060 plan). */
+  private toAgendaEntry(reminder: Reminder, event: ReminderEvent): AgendaEntry {
+    return {
+      reminderId: reminder.id,
+      petId: reminder.petId,
+      type: reminder.type,
+      title: reminder.title,
+      dueAt: event.dueAt,
+      status: event.status,
+      virtual: false,
+      eventId: event.id,
+    };
   }
 
   private toResponse(reminder: Reminder): ReminderResponse {

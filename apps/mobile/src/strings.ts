@@ -1,5 +1,7 @@
 import type { ReminderType } from "@pawcareright/types";
 
+import type { ScheduleFrequency } from "./reminders/schedule-builder";
+
 // Centralized user-facing copy for apps/mobile (CLAUDE.md §6).
 // The product display name is never hardcoded here — it is injected at
 // render time from the shared `APP_DISPLAY_NAME` constant.
@@ -14,6 +16,17 @@ const NOTIFICATION_TYPE_LABELS: Record<ReminderType, string> = {
   DENTAL: "Dental care",
   VET_VISIT: "Vet visits",
   CUSTOM: "Custom reminders",
+};
+
+/** `Reminder.type` is an open String vocabulary (T060 plan/`reminder.ts` header) -- an unrecognized value falls back to itself rather than throwing. */
+function agendaTypeLabel(type: string): string {
+  return type in NOTIFICATION_TYPE_LABELS ? NOTIFICATION_TYPE_LABELS[type as ReminderType] : type;
+}
+
+const SCHEDULE_FREQ_LABELS: Record<ScheduleFrequency, string> = {
+  DAILY: "Daily",
+  WEEKLY: "Weekly",
+  MONTHLY: "Monthly",
 };
 
 export const strings = {
@@ -318,5 +331,45 @@ export const strings = {
     validationError: "Some answers need attention before continuing.",
     invalidCategory: "We couldn't find that category. Go back and pick again.",
     offlineBanner: "You're offline — you can still fill this in.",
+  },
+  agenda: {
+    title: "Care agenda",
+    today: "Today",
+    upcoming: "Upcoming",
+    empty: "No care reminders in this window yet.",
+    loading: "Loading…",
+    error: "We couldn't load your care agenda.",
+    retry: "Retry",
+    offline: "You're offline. Reconnect to load your care agenda.",
+    offlineBanner: "You're offline — showing your last saved agenda.",
+    filterAll: "All",
+    markDone: "Mark done",
+    snooze: "Snooze",
+    newReminder: "+ New reminder",
+    carePlanLink: "Set up a care plan",
+    statusDone: "Done",
+    statusSnoozed: "Snoozed",
+    completeError: "We couldn't save that. Please try again.",
+    snoozeError: "We couldn't snooze that. Please try again.",
+    typeLabel: (type: string): string => agendaTypeLabel(type),
+  },
+  reminderForm: {
+    createTitle: "New reminder",
+    editTitle: "Edit reminder",
+    typeHeading: "Type",
+    titleLabel: "Title",
+    titlePlaceholder: "e.g. Rabies booster",
+    scheduleHeading: "Schedule",
+    freqLabel: (freq: ScheduleFrequency): string => SCHEDULE_FREQ_LABELS[freq],
+    intervalLabel: "Every",
+    weekdaysLabel: "On these days",
+    monthDayLabel: "Day of month",
+    startDateLabel: "Start date",
+    timeLabel: "Time",
+    save: "Save",
+    saveError: "We couldn't save this reminder. Please try again.",
+    loading: "Loading…",
+    error: "We couldn't load this reminder.",
+    retry: "Retry",
   },
 } as const;

@@ -42,6 +42,9 @@ describe("ReminderSchedulerService", () => {
     reminders?: ReminderRow[];
     create?: jest.Mock;
     updateMany?: jest.Mock;
+    snoozedEvents?: Array<{ id: string }>;
+    eventFindMany?: jest.Mock;
+    eventUpdateMany?: jest.Mock;
   }) {
     const findMany = jest.fn().mockResolvedValue(opts.reminders ?? [buildReminder()]);
     let nextEventSeq = 0;
@@ -49,13 +52,15 @@ describe("ReminderSchedulerService", () => {
       opts.create ??
       jest.fn().mockImplementation(() => Promise.resolve({ id: `event-${(nextEventSeq += 1)}` }));
     const updateMany = opts.updateMany ?? jest.fn().mockResolvedValue({ count: 1 });
+    const eventFindMany = opts.eventFindMany ?? jest.fn().mockResolvedValue(opts.snoozedEvents ?? []);
+    const eventUpdateMany = opts.eventUpdateMany ?? jest.fn().mockResolvedValue({ count: 1 });
 
     const prisma = {
       reminder: { findMany, updateMany },
-      reminderEvent: { create },
+      reminderEvent: { create, findMany: eventFindMany, updateMany: eventUpdateMany },
     } as unknown as PrismaService;
 
-    return { prisma, findMany, create, updateMany };
+    return { prisma, findMany, create, updateMany, eventFindMany, eventUpdateMany };
   }
 
   function buildPushQueue(overrides: { add?: jest.Mock } = {}) {
@@ -237,6 +242,106 @@ describe("ReminderSchedulerService", () => {
     expect(updateMany).toHaveBeenCalledWith({
       where: { id: "rem-b", nextFireAt: now },
       data: { nextFireAt: new Date("2026-07-15T09:00:00.000Z") },
+    });
+  });
+
+  describe("refireSnoozed", () => {
+    it("a due snoozed event flips to SENT and enqueues exactly one push", async () => {
+      const now = new Date("2026-07-14T09:00:00.000Z");
+      const { prisma, eventFindMany, eventUpdateMany } = buildPrisma({
+        reminders: [],
+        snoozedEvents: [{ id: "event-1" }],
+      });
+      const { pushQueue, add } = buildPushQueue();
+      const service = new ReminderSchedulerService(prisma, pushQueue);
+
+      await service.refireSnoozed(now);
+
+      expect(eventFindMany).toHaveBeenCalledWith({
+        where: { status: "SNOOZED", snoozedUntil: { lte: now } },
+        select: { id: true },
+      });
+      expect(eventUpdateMany).toHaveBeenCalledWith({
+        where: { id: "event-1", status: "SNOOZED", snoozedUntil: { lte: now } },
+        data: { status: "SENT", sentAt: now, snoozedUntil: null },
+      });
+      expect(add).toHaveBeenCalledTimes(1);
+      expect(add).toHaveBeenCalledWith(
+        "reminder-push",
+        { reminderEventId: "event-1" },
+        expect.objectContaining({
+          jobId: `event-1:snooze:${Math.floor(now.getTime() / 60_000)}`,
+          removeOnComplete: true,
+          removeOnFail: false,
+        }),
+      );
+    });
+
+    it("a not-yet-due snoozed event is untouched (excluded by the query, never enqueued)", async () => {
+      const now = new Date("2026-07-14T09:00:00.000Z");
+      const eventFindMany = jest.fn().mockResolvedValue([]); // the query itself excludes not-yet-due rows
+      const { prisma, eventUpdateMany } = buildPrisma({ reminders: [], eventFindMany });
+      const { pushQueue, add } = buildPushQueue();
+      const service = new ReminderSchedulerService(prisma, pushQueue);
+
+      await service.refireSnoozed(now);
+
+      expect(eventUpdateMany).not.toHaveBeenCalled();
+      expect(add).not.toHaveBeenCalled();
+    });
+
+    it("a concurrent/double invocation enqueues only once (guarded flip: count===1 the first time, 0 the second)", async () => {
+      const now = new Date("2026-07-14T09:00:00.000Z");
+      const eventUpdateMany = jest
+        .fn()
+        .mockResolvedValueOnce({ count: 1 })
+        .mockResolvedValueOnce({ count: 0 });
+      const { prisma } = buildPrisma({ reminders: [], snoozedEvents: [{ id: "event-1" }], eventUpdateMany });
+      const { pushQueue, add } = buildPushQueue();
+      const service = new ReminderSchedulerService(prisma, pushQueue);
+
+      await service.refireSnoozed(now);
+      await service.refireSnoozed(now);
+
+      expect(eventUpdateMany).toHaveBeenCalledTimes(2);
+      expect(add).toHaveBeenCalledTimes(1);
+    });
+
+    it("never modifies Reminder.nextFireAt (reminder.updateMany is never called)", async () => {
+      const now = new Date("2026-07-14T09:00:00.000Z");
+      const { prisma, updateMany } = buildPrisma({ reminders: [], snoozedEvents: [{ id: "event-1" }] });
+      const { pushQueue } = buildPushQueue();
+      const service = new ReminderSchedulerService(prisma, pushQueue);
+
+      await service.refireSnoozed(now);
+
+      expect(updateMany).not.toHaveBeenCalled();
+    });
+
+    it("isolates a failing event so other due snoozed events still refire", async () => {
+      const now = new Date("2026-07-14T09:00:00.000Z");
+      const eventUpdateMany = jest.fn().mockImplementation((args: { where: { id: string } }) => {
+        if (args.where.id === "event-a") {
+          return Promise.reject(new Error("infra down"));
+        }
+        return Promise.resolve({ count: 1 });
+      });
+      const { prisma } = buildPrisma({
+        reminders: [],
+        snoozedEvents: [{ id: "event-a" }, { id: "event-b" }],
+        eventUpdateMany,
+      });
+      const { pushQueue, add } = buildPushQueue();
+      const service = new ReminderSchedulerService(prisma, pushQueue);
+
+      await expect(service.refireSnoozed(now)).resolves.toBeUndefined();
+
+      expect(add).toHaveBeenCalledTimes(1);
+      expect(add).toHaveBeenCalledWith(
+        "reminder-push",
+        { reminderEventId: "event-b" },
+        expect.objectContaining({ jobId: `event-b:snooze:${Math.floor(now.getTime() / 60_000)}` }),
+      );
     });
   });
 });

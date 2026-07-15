@@ -401,4 +401,106 @@ describe("Reminders (e2e)", () => {
       expect(errorResponseSchema.parse(res.body).error.code).toBe("VALIDATION_FAILED");
     });
   });
+
+  describe("complete/snooze occurrence (T060)", () => {
+    it("POST .../complete materializes a DONE event that appears as a single non-virtual row in a subsequent GET /agenda (no duplicate); replay is idempotent", async () => {
+      const ctx = await owner();
+      const petId = await createPet(ctx);
+
+      const created = await ctx
+        .authedAgent("post", `/v1/pets/${petId}/reminders`)
+        .send(validReminderBody({ rrule: "FREQ=DAILY", timezone: "UTC", startAt: "2026-08-01T09:00:00.000Z" }));
+      expect(created.status).toBe(201);
+      const reminderId = created.body.id as string;
+
+      const dueAt = "2026-08-01T09:00:00.000Z";
+      const complete = await ctx.authedAgent("post", `/v1/reminders/${reminderId}/complete`).send({ dueAt });
+      expect(complete.status).toBe(200);
+      expect(complete.body.status).toBe("DONE");
+      expect(complete.body.virtual).toBe(false);
+      expect(complete.body.dueAt).toBe(dueAt);
+      const eventId = complete.body.eventId as string;
+      expect(eventId).toBeDefined();
+
+      const agenda = await ctx.authedAgent(
+        "get",
+        "/v1/agenda?from=2026-08-01T00:00:00.000Z&to=2026-08-01T23:59:59.000Z",
+      );
+      expect(agenda.status).toBe(200);
+      const matches = agenda.body.entries.filter(
+        (e: { reminderId: string; dueAt: string }) => e.reminderId === reminderId && e.dueAt === dueAt,
+      );
+      expect(matches).toHaveLength(1);
+      expect(matches[0].status).toBe("DONE");
+      expect(matches[0].virtual).toBe(false);
+      expect(matches[0].eventId).toBe(eventId);
+
+      // Replay: idempotent -- same event, still DONE.
+      const replay = await ctx.authedAgent("post", `/v1/reminders/${reminderId}/complete`).send({ dueAt });
+      expect(replay.status).toBe(200);
+      expect(replay.body.eventId).toBe(eventId);
+      expect(replay.body.status).toBe("DONE");
+    });
+
+    it("POST .../snooze -> 200-family SNOOZED with the posted snoozedUntil", async () => {
+      const ctx = await owner();
+      const petId = await createPet(ctx);
+
+      const created = await ctx
+        .authedAgent("post", `/v1/pets/${petId}/reminders`)
+        .send(validReminderBody({ rrule: "FREQ=DAILY", timezone: "UTC", startAt: "2026-08-01T09:00:00.000Z" }));
+      expect(created.status).toBe(201);
+      const reminderId = created.body.id as string;
+
+      const dueAt = "2026-08-01T09:00:00.000Z";
+      const snoozeUntil = "2026-08-01T15:00:00.000Z";
+      const snooze = await ctx
+        .authedAgent("post", `/v1/reminders/${reminderId}/snooze`)
+        .send({ dueAt, snoozeUntil });
+      expect(snooze.status).toBe(200);
+      expect(snooze.body.status).toBe("SNOOZED");
+      expect(snooze.body.virtual).toBe(false);
+    });
+
+    it("bad dueAt (not a genuine occurrence) -> 400 VALIDATION_FAILED-shaped BadRequest", async () => {
+      const ctx = await owner();
+      const petId = await createPet(ctx);
+
+      const created = await ctx
+        .authedAgent("post", `/v1/pets/${petId}/reminders`)
+        .send(validReminderBody({ rrule: "FREQ=DAILY", timezone: "UTC", startAt: "2026-08-01T09:00:00.000Z" }));
+      expect(created.status).toBe(201);
+      const reminderId = created.body.id as string;
+
+      const res = await ctx
+        .authedAgent("post", `/v1/reminders/${reminderId}/complete`)
+        .send({ dueAt: "2026-08-01T10:00:00.000Z" }); // not on the DAILY 09:00 cadence
+
+      expect(res.status).toBe(400);
+    });
+
+    it("complete/snooze on another household's reminder -> 404 NOT_FOUND", async () => {
+      const ownerA = await owner();
+      const ownerB = await owner();
+      const petId = await createPet(ownerA, "A's Dog");
+
+      const created = await ownerA
+        .authedAgent("post", `/v1/pets/${petId}/reminders`)
+        .send(validReminderBody({ rrule: "FREQ=DAILY", timezone: "UTC", startAt: "2026-08-01T09:00:00.000Z" }));
+      expect(created.status).toBe(201);
+      const reminderId = created.body.id as string;
+
+      const completeRes = await ownerB
+        .authedAgent("post", `/v1/reminders/${reminderId}/complete`)
+        .send({ dueAt: "2026-08-01T09:00:00.000Z" });
+      expect(completeRes.status).toBe(404);
+      expect(errorResponseSchema.parse(completeRes.body).error.code).toBe("NOT_FOUND");
+
+      const snoozeRes = await ownerB
+        .authedAgent("post", `/v1/reminders/${reminderId}/snooze`)
+        .send({ dueAt: "2026-08-01T09:00:00.000Z", snoozeUntil: "2026-08-02T09:00:00.000Z" });
+      expect(snoozeRes.status).toBe(404);
+      expect(errorResponseSchema.parse(snoozeRes.body).error.code).toBe("NOT_FOUND");
+    });
+  });
 });

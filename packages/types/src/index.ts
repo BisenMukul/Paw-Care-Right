@@ -12,3 +12,4 @@ export * from "./rrule";
 export * from "./reminder";
 export * from "./notification-prefs";
 export * from "./care-plan";
+export * from "./agenda";
