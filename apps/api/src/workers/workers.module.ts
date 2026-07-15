@@ -19,6 +19,9 @@ import { PUSH_RECEIPTS_QUEUE } from "./push-receipts.contract";
 import { PushReceiptsProcessor } from "./push-receipts.processor";
 import { PushSenderService } from "./push-sender.service";
 import { PushProcessor } from "./push.processor";
+import { REMINDER_CONSISTENCY_QUEUE } from "./reminder-consistency.contract";
+import { ReminderConsistencyProcessor } from "./reminder-consistency.processor";
+import { ReminderConsistencyService } from "./reminder-consistency.service";
 import { ReminderSchedulerProcessor } from "./reminder-scheduler.processor";
 import { ReminderSchedulerService } from "./reminder-scheduler.service";
 import { REMINDERS_QUEUE } from "./reminders-scheduler.contract";
@@ -37,6 +40,7 @@ import { REMINDERS_QUEUE } from "./reminders-scheduler.contract";
       { name: REMINDERS_QUEUE },
       { name: PUSH_QUEUE },
       { name: PUSH_RECEIPTS_QUEUE },
+      { name: REMINDER_CONSISTENCY_QUEUE },
     ),
   ],
   providers: [
@@ -47,6 +51,8 @@ import { REMINDERS_QUEUE } from "./reminders-scheduler.contract";
     PushSenderService,
     PushProcessor,
     PushReceiptsProcessor,
+    ReminderConsistencyService,
+    ReminderConsistencyProcessor,
     { provide: EXPO_PUSH_CLIENT, useClass: SdkExpoPushClient },
     { provide: TRIAGE_TEXT_PROVIDER, useFactory: () => getTextProvider() },
     { provide: TRIAGE_TEXT_MODEL_ID, useFactory: () => loadAiEnv().AI_TEXT_MODEL },
