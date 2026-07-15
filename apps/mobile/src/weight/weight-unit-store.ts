@@ -1,8 +1,8 @@
-import { createMMKV } from "react-native-mmkv";
 import { create } from "zustand";
 import { createJSONStorage, persist, type StateStorage } from "zustand/middleware";
 
 import { getDeviceRegionCode } from "../checks/region";
+import { createSafeStorage } from "../storage/safe-storage";
 import { defaultUnitForRegion, type WeightUnit } from "./weight-units";
 
 export interface WeightUnitState {
@@ -10,10 +10,14 @@ export interface WeightUnitState {
   setUnit(unit: WeightUnit): void;
 }
 
-// A dedicated MMKV instance for the weight-unit override (mirrors
-// `active-pet-store.ts` — plan step 6: each persisted store owns its own
-// instance rather than sharing a mobile-wide singleton).
-const mmkv = createMMKV();
+// A dedicated persisted store for the weight-unit override. If the native
+// MMKV binding is unavailable, it falls back to memory storage.
+const mmkv = createSafeStorage({
+  createMmkv: () => {
+    const { createMMKV } = require("react-native-mmkv");
+    return createMMKV();
+  },
+});
 const mmkvStorage: StateStorage = {
   getItem: (name) => mmkv.getString(name) ?? null,
   setItem: (name, value) => {

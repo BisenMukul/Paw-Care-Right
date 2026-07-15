@@ -1,8 +1,9 @@
-import { createMMKV } from "react-native-mmkv";
 import { create } from "zustand";
 import { createJSONStorage, persist, type StateStorage } from "zustand/middleware";
 
 import { type CreatePetInput, createPetSchema, type Sex, type Species } from "@pawcareright/types";
+
+import { createSafeStorage } from "../storage/safe-storage";
 
 export interface AddPetDraft {
   species: Species | null;
@@ -44,11 +45,14 @@ const INITIAL_DRAFT: AddPetDraft = {
   createdPetId: null,
 };
 
-// A second, dedicated MMKV instance for the wizard draft (plan R2 — the
-// `src/api/query.ts` "only the root layout imports mmkv" comment is a
-// web-bundle isolation note, not a mobile-wide singleton rule; this store is
-// never imported by web).
-const mmkv = createMMKV();
+// A second, dedicated persisted store for the wizard draft. When the native
+// MMKV binding is unavailable, the store uses in-memory storage instead.
+const mmkv = createSafeStorage({
+  createMmkv: () => {
+    const { createMMKV } = require("react-native-mmkv");
+    return createMMKV();
+  },
+});
 const mmkvStorage: StateStorage = {
   getItem: (name) => mmkv.getString(name) ?? null,
   setItem: (name, value) => {
