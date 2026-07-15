@@ -10,6 +10,7 @@ import {
   MEDICATION_NAME_LABEL,
   MEDICATION_NAME_PLACEHOLDER,
   MEDICATION_SAVE_LABEL,
+  type HealthLogKind,
   type ReminderType,
 } from "@pawcareright/types";
 
@@ -42,6 +43,17 @@ const SCHEDULE_FREQ_LABELS: Record<ScheduleFrequency, string> = {
   MONTHLY: "Monthly",
 };
 
+// T067 timeline: plain record-keeping nouns only -- no "diagnosis"/
+// interpretive language anywhere below (CLAUDE §7).
+const TIMELINE_KIND_LABELS: Record<HealthLogKind, string> = {
+  WEIGHT: "Weight",
+  MEAL: "Meal",
+  NOTE: "Note",
+  VET_VISIT: "Vet visit",
+  MED_GIVEN: "Medication",
+  CHECK_REF: "Symptom check",
+};
+
 export const strings = {
   tabs: {
     home: "Home",
@@ -62,8 +74,23 @@ export const strings = {
     setupCta: "Set up a care plan",
     noPet: "Add a pet to set up a care plan.",
   },
+  // T067 timeline tab: entries render recorded facts verbatim (date, kind,
+  // note/reason/weight); MED_GIVEN shows the name/dose exactly as entered
+  // (or the neutral fallback below) -- CLAUDE §7 rule 2, no dose is ever
+  // computed or suggested here.
   timeline: {
-    body: "Your pet's health timeline will live here.",
+    title: "Timeline",
+    loading: "Loading…",
+    error: "We couldn't load this pet's timeline.",
+    retry: "Retry",
+    offline: "You're offline. Reconnect to load the timeline.",
+    offlineBanner: "You're offline — showing your last saved timeline.",
+    empty: "No timeline entries yet.",
+    noPet: "Add a pet to see their timeline.",
+    filterAll: "All",
+    kindLabel: TIMELINE_KIND_LABELS,
+    medGivenFallback: "Medication given",
+    dateA11y: (date: string) => `Entry on ${date}`,
   },
   settings: {
     body: "Account and household settings will live here.",

@@ -1,16 +1,20 @@
-import type { VetVisitValue } from "@pawcareright/types";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import type { HealthLogKind, VetVisitValue } from "@pawcareright/types";
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { apiClient } from "./client";
 
 /**
- * Forward contract for T067's timeline list (T066 plan decision 4) — no
- * query consumes this yet, so invalidation below is a harmless no-op today
- * and the honest pattern once `useHealthTimeline` lands.
+ * `healthTimelineKeys.pet(petId)` is the T066 mutation-invalidation prefix.
+ * `.list(petId, kind)` (T067 plan decision 5) extends it with a `kind`
+ * segment so each kind filter caches independently, while a
+ * `pet(petId)`-scoped invalidation (T066's mutations) still matches every
+ * kind variant via TanStack's default `exact: false` prefix match.
  */
 export const healthTimelineKeys = {
   all: ["health-timeline"] as const,
   pet: (petId: string) => ["health-timeline", petId] as const,
+  list: (petId: string, kind: HealthLogKind | null) =>
+    [...healthTimelineKeys.pet(petId), kind ?? "all"] as const,
 };
 
 export const weightSeriesKeys = {
@@ -109,5 +113,47 @@ export function useAddVetVisit(petId: string) {
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: healthTimelineKeys.pet(petId) });
     },
+  });
+}
+
+/**
+ * Local mirror (T067 plan — mirrors `WeightSeriesResponse`'s comment above)
+ * of the api's `HealthLogsService.HealthLogResponse` — no import across the
+ * api/mobile boundary.
+ */
+export interface TimelineItem {
+  id: string;
+  kind: HealthLogKind;
+  occurredAt: string;
+  value: Record<string, unknown>;
+  photoKeys: string[];
+}
+
+/** Local mirror of the api's `HealthLogsService.TimelineListResponse`. */
+export interface TimelinePage {
+  items: TimelineItem[];
+  nextCursor: string | null;
+}
+
+export const HEALTH_TIMELINE_PAGE_SIZE = 20;
+
+/**
+ * Cursor-paginated, kind-filterable health timeline for a pet (T067 plan).
+ * Shares `healthTimelineKeys.pet(petId)` as its query-key prefix with
+ * `useAddNote`/`useAddVetVisit`'s invalidations (see `healthTimelineKeys`
+ * above) — mirrors `useChecksList`'s infinite-query shape.
+ */
+export function useHealthTimeline(petId: string, kind: HealthLogKind | null) {
+  return useInfiniteQuery({
+    queryKey: healthTimelineKeys.list(petId, kind),
+    queryFn: ({ pageParam }: { pageParam: string | undefined }) => {
+      const params = new URLSearchParams({ limit: String(HEALTH_TIMELINE_PAGE_SIZE) });
+      if (pageParam !== undefined) params.set("cursor", pageParam);
+      if (kind !== null) params.set("kind", kind);
+      return apiClient.get<TimelinePage>(`/v1/pets/${petId}/logs?${params.toString()}`);
+    },
+    initialPageParam: undefined as string | undefined,
+    getNextPageParam: (lastPage: TimelinePage) => lastPage.nextCursor ?? undefined,
+    enabled: petId.length > 0,
   });
 }
