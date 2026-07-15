@@ -39,6 +39,15 @@ export function AgendaItem({ entry, onComplete, onSnooze }: AgendaItemProps) {
       </View>
       <Text className="text-sm text-brand-700">{strings.agenda.typeLabel(entry.type)}</Text>
 
+      {entry.medDoseAsEntered !== undefined ? (
+        <Text
+          testID={`agenda-item-dose-${entry.reminderId}-${dueAtMs}`}
+          className="text-sm text-brand-700"
+        >
+          {strings.agenda.medDoseLabel}: {entry.medDoseAsEntered}
+        </Text>
+      ) : null}
+
       {entry.status === "DONE" ? (
         <Text
           testID={`agenda-item-status-${entry.reminderId}-${dueAtMs}`}

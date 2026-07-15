@@ -38,6 +38,25 @@ export interface CreateReminderInput {
 
 export type UpdateReminderInput = Partial<CreateReminderInput>;
 
+/**
+ * T061: mirrors `createMedicationCourseInputSchema` (`@pawcareright/types`).
+ * `medNameAsEntered`/`medDoseAsEntered` are recorded EXACTLY as entered --
+ * never suggested (CLAUDE §7 rule 2); `doseStartAts` are UTC instants the
+ * form computes client-side, one per daily dose time.
+ */
+export interface CreateMedicationCourseInput {
+  medNameAsEntered: string;
+  medDoseAsEntered?: string;
+  doseStartAts: string[];
+  courseLengthDays: number;
+  timezone: string;
+}
+
+export interface MedicationCourseResult {
+  courseId: string;
+  reminderCount: number;
+}
+
 export const remindersKeys = {
   detail: (id: string) => ["reminders", id] as const,
 };
@@ -70,6 +89,21 @@ export function useUpdateReminder(id: string) {
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: agendaKeys.all });
       void queryClient.invalidateQueries({ queryKey: remindersKeys.detail(id) });
+    },
+  });
+}
+
+/**
+ * POST `/v1/pets/:petId/reminders/medication-course` (T061) -- invalidates
+ * the agenda so the newly-created course's occurrences appear.
+ */
+export function useCreateMedicationCourse(petId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (input: CreateMedicationCourseInput) =>
+      apiClient.post<MedicationCourseResult>(`/v1/pets/${petId}/reminders/medication-course`, input),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: agendaKeys.all });
     },
   });
 }

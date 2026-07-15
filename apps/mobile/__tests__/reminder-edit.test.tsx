@@ -1,7 +1,13 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react-native";
 
 import ReminderEditScreen from "../app/reminders/edit";
-import { useCreateReminder, useReminder, useUpdateReminder, type Reminder } from "../src/api/reminders-api";
+import {
+  useCreateMedicationCourse,
+  useCreateReminder,
+  useReminder,
+  useUpdateReminder,
+  type Reminder,
+} from "../src/api/reminders-api";
 
 /**
  * Create/edit custom reminder screen (T060 plan "Tests to write" /
@@ -22,13 +28,16 @@ jest.mock("../src/api/reminders-api", () => ({
   useReminder: jest.fn(),
   useCreateReminder: jest.fn(),
   useUpdateReminder: jest.fn(),
+  useCreateMedicationCourse: jest.fn(),
 }));
 
 const mockedUseReminder = useReminder as unknown as jest.Mock;
 const mockedUseCreateReminder = useCreateReminder as unknown as jest.Mock;
 const mockedUseUpdateReminder = useUpdateReminder as unknown as jest.Mock;
+const mockedUseCreateMedicationCourse = useCreateMedicationCourse as unknown as jest.Mock;
 const mockCreateMutateAsync = jest.fn();
 const mockUpdateMutateAsync = jest.fn();
+const mockMedCreateMutateAsync = jest.fn();
 const mockRefetch = jest.fn();
 
 const EXISTING_REMINDER: Reminder = {
@@ -52,8 +61,10 @@ describe("reminder create/edit screen", () => {
     mockedUseReminder.mockReturnValue({ data: undefined, isLoading: false, isError: false, refetch: mockRefetch });
     mockedUseCreateReminder.mockReturnValue({ mutateAsync: mockCreateMutateAsync, isPending: false });
     mockedUseUpdateReminder.mockReturnValue({ mutateAsync: mockUpdateMutateAsync, isPending: false });
+    mockedUseCreateMedicationCourse.mockReturnValue({ mutateAsync: mockMedCreateMutateAsync, isPending: false });
     mockCreateMutateAsync.mockResolvedValue(EXISTING_REMINDER);
     mockUpdateMutateAsync.mockResolvedValue(EXISTING_REMINDER);
+    mockMedCreateMutateAsync.mockResolvedValue({ courseId: "course-1", reminderCount: 1 });
   });
 
   it("create mode: choosing weekly + MO,WE + title + type builds the expected rrule and calls create", async () => {
@@ -145,7 +156,7 @@ describe("reminder create/edit screen", () => {
     expect(mockBack).not.toHaveBeenCalled();
   });
 
-  it("renders no medication name/dose field (safety statement) regardless of the selected type", async () => {
+  it("renders no medication name/dose field on the GENERIC reminder form (safety statement) -- the legacy reminder-* testIDs/placeholder never appear", async () => {
     await render(<ReminderEditScreen />);
 
     await fireEvent.press(screen.getByTestId("reminder-type-MEDICATION"));
@@ -153,6 +164,24 @@ describe("reminder create/edit screen", () => {
     expect(screen.queryByTestId("reminder-med-name")).toBeNull();
     expect(screen.queryByTestId("reminder-dose")).toBeNull();
     expect(screen.queryByPlaceholderText(/dose/i)).toBeNull();
+  });
+
+  it("create mode: selecting MEDICATION reveals MedicationCourseForm (its testIDs) and hides the rrule ScheduleBuilder/title input (T061)", async () => {
+    await render(<ReminderEditScreen />);
+
+    await fireEvent.press(screen.getByTestId("reminder-type-MEDICATION"));
+
+    expect(screen.getByTestId("med-name-input")).toBeTruthy();
+    expect(screen.getByTestId("med-dose-input")).toBeTruthy();
+    expect(screen.getByTestId("med-disclaimer")).toBeTruthy();
+    expect(screen.queryByTestId("schedule-freq-DAILY")).toBeNull();
+    expect(screen.queryByTestId("reminder-title-input")).toBeNull();
+    expect(screen.queryByTestId("reminder-save")).toBeNull();
+
+    // Switching back to a non-MEDICATION type restores the generic form.
+    await fireEvent.press(screen.getByTestId("reminder-type-CUSTOM"));
+    expect(screen.queryByTestId("med-name-input")).toBeNull();
+    expect(screen.getByTestId("reminder-title-input")).toBeTruthy();
   });
 
   it("edit mode loading: shows reminder-form-loading", async () => {

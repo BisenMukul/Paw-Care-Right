@@ -503,4 +503,73 @@ describe("Reminders (e2e)", () => {
       expect(errorResponseSchema.parse(snoozeRes.body).error.code).toBe("NOT_FOUND");
     });
   });
+
+  describe("medication course (T061)", () => {
+    function validMedicationCourseBody(overrides: Record<string, unknown> = {}) {
+      return {
+        medNameAsEntered: "As prescribed",
+        doseStartAts: ["2026-08-01T09:00:00.000Z", "2026-08-01T21:00:00.000Z"],
+        courseLengthDays: 10,
+        timezone: "UTC",
+        ...overrides,
+      };
+    }
+
+    it("POST creates a 2x/day x 10-day course -> 201 { reminderCount: 2 }; a wide GET /agenda yields 20 MEDICATION occurrences carrying medNameAsEntered/medDoseAsEntered; completing one dose -> DONE", async () => {
+      const ctx = await owner();
+      const petId = await createPet(ctx);
+
+      const created = await ctx
+        .authedAgent("post", `/v1/pets/${petId}/reminders/medication-course`)
+        .send(validMedicationCourseBody({ medDoseAsEntered: "As instructed" }));
+      expect(created.status).toBe(201);
+      expect(created.body.reminderCount).toBe(2);
+      const courseId = created.body.courseId as string;
+      expect(courseId).toBeDefined();
+
+      const agenda = await ctx.authedAgent(
+        "get",
+        `/v1/agenda?from=2026-08-01T00:00:00.000Z&to=2026-08-11T00:00:00.000Z&petId=${petId}`,
+      );
+      expect(agenda.status).toBe(200);
+      const medEntries = agenda.body.entries.filter((e: { type: string }) => e.type === "MEDICATION");
+      expect(medEntries).toHaveLength(20);
+      for (const entry of medEntries as Array<{ medNameAsEntered: string; medDoseAsEntered: string }>) {
+        expect(entry.medNameAsEntered).toBe("As prescribed");
+        expect(entry.medDoseAsEntered).toBe("As instructed");
+      }
+
+      const firstMed = medEntries[0] as { reminderId: string; dueAt: string };
+      const complete = await ctx
+        .authedAgent("post", `/v1/reminders/${firstMed.reminderId}/complete`)
+        .send({ dueAt: firstMed.dueAt });
+      expect(complete.status).toBe(200);
+      expect(complete.body.status).toBe("DONE");
+    });
+
+    it("empty doseStartAts -> 400 VALIDATION_FAILED", async () => {
+      const ctx = await owner();
+      const petId = await createPet(ctx);
+
+      const res = await ctx
+        .authedAgent("post", `/v1/pets/${petId}/reminders/medication-course`)
+        .send(validMedicationCourseBody({ doseStartAts: [] }));
+
+      expect(res.status).toBe(400);
+      expect(errorResponseSchema.parse(res.body).error.code).toBe("VALIDATION_FAILED");
+    });
+
+    it("other-household's pet -> 404 NOT_FOUND", async () => {
+      const ownerA = await owner();
+      const ownerB = await owner();
+      const petId = await createPet(ownerA, "A's Dog");
+
+      const res = await ownerB
+        .authedAgent("post", `/v1/pets/${petId}/reminders/medication-course`)
+        .send(validMedicationCourseBody());
+
+      expect(res.status).toBe(404);
+      expect(errorResponseSchema.parse(res.body).error.code).toBe("NOT_FOUND");
+    });
+  });
 });

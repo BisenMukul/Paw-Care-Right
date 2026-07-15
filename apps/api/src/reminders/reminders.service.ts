@@ -1,18 +1,28 @@
+import { randomUUID } from "node:crypto";
+
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { resolveCareTemplate, resolveCareTemplateForPet, resolveLifeStage } from "@pawcareright/data";
-import { parseRRule, type CareTemplateSuggestions, type ReminderEventStatus, type Species } from "@pawcareright/types";
+import {
+  parseRRule,
+  type CareTemplateSuggestions,
+  type MedicationCourseResponse,
+  type ReminderEventStatus,
+  type Species,
+} from "@pawcareright/types";
 import type { Reminder, ReminderEvent } from "@prisma/client";
 
 import { PetsService } from "../pets/pets.service";
 import { PrismaService } from "../prisma/prisma.service";
 import type { AgendaQueryDto } from "./dto/agenda-query.dto";
 import type { CompleteOccurrenceDto } from "./dto/complete-occurrence.dto";
+import type { CreateMedicationCourseDto } from "./dto/create-medication-course.dto";
 import type { CreateReminderDto } from "./dto/create-reminder.dto";
 import type { InstantiateTemplateDto } from "./dto/instantiate-template.dto";
 import type { ListRemindersQueryDto } from "./dto/list-reminders-query.dto";
 import type { SnoozeOccurrenceDto } from "./dto/snooze-occurrence.dto";
 import type { TemplateSuggestionsQueryDto } from "./dto/template-suggestions-query.dto";
 import type { UpdateReminderDto } from "./dto/update-reminder.dto";
+import { buildMedicationCourse } from "./medication-course";
 import { computeNextFireAt } from "./next-fire-at";
 import { occurrencesBetween } from "./occurrences-between";
 import { deriveTemplateStartAt, petAgeMonths } from "./template-anchors";
@@ -28,8 +38,10 @@ export interface ReminderResponse {
   startAt: Date;
   nextFireAt: Date;
   medNameAsEntered?: string;
+  medDoseAsEntered?: string;
   active: boolean;
   templateKey?: string;
+  courseId?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -48,6 +60,8 @@ export interface AgendaEntry {
   status: ReminderEventStatus | "SCHEDULED";
   virtual: boolean;
   eventId?: string;
+  medNameAsEntered?: string;
+  medDoseAsEntered?: string;
 }
 
 export interface AgendaResponse {
@@ -247,6 +261,8 @@ export class RemindersService {
           dueAt,
           status: "SCHEDULED",
           virtual: true,
+          ...(reminder.medNameAsEntered !== null ? { medNameAsEntered: reminder.medNameAsEntered } : {}),
+          ...(reminder.medDoseAsEntered !== null ? { medDoseAsEntered: reminder.medDoseAsEntered } : {}),
         });
       }
     }
@@ -269,6 +285,8 @@ export class RemindersService {
         status: event.status,
         virtual: false,
         eventId: event.id,
+        ...(event.reminder.medNameAsEntered !== null ? { medNameAsEntered: event.reminder.medNameAsEntered } : {}),
+        ...(event.reminder.medDoseAsEntered !== null ? { medDoseAsEntered: event.reminder.medDoseAsEntered } : {}),
       });
     }
 
@@ -344,6 +362,53 @@ export class RemindersService {
     });
 
     return this.toAgendaEntry(reminder, event);
+  }
+
+  /**
+   * `POST /pets/:petId/reminders/medication-course` (T061 plan decisions
+   * 1/2/6): expands the request into one sibling `Reminder` per (de-duped)
+   * dose time via the pure `buildMedicationCourse`, sharing one
+   * `crypto.randomUUID()` `courseId`, and persists them in a single
+   * `$transaction`. Never performs dosing math -- `medNameAsEntered`/
+   * `medDoseAsEntered` are recorded exactly as entered (CLAUDE §7 rule 2).
+   */
+  async createMedicationCourse(
+    householdId: string,
+    petId: string,
+    dto: CreateMedicationCourseDto,
+  ): Promise<MedicationCourseResponse> {
+    await this.petsService.findOne(householdId, petId);
+
+    const courseId = randomUUID();
+    const specs = buildMedicationCourse({
+      medNameAsEntered: dto.medNameAsEntered,
+      ...(dto.medDoseAsEntered !== undefined ? { medDoseAsEntered: dto.medDoseAsEntered } : {}),
+      doseStartAts: dto.doseStartAts,
+      courseLengthDays: dto.courseLengthDays,
+      timezone: dto.timezone,
+      courseId,
+    });
+
+    await this.prisma.$transaction(
+      specs.map((spec) =>
+        this.prisma.reminder.create({
+          data: {
+            petId,
+            type: spec.type,
+            title: spec.title,
+            rrule: spec.rrule,
+            timezone: spec.timezone,
+            startAt: spec.startAt,
+            nextFireAt: spec.nextFireAt,
+            courseId: spec.courseId,
+            medNameAsEntered: spec.medNameAsEntered,
+            ...(spec.medDoseAsEntered !== undefined ? { medDoseAsEntered: spec.medDoseAsEntered } : {}),
+          },
+        }),
+      ),
+    );
+
+    return { courseId, reminderCount: specs.length };
   }
 
   /**
@@ -528,7 +593,7 @@ export class RemindersService {
 
   /** Mirrors `agenda()`'s materialized-event mapping (T060 plan). */
   private toAgendaEntry(reminder: Reminder, event: ReminderEvent): AgendaEntry {
-    return {
+    const entry: AgendaEntry = {
       reminderId: reminder.id,
       petId: reminder.petId,
       type: reminder.type,
@@ -538,6 +603,15 @@ export class RemindersService {
       virtual: false,
       eventId: event.id,
     };
+
+    if (reminder.medNameAsEntered !== null) {
+      entry.medNameAsEntered = reminder.medNameAsEntered;
+    }
+    if (reminder.medDoseAsEntered !== null) {
+      entry.medDoseAsEntered = reminder.medDoseAsEntered;
+    }
+
+    return entry;
   }
 
   private toResponse(reminder: Reminder): ReminderResponse {
@@ -558,8 +632,14 @@ export class RemindersService {
     if (reminder.medNameAsEntered !== null) {
       response.medNameAsEntered = reminder.medNameAsEntered;
     }
+    if (reminder.medDoseAsEntered !== null) {
+      response.medDoseAsEntered = reminder.medDoseAsEntered;
+    }
     if (reminder.templateKey !== null) {
       response.templateKey = reminder.templateKey;
+    }
+    if (reminder.courseId !== null) {
+      response.courseId = reminder.courseId;
     }
 
     return response;

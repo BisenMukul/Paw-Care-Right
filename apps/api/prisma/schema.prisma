@@ -233,6 +233,8 @@ model Reminder {
   startAt          DateTime // DTSTART anchor (UTC) — recurrence origin; nextFireAt/agenda computed from this
   nextFireAt       DateTime // UTC; set on create (first occurrence >= startAt), advanced by the T056 worker
   medNameAsEntered String? // T061 med subtype: name as entered; never suggested
+  medDoseAsEntered String? // T061 med subtype: dose as entered; never suggested
+  courseId         String? // T061: groups sibling dose-time reminders that make up one medication course (no dedicated index -- access is always pet-scoped, mirrors templateKey)
   active           Boolean  @default(true) // T058/T060 pause/disable
   templateKey      String? // T054/T055/T059 template-pack provenance + instantiation idempotency
   createdAt        DateTime @default(now())

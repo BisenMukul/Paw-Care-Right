@@ -13,3 +13,5 @@ export * from "./reminder";
 export * from "./notification-prefs";
 export * from "./care-plan";
 export * from "./agenda";
+export * from "./medication-copy";
+export * from "./medication-course";

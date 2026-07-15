@@ -1,4 +1,17 @@
-import type { ReminderType } from "@pawcareright/types";
+import {
+  MEDICATION_ADD_TIME_LABEL,
+  MEDICATION_AGENDA_DOSE_LABEL,
+  MEDICATION_COURSE_LENGTH_LABEL,
+  MEDICATION_DISCLAIMER,
+  MEDICATION_DOSE_LABEL,
+  MEDICATION_DOSE_PLACEHOLDER,
+  MEDICATION_DOSE_TIMES_LABEL,
+  MEDICATION_FORM_HEADING,
+  MEDICATION_NAME_LABEL,
+  MEDICATION_NAME_PLACEHOLDER,
+  MEDICATION_SAVE_LABEL,
+  type ReminderType,
+} from "@pawcareright/types";
 
 import type { ScheduleFrequency } from "./reminders/schedule-builder";
 
@@ -352,6 +365,10 @@ export const strings = {
     completeError: "We couldn't save that. Please try again.",
     snoozeError: "We couldn't snooze that. Please try again.",
     typeLabel: (type: string): string => agendaTypeLabel(type),
+    // T061: the dose-as-entered label shown on a MEDICATION agenda row --
+    // sourced from the same `MEDICATION_STATIC_COPY` SSOT the detector spec
+    // scans, so the tested string is byte-identical to the rendered one.
+    medDoseLabel: MEDICATION_AGENDA_DOSE_LABEL,
   },
   reminderForm: {
     createTitle: "New reminder",
@@ -371,5 +388,22 @@ export const strings = {
     loading: "Loading…",
     error: "We couldn't load this reminder.",
     retry: "Retry",
+  },
+  // T061 medication tracker: every value below comes from the
+  // `MEDICATION_STATIC_COPY` SSOT (`@pawcareright/types`) -- CLAUDE §7 rule
+  // 2, the med tracker RECORDS what a vet prescribed, it never suggests. Do
+  // not hardcode medication copy here; add to the SSOT instead so the T038
+  // detector lint test keeps scanning the exact rendered string.
+  medForm: {
+    heading: MEDICATION_FORM_HEADING,
+    nameLabel: MEDICATION_NAME_LABEL,
+    namePlaceholder: MEDICATION_NAME_PLACEHOLDER,
+    doseLabel: MEDICATION_DOSE_LABEL,
+    dosePlaceholder: MEDICATION_DOSE_PLACEHOLDER,
+    doseTimesLabel: MEDICATION_DOSE_TIMES_LABEL,
+    addTimeLabel: MEDICATION_ADD_TIME_LABEL,
+    courseLengthLabel: MEDICATION_COURSE_LENGTH_LABEL,
+    disclaimer: MEDICATION_DISCLAIMER,
+    save: MEDICATION_SAVE_LABEL,
   },
 } as const;

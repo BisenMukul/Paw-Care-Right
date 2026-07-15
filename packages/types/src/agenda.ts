@@ -31,6 +31,10 @@ export const agendaEntrySchema = z.object({
   status: agendaEntryStatusSchema,
   virtual: z.boolean(),
   eventId: z.string().optional(),
+  // T061 medication subtype: name/dose exactly as entered, propagated
+  // verbatim (never app-authored) so the agenda can show them as a record.
+  medNameAsEntered: z.string().optional(),
+  medDoseAsEntered: z.string().optional(),
 });
 
 export type AgendaEntry = z.infer<typeof agendaEntrySchema>;

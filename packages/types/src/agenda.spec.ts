@@ -40,6 +40,20 @@ describe("agendaEntrySchema", () => {
     const payload = { ...VALID_ENTRY, status: "BOGUS" };
     expect(agendaEntrySchema.safeParse(payload).success).toBe(false);
   });
+
+  it("a med entry (with medNameAsEntered + medDoseAsEntered) parses (T061)", () => {
+    const payload = {
+      ...VALID_ENTRY,
+      type: "MEDICATION",
+      medNameAsEntered: "As prescribed",
+      medDoseAsEntered: "As instructed",
+    };
+    expect(agendaEntrySchema.parse(payload)).toEqual(payload);
+  });
+
+  it("a plain entry (medNameAsEntered/medDoseAsEntered absent) still parses (T061)", () => {
+    expect(agendaEntrySchema.parse(VALID_ENTRY)).toEqual(VALID_ENTRY);
+  });
 });
 
 describe("agendaResponseSchema", () => {

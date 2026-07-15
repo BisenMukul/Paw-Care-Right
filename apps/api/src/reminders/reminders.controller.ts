@@ -7,12 +7,13 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from "@nestjs/swagger";
-import type { CareTemplateSuggestions } from "@pawcareright/types";
+import type { CareTemplateSuggestions, MedicationCourseResponse } from "@pawcareright/types";
 
 import type { HouseholdScope } from "../common/authenticated-request";
 import { CurrentHousehold, HouseholdFromMembership } from "../common/household-scope.decorators";
 import { AgendaQueryDto } from "./dto/agenda-query.dto";
 import { CompleteOccurrenceDto } from "./dto/complete-occurrence.dto";
+import { CreateMedicationCourseDto } from "./dto/create-medication-course.dto";
 import { CreateReminderDto } from "./dto/create-reminder.dto";
 import { InstantiateTemplateDto } from "./dto/instantiate-template.dto";
 import { ListRemindersQueryDto } from "./dto/list-reminders-query.dto";
@@ -64,6 +65,18 @@ export class RemindersController {
     @Query() query: ListRemindersQueryDto,
   ): Promise<ReminderListResponse> {
     return this.remindersService.list(scope.householdId, petId, query);
+  }
+
+  @Post("pets/:petId/reminders/medication-course")
+  @ApiCreatedResponse({ description: "The created medication course (courseId + reminderCount)." })
+  @ApiBadRequestResponse({ description: "Invalid dose times, course length, or timezone." })
+  @ApiNotFoundResponse({ description: "No resolved household for the caller, or the pet does not exist in it." })
+  createMedicationCourse(
+    @CurrentHousehold() scope: HouseholdScope,
+    @Param("petId") petId: string,
+    @Body() dto: CreateMedicationCourseDto,
+  ): Promise<MedicationCourseResponse> {
+    return this.remindersService.createMedicationCourse(scope.householdId, petId, dto);
   }
 
   @Get("pets/:petId/reminders/template-suggestions")

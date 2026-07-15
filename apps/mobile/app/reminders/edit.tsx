@@ -6,6 +6,7 @@ import { ActivityIndicator, ScrollView, Text, TextInput, View } from "react-nati
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useCreateReminder, useReminder, useUpdateReminder } from "../../src/api/reminders-api";
+import { MedicationCourseForm } from "../../src/components/medication-course-form";
 import { PrimaryButton } from "../../src/components/primary-button";
 import { ScheduleBuilder } from "../../src/components/schedule-builder";
 import { buildRRule, parseRRuleToScheduleConfig, type ScheduleConfig } from "../../src/reminders/schedule-builder";
@@ -67,9 +68,15 @@ function combineLocalDateTime(dateStr: string, timeStr: string): string {
 
 /**
  * Create/edit custom reminder screen (T060 plan). No `medNameAsEntered`
- * field, no dose/drug-name copy anywhere on this form (plan Safety
- * statement) -- selecting `type: MEDICATION` only records the user's own
- * title, exactly like every other type.
+ * field, no dose/drug-name copy anywhere on this generic form (plan Safety
+ * statement) -- editing any EXISTING reminder (including MEDICATION ones)
+ * only records the user's own title, exactly like every other type.
+ *
+ * T061: in CREATE mode only, selecting `type: MEDICATION` swaps the
+ * title/schedule/start-date/time/save block for `MedicationCourseForm` --
+ * free-text name+dose (a RECORD of what the vet prescribed, never a
+ * suggestion -- CLAUDE §7 rule 2) plus a per-dose-time course. Med-course
+ * editing is out of scope (plan "Out of scope").
  */
 export default function ReminderEditScreen() {
   const router = useRouter();
@@ -151,6 +158,10 @@ export default function ReminderEditScreen() {
   }
 
   const isSaving = createMutation.isPending || updateMutation.isPending;
+  // T061 plan: only in CREATE mode does selecting MEDICATION swap in the
+  // med-course form -- editing an existing reminder (including MEDICATION
+  // ones) is unchanged (out of scope).
+  const showMedicationForm = !isEdit && type === "MEDICATION";
 
   return (
     <SafeAreaView className="flex-1 bg-white">
@@ -180,90 +191,96 @@ export default function ReminderEditScreen() {
             </View>
           </View>
 
-          <View className="gap-2">
-            <Text className="text-base font-semibold text-brand-900">{strings.reminderForm.titleLabel}</Text>
-            <TextInput
-              testID="reminder-title-input"
-              value={title}
-              onChangeText={setTitle}
-              placeholder={strings.reminderForm.titlePlaceholder}
-              className="rounded-lg border border-brand-100 px-4 py-3 text-base text-brand-900"
-            />
-          </View>
+          {showMedicationForm ? (
+            <MedicationCourseForm petId={petId ?? ""} onSaved={() => router.back()} />
+          ) : (
+            <>
+              <View className="gap-2">
+                <Text className="text-base font-semibold text-brand-900">{strings.reminderForm.titleLabel}</Text>
+                <TextInput
+                  testID="reminder-title-input"
+                  value={title}
+                  onChangeText={setTitle}
+                  placeholder={strings.reminderForm.titlePlaceholder}
+                  className="rounded-lg border border-brand-100 px-4 py-3 text-base text-brand-900"
+                />
+              </View>
 
-          <View className="gap-2">
-            <Text className="text-base font-semibold text-brand-900">{strings.reminderForm.scheduleHeading}</Text>
-            <ScheduleBuilder value={schedule} onChange={setSchedule} />
-          </View>
+              <View className="gap-2">
+                <Text className="text-base font-semibold text-brand-900">{strings.reminderForm.scheduleHeading}</Text>
+                <ScheduleBuilder value={schedule} onChange={setSchedule} />
+              </View>
 
-          <View className="gap-2">
-            <Text className="text-base font-semibold text-brand-900">{strings.reminderForm.startDateLabel}</Text>
-            <View className="flex-row items-center gap-2">
-              <Text
-                testID="reminder-startdate-minus1w"
-                onPress={() => setStartDate((d) => shiftDateString(d, -7))}
-                className="rounded-lg border border-brand-100 px-2 py-1 text-sm text-brand-900"
-              >
-                -1w
-              </Text>
-              <Text
-                testID="reminder-startdate-minus1d"
-                onPress={() => setStartDate((d) => shiftDateString(d, -1))}
-                className="rounded-lg border border-brand-100 px-2 py-1 text-sm text-brand-900"
-              >
-                -1d
-              </Text>
-              <Text testID="reminder-startdate" className="text-sm font-semibold text-brand-900">
-                {startDate}
-              </Text>
-              <Text
-                testID="reminder-startdate-plus1d"
-                onPress={() => setStartDate((d) => shiftDateString(d, 1))}
-                className="rounded-lg border border-brand-100 px-2 py-1 text-sm text-brand-900"
-              >
-                +1d
-              </Text>
-              <Text
-                testID="reminder-startdate-plus1w"
-                onPress={() => setStartDate((d) => shiftDateString(d, 7))}
-                className="rounded-lg border border-brand-100 px-2 py-1 text-sm text-brand-900"
-              >
-                +1w
-              </Text>
-            </View>
-          </View>
+              <View className="gap-2">
+                <Text className="text-base font-semibold text-brand-900">{strings.reminderForm.startDateLabel}</Text>
+                <View className="flex-row items-center gap-2">
+                  <Text
+                    testID="reminder-startdate-minus1w"
+                    onPress={() => setStartDate((d) => shiftDateString(d, -7))}
+                    className="rounded-lg border border-brand-100 px-2 py-1 text-sm text-brand-900"
+                  >
+                    -1w
+                  </Text>
+                  <Text
+                    testID="reminder-startdate-minus1d"
+                    onPress={() => setStartDate((d) => shiftDateString(d, -1))}
+                    className="rounded-lg border border-brand-100 px-2 py-1 text-sm text-brand-900"
+                  >
+                    -1d
+                  </Text>
+                  <Text testID="reminder-startdate" className="text-sm font-semibold text-brand-900">
+                    {startDate}
+                  </Text>
+                  <Text
+                    testID="reminder-startdate-plus1d"
+                    onPress={() => setStartDate((d) => shiftDateString(d, 1))}
+                    className="rounded-lg border border-brand-100 px-2 py-1 text-sm text-brand-900"
+                  >
+                    +1d
+                  </Text>
+                  <Text
+                    testID="reminder-startdate-plus1w"
+                    onPress={() => setStartDate((d) => shiftDateString(d, 7))}
+                    className="rounded-lg border border-brand-100 px-2 py-1 text-sm text-brand-900"
+                  >
+                    +1w
+                  </Text>
+                </View>
+              </View>
 
-          <View className="gap-2">
-            <Text className="text-base font-semibold text-brand-900">{strings.reminderForm.timeLabel}</Text>
-            <ScrollView horizontal testID="reminder-time-list">
-              {TIME_OF_DAY_OPTIONS.map((time) => (
-                <Text
-                  key={time}
-                  testID={`reminder-time-${time}`}
-                  onPress={() => setTimeOfDay(time)}
-                  className={
-                    time === timeOfDay
-                      ? "mr-2 rounded-lg bg-brand-700 px-3 py-2 text-sm font-semibold text-white"
-                      : "mr-2 rounded-lg border border-brand-100 px-3 py-2 text-sm text-brand-900"
-                  }
-                >
-                  {time}
+              <View className="gap-2">
+                <Text className="text-base font-semibold text-brand-900">{strings.reminderForm.timeLabel}</Text>
+                <ScrollView horizontal testID="reminder-time-list">
+                  {TIME_OF_DAY_OPTIONS.map((time) => (
+                    <Text
+                      key={time}
+                      testID={`reminder-time-${time}`}
+                      onPress={() => setTimeOfDay(time)}
+                      className={
+                        time === timeOfDay
+                          ? "mr-2 rounded-lg bg-brand-700 px-3 py-2 text-sm font-semibold text-white"
+                          : "mr-2 rounded-lg border border-brand-100 px-3 py-2 text-sm text-brand-900"
+                      }
+                    >
+                      {time}
+                    </Text>
+                  ))}
+                </ScrollView>
+              </View>
+
+              <PrimaryButton
+                testID="reminder-save"
+                label={strings.reminderForm.save}
+                loading={isSaving}
+                onPress={() => void handleSave()}
+              />
+              {saveError ? (
+                <Text testID="reminder-save-error" className="text-center text-sm text-red-600">
+                  {strings.reminderForm.saveError}
                 </Text>
-              ))}
-            </ScrollView>
-          </View>
-
-          <PrimaryButton
-            testID="reminder-save"
-            label={strings.reminderForm.save}
-            loading={isSaving}
-            onPress={() => void handleSave()}
-          />
-          {saveError ? (
-            <Text testID="reminder-save-error" className="text-center text-sm text-red-600">
-              {strings.reminderForm.saveError}
-            </Text>
-          ) : null}
+              ) : null}
+            </>
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>

@@ -4,6 +4,7 @@ import { resolveCareTemplate } from "@pawcareright/data";
 import type { PetResponse } from "../pets/pets.service";
 import type { PetsService } from "../pets/pets.service";
 import type { PrismaService } from "../prisma/prisma.service";
+import type { CreateMedicationCourseDto } from "./dto/create-medication-course.dto";
 import type { CreateReminderDto } from "./dto/create-reminder.dto";
 import type { UpdateReminderDto } from "./dto/update-reminder.dto";
 import { RemindersService } from "./reminders.service";
@@ -42,8 +43,10 @@ function buildReminderRow(overrides: Partial<Record<string, unknown>> = {}) {
     startAt: new Date("2026-08-01T09:00:00.000Z"),
     nextFireAt: new Date("2026-08-01T09:00:00.000Z"),
     medNameAsEntered: null,
+    medDoseAsEntered: null,
     active: true,
     templateKey: null,
+    courseId: null,
     createdAt: new Date("2026-01-01T00:00:00.000Z"),
     updatedAt: new Date("2026-01-01T00:00:00.000Z"),
     ...overrides,
@@ -192,6 +195,94 @@ describe("RemindersService", () => {
         expect.objectContaining({ data: expect.objectContaining({ medNameAsEntered: "Apoquel 16mg, per vet" }) }),
       );
       expect(result.medNameAsEntered).toBe("Apoquel 16mg, per vet");
+    });
+  });
+
+  describe("createMedicationCourse (T061)", () => {
+    function buildDto(overrides: Partial<CreateMedicationCourseDto> = {}): CreateMedicationCourseDto {
+      return {
+        medNameAsEntered: "As prescribed",
+        doseStartAts: ["2026-08-01T09:00:00.000Z", "2026-08-01T21:00:00.000Z"],
+        courseLengthDays: 10,
+        timezone: "UTC",
+        ...overrides,
+      } as CreateMedicationCourseDto;
+    }
+
+    it("pet-404 first: petsService.findOne rejects -> no reminder.create call", async () => {
+      const petsService = buildPetsService(jest.fn().mockRejectedValue(new NotFoundException()));
+      const create = jest.fn();
+      const transaction = jest.fn();
+      const prisma = buildPrisma({ create, transaction });
+      const service = new RemindersService(prisma, petsService);
+
+      await expect(
+        service.createMedicationCourse(HOUSEHOLD_ID, PET_ID, buildDto()),
+      ).rejects.toBeInstanceOf(NotFoundException);
+      expect(create).not.toHaveBeenCalled();
+      expect(transaction).not.toHaveBeenCalled();
+    });
+
+    it("creates one reminder per (de-duped) dose time, sharing one courseId, type MEDICATION, COUNT=<days>; returns { courseId, reminderCount }", async () => {
+      const petsService = buildPetsService();
+      const create = jest
+        .fn()
+        .mockImplementation(({ data }: { data: Record<string, unknown> }) => Promise.resolve(buildReminderRow(data)));
+      const prisma = buildPrisma({ create });
+      const service = new RemindersService(prisma, petsService);
+
+      const result = await service.createMedicationCourse(HOUSEHOLD_ID, PET_ID, buildDto());
+
+      expect(create).toHaveBeenCalledTimes(2);
+      const calls = create.mock.calls as Array<[{ data: Record<string, unknown> }]>;
+      for (const [{ data }] of calls) {
+        expect(data.type).toBe("MEDICATION");
+        expect(data.rrule).toBe("FREQ=DAILY;COUNT=10");
+        expect(data.courseId).toBe(result.courseId);
+        expect(data.petId).toBe(PET_ID);
+        expect(data.medNameAsEntered).toBe("As prescribed");
+      }
+      expect(result.reminderCount).toBe(2);
+      expect(typeof result.courseId).toBe("string");
+      expect((result.courseId as string).length).toBeGreaterThan(0);
+    });
+
+    it("passes medDoseAsEntered through to every sibling when present", async () => {
+      const petsService = buildPetsService();
+      const create = jest
+        .fn()
+        .mockImplementation(({ data }: { data: Record<string, unknown> }) => Promise.resolve(buildReminderRow(data)));
+      const prisma = buildPrisma({ create });
+      const service = new RemindersService(prisma, petsService);
+
+      await service.createMedicationCourse(
+        HOUSEHOLD_ID,
+        PET_ID,
+        buildDto({ medDoseAsEntered: "As instructed" }),
+      );
+
+      const calls = create.mock.calls as Array<[{ data: Record<string, unknown> }]>;
+      for (const [{ data }] of calls) {
+        expect(data.medDoseAsEntered).toBe("As instructed");
+      }
+    });
+
+    it("de-dupes identical dose times before creating (reminderCount reflects the de-duped set)", async () => {
+      const petsService = buildPetsService();
+      const create = jest
+        .fn()
+        .mockImplementation(({ data }: { data: Record<string, unknown> }) => Promise.resolve(buildReminderRow(data)));
+      const prisma = buildPrisma({ create });
+      const service = new RemindersService(prisma, petsService);
+
+      const result = await service.createMedicationCourse(
+        HOUSEHOLD_ID,
+        PET_ID,
+        buildDto({ doseStartAts: ["2026-08-01T09:00:00.000Z", "2026-08-01T09:00:00.000Z"] }),
+      );
+
+      expect(create).toHaveBeenCalledTimes(1);
+      expect(result.reminderCount).toBe(1);
     });
   });
 
@@ -760,6 +851,42 @@ describe("RemindersService", () => {
       expect(result.status).toBe("DONE");
       const call = upsert.mock.calls[0] as [{ update: unknown }];
       expect(call[0].update).toEqual({ status: "DONE", completedAt: expect.any(Date), snoozedUntil: null });
+    });
+
+    it("MED_GIVEN idempotency (T061): completing a MEDICATION dose occurrence TWICE yields one DONE event (completedAt set)", async () => {
+      const reminder = buildReminderRow({
+        type: "MEDICATION",
+        rrule: "FREQ=DAILY;COUNT=10",
+        startAt: new Date("2026-08-01T09:00:00.000Z"),
+        timezone: "UTC",
+        medNameAsEntered: "As prescribed",
+        medDoseAsEntered: "As instructed",
+        courseId: "course-1",
+      });
+      const dueAt = new Date("2026-08-01T09:00:00.000Z");
+      const findFirst = jest.fn().mockResolvedValue(reminder);
+      const upsertedEvent = {
+        id: "event-1",
+        reminderId: REMINDER_ID,
+        dueAt,
+        status: "DONE",
+        completedAt: new Date(),
+        snoozedUntil: null,
+      };
+      const upsert = jest.fn().mockResolvedValue(upsertedEvent);
+      const prisma = buildPrisma({ findFirst, eventUpsert: upsert });
+      const service = new RemindersService(prisma, buildPetsService());
+
+      const first = await service.completeOccurrence(HOUSEHOLD_ID, REMINDER_ID, { dueAt: dueAt.toISOString() });
+      const second = await service.completeOccurrence(HOUSEHOLD_ID, REMINDER_ID, { dueAt: dueAt.toISOString() });
+
+      expect(upsert).toHaveBeenCalledTimes(2);
+      expect(first.eventId).toBe("event-1");
+      expect(second.eventId).toBe("event-1");
+      expect(first.status).toBe("DONE");
+      expect(second.status).toBe("DONE");
+      expect(first.medNameAsEntered).toBe("As prescribed");
+      expect(first.medDoseAsEntered).toBe("As instructed");
     });
   });
 
