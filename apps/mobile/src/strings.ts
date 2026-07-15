@@ -170,6 +170,28 @@ export const strings = {
     offline: "You're offline. Reconnect to load this pet.",
     age: { yr: "yr", mo: "mo", approx: "~", unknown: "Age unknown" },
   },
+  // T065 weight chart: the typical-range band caption is strictly factual
+  // reference information (CLAUDE §7 / plan Safety statement) -- no
+  // "overweight"/"underweight"/interpretive copy anywhere below.
+  weight: {
+    title: "Weight",
+    loading: "Loading…",
+    error: "We couldn't load this pet's weight history.",
+    empty: "No weight entries yet — add one to start the chart.",
+    retry: "Retry",
+    offline: "You're offline. Reconnect to load weight history.",
+    offlineBanner: "You're offline — showing your last saved weight history.",
+    addWeight: "Add weight",
+    unitToggleA11y: "Switch weight unit",
+    save: "Save",
+    cancel: "Cancel",
+    inputPlaceholder: "Enter weight",
+    errorEmpty: "Enter a weight.",
+    errorInvalid: "Enter a valid number.",
+    errorRange: "Enter a weight within a realistic range.",
+    typicalRange: (breed: string) => `Typical adult range for ${breed}`,
+    unitLabel: { kg: "kg", lb: "lb" },
+  },
   comingSoon: {
     title: "Coming soon",
     body: "This part of the app isn't ready yet. Check back soon.",

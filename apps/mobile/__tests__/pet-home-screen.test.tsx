@@ -144,7 +144,7 @@ describe("pet home screen — 4-state matrix (AC1)", () => {
     expect(screen.getByTestId("pet-home-name")).toHaveTextContent("Rex");
   });
 
-  it("loaded (online): CTA and both quick actions stub-navigate to /coming-soon", async () => {
+  it("loaded (online): CTA navigates, log-weight quick action opens the weight screen, reminders still stubs to /coming-soon", async () => {
     mockedUsePet.mockReturnValue({
       data: FIXTURE_PET,
       isLoading: false,
@@ -164,8 +164,8 @@ describe("pet home screen — 4-state matrix (AC1)", () => {
 
     await fireEvent.press(screen.getByTestId("quick-action-log-weight"));
     expect(mockPush).toHaveBeenCalledWith({
-      pathname: "/coming-soon",
-      params: { feature: "log-weight" },
+      pathname: "/weight/[petId]",
+      params: { petId: "pet1" },
     });
 
     await fireEvent.press(screen.getByTestId("quick-action-reminders"));

@@ -1,0 +1,418 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`WeightChart snapshots empty: renders the placeholder, not the svg 1`] = `
+<View
+  className="items-center justify-center py-8"
+  testID="weight-chart-empty"
+>
+  <Text
+    className="text-center text-base text-brand-900"
+  >
+    No weight entries yet — add one to start the chart.
+  </Text>
+</View>
+`;
+
+exports[`WeightChart snapshots many points + band 1`] = `
+<View
+  className="gap-2"
+>
+  <mock-svg
+    height={200}
+    testID="weight-chart-svg"
+    viewBox="0 0 320 200"
+    width={320}
+  >
+    <mock-svg-rect
+      fill="#DCEEDC"
+      height={124.66666666666666}
+      testID="weight-chart-band"
+      width={256}
+      x={32}
+      y={32}
+    />
+    <mock-svg-g>
+      <mock-svg-line
+        stroke="#E2E8F0"
+        strokeWidth={1}
+        x1={32}
+        x2={288}
+        y1={168}
+        y2={168}
+      />
+      <Text
+        fill="#475569"
+        fontSize={10}
+        x={2}
+        y={168}
+      >
+        24.0 kg
+      </Text>
+    </mock-svg-g>
+    <mock-svg-g>
+      <mock-svg-line
+        stroke="#E2E8F0"
+        strokeWidth={1}
+        x1={32}
+        x2={288}
+        y1={122.66666666666667}
+        y2={122.66666666666667}
+      />
+      <Text
+        fill="#475569"
+        fontSize={10}
+        x={2}
+        y={122.66666666666667}
+      >
+        28.0 kg
+      </Text>
+    </mock-svg-g>
+    <mock-svg-g>
+      <mock-svg-line
+        stroke="#E2E8F0"
+        strokeWidth={1}
+        x1={32}
+        x2={288}
+        y1={77.33333333333334}
+        y2={77.33333333333334}
+      />
+      <Text
+        fill="#475569"
+        fontSize={10}
+        x={2}
+        y={77.33333333333334}
+      >
+        32.0 kg
+      </Text>
+    </mock-svg-g>
+    <mock-svg-g>
+      <mock-svg-line
+        stroke="#E2E8F0"
+        strokeWidth={1}
+        x1={32}
+        x2={288}
+        y1={32}
+        y2={32}
+      />
+      <Text
+        fill="#475569"
+        fontSize={10}
+        x={2}
+        y={32}
+      >
+        36.0 kg
+      </Text>
+    </mock-svg-g>
+    <mock-svg-line
+      stroke="#94A3B8"
+      strokeWidth={1}
+      x1={32}
+      x2={32}
+      y1={32}
+      y2={168}
+    />
+    <mock-svg-line
+      stroke="#94A3B8"
+      strokeWidth={1}
+      x1={32}
+      x2={288}
+      y1={168}
+      y2={168}
+    />
+    <mock-svg-path
+      d="M 32 168 L 96 162.33333333333334 L 160 156.66666666666666 L 224 151 L 288 145.33333333333334"
+      fill="none"
+      stroke="#2563EB"
+      strokeWidth={2}
+    />
+    <mock-svg-circle
+      cx={32}
+      cy={168}
+      fill="#2563EB"
+      r={3}
+    />
+    <mock-svg-circle
+      cx={96}
+      cy={162.33333333333334}
+      fill="#2563EB"
+      r={3}
+    />
+    <mock-svg-circle
+      cx={160}
+      cy={156.66666666666666}
+      fill="#2563EB"
+      r={3}
+    />
+    <mock-svg-circle
+      cx={224}
+      cy={151}
+      fill="#2563EB"
+      r={3}
+    />
+    <mock-svg-circle
+      cx={288}
+      cy={145.33333333333334}
+      fill="#2563EB"
+      r={3}
+    />
+  </mock-svg>
+  <Text
+    className="text-center text-xs text-brand-700"
+    testID="weight-chart-band-caption"
+  >
+    Typical adult range for Labrador Retriever
+  </Text>
+</View>
+`;
+
+exports[`WeightChart snapshots many points 1`] = `
+<View
+  className="gap-2"
+>
+  <mock-svg
+    height={200}
+    testID="weight-chart-svg"
+    viewBox="0 0 320 200"
+    width={320}
+  >
+    <mock-svg-g>
+      <mock-svg-line
+        stroke="#E2E8F0"
+        strokeWidth={1}
+        x1={32}
+        x2={288}
+        y1={168}
+        y2={168}
+      />
+      <Text
+        fill="#475569"
+        fontSize={10}
+        x={2}
+        y={168}
+      >
+        24.0 kg
+      </Text>
+    </mock-svg-g>
+    <mock-svg-g>
+      <mock-svg-line
+        stroke="#E2E8F0"
+        strokeWidth={1}
+        x1={32}
+        x2={288}
+        y1={122.66666666666659}
+        y2={122.66666666666659}
+      />
+      <Text
+        fill="#475569"
+        fontSize={10}
+        x={2}
+        y={122.66666666666659}
+      >
+        24.7 kg
+      </Text>
+    </mock-svg-g>
+    <mock-svg-g>
+      <mock-svg-line
+        stroke="#E2E8F0"
+        strokeWidth={1}
+        x1={32}
+        x2={288}
+        y1={77.33333333333341}
+        y2={77.33333333333341}
+      />
+      <Text
+        fill="#475569"
+        fontSize={10}
+        x={2}
+        y={77.33333333333341}
+      >
+        25.3 kg
+      </Text>
+    </mock-svg-g>
+    <mock-svg-g>
+      <mock-svg-line
+        stroke="#E2E8F0"
+        strokeWidth={1}
+        x1={32}
+        x2={288}
+        y1={32}
+        y2={32}
+      />
+      <Text
+        fill="#475569"
+        fontSize={10}
+        x={2}
+        y={32}
+      >
+        26.0 kg
+      </Text>
+    </mock-svg-g>
+    <mock-svg-line
+      stroke="#94A3B8"
+      strokeWidth={1}
+      x1={32}
+      x2={32}
+      y1={32}
+      y2={168}
+    />
+    <mock-svg-line
+      stroke="#94A3B8"
+      strokeWidth={1}
+      x1={32}
+      x2={288}
+      y1={168}
+      y2={168}
+    />
+    <mock-svg-path
+      d="M 32 168 L 96 134 L 160 100 L 224 66 L 288 32"
+      fill="none"
+      stroke="#2563EB"
+      strokeWidth={2}
+    />
+    <mock-svg-circle
+      cx={32}
+      cy={168}
+      fill="#2563EB"
+      r={3}
+    />
+    <mock-svg-circle
+      cx={96}
+      cy={134}
+      fill="#2563EB"
+      r={3}
+    />
+    <mock-svg-circle
+      cx={160}
+      cy={100}
+      fill="#2563EB"
+      r={3}
+    />
+    <mock-svg-circle
+      cx={224}
+      cy={66}
+      fill="#2563EB"
+      r={3}
+    />
+    <mock-svg-circle
+      cx={288}
+      cy={32}
+      fill="#2563EB"
+      r={3}
+    />
+  </mock-svg>
+</View>
+`;
+
+exports[`WeightChart snapshots one point 1`] = `
+<View
+  className="gap-2"
+>
+  <mock-svg
+    height={200}
+    testID="weight-chart-svg"
+    viewBox="0 0 320 200"
+    width={320}
+  >
+    <mock-svg-g>
+      <mock-svg-line
+        stroke="#E2E8F0"
+        strokeWidth={1}
+        x1={32}
+        x2={288}
+        y1={168}
+        y2={168}
+      />
+      <Text
+        fill="#475569"
+        fontSize={10}
+        x={2}
+        y={168}
+      >
+        24.0 kg
+      </Text>
+    </mock-svg-g>
+    <mock-svg-g>
+      <mock-svg-line
+        stroke="#E2E8F0"
+        strokeWidth={1}
+        x1={32}
+        x2={288}
+        y1={122.66666666666659}
+        y2={122.66666666666659}
+      />
+      <Text
+        fill="#475569"
+        fontSize={10}
+        x={2}
+        y={122.66666666666659}
+      >
+        24.7 kg
+      </Text>
+    </mock-svg-g>
+    <mock-svg-g>
+      <mock-svg-line
+        stroke="#E2E8F0"
+        strokeWidth={1}
+        x1={32}
+        x2={288}
+        y1={77.33333333333341}
+        y2={77.33333333333341}
+      />
+      <Text
+        fill="#475569"
+        fontSize={10}
+        x={2}
+        y={77.33333333333341}
+      >
+        25.3 kg
+      </Text>
+    </mock-svg-g>
+    <mock-svg-g>
+      <mock-svg-line
+        stroke="#E2E8F0"
+        strokeWidth={1}
+        x1={32}
+        x2={288}
+        y1={32}
+        y2={32}
+      />
+      <Text
+        fill="#475569"
+        fontSize={10}
+        x={2}
+        y={32}
+      >
+        26.0 kg
+      </Text>
+    </mock-svg-g>
+    <mock-svg-line
+      stroke="#94A3B8"
+      strokeWidth={1}
+      x1={32}
+      x2={32}
+      y1={32}
+      y2={168}
+    />
+    <mock-svg-line
+      stroke="#94A3B8"
+      strokeWidth={1}
+      x1={32}
+      x2={288}
+      y1={168}
+      y2={168}
+    />
+    <mock-svg-path
+      d="M 160 100"
+      fill="none"
+      stroke="#2563EB"
+      strokeWidth={2}
+    />
+    <mock-svg-circle
+      cx={160}
+      cy={100}
+      fill="#2563EB"
+      r={3}
+    />
+  </mock-svg>
+</View>
+`;

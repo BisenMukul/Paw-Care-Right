@@ -94,7 +94,7 @@ export default function PetHomeScreen() {
       <ScrollView testID="pet-home-scroll" className="flex-1">
         <View className="gap-4 px-6 pb-8 pt-4">
           <QuickActions
-            onLogWeight={() => goToComingSoon("log-weight")}
+            onLogWeight={() => router.push({ pathname: "/weight/[petId]", params: { petId: id } })}
             onReminders={() => goToComingSoon("reminders")}
           />
         </View>

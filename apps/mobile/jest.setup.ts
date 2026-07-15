@@ -7,7 +7,8 @@
 // `Image` so the wizard's photo preview/avatar renders headless. Imported
 // under a `mock`-prefixed alias so babel-plugin-jest-hoist allows the
 // jest.mock factory below (hoisted above this import) to reference it.
-import { Image as mockImage } from "react-native";
+import { createElement as mockCreateElement, type ReactNode } from "react";
+import { Image as mockImage, Text as mockText } from "react-native";
 
 // T018: global mocks for the native modules the auth flow touches, so any
 // test importing a screen/store/component works headless (no device/
@@ -115,5 +116,37 @@ jest.mock("expo-image-manipulator", () => {
 
 // expo-image (T024) — a passthrough stand-in for the native `Image` view.
 jest.mock("expo-image", () => ({ Image: mockImage }));
+
+// react-native-svg (T065) — the real native module never loads under jest;
+// each named export becomes a passthrough host component (stable tag,
+// props/children rendered through unchanged) so `<Svg>`/`<Path>`/etc.
+// snapshot deterministically. Default export is `Svg` itself, mirroring
+// the real package's `import Svg, { G, Path, ... } from "react-native-svg"`.
+// `Text`'s underlying host is the REAL `react-native` `Text` (not a bare
+// string tag) — react-native-svg's `<Text>` is the one element that holds
+// raw string children, and RNTL's host-component allowlist only permits
+// that under a real `Text` view, not an arbitrary custom tag.
+jest.mock("react-native-svg", () => {
+  function passthrough(tag: string) {
+    return function MockSvgComponent(props: { children?: ReactNode; [key: string]: unknown }) {
+      const { children, ...rest } = props;
+      return mockCreateElement(tag, rest, children);
+    };
+  }
+  function textPassthrough() {
+    return function MockSvgText(props: { children?: ReactNode; [key: string]: unknown }) {
+      const { children, ...rest } = props;
+      return mockCreateElement(mockText, rest, children);
+    };
+  }
+  const Svg = passthrough("mock-svg");
+  const G = passthrough("mock-svg-g");
+  const Path = passthrough("mock-svg-path");
+  const Line = passthrough("mock-svg-line");
+  const Rect = passthrough("mock-svg-rect");
+  const Circle = passthrough("mock-svg-circle");
+  const Text = textPassthrough();
+  return { __esModule: true, default: Svg, Svg, G, Path, Line, Rect, Circle, Text };
+});
 
 export {};
