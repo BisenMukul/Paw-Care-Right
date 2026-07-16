@@ -1,3 +1,8 @@
+// Startup crash trap FIRST: any fatal JS error from here on is logged with
+// its stack before the app dies (founder hotfix -- silent crash-after-splash
+// becomes a readable Metro/adb trace).
+import "../src/startup-guard";
+
 import { PersistedApiQueryProvider } from "@pawcareright/api-client";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { useEffect } from "react";
@@ -40,7 +45,14 @@ function useAuthGate() {
   }, [status, segments, router]);
 }
 
-export default function RootLayout() {
+/**
+ * Everything below the error boundary lives in ONE tree (founder hotfix:
+ * the entry used to duplicate the provider stack across the restoring and
+ * ready branches; a single tree is simpler and cannot drift). Hooks with
+ * side effects (restore, auth gate, network, purchases) run here so a
+ * failure in any of them surfaces inside the boundary, not above it.
+ */
+function AppRoot() {
   const status = useAuthStore((state) => state.status);
 
   useEffect(() => {
@@ -52,45 +64,49 @@ export default function RootLayout() {
   usePurchasesInit();
 
   if (status === "restoring") {
-    return (
-      <PersistedApiQueryProvider client={queryClient} persister={queryPersister}>
-        <AppErrorBoundary>
-          <SafeAreaProvider>
-            <View testID="auth-splash" className="flex-1 items-center justify-center bg-white" />
-          </SafeAreaProvider>
-        </AppErrorBoundary>
-      </PersistedApiQueryProvider>
-    );
+    return <View testID="auth-splash" className="flex-1 items-center justify-center bg-white" />;
   }
 
   return (
-    <PersistedApiQueryProvider client={queryClient} persister={queryPersister}>
-      <AppErrorBoundary>
+    <UpdateGate>
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="(auth)" />
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="push-rationale" />
+        <Stack.Screen name="add-pet" options={{ presentation: "modal" }} />
+        <Stack.Screen name="pets/[id]" />
+        <Stack.Screen name="care-plan/[petId]" />
+        <Stack.Screen name="reminders/edit" options={{ presentation: "modal" }} />
+        <Stack.Screen name="check/index" />
+        <Stack.Screen name="check/[category]" />
+        <Stack.Screen name="check/waiting/[checkId]" />
+        <Stack.Screen name="check/result/[checkId]" />
+        <Stack.Screen name="check/emergency/[checkId]" options={{ gestureEnabled: false }} />
+        <Stack.Screen name="check/history/[petId]" />
+        <Stack.Screen name="checks/[id]" />
+        <Stack.Screen name="paywall" options={{ presentation: "modal" }} />
+        <Stack.Screen name="family" />
+        <Stack.Screen name="join/[code]" />
+      </Stack>
+      <UpsellSheet />
+    </UpdateGate>
+  );
+}
+
+/**
+ * Root layout: the error boundary is the OUTERMOST element (founder
+ * hotfix -- it previously sat inside the query provider, so a provider
+ * failure rendered nothing). The boundary itself uses only core RN
+ * primitives, so it needs no provider to render its fallback.
+ */
+export default function RootLayout() {
+  return (
+    <AppErrorBoundary>
+      <PersistedApiQueryProvider client={queryClient} persister={queryPersister}>
         <SafeAreaProvider>
-          <UpdateGate>
-            <Stack screenOptions={{ headerShown: false }}>
-              <Stack.Screen name="(auth)" />
-              <Stack.Screen name="(tabs)" />
-              <Stack.Screen name="push-rationale" />
-              <Stack.Screen name="add-pet" options={{ presentation: "modal" }} />
-              <Stack.Screen name="pets/[id]" />
-              <Stack.Screen name="care-plan/[petId]" />
-              <Stack.Screen name="reminders/edit" options={{ presentation: "modal" }} />
-              <Stack.Screen name="check/index" />
-              <Stack.Screen name="check/[category]" />
-              <Stack.Screen name="check/waiting/[checkId]" />
-              <Stack.Screen name="check/result/[checkId]" />
-              <Stack.Screen name="check/emergency/[checkId]" options={{ gestureEnabled: false }} />
-              <Stack.Screen name="check/history/[petId]" />
-              <Stack.Screen name="checks/[id]" />
-              <Stack.Screen name="paywall" options={{ presentation: "modal" }} />
-              <Stack.Screen name="family" />
-              <Stack.Screen name="join/[code]" />
-            </Stack>
-            <UpsellSheet />
-          </UpdateGate>
+          <AppRoot />
         </SafeAreaProvider>
-      </AppErrorBoundary>
-    </PersistedApiQueryProvider>
+      </PersistedApiQueryProvider>
+    </AppErrorBoundary>
   );
 }
