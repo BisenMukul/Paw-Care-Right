@@ -49,6 +49,11 @@ export function useCreateCheck(petId: string) {
         { intake: vars.intake, photoKeys: vars.photoKeys },
         { headers: { "Idempotency-Key": vars.idempotencyKey } },
       ),
+    // T075 plan decision 7 — suppresses the global 402-upsell interceptor:
+    // the check flow keeps its own bespoke "quota" screen (whose "See plans"
+    // button deep-links to /paywall itself), avoiding a double UI on the
+    // §5-adjacent check flow.
+    meta: { skipUpsell: true },
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: checksKeys.list(petId) });
     },

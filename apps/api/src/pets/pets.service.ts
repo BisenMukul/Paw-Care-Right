@@ -1,7 +1,9 @@
-import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, HttpException, HttpStatus, Inject, Injectable, NotFoundException } from "@nestjs/common";
 import type { Pet } from "@prisma/client";
 
 import { PrismaService } from "../prisma/prisma.service";
+import { ENTITLEMENT_RESOLVER, type EntitlementResolver } from "../quota/entitlement";
+import { FREE_MAX_PETS } from "../quota/quota.constants";
 import type { CreatePetDto } from "./dto/create-pet.dto";
 import type { UpdatePetDto } from "./dto/update-pet.dto";
 
@@ -30,10 +32,24 @@ export interface PetResponse {
  */
 @Injectable()
 export class PetsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    @Inject(ENTITLEMENT_RESOLVER) private readonly entitlementResolver: EntitlementResolver,
+  ) {}
 
-  async create(householdId: string, dto: CreatePetDto): Promise<PetResponse> {
+  async create(householdId: string, userId: string, dto: CreatePetDto): Promise<PetResponse> {
     this.assertAgeXor(dto.birthDate ? new Date(dto.birthDate) : null, dto.ageEstimateMonths ?? null);
+
+    // Free-tier 1-pet gate (T075 plan decision 5 — household-scoped, SPEC
+    // §7): authoritative from `Pet` rows, already server-side + reinstall-
+    // safe. PREMIUM (household-scoped) lifts the gate for every member.
+    const entitlement = await this.entitlementResolver.resolve(userId, householdId);
+    if (entitlement.tier === "FREE") {
+      const count = await this.prisma.pet.count({ where: { householdId, deletedAt: null } });
+      if (count >= FREE_MAX_PETS) {
+        throw new HttpException("Free tier is limited to one pet.", HttpStatus.PAYMENT_REQUIRED);
+      }
+    }
 
     const pet = await this.prisma.pet.create({
       data: {

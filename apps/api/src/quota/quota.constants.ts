@@ -29,3 +29,6 @@ export const QUOTA_LIMITS: Record<EntitlementTier, Record<QuotaMetric, QuotaLimi
     foodLookups: { window: "day", limit: null },
   },
 };
+
+/** SPEC §7/F8 verbatim: "Free tier: 1 pet". Household-scoped (T075). */
+export const FREE_MAX_PETS = 1;

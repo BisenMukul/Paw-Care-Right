@@ -96,13 +96,14 @@ export default function IntakeScreen() {
             {strings.check.submit.quotaTitle}
           </Text>
           <Text className="text-center text-base text-brand-700">{strings.check.submit.quotaBody}</Text>
-          {/* Neutral "See plans" affordance (SPEC F8) — the billing/plans
-              screen is a separate, not-yet-built task; this button renders
-              the copy per plan but has no navigation target in scope here. */}
+          {/* Neutral "See plans" affordance (SPEC F8) — deep-links to the
+              paywall (T075); this screen's quota state stays bespoke rather
+              than the global upsell sheet (the check mutation carries
+              `meta.skipUpsell`), so there is no double UI here. */}
           <PrimaryButton
             testID="check-submit-quota-upgrade"
             label={strings.check.submit.quotaUpgrade}
-            onPress={() => undefined}
+            onPress={() => router.push({ pathname: "/paywall", params: { source: "check-quota" } })}
           />
         </SafeAreaView>
       ) : null}

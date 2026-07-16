@@ -1,8 +1,9 @@
-import { BadRequestException, NotFoundException } from "@nestjs/common";
+import { BadRequestException, HttpException, NotFoundException } from "@nestjs/common";
 import { sexSchema, speciesSchema } from "@pawcareright/types";
 import { Sex, Species } from "@prisma/client";
 
 import type { PrismaService } from "../prisma/prisma.service";
+import type { EntitlementResolver } from "../quota/entitlement";
 import type { CreatePetDto } from "./dto/create-pet.dto";
 import type { UpdatePetDto } from "./dto/update-pet.dto";
 import { PetsService } from "./pets.service";
@@ -46,6 +47,7 @@ describe("PetsService", () => {
     findMany?: jest.Mock;
     findFirst?: jest.Mock;
     update?: jest.Mock;
+    count?: jest.Mock;
   }) {
     return {
       pet: {
@@ -53,19 +55,26 @@ describe("PetsService", () => {
         findMany: overrides.findMany ?? jest.fn(),
         findFirst: overrides.findFirst ?? jest.fn(),
         update: overrides.update ?? jest.fn(),
+        count: overrides.count ?? jest.fn().mockResolvedValue(0),
       },
     } as unknown as PrismaService;
   }
+
+  function buildResolver(tier: "FREE" | "PREMIUM" = "FREE"): EntitlementResolver {
+    return { resolve: jest.fn().mockResolvedValue({ tier, bypassQuota: false }) };
+  }
+
+  const userId = "user-1";
 
   describe("create", () => {
     it("creates scoped to householdId and maps the response", async () => {
       const row = buildPetRow();
       const create = jest.fn().mockResolvedValue(row);
       const prisma = buildPrisma({ create });
-      const service = new PetsService(prisma);
+      const service = new PetsService(prisma, buildResolver());
       const dto = { species: "DOG", name: "Fido" } as CreatePetDto;
 
-      const result = await service.create(householdId, dto);
+      const result = await service.create(householdId, userId, dto);
 
       expect(create).toHaveBeenCalledWith({
         data: { householdId, species: "DOG", name: "Fido" },
@@ -77,7 +86,7 @@ describe("PetsService", () => {
     it("both birthDate and ageEstimateMonths set → BadRequestException, no Prisma call", async () => {
       const create = jest.fn();
       const prisma = buildPrisma({ create });
-      const service = new PetsService(prisma);
+      const service = new PetsService(prisma, buildResolver());
       const dto = {
         species: "DOG",
         name: "Fido",
@@ -85,7 +94,7 @@ describe("PetsService", () => {
         ageEstimateMonths: 6,
       } as CreatePetDto;
 
-      await expect(service.create(householdId, dto)).rejects.toBeInstanceOf(BadRequestException);
+      await expect(service.create(householdId, userId, dto)).rejects.toBeInstanceOf(BadRequestException);
       expect(create).not.toHaveBeenCalled();
     });
 
@@ -93,30 +102,68 @@ describe("PetsService", () => {
       const row = buildPetRow({ birthDate: new Date("2020-01-01T00:00:00.000Z") });
       const create = jest.fn().mockResolvedValue(row);
       const prisma = buildPrisma({ create });
-      const service = new PetsService(prisma);
+      const service = new PetsService(prisma, buildResolver());
       const dto = { species: "DOG", name: "Fido", birthDate: "2020-01-01T00:00:00.000Z" } as CreatePetDto;
 
-      await expect(service.create(householdId, dto)).resolves.toBeDefined();
+      await expect(service.create(householdId, userId, dto)).resolves.toBeDefined();
     });
 
     it("ageEstimateMonths alone → no throw", async () => {
       const row = buildPetRow({ ageEstimateMonths: 6 });
       const create = jest.fn().mockResolvedValue(row);
       const prisma = buildPrisma({ create });
-      const service = new PetsService(prisma);
+      const service = new PetsService(prisma, buildResolver());
       const dto = { species: "DOG", name: "Fido", ageEstimateMonths: 6 } as CreatePetDto;
 
-      await expect(service.create(householdId, dto)).resolves.toBeDefined();
+      await expect(service.create(householdId, userId, dto)).resolves.toBeDefined();
     });
 
     it("neither set → no throw", async () => {
       const row = buildPetRow();
       const create = jest.fn().mockResolvedValue(row);
       const prisma = buildPrisma({ create });
-      const service = new PetsService(prisma);
+      const service = new PetsService(prisma, buildResolver());
       const dto = { species: "DOG", name: "Fido" } as CreatePetDto;
 
-      await expect(service.create(householdId, dto)).resolves.toBeDefined();
+      await expect(service.create(householdId, userId, dto)).resolves.toBeDefined();
+    });
+
+    it("FREE + existing count 0 → creates (resolver + count consulted, no throw)", async () => {
+      const row = buildPetRow();
+      const create = jest.fn().mockResolvedValue(row);
+      const count = jest.fn().mockResolvedValue(0);
+      const prisma = buildPrisma({ create, count });
+      const resolver = buildResolver("FREE");
+      const service = new PetsService(prisma, resolver);
+      const dto = { species: "DOG", name: "Fido" } as CreatePetDto;
+
+      await expect(service.create(householdId, userId, dto)).resolves.toBeDefined();
+      expect(resolver.resolve).toHaveBeenCalledWith(userId, householdId);
+      expect(count).toHaveBeenCalledWith({ where: { householdId, deletedAt: null } });
+      expect(create).toHaveBeenCalled();
+    });
+
+    it("FREE + count ≥ FREE_MAX_PETS (1) → 402 HttpException, no pet.create call", async () => {
+      const create = jest.fn();
+      const count = jest.fn().mockResolvedValue(1);
+      const prisma = buildPrisma({ create, count });
+      const service = new PetsService(prisma, buildResolver("FREE"));
+      const dto = { species: "DOG", name: "Fido" } as CreatePetDto;
+
+      await expect(service.create(householdId, userId, dto)).rejects.toBeInstanceOf(HttpException);
+      expect(create).not.toHaveBeenCalled();
+    });
+
+    it("PREMIUM + count ≥ 1 → creates (no gate applied)", async () => {
+      const row = buildPetRow();
+      const create = jest.fn().mockResolvedValue(row);
+      const count = jest.fn().mockResolvedValue(3);
+      const prisma = buildPrisma({ create, count });
+      const service = new PetsService(prisma, buildResolver("PREMIUM"));
+      const dto = { species: "DOG", name: "Fido" } as CreatePetDto;
+
+      await expect(service.create(householdId, userId, dto)).resolves.toBeDefined();
+      expect(create).toHaveBeenCalled();
     });
   });
 
@@ -124,7 +171,7 @@ describe("PetsService", () => {
     it("scopes to { householdId, deletedAt: null }, ordered createdAt desc", async () => {
       const findMany = jest.fn().mockResolvedValue([buildPetRow()]);
       const prisma = buildPrisma({ findMany });
-      const service = new PetsService(prisma);
+      const service = new PetsService(prisma, buildResolver());
 
       const result = await service.findAll(householdId);
 
@@ -138,7 +185,7 @@ describe("PetsService", () => {
     it("a soft-deleted row is absent because the where clause excludes it (findMany mock proves the filter, not app-level filtering)", async () => {
       const findMany = jest.fn().mockResolvedValue([]);
       const prisma = buildPrisma({ findMany });
-      const service = new PetsService(prisma);
+      const service = new PetsService(prisma, buildResolver());
 
       const result = await service.findAll(householdId);
 
@@ -154,7 +201,7 @@ describe("PetsService", () => {
       const row = buildPetRow();
       const findFirst = jest.fn().mockResolvedValue(row);
       const prisma = buildPrisma({ findFirst });
-      const service = new PetsService(prisma);
+      const service = new PetsService(prisma, buildResolver());
 
       const result = await service.findOne(householdId, id);
 
@@ -165,7 +212,7 @@ describe("PetsService", () => {
     it("not found (wrong household or missing) → NotFoundException", async () => {
       const findFirst = jest.fn().mockResolvedValue(null);
       const prisma = buildPrisma({ findFirst });
-      const service = new PetsService(prisma);
+      const service = new PetsService(prisma, buildResolver());
 
       await expect(service.findOne("other-household", id)).rejects.toBeInstanceOf(NotFoundException);
     });
@@ -176,7 +223,7 @@ describe("PetsService", () => {
       const findFirst = jest.fn().mockResolvedValue(null);
       const update = jest.fn();
       const prisma = buildPrisma({ findFirst, update });
-      const service = new PetsService(prisma);
+      const service = new PetsService(prisma, buildResolver());
 
       await expect(
         service.update("other-household", id, {} as UpdatePetDto),
@@ -189,7 +236,7 @@ describe("PetsService", () => {
       const findFirst = jest.fn().mockResolvedValue(existing);
       const update = jest.fn();
       const prisma = buildPrisma({ findFirst, update });
-      const service = new PetsService(prisma);
+      const service = new PetsService(prisma, buildResolver());
 
       await expect(
         service.update(householdId, id, { ageEstimateMonths: 6 } as UpdatePetDto),
@@ -203,7 +250,7 @@ describe("PetsService", () => {
       const updated = buildPetRow({ ageEstimateMonths: 6, birthDate: null });
       const update = jest.fn().mockResolvedValue(updated);
       const prisma = buildPrisma({ findFirst, update });
-      const service = new PetsService(prisma);
+      const service = new PetsService(prisma, buildResolver());
 
       const dto = { ageEstimateMonths: 6, birthDate: null } as UpdatePetDto;
       const result = await service.update(householdId, id, dto);
@@ -220,7 +267,7 @@ describe("PetsService", () => {
       const findFirst = jest.fn().mockResolvedValue(existing);
       const update = jest.fn().mockResolvedValue(existing);
       const prisma = buildPrisma({ findFirst, update });
-      const service = new PetsService(prisma);
+      const service = new PetsService(prisma, buildResolver());
 
       await service.update(householdId, id, { name: "Fido II" } as UpdatePetDto);
 
@@ -233,7 +280,7 @@ describe("PetsService", () => {
       const findFirst = jest.fn().mockResolvedValue(null);
       const update = jest.fn();
       const prisma = buildPrisma({ findFirst, update });
-      const service = new PetsService(prisma);
+      const service = new PetsService(prisma, buildResolver());
 
       await expect(service.remove("other-household", id)).rejects.toBeInstanceOf(NotFoundException);
       expect(update).not.toHaveBeenCalled();
@@ -245,7 +292,7 @@ describe("PetsService", () => {
       const deletedRow = buildPetRow({ deletedAt: new Date() });
       const update = jest.fn().mockResolvedValue(deletedRow);
       const prisma = buildPrisma({ findFirst, update });
-      const service = new PetsService(prisma);
+      const service = new PetsService(prisma, buildResolver());
 
       const result = await service.remove(householdId, id);
 

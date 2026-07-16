@@ -1,7 +1,8 @@
-import { ConflictException, NotFoundException } from "@nestjs/common";
+import { ConflictException, HttpException, NotFoundException } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
 
 import type { PrismaService } from "../prisma/prisma.service";
+import type { EntitlementResolver } from "../quota/entitlement";
 import { INVITE_CODE_REGEX } from "./invite-code";
 import { HouseholdsService } from "./households.service";
 
@@ -54,11 +55,18 @@ describe("HouseholdsService", () => {
     } as unknown as PrismaService;
   }
 
+  /** Defaults to PREMIUM so the pre-existing `createInvite` mint-flow tests
+   *  (which predate the T075 gate) are unaffected by it; `acceptInvite`/
+   *  `getHouseholdMe` never consult the resolver at all. */
+  function buildResolver(tier: "FREE" | "PREMIUM" = "PREMIUM"): EntitlementResolver {
+    return { resolve: jest.fn().mockResolvedValue({ tier, bypassQuota: false }) };
+  }
+
   describe("createInvite", () => {
     it("sets expiresAt to ~7 days ahead and returns a code/deepLink matching the contract", async () => {
       const create = jest.fn().mockResolvedValue(undefined);
       const prisma = buildPrisma({ householdInvite: { create } });
-      const service = new HouseholdsService(prisma);
+      const service = new HouseholdsService(prisma, buildResolver());
 
       const before = Date.now();
       const result = await service.createInvite(householdId, createdById);
@@ -81,7 +89,7 @@ describe("HouseholdsService", () => {
       });
       const create = jest.fn().mockRejectedValueOnce(p2002).mockResolvedValueOnce(undefined);
       const prisma = buildPrisma({ householdInvite: { create } });
-      const service = new HouseholdsService(prisma);
+      const service = new HouseholdsService(prisma, buildResolver());
 
       const result = await service.createInvite(householdId, createdById);
 
@@ -93,10 +101,32 @@ describe("HouseholdsService", () => {
       const genericError = new Error("boom");
       const create = jest.fn().mockRejectedValue(genericError);
       const prisma = buildPrisma({ householdInvite: { create } });
-      const service = new HouseholdsService(prisma);
+      const service = new HouseholdsService(prisma, buildResolver());
 
       await expect(service.createInvite(householdId, createdById)).rejects.toThrow("boom");
       expect(create).toHaveBeenCalledTimes(1);
+    });
+
+    it("FREE → 402 HttpException, no invite persisted", async () => {
+      const create = jest.fn();
+      const prisma = buildPrisma({ householdInvite: { create } });
+      const resolver = buildResolver("FREE");
+      const service = new HouseholdsService(prisma, resolver);
+
+      await expect(service.createInvite(householdId, createdById)).rejects.toBeInstanceOf(HttpException);
+      expect(resolver.resolve).toHaveBeenCalledWith(createdById, householdId);
+      expect(create).not.toHaveBeenCalled();
+    });
+
+    it("PREMIUM → succeeds (mints an invite)", async () => {
+      const create = jest.fn().mockResolvedValue(undefined);
+      const prisma = buildPrisma({ householdInvite: { create } });
+      const service = new HouseholdsService(prisma, buildResolver("PREMIUM"));
+
+      const result = await service.createInvite(householdId, createdById);
+
+      expect(result.code).toMatch(INVITE_CODE_REGEX);
+      expect(create).toHaveBeenCalled();
     });
   });
 
@@ -105,7 +135,7 @@ describe("HouseholdsService", () => {
       const findUnique = jest.fn().mockResolvedValue(null);
       const transaction = jest.fn();
       const prisma = buildPrisma({ householdInvite: { findUnique }, transaction });
-      const service = new HouseholdsService(prisma);
+      const service = new HouseholdsService(prisma, buildResolver());
 
       await expect(service.acceptInvite("joiner-1", code)).rejects.toBeInstanceOf(NotFoundException);
       expect(transaction).not.toHaveBeenCalled();
@@ -115,7 +145,7 @@ describe("HouseholdsService", () => {
       const findUnique = jest.fn().mockResolvedValue(buildInviteRow({ expiresAt: new Date(Date.now() - 1000) }));
       const transaction = jest.fn();
       const prisma = buildPrisma({ householdInvite: { findUnique }, transaction });
-      const service = new HouseholdsService(prisma);
+      const service = new HouseholdsService(prisma, buildResolver());
 
       await expect(service.acceptInvite("joiner-1", code)).rejects.toBeInstanceOf(NotFoundException);
       expect(transaction).not.toHaveBeenCalled();
@@ -125,7 +155,7 @@ describe("HouseholdsService", () => {
       const findUnique = jest.fn().mockResolvedValue(buildInviteRow({ usedAt: new Date() }));
       const transaction = jest.fn();
       const prisma = buildPrisma({ householdInvite: { findUnique }, transaction });
-      const service = new HouseholdsService(prisma);
+      const service = new HouseholdsService(prisma, buildResolver());
 
       await expect(service.acceptInvite("joiner-1", code)).rejects.toBeInstanceOf(NotFoundException);
       expect(transaction).not.toHaveBeenCalled();
@@ -140,7 +170,7 @@ describe("HouseholdsService", () => {
         membership: { findMany },
         transaction,
       });
-      const service = new HouseholdsService(prisma);
+      const service = new HouseholdsService(prisma, buildResolver());
 
       await expect(service.acceptInvite("joiner-1", code)).rejects.toBeInstanceOf(ConflictException);
       expect(transaction).not.toHaveBeenCalled();
@@ -157,7 +187,7 @@ describe("HouseholdsService", () => {
         membership: { findMany },
         transaction,
       });
-      const service = new HouseholdsService(prisma);
+      const service = new HouseholdsService(prisma, buildResolver());
 
       await expect(service.acceptInvite("joiner-1", code)).rejects.toBeInstanceOf(ConflictException);
       expect(transaction).not.toHaveBeenCalled();
@@ -183,7 +213,7 @@ describe("HouseholdsService", () => {
         membership: { findMany },
         transaction,
       });
-      const service = new HouseholdsService(prisma);
+      const service = new HouseholdsService(prisma, buildResolver());
 
       await expect(service.acceptInvite("joiner-1", code)).rejects.toBeInstanceOf(NotFoundException);
       expect(petCount).not.toHaveBeenCalled();
@@ -212,7 +242,7 @@ describe("HouseholdsService", () => {
         membership: { findMany },
         transaction,
       });
-      const service = new HouseholdsService(prisma);
+      const service = new HouseholdsService(prisma, buildResolver());
 
       const result = await service.acceptInvite("joiner-1", code);
 
@@ -247,7 +277,7 @@ describe("HouseholdsService", () => {
         membership: { findMany },
         transaction,
       });
-      const service = new HouseholdsService(prisma);
+      const service = new HouseholdsService(prisma, buildResolver());
 
       await service.acceptInvite("joiner-1", code);
 
@@ -278,7 +308,7 @@ describe("HouseholdsService", () => {
         membership: { findMany },
         transaction,
       });
-      const service = new HouseholdsService(prisma);
+      const service = new HouseholdsService(prisma, buildResolver());
 
       await expect(service.acceptInvite("joiner-1", code)).rejects.toBeInstanceOf(ConflictException);
       expect(householdDelete).not.toHaveBeenCalled();
@@ -297,7 +327,7 @@ describe("HouseholdsService", () => {
         ],
       });
       const prisma = buildPrisma({ household: { findUnique } });
-      const service = new HouseholdsService(prisma);
+      const service = new HouseholdsService(prisma, buildResolver());
 
       const result = await service.getHouseholdMe(householdId);
 
@@ -318,7 +348,7 @@ describe("HouseholdsService", () => {
     it("household not found (defensive) → NotFoundException", async () => {
       const findUnique = jest.fn().mockResolvedValue(null);
       const prisma = buildPrisma({ household: { findUnique } });
-      const service = new HouseholdsService(prisma);
+      const service = new HouseholdsService(prisma, buildResolver());
 
       await expect(service.getHouseholdMe(householdId)).rejects.toBeInstanceOf(NotFoundException);
     });

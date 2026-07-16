@@ -7,6 +7,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { queryClient, queryPersister } from "../src/api/query";
 import { useAuthStore } from "../src/auth/auth-store";
 import { usePurchasesInit } from "../src/billing/use-purchases-init";
+import { UpsellSheet } from "../src/components/upsell-sheet";
 import { AppErrorBoundary } from "../src/error-boundary";
 import { useNetworkListener } from "../src/offline/use-network-listener";
 
@@ -84,6 +85,7 @@ export default function RootLayout() {
             <Stack.Screen name="family" />
             <Stack.Screen name="join/[code]" />
           </Stack>
+          <UpsellSheet />
         </SafeAreaProvider>
       </AppErrorBoundary>
     </PersistedApiQueryProvider>

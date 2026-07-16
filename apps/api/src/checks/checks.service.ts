@@ -148,7 +148,7 @@ export class ChecksService {
       });
     } else {
       // 6. No red flag — consume quota; 402 on exceeded, no persist/enqueue.
-      const entitlement = await this.entitlementResolver.resolve(userId);
+      const entitlement = await this.entitlementResolver.resolve(userId, householdId);
       const quotaResult = await this.quotaService.consume(userId, "checks", entitlement);
       if (!quotaResult.allowed) {
         throw new HttpException("Symptom-check quota exceeded.", HttpStatus.PAYMENT_REQUIRED);

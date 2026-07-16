@@ -350,6 +350,14 @@ export const strings = {
       dateA11y: (date: string) => `Checked on ${date}`,
     },
   },
+  upsell: {
+    // Global 402 upsell sheet copy (T075 plan decision 7) — generic, no
+    // health/medical/dosing/"diagnos*" tokens (CLAUDE.md §7).
+    title: "Upgrade to Premium",
+    body: "This is a premium feature. Upgrade to unlock it for your whole family.",
+    seePlans: "See plans",
+    dismiss: "Not now",
+  },
   paywall: {
     // A/B copy variants (T074 plan decision 5): the server only ever sends
     // the variant ID, never prose (§7 review + i18n-ready). NO health/

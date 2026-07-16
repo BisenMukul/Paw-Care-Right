@@ -13,6 +13,7 @@ import {
   createMemberContext,
   createOwnerContext,
   createPet,
+  createSubscription,
   createUser,
   mintAccessToken,
   overrideCheckRunner,
@@ -53,7 +54,25 @@ describe("Households — invites (e2e)", () => {
   const owner = (): Promise<AuthedContext> => createOwnerContext(app, prisma, jwtService, userIds);
   const member = (): Promise<AuthedContext> => createMemberContext(app, prisma, jwtService, userIds);
 
+  /**
+   * T075 added a premium-only gate on invite creation (SPEC §7 "sharing is
+   * premium"). This suite is about the invite/accept MECHANICS, not
+   * entitlement, so every context that mints an invite here is first granted
+   * an active own `Subscription` — orthogonal to what each test actually
+   * asserts. The entitlement gate itself is covered by
+   * `quota-gating.e2e-spec.ts`'s FREE/PREMIUM matrix.
+   */
+  async function grantPremium(ctx: AuthedContext): Promise<void> {
+    await createSubscription(prisma, {
+      rcAppUserId: ctx.user.id,
+      householdId: ctx.household.id,
+      entitlement: "PREMIUM",
+      expiresAt: null,
+    });
+  }
+
   async function mintInvite(ctx: AuthedContext): Promise<{ code: string; deepLink: string; expiresAt: string }> {
+    await grantPremium(ctx);
     const res = await ctx.authedAgent("post", "/v1/households/invites");
     expect(res.status).toBe(201);
     return res.body as { code: string; deepLink: string; expiresAt: string };
@@ -96,6 +115,7 @@ describe("Households — invites (e2e)", () => {
 
     it("OWNER POST → 201 with a valid code, deep link, and ~7-day expiry", async () => {
       const ctx = await owner();
+      await grantPremium(ctx);
 
       const before = Date.now();
       const res = await ctx.authedAgent("post", "/v1/households/invites");

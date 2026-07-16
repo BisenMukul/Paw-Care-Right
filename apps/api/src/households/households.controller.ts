@@ -5,6 +5,7 @@ import {
   ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiPaymentRequiredResponse,
   ApiTags,
   ApiUnauthorizedResponse,
 } from "@nestjs/swagger";
@@ -39,6 +40,7 @@ export class HouseholdsController {
   @ApiCreatedResponse({ description: "A freshly minted invite code + deep link, expiring in 7 days." })
   @ApiForbiddenResponse({ description: "Caller's role in the resolved household is not OWNER." })
   @ApiNotFoundResponse({ description: "No resolved household for the caller." })
+  @ApiPaymentRequiredResponse({ description: "Household sharing requires premium." })
   createInvite(
     @CurrentHousehold() scope: HouseholdScope,
     @CurrentUser() user: { userId: string },

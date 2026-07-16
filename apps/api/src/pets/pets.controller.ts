@@ -5,10 +5,12 @@ import {
   ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiPaymentRequiredResponse,
   ApiTags,
   ApiUnauthorizedResponse,
 } from "@nestjs/swagger";
 
+import { CurrentUser } from "../auth/auth.decorators";
 import type { HouseholdScope } from "../common/authenticated-request";
 import {
   CurrentHousehold,
@@ -44,11 +46,13 @@ export class PetsController {
   @Post()
   @ApiCreatedResponse({ description: "The created pet." })
   @ApiBadRequestResponse({ description: "Validation failed, e.g. both birthDate and ageEstimateMonths set." })
+  @ApiPaymentRequiredResponse({ description: "Free-tier pet limit reached." })
   create(
     @CurrentHousehold() scope: HouseholdScope,
+    @CurrentUser() user: { userId: string },
     @Body() dto: CreatePetDto,
   ): Promise<PetResponse> {
-    return this.petsService.create(scope.householdId, dto);
+    return this.petsService.create(scope.householdId, user.userId, dto);
   }
 
   @Get(":id")

@@ -1,8 +1,16 @@
-import { ConflictException, Injectable, NotFoundException } from "@nestjs/common";
+import {
+  ConflictException,
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
 import { DEEPLINK_SCHEME } from "@pawcareright/config";
 import { Prisma, type Role } from "@prisma/client";
 
 import { PrismaService } from "../prisma/prisma.service";
+import { ENTITLEMENT_RESOLVER, type EntitlementResolver } from "../quota/entitlement";
 import { generateInviteCode } from "./invite-code";
 
 const INVITE_TTL_MS = 7 * 24 * 60 * 60 * 1000;
@@ -48,9 +56,19 @@ export interface HouseholdMeResult {
  */
 @Injectable()
 export class HouseholdsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    @Inject(ENTITLEMENT_RESOLVER) private readonly entitlementResolver: EntitlementResolver,
+  ) {}
 
   async createInvite(householdId: string, createdById: string): Promise<CreateInviteResult> {
+    // Premium-only feature lock (T075 plan decision 5) — a pure entitlement
+    // check, no counter: FREE households cannot mint invites at all.
+    const entitlement = await this.entitlementResolver.resolve(createdById, householdId);
+    if (entitlement.tier === "FREE") {
+      throw new HttpException("Household sharing is a premium feature.", HttpStatus.PAYMENT_REQUIRED);
+    }
+
     const expiresAt = new Date(Date.now() + INVITE_TTL_MS);
 
     for (let attempt = 0; attempt < MAX_CODE_GENERATION_ATTEMPTS; attempt += 1) {

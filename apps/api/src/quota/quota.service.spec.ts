@@ -180,6 +180,6 @@ describe("StaticEntitlementResolver", () => {
   it("resolves everyone to FREE with no bypass", async () => {
     const resolver = new StaticEntitlementResolver();
 
-    await expect(resolver.resolve("u1")).resolves.toEqual({ tier: "FREE", bypassQuota: false });
+    await expect(resolver.resolve("u1", "household-1")).resolves.toEqual({ tier: "FREE", bypassQuota: false });
   });
 });
