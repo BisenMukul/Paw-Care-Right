@@ -311,6 +311,69 @@ describe("timeline screen", () => {
     expect(spy.mock.calls.map((call) => call[0])).toEqual(["VET_VISIT", "MEAL"]);
   });
 
+  // T070 straggler 2: T067's append test above only ever used `photoKeys: []`
+  // fixtures, so it never proved a photo-bearing row (which also mounts the
+  // separately-memoized `TimelinePhotoStrip`, plan decision 5) survives an
+  // append without re-rendering its `TimelineRow` body. `getKindDisplay`
+  // lives only in `TimelineRow`, not in the strip, so this assertion is
+  // unaffected by the strip mounting/re-rendering.
+  it("appending a page does not re-render an existing photo-bearing row", async () => {
+    const spy = jest.spyOn(kindDisplayModule, "getKindDisplay");
+
+    const itemA: TimelineItem = {
+      id: "a",
+      kind: "NOTE",
+      occurredAt: "2024-03-10T00:00:00.000Z",
+      value: { text: "A" },
+      photoKeys: ["pets/pet1/original/a.jpg"],
+    };
+    const itemB: TimelineItem = {
+      id: "b",
+      kind: "WEIGHT",
+      occurredAt: "2024-03-08T00:00:00.000Z",
+      value: { weightGrams: 20000 },
+      photoKeys: [],
+    };
+    const itemC: TimelineItem = {
+      id: "c",
+      kind: "VET_VISIT",
+      occurredAt: "2024-03-05T00:00:00.000Z",
+      value: { reason: "C visit" },
+      photoKeys: [],
+    };
+    const itemD: TimelineItem = {
+      id: "d",
+      kind: "MEAL",
+      occurredAt: "2024-03-01T00:00:00.000Z",
+      value: { note: "D meal" },
+      photoKeys: [],
+    };
+
+    const page1Data = { pages: [{ items: [itemA, itemB], nextCursor: "cursor1" }], pageParams: [undefined] };
+    const page1and2Data = {
+      pages: [
+        { items: [itemA, itemB], nextCursor: "cursor1" },
+        { items: [itemC, itemD], nextCursor: null },
+      ],
+      pageParams: [undefined, "cursor1"],
+    };
+
+    mockUseHealthTimeline.mockReturnValue({ ...BASE_MOCK, data: page1Data, hasNextPage: true });
+    const { rerender } = await render(<TimelineScreen />);
+
+    expect(spy).toHaveBeenCalledTimes(2);
+    expect(spy.mock.calls.map((call) => call[0])).toEqual(["NOTE", "WEIGHT"]);
+
+    spy.mockClear();
+    mockUseHealthTimeline.mockReturnValue({ ...BASE_MOCK, data: page1and2Data, hasNextPage: false });
+    await rerender(<TimelineScreen />);
+
+    // Only the two NEW rows (C, D) render -- the photo-bearing row A never
+    // appears again, proving it was not re-rendered by the append.
+    expect(spy).toHaveBeenCalledTimes(2);
+    expect(spy.mock.calls.map((call) => call[0])).toEqual(["VET_VISIT", "MEAL"]);
+  });
+
   // T069 plan "Tests to write" -> "implied" thumbnails + AC (viewer opens).
   it("a row with photoKeys renders the strip; tapping a thumb opens the viewer", async () => {
     mockUseHealthTimeline.mockReturnValue({ ...BASE_MOCK, ...page([PHOTO_ITEM]) });

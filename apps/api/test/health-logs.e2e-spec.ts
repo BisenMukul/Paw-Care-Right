@@ -10,10 +10,13 @@ import { configureApp } from "../src/app.setup";
 import { encodeCursor } from "../src/health-logs/timeline-cursor";
 import {
   cleanupUsers,
+  createHealthLog,
   createOwnerContext,
   createPet,
+  logValue,
   overrideCheckRunner,
   resolveJwtService,
+  seedCompletedMedication,
   type AuthedContext,
 } from "./factories";
 
@@ -281,35 +284,16 @@ describe("Health logs (e2e)", () => {
       });
 
       // CHECK_REF: no source writes it via the public API -- seed directly (R3: rendered without a join).
-      await prisma.healthLog.create({
-        data: {
-          petId: pet.id,
-          kind: "CHECK_REF",
-          valueJson: { checkId: "8400e29b-9c1d-4c1a-9e1a-6b6b6b6b6b6b" },
-          occurredAt: new Date("2026-07-15T09:00:00.000Z"),
-        },
+      await createHealthLog(prisma, pet.id, {
+        kind: "CHECK_REF",
+        valueJson: logValue.checkRef("8400e29b-9c1d-4c1a-9e1a-6b6b6b6b6b6b"),
+        occurredAt: "2026-07-15T09:00:00.000Z",
       });
 
       // MED_GIVEN: a read-time projection of a completed MEDICATION ReminderEvent.
-      const reminder = await prisma.reminder.create({
-        data: {
-          petId: pet.id,
-          type: "MEDICATION",
-          title: "Antibiotic",
-          rrule: "FREQ=DAILY",
-          timezone: "UTC",
-          startAt: new Date("2026-07-15T09:00:00.000Z"),
-          nextFireAt: new Date("2026-07-15T09:00:00.000Z"),
-          medNameAsEntered: "As prescribed",
-        },
-      });
-      await prisma.reminderEvent.create({
-        data: {
-          reminderId: reminder.id,
-          dueAt: new Date("2026-07-15T09:00:00.000Z"),
-          status: "DONE",
-          completedAt: new Date("2026-07-15T09:00:00.000Z"),
-        },
+      await seedCompletedMedication(prisma, pet.id, {
+        at: "2026-07-15T09:00:00.000Z",
+        medNameAsEntered: "As prescribed",
       });
 
       for (const kind of ["WEIGHT", "MEAL", "NOTE", "VET_VISIT", "MED_GIVEN", "CHECK_REF"]) {
@@ -435,26 +419,10 @@ describe("Health logs (e2e)", () => {
       await createLog(ctx, pet.id, { kind: "NOTE", occurredAt: recent(2), value: { text: "Ate normally today." } });
 
       // A completed MEDICATION ReminderEvent -- read-time MED_GIVEN projection (reused pattern from filter_by_each_kind).
-      const reminder = await prisma.reminder.create({
-        data: {
-          petId: pet.id,
-          type: "MEDICATION",
-          title: "Antibiotic",
-          rrule: "FREQ=DAILY",
-          timezone: "UTC",
-          startAt: new Date(recent(5)),
-          nextFireAt: new Date(recent(5)),
-          medNameAsEntered: "Amoxicillin",
-          medDoseAsEntered: "As prescribed",
-        },
-      });
-      await prisma.reminderEvent.create({
-        data: {
-          reminderId: reminder.id,
-          dueAt: new Date(recent(5)),
-          status: "DONE",
-          completedAt: new Date(recent(5)),
-        },
+      await seedCompletedMedication(prisma, pet.id, {
+        at: recent(5),
+        medNameAsEntered: "Amoxicillin",
+        medDoseAsEntered: "As prescribed",
       });
 
       // A terminal SymptomCheck + TriageResult -- seeded directly (no queue/AI provider round-trip in this suite).

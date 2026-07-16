@@ -190,3 +190,5 @@ export async function cleanupUsers(
   await prisma.household.deleteMany({ where: { ownerId: { in: ids } } });
   await prisma.user.deleteMany({ where: { id: { in: ids } } });
 }
+
+export * from "./health-logs";

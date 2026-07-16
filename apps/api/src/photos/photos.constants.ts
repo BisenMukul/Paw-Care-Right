@@ -20,6 +20,19 @@ export function originalKeyPrefix(petId: string): string {
   return `pets/${petId}/original/`;
 }
 
+/** True iff `key` is a single flat object under this pet's original-upload
+ *  namespace. Rejects a foreign prefix, path-traversal (`..`) and any extra
+ *  `/` segment, so a derived thumb/main key can never escape the namespace. */
+export function isKeyInPetNamespace(petId: string, key: string): boolean {
+  const prefix = originalKeyPrefix(petId);
+  if (!key.startsWith(prefix)) return false;
+  const remainder = key.slice(prefix.length);
+  if (remainder.length === 0) return false;
+  if (remainder.includes("/")) return false;
+  if (remainder.includes("..")) return false;
+  return true;
+}
+
 /** `pets/<petId>/main/<uuid>.jpg` — derived from the original key, same uuid. */
 export function deriveMainKey(originalKey: string): string {
   return deriveRenditionKey(originalKey, "main");

@@ -117,6 +117,20 @@ describe("PhotosService", () => {
       expect(add).not.toHaveBeenCalled();
     });
 
+    it("rejects a path-traversal key (400), no objectExists/queue.add", async () => {
+      const objectExists = jest.fn();
+      const add = jest.fn();
+      const { petsService, storage, queue } = buildDeps({ objectExists, add });
+      const service = new PhotosService(petsService, storage, queue);
+      const dto: ConfirmPhotoUploadDto = { key: `pets/${petId}/original/../../other-pet/main/x.jpg` };
+
+      await expect(service.confirmUpload(householdId, petId, dto)).rejects.toBeInstanceOf(
+        BadRequestException,
+      );
+      expect(objectExists).not.toHaveBeenCalled();
+      expect(add).not.toHaveBeenCalled();
+    });
+
     it("on success, enqueues { petId, householdId, key } with jobId === key and returns { queued: true, jobId }", async () => {
       const objectExists = jest.fn().mockResolvedValue(true);
       const add = jest.fn().mockResolvedValue(undefined);
@@ -195,6 +209,16 @@ describe("PhotosService", () => {
       const dto: PhotoViewUrlsDto = { keys: [`pets/${petId}/original/abc.jpg`] };
 
       await expect(service.viewUrls("other-household", petId, dto)).rejects.toBeInstanceOf(NotFoundException);
+      expect(getPresignedGetUrl).not.toHaveBeenCalled();
+    });
+
+    it("rejects a path-traversal key (400), no signing", async () => {
+      const getPresignedGetUrl = jest.fn();
+      const { petsService, storage, queue } = buildDeps({ getPresignedGetUrl });
+      const service = new PhotosService(petsService, storage, queue);
+      const dto: PhotoViewUrlsDto = { keys: [`pets/${petId}/original/../evil.jpg`] };
+
+      await expect(service.viewUrls(householdId, petId, dto)).rejects.toBeInstanceOf(BadRequestException);
       expect(getPresignedGetUrl).not.toHaveBeenCalled();
     });
   });

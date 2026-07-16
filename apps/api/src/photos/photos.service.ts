@@ -16,7 +16,7 @@ import {
   contentTypeToExt,
   deriveMainKey,
   deriveThumbKey,
-  originalKeyPrefix,
+  isKeyInPetNamespace,
 } from "./photos.constants";
 
 export interface PhotoUploadUrlResponse {
@@ -73,7 +73,7 @@ export class PhotosService {
   ): Promise<ConfirmPhotoUploadResponse> {
     await this.petsService.findOne(householdId, petId);
 
-    if (!dto.key.startsWith(originalKeyPrefix(petId))) {
+    if (!isKeyInPetNamespace(petId, dto.key)) {
       throw new BadRequestException("key does not belong to this pet's original-upload namespace");
     }
 
@@ -116,9 +116,8 @@ export class PhotosService {
   ): Promise<PhotoViewUrlsResponse> {
     await this.petsService.findOne(householdId, petId);
 
-    const prefix = originalKeyPrefix(petId);
     for (const key of dto.keys) {
-      if (!key.startsWith(prefix)) {
+      if (!isKeyInPetNamespace(petId, key)) {
         throw new BadRequestException("key does not belong to this pet's original-upload namespace");
       }
     }

@@ -8,6 +8,7 @@ import type { CreateLogDto } from "./dto/create-log.dto";
 import type { ListLogsQueryDto } from "./dto/list-logs-query.dto";
 import type { WeightSeriesQueryDto } from "./dto/weight-series-query.dto";
 import { HealthLogsService } from "./health-logs.service";
+import { encodeCursor } from "./timeline-cursor";
 
 const HOUSEHOLD_ID = "household-1";
 const PET_ID = "pet-1";
@@ -266,6 +267,35 @@ describe("HealthLogsService.list", () => {
       service.list(HOUSEHOLD_ID, PET_ID, { cursor: "not-a-valid-cursor!!" } as ListLogsQueryDto),
     ).rejects.toBeInstanceOf(BadRequestException);
   });
+
+  it("a decoded cursor with s===1 (MED_GIVEN-sourced) builds the id-tiebreak where clause", async () => {
+    const { service, reminderEvent } = buildHarness();
+    reminderEvent.findMany.mockResolvedValue([]);
+    const cursor = encodeCursor({ o: "2026-07-15T09:00:00.000Z", s: 1, i: "re-1" });
+
+    await service.list(HOUSEHOLD_ID, PET_ID, { kind: "MED_GIVEN", cursor } as ListLogsQueryDto);
+
+    const where = reminderEvent.findMany.mock.calls[0]?.[0]?.where as { OR: Array<Record<string, unknown>> };
+    expect(where.OR).toContainEqual({
+      completedAt: new Date("2026-07-15T09:00:00.000Z"),
+      id: { lt: "re-1" },
+    });
+  });
+
+  it("only medGiven rows remain after healthLog rows are exhausted -- the merge's trailing medGiven drain runs", async () => {
+    const { service, healthLog, reminderEvent } = buildHarness();
+    healthLog.findMany.mockResolvedValue([
+      buildHealthLogRow({ id: "hl-1", occurredAt: new Date("2026-07-15T12:00:00.000Z") }),
+    ]);
+    reminderEvent.findMany.mockResolvedValue([
+      buildReminderEventRow({ id: "re-1", completedAt: new Date("2026-07-15T10:00:00.000Z") }),
+      buildReminderEventRow({ id: "re-2", completedAt: new Date("2026-07-15T08:00:00.000Z") }),
+    ]);
+
+    const result = await service.list(HOUSEHOLD_ID, PET_ID, {} as ListLogsQueryDto);
+
+    expect(result.items.map((i) => i.id)).toEqual(["hl-1", "re-1", "re-2"]);
+  });
 });
 
 describe("HealthLogsService.weightSeries", () => {
@@ -298,6 +328,22 @@ describe("HealthLogsService.weightSeries", () => {
 
     expect(result.sampled).toBe(false);
     expect(result.points).toHaveLength(50);
+  });
+
+  it("with both from and to set, queries occurredAt gte AND lte (both filter branches)", async () => {
+    const { service, healthLog } = buildHarness();
+    healthLog.findMany.mockResolvedValue([]);
+
+    await service.weightSeries(HOUSEHOLD_ID, PET_ID, {
+      from: "2026-07-01T00:00:00.000Z",
+      to: "2026-07-15T00:00:00.000Z",
+    } as WeightSeriesQueryDto);
+
+    const where = healthLog.findMany.mock.calls[0]?.[0]?.where as {
+      occurredAt: { gte: Date; lte: Date };
+    };
+    expect(where.occurredAt.gte).toEqual(new Date("2026-07-01T00:00:00.000Z"));
+    expect(where.occurredAt.lte).toEqual(new Date("2026-07-15T00:00:00.000Z"));
   });
 });
 
@@ -378,5 +424,18 @@ describe("HealthLogsService.vetSummary", () => {
     const { service } = buildHarness({ petFindOne });
 
     await expect(service.vetSummary(HOUSEHOLD_ID, PET_ID)).rejects.toThrow();
+  });
+
+  it("a SymptomCheck with no result (result: null) maps to a null tier -- rendered as 'awaiting assessment'", async () => {
+    const { service, healthLog, symptomCheck, reminderEvent } = buildHarness();
+    healthLog.findMany.mockResolvedValue([]);
+    symptomCheck.findMany.mockResolvedValue([
+      { id: "check-1", createdAt: new Date("2026-07-10T00:00:00.000Z"), result: null },
+    ]);
+    reminderEvent.findMany.mockResolvedValue([]);
+
+    const result = await service.vetSummary(HOUSEHOLD_ID, PET_ID);
+
+    expect(result.summary).toContain("awaiting assessment");
   });
 });

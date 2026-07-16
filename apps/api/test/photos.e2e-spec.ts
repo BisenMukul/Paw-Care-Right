@@ -179,6 +179,17 @@ describe("Photos (e2e)", () => {
       expect(res.status).toBe(404);
       expect(errorResponseSchema.parse(res.body).error.code).toBe("NOT_FOUND");
     });
+
+    it("path-traversal key → 400 VALIDATION_FAILED", async () => {
+      const ctx = await owner();
+      const petId = await createPet(ctx);
+      const key = `${originalKeyPrefix(petId)}../../other-pet/main/x.jpg`;
+
+      const res = await ctx.authedAgent("post", `/v1/pets/${petId}/photo-upload-confirm`).send({ key });
+
+      expect(res.status).toBe(400);
+      expect(errorResponseSchema.parse(res.body).error.code).toBe("VALIDATION_FAILED");
+    });
   });
 
   describe("happy path — full upload → resize → rendition round-trip", () => {
@@ -276,6 +287,17 @@ describe("Photos (e2e)", () => {
       const petId = await createPet(ctx);
 
       const res = await ctx.authedAgent("post", `/v1/pets/${petId}/photo-view-urls`).send({ keys: [] });
+
+      expect(res.status).toBe(400);
+      expect(errorResponseSchema.parse(res.body).error.code).toBe("VALIDATION_FAILED");
+    });
+
+    it("a path-traversal key → 400 VALIDATION_FAILED", async () => {
+      const ctx = await owner();
+      const petId = await createPet(ctx);
+      const key = `${originalKeyPrefix(petId)}../evil.jpg`;
+
+      const res = await ctx.authedAgent("post", `/v1/pets/${petId}/photo-view-urls`).send({ keys: [key] });
 
       expect(res.status).toBe(400);
       expect(errorResponseSchema.parse(res.body).error.code).toBe("VALIDATION_FAILED");
