@@ -750,3 +750,15 @@
 - **Gates:** typecheck 14/14, lint 0 errors, mobile **59 suites / 441 tests** (error-boundary + safe-storage tests included), api-client 53, api 68/743, build 8/8.
 - **⚠️ Founder (unchanged, now 3rd reminder):** rebuild the dev client (`eas build --profile development` with EXPO_PUBLIC_API_URL set) — native modules: nitro-modules, react-native-svg. Expo Go now boots with reduced persistence; the weight chart still needs the real build.
 - Commit: fix(mobile,api-client): reconcile founder crash-debugging merge (journal rides in the same commit).
+
+## [2026-07-15] 🚩 MILESTONE M6 — Phase 6 (Health Timeline) COMPLETE
+- **Scope:** T063–T070 all DONE, every task attempt 1 (8/8 first-attempt checker passes — the loop's cleanest phase yet): HealthLog model + migration with per-kind strict Zod validators; Timeline API (two-source merged keyset cursor over HealthLog rows + read-time MED_GIVEN projection, per-kind validated create, bucket-mean downsampled weight series); weight chart (react-native-svg, pure tested geometry/units/band modules, locale unit toggle); quick-log actions (note+photo, vet visit, 2-tap); Timeline UI (virtualized SectionList, month headers, render-count-guarded memoization, CHECK_REF deep links); vet visit prep summary (pure deterministic digest, golden-file tested, footer-reserved 2500-char budget); photo attachments (view-URLs endpoint, thumbnails, a11y-labeled viewer); Phase 6 sweep (path-traversal hardening, factories, coverage 99% health-logs).
+- **Also absorbed mid-phase:** the founder crash-debugging merge + authorized Full-restore reconciliation (see HOTFIX entry above) — app shell restored and hardened with a startup error boundary + safe-storage fallbacks.
+- **M6 gate (LOOP_PROTOCOL §6), all run fresh post-reconciliation:**
+  1. typecheck/lint/test/build all exit 0 — api **68 suites / 743 tests**, mobile **59 / 441**, types **18 / 468**, ai **427 + 3 skipped**, data **178**, api-client 53, config 4.
+  2. `pnpm test:ai-evals`: exit 0 — 195 cases, thresholdsPassed=true.
+  3. Zero in_progress, zero blocked at gate time. ✓
+  4. This milestone journal entry. ✓
+- **Items awaiting founder attention:** ① dev-client rebuild (nitro-modules + react-native-svg) + EXPO_PUBLIC_API_URL — blocks all on-device milestone evidence (M4/M5/M6); ② the 5 region hotline numbers before store submission; ③ milestone tags M0–M6 local-only; ④ safe-storage native-branch adapter test (checker follow-up, queued for the next sweep); ⑤ C2 vet-review list accumulating.
+- **Actions:** `milestones.M6 = passed`; `currentPhase P6 → P7` (Monetization → M7 · ⛔ HUMAN CHECKPOINT C2 after M7); active task → T071; tag `milestone/M6` local.
+- **Next:** Phase 7 — RevenueCat + offerings, subscription mirror + entitlements, paywall, quota enforcement → M7, then the C2 checkpoint pauses the loop for founder review.
