@@ -20,6 +20,10 @@ export const apiEnvSchema = z.object({
   S3_ACCESS_KEY: z.string().min(1).default("pawcareright"),
   S3_SECRET_KEY: z.string().min(1).default("pawcareright-dev-secret"),
   S3_BUCKET: z.string().min(1).default("pawcareright-media"),
+  RC_WEBHOOK_AUTH_TOKEN: z
+    .string()
+    .min(1)
+    .default("dev-insecure-rc-webhook-token-do-not-use-in-production"),
 });
 
 export type ApiEnv = z.infer<typeof apiEnvSchema>;

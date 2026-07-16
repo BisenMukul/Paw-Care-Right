@@ -327,6 +327,7 @@ model Subscription {
   plan         String?
   status       String
   expiresAt    DateTime?
+  lastEventAt  DateTime?
   rawEventJson Json
   createdAt    DateTime                @default(now())
   updatedAt    DateTime                @updatedAt
@@ -335,4 +336,9 @@ model Subscription {
   household Household @relation(fields: [householdId], references: [id], onDelete: Cascade)
 
   @@index([householdId])
+}
+
+model ProcessedWebhookEvent {
+  eventId     String   @id
+  processedAt DateTime @default(now())
 }

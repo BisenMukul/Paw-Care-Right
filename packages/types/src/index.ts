@@ -18,3 +18,4 @@ export * from "./medication-course";
 export * from "./health-log";
 export * from "./vet-summary-copy";
 export * from "./entitlement";
+export * from "./rc-webhook";

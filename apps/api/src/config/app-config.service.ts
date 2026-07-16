@@ -66,4 +66,8 @@ export class AppConfigService {
   get s3Bucket(): string {
     return this.env.S3_BUCKET;
   }
+
+  get rcWebhookAuthToken(): string {
+    return this.env.RC_WEBHOOK_AUTH_TOKEN;
+  }
 }
