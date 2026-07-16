@@ -17,6 +17,7 @@ export const billingEntitlementSchema = z.object({
   source: entitlementSourceSchema,
   plan: z.string().nullable(),
   expiresAt: z.string().datetime().nullable(),
+  billingIssue: z.boolean(),
 });
 
 export type EntitlementSource = z.infer<typeof entitlementSourceSchema>;

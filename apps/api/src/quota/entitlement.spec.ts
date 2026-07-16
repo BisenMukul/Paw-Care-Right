@@ -5,7 +5,7 @@ import { BillingEntitlementResolver, entitlementFromBilling } from "./entitlemen
 
 describe("entitlementFromBilling", () => {
   function billingEntitlement(overrides: Partial<BillingEntitlement> = {}): BillingEntitlement {
-    return { entitled: false, source: "none", plan: null, expiresAt: null, ...overrides };
+    return { entitled: false, source: "none", plan: null, expiresAt: null, billingIssue: false, ...overrides };
   }
 
   it("entitled:true -> PREMIUM, bypassQuota:false", () => {
@@ -27,7 +27,7 @@ describe("BillingEntitlementResolver", () => {
   it("calls getEntitlement(userId, householdId) and returns the mapped tier", async () => {
     const getEntitlement = jest
       .fn()
-      .mockResolvedValue({ entitled: true, source: "family", plan: "family_plan", expiresAt: null });
+      .mockResolvedValue({ entitled: true, source: "family", plan: "family_plan", expiresAt: null, billingIssue: false });
     const billingService = { getEntitlement } as unknown as BillingService;
     const resolver = new BillingEntitlementResolver(billingService);
 
@@ -40,7 +40,7 @@ describe("BillingEntitlementResolver", () => {
   it("maps a non-entitled result to FREE", async () => {
     const getEntitlement = jest
       .fn()
-      .mockResolvedValue({ entitled: false, source: "none", plan: null, expiresAt: null });
+      .mockResolvedValue({ entitled: false, source: "none", plan: null, expiresAt: null, billingIssue: false });
     const billingService = { getEntitlement } as unknown as BillingService;
     const resolver = new BillingEntitlementResolver(billingService);
 

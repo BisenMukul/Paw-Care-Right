@@ -7,6 +7,7 @@ import request from "supertest";
 
 import { AppModule } from "../src/app.module";
 import { configureApp } from "../src/app.setup";
+import { RC_WEBHOOK_STATUS } from "../src/billing/rc-webhook.state";
 import {
   cleanupUsers,
   createMemberContext,
@@ -61,7 +62,7 @@ describe("Billing — entitlement (e2e)", () => {
 
     expect(res.status).toBe(200);
     const body = billingEntitlementSchema.parse(res.body);
-    expect(body).toEqual({ entitled: false, source: "none", plan: null, expiresAt: null });
+    expect(body).toEqual({ entitled: false, source: "none", plan: null, expiresAt: null, billingIssue: false });
   });
 
   it("an active own sub -> 200 { entitled:true, source:'own' }", async () => {
@@ -82,6 +83,27 @@ describe("Billing — entitlement (e2e)", () => {
     expect(body.entitled).toBe(true);
     expect(body.source).toBe("own");
     expect(body.expiresAt).toBe(expiresAt.toISOString());
+  });
+
+  it("an own sub in billing_issue status -> 200 { entitled:true, source:'own', billingIssue:true }", async () => {
+    const ctx = await owner();
+    const expiresAt = new Date(Date.now() + 60_000);
+    await createSubscription(prisma, {
+      rcAppUserId: ctx.user.id,
+      householdId: ctx.household.id,
+      entitlement: "PREMIUM",
+      plan: "pawcareright_monthly",
+      status: RC_WEBHOOK_STATUS.BILLING_ISSUE,
+      expiresAt,
+    });
+
+    const res = await ctx.authedAgent("get", "/v1/billing/entitlement");
+
+    expect(res.status).toBe(200);
+    const body = billingEntitlementSchema.parse(res.body);
+    expect(body.entitled).toBe(true);
+    expect(body.source).toBe("own");
+    expect(body.billingIssue).toBe(true);
   });
 
   it("a household member resolves entitled/family from the owner's active family sub", async () => {

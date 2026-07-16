@@ -3,6 +3,7 @@ import { FAMILY_PLAN_PRODUCT_ID } from "@pawcareright/types";
 import type { PrismaService } from "../prisma/prisma.service";
 import { BillingService } from "./billing.service";
 import type { SubscriptionRow } from "./entitlement.util";
+import { RC_WEBHOOK_STATUS } from "./rc-webhook.state";
 
 describe("BillingService", () => {
   const userId = "user-1";
@@ -15,6 +16,7 @@ describe("BillingService", () => {
       entitlement: "PREMIUM",
       plan: "pawcareright_monthly",
       expiresAt: new Date(Date.now() + 60_000),
+      status: RC_WEBHOOK_STATUS.ACTIVE,
       ...overrides,
     };
   }
@@ -39,7 +41,7 @@ describe("BillingService", () => {
 
       const result = await service.getEntitlement(userId, householdId);
 
-      expect(result).toEqual({ entitled: false, source: "none", plan: null, expiresAt: null });
+      expect(result).toEqual({ entitled: false, source: "none", plan: null, expiresAt: null, billingIssue: false });
     });
 
     it("resolves entitled/own for the caller's own active PREMIUM sub", async () => {
@@ -55,6 +57,7 @@ describe("BillingService", () => {
         source: "own",
         plan: "pawcareright_monthly",
         expiresAt: expiresAt.toISOString(),
+        billingIssue: false,
       });
     });
 
@@ -66,7 +69,7 @@ describe("BillingService", () => {
 
       const result = await service.getEntitlement(userId, householdId);
 
-      expect(result).toEqual({ entitled: false, source: "none", plan: null, expiresAt: null });
+      expect(result).toEqual({ entitled: false, source: "none", plan: null, expiresAt: null, billingIssue: false });
     });
 
     it("resolves entitled/family from another member's active family sub", async () => {
@@ -84,6 +87,7 @@ describe("BillingService", () => {
         source: "family",
         plan: FAMILY_PLAN_PRODUCT_ID,
         expiresAt: expiresAt.toISOString(),
+        billingIssue: false,
       });
     });
 
@@ -96,7 +100,7 @@ describe("BillingService", () => {
 
       const result = await service.getEntitlement(userId, householdId);
 
-      expect(result).toEqual({ entitled: false, source: "none", plan: null, expiresAt: null });
+      expect(result).toEqual({ entitled: false, source: "none", plan: null, expiresAt: null, billingIssue: false });
     });
 
     it("does NOT entitle from an expired family sub", async () => {
@@ -109,7 +113,26 @@ describe("BillingService", () => {
 
       const result = await service.getEntitlement(userId, householdId);
 
-      expect(result).toEqual({ entitled: false, source: "none", plan: null, expiresAt: null });
+      expect(result).toEqual({ entitled: false, source: "none", plan: null, expiresAt: null, billingIssue: false });
+    });
+
+    it("marks billingIssue true for the caller's own PREMIUM sub in billing_issue status", async () => {
+      const expiresAt = new Date(Date.now() + 60_000);
+      const findUnique = jest
+        .fn()
+        .mockResolvedValue(buildRow({ expiresAt, status: RC_WEBHOOK_STATUS.BILLING_ISSUE }));
+      const findMany = jest.fn().mockResolvedValue([]);
+      const service = new BillingService(buildPrisma({ findUnique, findMany }));
+
+      const result = await service.getEntitlement(userId, householdId);
+
+      expect(result).toEqual({
+        entitled: true,
+        source: "own",
+        plan: "pawcareright_monthly",
+        expiresAt: expiresAt.toISOString(),
+        billingIssue: true,
+      });
     });
 
     it("own active sub takes precedence over a covering family sub (strongest pick)", async () => {

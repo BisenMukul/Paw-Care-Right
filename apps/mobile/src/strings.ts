@@ -103,6 +103,16 @@ export const strings = {
     family: "Family",
     notifications: "Notifications",
     premium: (appName: string) => `Upgrade to ${appName} Plus`,
+    manage: "Manage subscription",
+    restore: "Restore purchases",
+    restoreSuccess: "Your purchases were restored.",
+    restoreNone: "No active purchases were found to restore.",
+    restoreError: "We couldn't restore your purchases. Please try again.",
+    billingIssue: {
+      body: "There's a billing issue with your subscription. Update your payment method to keep Premium.",
+      fix: "Update payment method",
+      dismiss: "Dismiss",
+    },
   },
   auth: {
     welcome: {

@@ -42,6 +42,7 @@ interface RcOfferingsShape {
 }
 interface RcCustomerInfoShape {
   entitlements?: { active?: Record<string, unknown> };
+  managementURL?: unknown;
 }
 interface RcPurchaseErrorShape {
   userCancelled?: unknown;
@@ -286,6 +287,20 @@ export function isEntitled(customerInfo: unknown): boolean {
 
   const ci = customerInfo as RcCustomerInfoShape;
   return ci.entitlements?.active?.[RC_ENTITLEMENT_ID] !== undefined;
+}
+
+/**
+ * Extracts RC's store-correct `managementURL` from `customerInfo` (T076),
+ * mirroring `isEntitled`'s narrowing: non-object/missing input -> `null`,
+ * never a fabricated URL.
+ */
+export function managementUrlFromCustomerInfo(customerInfo: unknown): string | null {
+  if (typeof customerInfo !== "object" || customerInfo === null) {
+    return null;
+  }
+
+  const ci = customerInfo as RcCustomerInfoShape;
+  return typeof ci.managementURL === "string" ? ci.managementURL : null;
 }
 
 /** Test-only reset of module state. Not for use outside the test suite. */

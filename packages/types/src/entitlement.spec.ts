@@ -5,6 +5,7 @@ const VALID_PAYLOAD = {
   source: "own",
   plan: "pawcareright_monthly",
   expiresAt: "2026-08-01T00:00:00.000Z",
+  billingIssue: false,
 };
 
 describe("billingEntitlementSchema", () => {
@@ -18,13 +19,28 @@ describe("billingEntitlementSchema", () => {
   });
 
   it("accepts plan: null and expiresAt: null", () => {
-    const payload = { entitled: false, source: "none", plan: null, expiresAt: null };
+    const payload = { entitled: false, source: "none", plan: null, expiresAt: null, billingIssue: false };
     expect(billingEntitlementSchema.parse(payload)).toEqual(payload);
   });
 
   it("rejects a non-ISO expiresAt", () => {
     const payload = { ...VALID_PAYLOAD, expiresAt: "not-a-date" };
     expect(billingEntitlementSchema.safeParse(payload).success).toBe(false);
+  });
+
+  it("rejects a payload missing billingIssue", () => {
+    const payload: Record<string, unknown> = { ...VALID_PAYLOAD };
+    delete payload.billingIssue;
+    expect(billingEntitlementSchema.safeParse(payload).success).toBe(false);
+  });
+
+  it("accepts billingIssue: true", () => {
+    const payload = { ...VALID_PAYLOAD, billingIssue: true };
+    expect(billingEntitlementSchema.parse(payload)).toEqual(payload);
+  });
+
+  it("accepts billingIssue: false", () => {
+    expect(billingEntitlementSchema.parse(VALID_PAYLOAD)).toEqual(VALID_PAYLOAD);
   });
 });
 

@@ -1,6 +1,7 @@
 import { FAMILY_PLAN_PRODUCT_ID, type BillingEntitlement } from "@pawcareright/types";
 
 import { SUBSCRIPTION_GRACE_MS } from "./billing.constants";
+import { RC_WEBHOOK_STATUS } from "./rc-webhook.state";
 
 /**
  * The structural subset of a `Subscription` row the resolver needs
@@ -13,6 +14,7 @@ export interface SubscriptionRow {
   entitlement: "FREE" | "PREMIUM";
   plan: string | null;
   expiresAt: Date | null;
+  status: string;
 }
 
 /**
@@ -62,7 +64,13 @@ export function pickEntitlement(
   now: Date,
 ): BillingEntitlement {
   if (own !== null && isSubscriptionActive(own, now)) {
-    return { entitled: true, source: "own", plan: own.plan, expiresAt: toIsoOrNull(own.expiresAt) };
+    return {
+      entitled: true,
+      source: "own",
+      plan: own.plan,
+      expiresAt: toIsoOrNull(own.expiresAt),
+      billingIssue: own.status === RC_WEBHOOK_STATUS.BILLING_ISSUE,
+    };
   }
 
   const activeFamilyRows = householdSubs.filter(
@@ -71,8 +79,14 @@ export function pickEntitlement(
 
   if (activeFamilyRows.length > 0) {
     const chosen = pickLatestExpiring(activeFamilyRows);
-    return { entitled: true, source: "family", plan: chosen.plan, expiresAt: toIsoOrNull(chosen.expiresAt) };
+    return {
+      entitled: true,
+      source: "family",
+      plan: chosen.plan,
+      expiresAt: toIsoOrNull(chosen.expiresAt),
+      billingIssue: false,
+    };
   }
 
-  return { entitled: false, source: "none", plan: null, expiresAt: null };
+  return { entitled: false, source: "none", plan: null, expiresAt: null, billingIssue: false };
 }
