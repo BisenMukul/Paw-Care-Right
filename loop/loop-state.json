@@ -490,12 +490,12 @@
       "attempts": 1
     },
     "T077": {
-      "status": "in_progress",
+      "status": "done",
       "attempts": 1
     },
     "T078": {
-      "status": "pending",
-      "attempts": 0
+      "status": "in_progress",
+      "attempts": 1
     },
     "T079": {
       "status": "pending",

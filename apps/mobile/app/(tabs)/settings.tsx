@@ -67,7 +67,7 @@ export default function SettingsScreen() {
       >
         <Text className="text-base font-semibold text-white">{strings.settings.premium(APP_DISPLAY_NAME)}</Text>
       </Pressable>
-      {entitlement?.entitled === true ? (
+      {entitlement?.source === "own" ? (
         <Pressable
           testID="settings-manage"
           onPress={() => void openManageSubscription()}
@@ -76,6 +76,11 @@ export default function SettingsScreen() {
         >
           <Text className="text-base font-semibold text-white">{strings.settings.manage}</Text>
         </Pressable>
+      ) : null}
+      {entitlement?.entitled === true && entitlement.source === "family" ? (
+        <View testID="settings-family-note" className="items-center rounded-lg bg-brand-50 px-6 py-3">
+          <Text className="text-center text-sm text-brand-900">{strings.settings.familyManagedNote}</Text>
+        </View>
       ) : null}
       <Pressable
         testID="settings-restore"

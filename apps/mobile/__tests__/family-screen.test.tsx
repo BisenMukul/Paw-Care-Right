@@ -3,7 +3,8 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react-nativ
 import { Share } from "react-native";
 
 import FamilyScreen from "../app/family";
-import { useCreateInvite, useHouseholdMe } from "../src/api/households-api";
+import { useEntitlement } from "../src/api/billing-api";
+import { useCreateInvite, useHouseholdMe, useLeaveHousehold } from "../src/api/households-api";
 import { useAuthStore } from "../src/auth/auth-store";
 import { strings } from "../src/strings";
 
@@ -16,12 +17,20 @@ import { strings } from "../src/strings";
 jest.mock("../src/api/households-api", () => ({
   useHouseholdMe: jest.fn(),
   useCreateInvite: jest.fn(),
+  useLeaveHousehold: jest.fn(),
+}));
+
+jest.mock("../src/api/billing-api", () => ({
+  useEntitlement: jest.fn(),
 }));
 
 const mockedUseHouseholdMe = useHouseholdMe as unknown as jest.Mock;
 const mockedUseCreateInvite = useCreateInvite as unknown as jest.Mock;
+const mockedUseLeaveHousehold = useLeaveHousehold as unknown as jest.Mock;
+const mockedUseEntitlement = useEntitlement as unknown as jest.Mock;
 const mockRefetch = jest.fn();
 const mockMutateAsync = jest.fn();
+const mockLeaveMutateAsync = jest.fn();
 
 const HOUSEHOLD: HouseholdMe = {
   id: "11111111-1111-4111-8111-111111111111",
@@ -41,6 +50,8 @@ describe("family screen", () => {
     jest.clearAllMocks();
     jest.spyOn(Share, "share").mockResolvedValue({ action: "sharedAction" });
     mockedUseCreateInvite.mockReturnValue({ mutateAsync: mockMutateAsync, isPending: false });
+    mockedUseLeaveHousehold.mockReturnValue({ mutateAsync: mockLeaveMutateAsync, isPending: false });
+    mockedUseEntitlement.mockReturnValue({ data: { entitled: false, source: "none" } });
     resetAuthUser("user-owner", "owner@example.com");
   });
 
@@ -145,5 +156,90 @@ describe("family screen", () => {
       expect(screen.getByTestId("family-invite-error")).toBeTruthy();
     });
     expect(Share.share).not.toHaveBeenCalled();
+  });
+
+  describe("leave household (T077)", () => {
+    beforeEach(() => {
+      resetAuthUser("user-member", "member@example.com");
+      mockedUseHouseholdMe.mockReturnValue({
+        data: HOUSEHOLD,
+        isLoading: false,
+        isError: false,
+        refetch: mockRefetch,
+      });
+    });
+
+    it("[AC] MEMBER caller sees family-leave-button", async () => {
+      await render(<FamilyScreen />);
+      expect(screen.getByTestId("family-leave-button")).toBeTruthy();
+    });
+
+    it("[AC] OWNER caller does not see family-leave-button", async () => {
+      resetAuthUser("user-owner", "owner@example.com");
+
+      await render(<FamilyScreen />);
+
+      expect(screen.queryByTestId("family-leave-button")).toBeNull();
+    });
+
+    it("pressing leave shows the confirm view", async () => {
+      await render(<FamilyScreen />);
+
+      await fireEvent.press(screen.getByTestId("family-leave-button"));
+
+      expect(screen.getByTestId("family-leave-confirm")).toBeTruthy();
+    });
+
+    it("[AC] shows the grace warning when entitlement source is 'family'", async () => {
+      mockedUseEntitlement.mockReturnValue({ data: { entitled: true, source: "family" } });
+
+      await render(<FamilyScreen />);
+      await fireEvent.press(screen.getByTestId("family-leave-button"));
+
+      expect(screen.getByTestId("family-leave-grace")).toBeTruthy();
+    });
+
+    it("hides the grace warning when entitlement source is 'own'", async () => {
+      mockedUseEntitlement.mockReturnValue({ data: { entitled: true, source: "own" } });
+
+      await render(<FamilyScreen />);
+      await fireEvent.press(screen.getByTestId("family-leave-button"));
+
+      expect(screen.queryByTestId("family-leave-grace")).toBeNull();
+    });
+
+    it("cancel returns to the leave button", async () => {
+      await render(<FamilyScreen />);
+      await fireEvent.press(screen.getByTestId("family-leave-button"));
+
+      await fireEvent.press(screen.getByTestId("family-leave-cancel"));
+
+      expect(screen.queryByTestId("family-leave-confirm")).toBeNull();
+      expect(screen.getByTestId("family-leave-button")).toBeTruthy();
+    });
+
+    it("confirm calls useLeaveHousehold().mutateAsync once", async () => {
+      mockLeaveMutateAsync.mockResolvedValue({ householdId: "new-household", name: "My Household" });
+
+      await render(<FamilyScreen />);
+      await fireEvent.press(screen.getByTestId("family-leave-button"));
+      await fireEvent.press(screen.getByTestId("family-leave-confirm-button"));
+
+      await waitFor(() => {
+        expect(mockLeaveMutateAsync).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    it("a rejected leave mutation shows family-leave-error", async () => {
+      mockLeaveMutateAsync.mockRejectedValue(new Error("network down"));
+
+      await render(<FamilyScreen />);
+      await fireEvent.press(screen.getByTestId("family-leave-button"));
+      await fireEvent.press(screen.getByTestId("family-leave-confirm-button"));
+
+      await waitFor(() => {
+        expect(screen.getByTestId("family-leave-error")).toBeTruthy();
+      });
+    });
   });
 });

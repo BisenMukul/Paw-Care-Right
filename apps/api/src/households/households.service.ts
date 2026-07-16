@@ -9,6 +9,7 @@ import {
 import { DEEPLINK_SCHEME } from "@pawcareright/config";
 import { Prisma, type Role } from "@prisma/client";
 
+import { DEFAULT_HOUSEHOLD_NAME } from "../auth/auth.constants";
 import { PrismaService } from "../prisma/prisma.service";
 import { ENTITLEMENT_RESOLVER, type EntitlementResolver } from "../quota/entitlement";
 import { generateInviteCode } from "./invite-code";
@@ -38,6 +39,11 @@ export interface HouseholdMeResult {
   id: string;
   name: string;
   members: HouseholdMemberResult[];
+}
+
+export interface LeaveHouseholdResult {
+  householdId: string;
+  name: string;
 }
 
 /**
@@ -160,6 +166,42 @@ export class HouseholdsService {
       }
 
       return { householdId: target.id, name: target.name };
+    });
+  }
+
+  /**
+   * Member-initiated self-leave (plan decision 1/2/3). Preserves the
+   * one-membership-per-user invariant by re-provisioning a fresh solo
+   * household in the SAME transaction that drops the caller's current
+   * MEMBER membership — mirrors `AuthService.provisionNewAccount`. Only a
+   * MEMBER may leave: an OWNER leaving would strand the shared household's
+   * pets/members/subscription, so it (and any unsupported membership
+   * count) is a `ConflictException`. Entitlement revocation is automatic:
+   * the caller's new household has no family `Subscription` row, so the
+   * next `GET /billing/entitlement` resolves `{ entitled:false,
+   * source:"none" }` (plan decision 4) with no billing code change.
+   */
+  async leaveHousehold(userId: string): Promise<LeaveHouseholdResult> {
+    const memberships = await this.prisma.membership.findMany({ where: { userId } });
+    if (memberships.length !== 1) {
+      throw new ConflictException();
+    }
+    const sole = memberships[0]!;
+
+    if (sole.role === "OWNER") {
+      throw new ConflictException();
+    }
+
+    return this.prisma.$transaction(async (tx) => {
+      const newHousehold = await tx.household.create({
+        data: { name: DEFAULT_HOUSEHOLD_NAME, ownerId: userId },
+      });
+      await tx.membership.create({
+        data: { userId, householdId: newHousehold.id, role: "OWNER" },
+      });
+      await tx.membership.delete({ where: { id: sole.id } });
+
+      return { householdId: newHousehold.id, name: newHousehold.name };
     });
   }
 

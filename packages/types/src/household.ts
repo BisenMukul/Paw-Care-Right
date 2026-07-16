@@ -25,6 +25,13 @@ export const acceptInviteResponseSchema = z.object({
 });
 export type AcceptInviteResponse = z.infer<typeof acceptInviteResponseSchema>;
 
+/** Response body for `POST /v1/households/leave`. */
+export const leaveHouseholdResponseSchema = z.object({
+  householdId: z.string().uuid(),
+  name: z.string(),
+});
+export type LeaveHouseholdResponse = z.infer<typeof leaveHouseholdResponseSchema>;
+
 export const householdMemberSchema = z.object({
   userId: z.string().uuid(),
   email: z.string().email(),

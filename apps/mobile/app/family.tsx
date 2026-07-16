@@ -2,7 +2,8 @@ import { useState } from "react";
 import { ActivityIndicator, ScrollView, Share, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { useCreateInvite, useHouseholdMe } from "../src/api/households-api";
+import { useEntitlement } from "../src/api/billing-api";
+import { useCreateInvite, useHouseholdMe, useLeaveHousehold } from "../src/api/households-api";
 import { useAuthStore } from "../src/auth/auth-store";
 import { PrimaryButton } from "../src/components/primary-button";
 import { strings } from "../src/strings";
@@ -13,12 +14,22 @@ import { strings } from "../src/strings";
  * the native share sheet with the deep link. The invite/join deep link
  * itself comes from the API response only — nothing here hardcodes the
  * `pawcareright://` scheme (CLAUDE.md §1a).
+ *
+ * T077: a non-owner (MEMBER) caller instead sees a "Leave household"
+ * button. Pressing it opens a confirmation with a grace warning shown only
+ * when the caller's entitlement is currently sourced from this household's
+ * family plan (`useEntitlement().data?.source === "family"`) — leaving
+ * drops that access immediately (server-side, `useLeaveHousehold`).
  */
 export default function FamilyScreen() {
   const { data: household, isLoading, isError, refetch } = useHouseholdMe();
   const currentUserId = useAuthStore((state) => state.user?.id ?? null);
   const createInvite = useCreateInvite();
+  const { data: entitlement } = useEntitlement();
+  const leaveHousehold = useLeaveHousehold();
   const [inviteError, setInviteError] = useState(false);
+  const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
+  const [leaveError, setLeaveError] = useState(false);
 
   const isOwner = household?.members.some(
     (member) => member.userId === currentUserId && member.role === "OWNER",
@@ -31,6 +42,15 @@ export default function FamilyScreen() {
       await Share.share({ message: invite.deepLink });
     } catch {
       setInviteError(true);
+    }
+  }
+
+  async function handleLeave() {
+    setLeaveError(false);
+    try {
+      await leaveHousehold.mutateAsync();
+    } catch {
+      setLeaveError(true);
     }
   }
 
@@ -100,7 +120,44 @@ export default function FamilyScreen() {
                 </Text>
               ) : null}
             </View>
-          ) : null}
+          ) : (
+            <View className="gap-2">
+              {showLeaveConfirm ? (
+                <View testID="family-leave-confirm" className="gap-3">
+                  <Text className="text-center text-sm text-brand-900">
+                    {strings.family.leaveConfirmBody}
+                  </Text>
+                  {entitlement?.source === "family" ? (
+                    <Text testID="family-leave-grace" className="text-center text-sm text-red-600">
+                      {strings.family.leaveGrace}
+                    </Text>
+                  ) : null}
+                  <PrimaryButton
+                    testID="family-leave-confirm-button"
+                    label={strings.family.leaveConfirm}
+                    loading={leaveHousehold.isPending}
+                    onPress={() => void handleLeave()}
+                  />
+                  <PrimaryButton
+                    testID="family-leave-cancel"
+                    label={strings.family.leaveCancel}
+                    onPress={() => setShowLeaveConfirm(false)}
+                  />
+                  {leaveError ? (
+                    <Text testID="family-leave-error" className="text-center text-sm text-red-600">
+                      {strings.family.leaveError}
+                    </Text>
+                  ) : null}
+                </View>
+              ) : (
+                <PrimaryButton
+                  testID="family-leave-button"
+                  label={strings.family.leave}
+                  onPress={() => setShowLeaveConfirm(true)}
+                />
+              )}
+            </View>
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>

@@ -4,6 +4,7 @@ import {
   createInviteResponseSchema,
   householdMemberSchema,
   householdMeSchema,
+  leaveHouseholdResponseSchema,
   ROLES,
   roleSchema,
 } from "./household";
@@ -59,6 +60,28 @@ describe("acceptInviteResponseSchema", () => {
 
   it("rejects a non-uuid householdId", () => {
     expect(acceptInviteResponseSchema.safeParse({ ...valid, householdId: "not-a-uuid" }).success).toBe(
+      false,
+    );
+  });
+});
+
+describe("leaveHouseholdResponseSchema", () => {
+  const valid = {
+    householdId: "523e4567-e89b-12d3-a456-426614174000",
+    name: "My Household",
+  };
+
+  it("parses a valid fixture", () => {
+    expect(leaveHouseholdResponseSchema.safeParse(valid).success).toBe(true);
+  });
+
+  it("rejects a missing name", () => {
+    const { householdId } = valid;
+    expect(leaveHouseholdResponseSchema.safeParse({ householdId }).success).toBe(false);
+  });
+
+  it("rejects a non-uuid householdId", () => {
+    expect(leaveHouseholdResponseSchema.safeParse({ ...valid, householdId: "not-a-uuid" }).success).toBe(
       false,
     );
   });

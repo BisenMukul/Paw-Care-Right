@@ -19,14 +19,17 @@ import {
   type CreateInviteResult,
   HouseholdsService,
   type HouseholdMeResult,
+  type LeaveHouseholdResult,
 } from "./households.service";
 
 /**
  * Decorators are applied PER METHOD (not class-level): `invites/accept`
  * must stay unscoped (any authenticated caller, regardless of their current
  * household, needs to be able to accept an invite into a DIFFERENT
- * household — see plan's JOIN-REPLACES). Not `@Public()` anywhere — the
- * global `JwtAuthGuard` applies to all three routes.
+ * household — see plan's JOIN-REPLACES). `leave` is likewise unscoped (a
+ * MEMBER leaving their current household needs no resolved-household scope
+ * beyond their own membership row). Not `@Public()` anywhere — the global
+ * `JwtAuthGuard` applies to every route below.
  */
 @ApiTags("households")
 @Controller("households")
@@ -63,6 +66,16 @@ export class HouseholdsController {
     @Body() dto: AcceptInviteDto,
   ): Promise<AcceptInviteResult> {
     return this.householdsService.acceptInvite(user.userId, dto.code);
+  }
+
+  @Post("leave")
+  @HttpCode(200)
+  @ApiOkResponse({ description: "The caller's freshly re-provisioned solo household." })
+  @ApiConflictResponse({
+    description: "Caller is the household OWNER, or is in an unsupported membership state.",
+  })
+  leaveHousehold(@CurrentUser() user: { userId: string }): Promise<LeaveHouseholdResult> {
+    return this.householdsService.leaveHousehold(user.userId);
   }
 
   @Get("me")

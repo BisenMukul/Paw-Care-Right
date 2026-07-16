@@ -61,4 +61,21 @@ describe("settings screen — manage subscription row", () => {
 
     expect(screen.queryByTestId("settings-manage")).toBeNull();
   });
+
+  it("[AC] family-source entitlement: settings-manage absent, settings-family-note present", async () => {
+    mockedUseEntitlement.mockReturnValue({
+      data: {
+        entitled: true,
+        source: "family",
+        plan: "pawcareright_family",
+        expiresAt: null,
+        billingIssue: false,
+      },
+    });
+
+    await render(<SettingsScreen />);
+
+    expect(screen.queryByTestId("settings-manage")).toBeNull();
+    expect(screen.getByTestId("settings-family-note")).toBeTruthy();
+  });
 });

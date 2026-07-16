@@ -1,7 +1,11 @@
 import type { INestApplication } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { Test } from "@nestjs/testing";
-import { errorResponseSchema } from "@pawcareright/types";
+import {
+  billingEntitlementSchema,
+  errorResponseSchema,
+  FAMILY_PLAN_PRODUCT_ID,
+} from "@pawcareright/types";
 import { PrismaClient } from "@prisma/client";
 import request from "supertest";
 
@@ -250,6 +254,59 @@ describe("Households — invites (e2e)", () => {
           { userId: ownerB.user.id, email: ownerB.user.email, role: "MEMBER" },
         ]),
       );
+    });
+  });
+
+  describe("leave household", () => {
+    it("member with family premium who leaves -> entitlement flips to none", async () => {
+      const memberCtx = await member();
+      const oldHouseholdId = memberCtx.household.id;
+
+      // Precondition (pinned alongside billing.e2e-spec.ts:109): a household
+      // member resolves entitled/family from the owner's active family sub.
+      // `member()` auto-provisions memberCtx into a household owned by a
+      // separate, auto-generated user (`household.ownerId`) — mirrors
+      // billing.e2e-spec.ts's "a household member resolves entitled/family
+      // from the owner's active family sub" precisely.
+      await createSubscription(prisma, {
+        rcAppUserId: memberCtx.household.ownerId,
+        householdId: memberCtx.household.id,
+        entitlement: "PREMIUM",
+        plan: FAMILY_PLAN_PRODUCT_ID,
+        expiresAt: new Date(Date.now() + 60_000),
+      });
+
+      const beforeRes = await memberCtx.authedAgent("get", "/v1/billing/entitlement");
+      expect(beforeRes.status).toBe(200);
+      const before = billingEntitlementSchema.parse(beforeRes.body);
+      expect(before.entitled).toBe(true);
+      expect(before.source).toBe("family");
+
+      const leaveRes = await memberCtx.authedAgent("post", "/v1/households/leave");
+      expect(leaveRes.status).toBe(200);
+      expect(leaveRes.body.householdId).not.toBe(oldHouseholdId);
+      expect(typeof leaveRes.body.name).toBe("string");
+
+      const afterRes = await memberCtx.authedAgent("get", "/v1/billing/entitlement");
+      expect(afterRes.status).toBe(200);
+      const after = billingEntitlementSchema.parse(afterRes.body);
+      expect(after).toEqual({ entitled: false, source: "none", plan: null, expiresAt: null, billingIssue: false });
+    });
+
+    it("OWNER calling leave -> 409 CONFLICT", async () => {
+      const ownerCtx = await owner();
+
+      const res = await ownerCtx.authedAgent("post", "/v1/households/leave");
+
+      expect(res.status).toBe(409);
+      expect(errorResponseSchema.parse(res.body).error.code).toBe("CONFLICT");
+    });
+
+    it("POST /v1/households/leave with no token -> 401 UNAUTHORIZED", async () => {
+      const res = await request(app.getHttpServer()).post("/v1/households/leave");
+
+      expect(res.status).toBe(401);
+      expect(errorResponseSchema.parse(res.body).error.code).toBe("UNAUTHORIZED");
     });
   });
 

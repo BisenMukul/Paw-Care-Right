@@ -30,7 +30,7 @@ describe("HouseholdsService", () => {
     householdInvite?: Partial<{ create: jest.Mock; findUnique: jest.Mock; updateMany: jest.Mock }>;
     membership?: Partial<{ findMany: jest.Mock; delete: jest.Mock; create: jest.Mock }>;
     pet?: Partial<{ count: jest.Mock }>;
-    household?: Partial<{ delete: jest.Mock; findUnique: jest.Mock }>;
+    household?: Partial<{ delete: jest.Mock; findUnique: jest.Mock; create: jest.Mock }>;
     transaction?: jest.Mock;
   }) {
     return {
@@ -50,6 +50,7 @@ describe("HouseholdsService", () => {
       household: {
         delete: overrides.household?.delete ?? jest.fn(),
         findUnique: overrides.household?.findUnique ?? jest.fn(),
+        create: overrides.household?.create ?? jest.fn(),
       },
       $transaction: overrides.transaction ?? jest.fn(async (cb: (tx: unknown) => unknown) => cb(undefined)),
     } as unknown as PrismaService;
@@ -313,6 +314,58 @@ describe("HouseholdsService", () => {
       await expect(service.acceptInvite("joiner-1", code)).rejects.toBeInstanceOf(ConflictException);
       expect(householdDelete).not.toHaveBeenCalled();
       expect(membershipCreate).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("leaveHousehold", () => {
+    it("MEMBER leaves: creates a new solo household + OWNER membership, deletes the old membership, returns the new household", async () => {
+      const findMany = jest
+        .fn()
+        .mockResolvedValue([{ id: "m1", userId: "joiner-1", householdId: "old-household", role: "MEMBER" }]);
+      const householdCreate = jest.fn().mockResolvedValue({ id: "new-household", name: "My Household" });
+      const membershipCreate = jest.fn().mockResolvedValue(undefined);
+      const membershipDelete = jest.fn().mockResolvedValue(undefined);
+      const transaction = jest.fn(async (cb: (tx: unknown) => unknown) =>
+        cb({
+          household: { create: householdCreate },
+          membership: { create: membershipCreate, delete: membershipDelete },
+        }),
+      );
+      const prisma = buildPrisma({ membership: { findMany }, transaction });
+      const service = new HouseholdsService(prisma, buildResolver());
+
+      const result = await service.leaveHousehold("joiner-1");
+
+      expect(householdCreate).toHaveBeenCalledWith({
+        data: { name: "My Household", ownerId: "joiner-1" },
+      });
+      expect(membershipCreate).toHaveBeenCalledWith({
+        data: { userId: "joiner-1", householdId: "new-household", role: "OWNER" },
+      });
+      expect(membershipDelete).toHaveBeenCalledWith({ where: { id: "m1" } });
+      expect(result).toEqual({ householdId: "new-household", name: "My Household" });
+    });
+
+    it("OWNER calling leave -> ConflictException, no transaction", async () => {
+      const findMany = jest
+        .fn()
+        .mockResolvedValue([{ id: "m1", userId: "owner-1", householdId: "household-1", role: "OWNER" }]);
+      const transaction = jest.fn();
+      const prisma = buildPrisma({ membership: { findMany }, transaction });
+      const service = new HouseholdsService(prisma, buildResolver());
+
+      await expect(service.leaveHousehold("owner-1")).rejects.toBeInstanceOf(ConflictException);
+      expect(transaction).not.toHaveBeenCalled();
+    });
+
+    it("membership count !== 1 -> ConflictException, no transaction", async () => {
+      const findMany = jest.fn().mockResolvedValue([]);
+      const transaction = jest.fn();
+      const prisma = buildPrisma({ membership: { findMany }, transaction });
+      const service = new HouseholdsService(prisma, buildResolver());
+
+      await expect(service.leaveHousehold("nowhere-1")).rejects.toBeInstanceOf(ConflictException);
+      expect(transaction).not.toHaveBeenCalled();
     });
   });
 

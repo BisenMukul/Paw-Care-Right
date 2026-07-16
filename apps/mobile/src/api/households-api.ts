@@ -3,9 +3,11 @@ import type {
   AcceptInviteResponse,
   CreateInviteResponse,
   HouseholdMe,
+  LeaveHouseholdResponse,
 } from "@pawcareright/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
+import { billingKeys } from "./billing-api";
 import { apiClient } from "./client";
 import { petsKeys } from "./pets-api";
 
@@ -42,6 +44,24 @@ export function useAcceptInvite() {
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: petsKeys.all });
       void queryClient.invalidateQueries({ queryKey: householdKeys.me });
+    },
+  });
+}
+
+/**
+ * POST `/v1/households/leave` — member-initiated self-leave (T077). Success
+ * re-provisions the caller into a fresh solo household, so the pets list,
+ * household-members view, and billing entitlement (a family grant drops
+ * once the caller is no longer in that household) are all invalidated.
+ */
+export function useLeaveHousehold() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => apiClient.post<LeaveHouseholdResponse>("/v1/households/leave"),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: petsKeys.all });
+      void queryClient.invalidateQueries({ queryKey: householdKeys.me });
+      void queryClient.invalidateQueries({ queryKey: billingKeys.entitlement });
     },
   });
 }
