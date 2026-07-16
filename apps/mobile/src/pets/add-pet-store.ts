@@ -49,6 +49,7 @@ const INITIAL_DRAFT: AddPetDraft = {
 // MMKV binding is unavailable, the store uses in-memory storage instead.
 const mmkv = createSafeStorage({
   createMmkv: () => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports -- JUSTIFIED: lazy runtime require so a missing native MMKV binding (Expo Go) falls back instead of crashing at module load
     const { createMMKV } = require("react-native-mmkv");
     return createMMKV();
   },

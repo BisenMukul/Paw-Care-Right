@@ -9,6 +9,7 @@ import { createSafeStorage } from "../storage/safe-storage";
 // crash before the root layout renders.
 export const mmkv = createSafeStorage({
   createMmkv: () => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports -- JUSTIFIED: lazy runtime require so a missing native MMKV binding (Expo Go) falls back instead of crashing at module load
     const { createMMKV } = require("react-native-mmkv");
     return createMMKV();
   },

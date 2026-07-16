@@ -19,7 +19,26 @@ export function createSafeStorage(options: SafeStorageOptions = {}): SafeStorage
 
   if (createMmkv) {
     try {
-      return createMmkv();
+      const mmkv = createMmkv();
+      // The raw MMKV instance only implements SafeStorageLike; adapt it so
+      // StorageLike consumers (zustand createJSONStorage, web-style callers)
+      // work on the native path too, not just the memory fallback.
+      return {
+        getString: (key) => mmkv.getString(key),
+        getItem: (key) => mmkv.getString(key) ?? null,
+        set: (key, value) => {
+          mmkv.set(key, value);
+        },
+        setItem: (key, value) => {
+          mmkv.set(key, value);
+        },
+        remove: (key) => {
+          mmkv.remove(key);
+        },
+        removeItem: (key) => {
+          mmkv.remove(key);
+        },
+      };
     } catch {
       // Fall back to memory storage so Expo Go startup does not crash when
       // the native MMKV binding is unavailable at runtime.

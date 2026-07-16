@@ -1,9 +1,12 @@
-import type { MMKV } from "react-native-mmkv";
 import type { Persister, PersistedClient } from "@tanstack/react-query-persist-client";
 
 const DEFAULT_PERSISTER_KEY = "pawcareright-query-cache";
 
-type MmkvLike = Pick<MMKV, "getString" | "set" | "remove">;
+interface MmkvLike {
+  getString(key: string): string | undefined;
+  set(key: string, value: string): void;
+  remove(key: string): void;
+}
 
 function createMemoryStorage(): MmkvLike {
   const store = new Map<string, string>();
@@ -27,6 +30,7 @@ function resolveStorage(options: CreateMmkvPersisterOptions): MmkvLike {
   }
 
   try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports -- JUSTIFIED: lazy runtime require so a missing native MMKV binding (Expo Go) falls back instead of crashing at module load
     const runtime = require("react-native-mmkv") as { createMMKV?: () => MmkvLike };
     if (typeof runtime.createMMKV === "function") {
       return runtime.createMMKV();
@@ -41,7 +45,7 @@ function resolveStorage(options: CreateMmkvPersisterOptions): MmkvLike {
 
 export interface CreateMmkvPersisterOptions {
   /** Reuse an existing MMKV instance; a dedicated one is created via `createMMKV()` if omitted. */
-  mmkv?: MMKV;
+  mmkv?: MmkvLike;
   /** Storage key under which the serialized cache is persisted. */
   key?: string;
 }

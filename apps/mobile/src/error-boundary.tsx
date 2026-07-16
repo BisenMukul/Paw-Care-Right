@@ -17,6 +17,7 @@ export class AppErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    // eslint-disable-next-line no-console -- JUSTIFIED: last-resort startup-crash diagnostic; fires only after the UI has already failed (Sentry wiring lands in P9)
     console.error("AppErrorBoundary", error, errorInfo);
   }
 

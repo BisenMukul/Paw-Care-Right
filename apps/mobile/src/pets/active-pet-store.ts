@@ -13,6 +13,7 @@ export interface ActivePetState {
 // falls back to memory when the native MMKV binding is unavailable.
 const mmkv = createSafeStorage({
   createMmkv: () => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports -- JUSTIFIED: lazy runtime require so a missing native MMKV binding (Expo Go) falls back instead of crashing at module load
     const { createMMKV } = require("react-native-mmkv");
     return createMMKV();
   },
