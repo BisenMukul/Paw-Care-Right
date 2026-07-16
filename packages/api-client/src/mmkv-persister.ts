@@ -1,7 +1,43 @@
-import { createMMKV, type MMKV } from "react-native-mmkv";
+import type { MMKV } from "react-native-mmkv";
 import type { Persister, PersistedClient } from "@tanstack/react-query-persist-client";
 
 const DEFAULT_PERSISTER_KEY = "pawcareright-query-cache";
+
+type MmkvLike = Pick<MMKV, "getString" | "set" | "remove">;
+
+function createMemoryStorage(): MmkvLike {
+  const store = new Map<string, string>();
+
+  return {
+    getString(key: string) {
+      return store.get(key);
+    },
+    set(key: string, value: string) {
+      store.set(key, value);
+    },
+    remove(key: string) {
+      store.delete(key);
+    },
+  };
+}
+
+function resolveStorage(options: CreateMmkvPersisterOptions): MmkvLike {
+  if (options.mmkv) {
+    return options.mmkv;
+  }
+
+  try {
+    const runtime = require("react-native-mmkv") as { createMMKV?: () => MmkvLike };
+    if (typeof runtime.createMMKV === "function") {
+      return runtime.createMMKV();
+    }
+  } catch {
+    // Fall back to an in-memory store so Expo Go startup does not crash when
+    // the native MMKV binding cannot be loaded.
+  }
+
+  return createMemoryStorage();
+}
 
 export interface CreateMmkvPersisterOptions {
   /** Reuse an existing MMKV instance; a dedicated one is created via `createMMKV()` if omitted. */
@@ -16,7 +52,7 @@ export interface CreateMmkvPersisterOptions {
  * import graph — import this from `@pawcareright/api-client/mmkv-persister`.
  */
 export function createMmkvPersister(options: CreateMmkvPersisterOptions = {}): Persister {
-  const storage = options.mmkv ?? createMMKV();
+  const storage = resolveStorage(options);
   const key = options.key ?? DEFAULT_PERSISTER_KEY;
 
   return {

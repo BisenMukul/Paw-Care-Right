@@ -1,6 +1,7 @@
-import { createMMKV } from "react-native-mmkv";
 import { create } from "zustand";
 import { createJSONStorage, persist, type StateStorage } from "zustand/middleware";
+
+import { createSafeStorage } from "../storage/safe-storage";
 
 export interface ActivePetState {
   activePetId: string | null;
@@ -8,10 +9,14 @@ export interface ActivePetState {
   clear(): void;
 }
 
-// A dedicated MMKV instance for the active-pet selection (mirrors the
-// `add-pet-store.ts` pattern — plan step 2; each persisted store owns its
-// own instance rather than sharing a mobile-wide singleton).
-const mmkv = createMMKV();
+// A dedicated persisted store for the active-pet selection. The storage layer
+// falls back to memory when the native MMKV binding is unavailable.
+const mmkv = createSafeStorage({
+  createMmkv: () => {
+    const { createMMKV } = require("react-native-mmkv");
+    return createMMKV();
+  },
+});
 const mmkvStorage: StateStorage = {
   getItem: (name) => mmkv.getString(name) ?? null,
   setItem: (name, value) => {
