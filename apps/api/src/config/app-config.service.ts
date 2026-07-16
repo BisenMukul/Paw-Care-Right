@@ -70,4 +70,8 @@ export class AppConfigService {
   get rcWebhookAuthToken(): string {
     return this.env.RC_WEBHOOK_AUTH_TOKEN;
   }
+
+  get paywallVariant(): ApiEnv["PAYWALL_VARIANT"] {
+    return this.env.PAYWALL_VARIANT;
+  }
 }

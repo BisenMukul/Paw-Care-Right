@@ -1,0 +1,819 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`paywall screen — variant A renders and matches the snapshot 1`] = `
+<RNCSafeAreaView
+  className="flex-1 bg-white"
+  edges={
+    {
+      "bottom": "additive",
+      "left": "additive",
+      "right": "additive",
+      "top": "additive",
+    }
+  }
+  testID="paywall-screen"
+>
+  <View
+    className="relative flex-1"
+  >
+    <RCTScrollView
+      className="flex-1"
+      testID="paywall-scroll"
+    >
+      <View>
+        <View
+          className="gap-4 px-6 pb-8 pt-4"
+        >
+          <Text
+            className="text-2xl font-bold text-brand-900"
+            testID="paywall-headline"
+          >
+            Get more from Paw Care Right +
+          </Text>
+          <Text
+            className="text-base text-brand-700"
+            testID="paywall-subcopy"
+          >
+            Unlock unlimited symptom checks, faster answers, and sharing across your whole family.
+          </Text>
+          <View
+            className="gap-3"
+          >
+            <View
+              accessibilityRole="button"
+              accessibilityState={
+                {
+                  "busy": undefined,
+                  "checked": undefined,
+                  "disabled": false,
+                  "expanded": undefined,
+                  "selected": undefined,
+                }
+              }
+              accessibilityValue={
+                {
+                  "max": undefined,
+                  "min": undefined,
+                  "now": undefined,
+                  "text": undefined,
+                }
+              }
+              accessible={true}
+              className="gap-1 rounded-lg border-2 border-brand-700 px-4 py-3"
+              collapsable={false}
+              focusable={true}
+              onBlur={[Function]}
+              onClick={[Function]}
+              onFocus={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              testID="paywall-plan-annual"
+            >
+              <View
+                className="self-start rounded bg-brand-700 px-2 py-1"
+                testID="paywall-plan-annual-highlight"
+              >
+                <Text
+                  className="text-xs font-semibold text-white"
+                >
+                  Best value
+                </Text>
+              </View>
+              <Text
+                className="text-base font-semibold text-brand-900"
+              >
+                Annual
+              </Text>
+              <Text
+                className="text-base text-brand-700"
+                testID="paywall-price-annual"
+              >
+                $39.99/yr
+              </Text>
+            </View>
+            <View
+              accessibilityRole="button"
+              accessibilityState={
+                {
+                  "busy": undefined,
+                  "checked": undefined,
+                  "disabled": false,
+                  "expanded": undefined,
+                  "selected": undefined,
+                }
+              }
+              accessibilityValue={
+                {
+                  "max": undefined,
+                  "min": undefined,
+                  "now": undefined,
+                  "text": undefined,
+                }
+              }
+              accessible={true}
+              className="gap-1 rounded-lg border border-brand-300 px-4 py-3"
+              collapsable={false}
+              focusable={true}
+              onBlur={[Function]}
+              onClick={[Function]}
+              onFocus={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              testID="paywall-plan-monthly"
+            >
+              <Text
+                className="text-base font-semibold text-brand-900"
+              >
+                Monthly
+              </Text>
+              <Text
+                className="text-base text-brand-700"
+                testID="paywall-price-monthly"
+              >
+                $4.99/mo
+              </Text>
+              <Text
+                className="text-xs text-brand-700"
+                testID="paywall-trial-badge"
+              >
+                7-day free trial
+              </Text>
+            </View>
+            <View
+              accessibilityRole="button"
+              accessibilityState={
+                {
+                  "busy": undefined,
+                  "checked": undefined,
+                  "disabled": false,
+                  "expanded": undefined,
+                  "selected": undefined,
+                }
+              }
+              accessibilityValue={
+                {
+                  "max": undefined,
+                  "min": undefined,
+                  "now": undefined,
+                  "text": undefined,
+                }
+              }
+              accessible={true}
+              className="gap-1 rounded-lg border border-brand-300 px-4 py-3"
+              collapsable={false}
+              focusable={true}
+              onBlur={[Function]}
+              onClick={[Function]}
+              onFocus={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              testID="paywall-plan-family"
+            >
+              <Text
+                className="text-base font-semibold text-brand-900"
+              >
+                Family
+              </Text>
+              <Text
+                className="text-base text-brand-700"
+                testID="paywall-price-family"
+              >
+                $59.99/yr
+              </Text>
+              <Text
+                className="text-sm text-brand-700"
+                testID="paywall-family-explainer"
+              >
+                Share one subscription across everyone who cares for your pets.
+              </Text>
+            </View>
+            <View
+              accessibilityRole="button"
+              accessibilityState={
+                {
+                  "busy": undefined,
+                  "checked": undefined,
+                  "disabled": false,
+                  "expanded": undefined,
+                  "selected": undefined,
+                }
+              }
+              accessibilityValue={
+                {
+                  "max": undefined,
+                  "min": undefined,
+                  "now": undefined,
+                  "text": undefined,
+                }
+              }
+              accessible={true}
+              className="items-center rounded-lg bg-brand-700 px-6 py-3"
+              collapsable={false}
+              focusable={true}
+              onBlur={[Function]}
+              onClick={[Function]}
+              onFocus={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              testID="paywall-trial-cta"
+            >
+              <Text
+                className="text-base font-semibold text-white"
+              >
+                Start your 7-day free trial — then Free for 7 days
+              </Text>
+            </View>
+          </View>
+          <View
+            accessibilityRole="button"
+            accessibilityState={
+              {
+                "busy": undefined,
+                "checked": undefined,
+                "disabled": false,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            className="items-center py-2"
+            collapsable={false}
+            focusable={true}
+            onBlur={[Function]}
+            onClick={[Function]}
+            onFocus={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            testID="paywall-restore"
+          >
+            <Text
+              className="text-sm font-semibold text-brand-700"
+            >
+              Restore purchases
+            </Text>
+          </View>
+          <View
+            className="flex-row justify-center gap-6"
+          >
+            <View
+              accessibilityRole="link"
+              accessibilityState={
+                {
+                  "busy": undefined,
+                  "checked": undefined,
+                  "disabled": undefined,
+                  "expanded": undefined,
+                  "selected": undefined,
+                }
+              }
+              accessibilityValue={
+                {
+                  "max": undefined,
+                  "min": undefined,
+                  "now": undefined,
+                  "text": undefined,
+                }
+              }
+              accessible={true}
+              collapsable={false}
+              focusable={true}
+              onBlur={[Function]}
+              onClick={[Function]}
+              onFocus={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              testID="paywall-terms"
+            >
+              <Text
+                className="text-xs text-brand-700 underline"
+              >
+                Terms of Service
+              </Text>
+            </View>
+            <View
+              accessibilityRole="link"
+              accessibilityState={
+                {
+                  "busy": undefined,
+                  "checked": undefined,
+                  "disabled": undefined,
+                  "expanded": undefined,
+                  "selected": undefined,
+                }
+              }
+              accessibilityValue={
+                {
+                  "max": undefined,
+                  "min": undefined,
+                  "now": undefined,
+                  "text": undefined,
+                }
+              }
+              accessible={true}
+              collapsable={false}
+              focusable={true}
+              onBlur={[Function]}
+              onClick={[Function]}
+              onFocus={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              testID="paywall-privacy"
+            >
+              <Text
+                className="text-xs text-brand-700 underline"
+              >
+                Privacy Policy
+              </Text>
+            </View>
+          </View>
+          <View
+            accessibilityRole="button"
+            accessibilityState={
+              {
+                "busy": undefined,
+                "checked": undefined,
+                "disabled": undefined,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            className="items-center py-2"
+            collapsable={false}
+            focusable={true}
+            onBlur={[Function]}
+            onClick={[Function]}
+            onFocus={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            testID="paywall-maybe-later"
+          >
+            <Text
+              className="text-sm text-brand-700"
+            >
+              Maybe later
+            </Text>
+          </View>
+        </View>
+      </View>
+    </RCTScrollView>
+  </View>
+</RNCSafeAreaView>
+`;
+
+exports[`paywall screen — variant B renders and matches the snapshot 1`] = `
+<RNCSafeAreaView
+  className="flex-1 bg-white"
+  edges={
+    {
+      "bottom": "additive",
+      "left": "additive",
+      "right": "additive",
+      "top": "additive",
+    }
+  }
+  testID="paywall-screen"
+>
+  <View
+    className="relative flex-1"
+  >
+    <RCTScrollView
+      className="flex-1"
+      testID="paywall-scroll"
+    >
+      <View>
+        <View
+          className="gap-4 px-6 pb-8 pt-4"
+        >
+          <Text
+            className="text-2xl font-bold text-brand-900"
+            testID="paywall-headline"
+          >
+            Paw Care Right + Plus
+          </Text>
+          <Text
+            className="text-base text-brand-700"
+            testID="paywall-subcopy"
+          >
+            Go further with unlimited symptom checks, priority guidance, and a plan the whole family can share.
+          </Text>
+          <View
+            className="gap-3"
+          >
+            <View
+              accessibilityRole="button"
+              accessibilityState={
+                {
+                  "busy": undefined,
+                  "checked": undefined,
+                  "disabled": false,
+                  "expanded": undefined,
+                  "selected": undefined,
+                }
+              }
+              accessibilityValue={
+                {
+                  "max": undefined,
+                  "min": undefined,
+                  "now": undefined,
+                  "text": undefined,
+                }
+              }
+              accessible={true}
+              className="gap-1 rounded-lg border-2 border-brand-700 px-4 py-3"
+              collapsable={false}
+              focusable={true}
+              onBlur={[Function]}
+              onClick={[Function]}
+              onFocus={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              testID="paywall-plan-annual"
+            >
+              <View
+                className="self-start rounded bg-brand-700 px-2 py-1"
+                testID="paywall-plan-annual-highlight"
+              >
+                <Text
+                  className="text-xs font-semibold text-white"
+                >
+                  Best value
+                </Text>
+              </View>
+              <Text
+                className="text-base font-semibold text-brand-900"
+              >
+                Annual
+              </Text>
+              <Text
+                className="text-base text-brand-700"
+                testID="paywall-price-annual"
+              >
+                $39.99/yr
+              </Text>
+            </View>
+            <View
+              accessibilityRole="button"
+              accessibilityState={
+                {
+                  "busy": undefined,
+                  "checked": undefined,
+                  "disabled": false,
+                  "expanded": undefined,
+                  "selected": undefined,
+                }
+              }
+              accessibilityValue={
+                {
+                  "max": undefined,
+                  "min": undefined,
+                  "now": undefined,
+                  "text": undefined,
+                }
+              }
+              accessible={true}
+              className="gap-1 rounded-lg border border-brand-300 px-4 py-3"
+              collapsable={false}
+              focusable={true}
+              onBlur={[Function]}
+              onClick={[Function]}
+              onFocus={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              testID="paywall-plan-monthly"
+            >
+              <Text
+                className="text-base font-semibold text-brand-900"
+              >
+                Monthly
+              </Text>
+              <Text
+                className="text-base text-brand-700"
+                testID="paywall-price-monthly"
+              >
+                $4.99/mo
+              </Text>
+              <Text
+                className="text-xs text-brand-700"
+                testID="paywall-trial-badge"
+              >
+                7-day free trial
+              </Text>
+            </View>
+            <View
+              accessibilityRole="button"
+              accessibilityState={
+                {
+                  "busy": undefined,
+                  "checked": undefined,
+                  "disabled": false,
+                  "expanded": undefined,
+                  "selected": undefined,
+                }
+              }
+              accessibilityValue={
+                {
+                  "max": undefined,
+                  "min": undefined,
+                  "now": undefined,
+                  "text": undefined,
+                }
+              }
+              accessible={true}
+              className="gap-1 rounded-lg border border-brand-300 px-4 py-3"
+              collapsable={false}
+              focusable={true}
+              onBlur={[Function]}
+              onClick={[Function]}
+              onFocus={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              testID="paywall-plan-family"
+            >
+              <Text
+                className="text-base font-semibold text-brand-900"
+              >
+                Family
+              </Text>
+              <Text
+                className="text-base text-brand-700"
+                testID="paywall-price-family"
+              >
+                $59.99/yr
+              </Text>
+              <Text
+                className="text-sm text-brand-700"
+                testID="paywall-family-explainer"
+              >
+                Share one subscription across everyone who cares for your pets.
+              </Text>
+            </View>
+            <View
+              accessibilityRole="button"
+              accessibilityState={
+                {
+                  "busy": undefined,
+                  "checked": undefined,
+                  "disabled": false,
+                  "expanded": undefined,
+                  "selected": undefined,
+                }
+              }
+              accessibilityValue={
+                {
+                  "max": undefined,
+                  "min": undefined,
+                  "now": undefined,
+                  "text": undefined,
+                }
+              }
+              accessible={true}
+              className="items-center rounded-lg bg-brand-700 px-6 py-3"
+              collapsable={false}
+              focusable={true}
+              onBlur={[Function]}
+              onClick={[Function]}
+              onFocus={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              testID="paywall-trial-cta"
+            >
+              <Text
+                className="text-base font-semibold text-white"
+              >
+                Start your 7-day free trial — then Free for 7 days
+              </Text>
+            </View>
+          </View>
+          <View
+            accessibilityRole="button"
+            accessibilityState={
+              {
+                "busy": undefined,
+                "checked": undefined,
+                "disabled": false,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            className="items-center py-2"
+            collapsable={false}
+            focusable={true}
+            onBlur={[Function]}
+            onClick={[Function]}
+            onFocus={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            testID="paywall-restore"
+          >
+            <Text
+              className="text-sm font-semibold text-brand-700"
+            >
+              Restore purchases
+            </Text>
+          </View>
+          <View
+            className="flex-row justify-center gap-6"
+          >
+            <View
+              accessibilityRole="link"
+              accessibilityState={
+                {
+                  "busy": undefined,
+                  "checked": undefined,
+                  "disabled": undefined,
+                  "expanded": undefined,
+                  "selected": undefined,
+                }
+              }
+              accessibilityValue={
+                {
+                  "max": undefined,
+                  "min": undefined,
+                  "now": undefined,
+                  "text": undefined,
+                }
+              }
+              accessible={true}
+              collapsable={false}
+              focusable={true}
+              onBlur={[Function]}
+              onClick={[Function]}
+              onFocus={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              testID="paywall-terms"
+            >
+              <Text
+                className="text-xs text-brand-700 underline"
+              >
+                Terms of Service
+              </Text>
+            </View>
+            <View
+              accessibilityRole="link"
+              accessibilityState={
+                {
+                  "busy": undefined,
+                  "checked": undefined,
+                  "disabled": undefined,
+                  "expanded": undefined,
+                  "selected": undefined,
+                }
+              }
+              accessibilityValue={
+                {
+                  "max": undefined,
+                  "min": undefined,
+                  "now": undefined,
+                  "text": undefined,
+                }
+              }
+              accessible={true}
+              collapsable={false}
+              focusable={true}
+              onBlur={[Function]}
+              onClick={[Function]}
+              onFocus={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              testID="paywall-privacy"
+            >
+              <Text
+                className="text-xs text-brand-700 underline"
+              >
+                Privacy Policy
+              </Text>
+            </View>
+          </View>
+          <View
+            accessibilityRole="button"
+            accessibilityState={
+              {
+                "busy": undefined,
+                "checked": undefined,
+                "disabled": undefined,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            className="items-center py-2"
+            collapsable={false}
+            focusable={true}
+            onBlur={[Function]}
+            onClick={[Function]}
+            onFocus={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            testID="paywall-maybe-later"
+          >
+            <Text
+              className="text-sm text-brand-700"
+            >
+              Maybe later
+            </Text>
+          </View>
+        </View>
+      </View>
+    </RCTScrollView>
+  </View>
+</RNCSafeAreaView>
+`;

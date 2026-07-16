@@ -9,6 +9,8 @@ export interface AppConfig {
   googleClientId: string;
   revenueCatIosKey: string;
   revenueCatAndroidKey: string;
+  termsUrl: string;
+  privacyUrl: string;
 }
 
 export function getConfig(): AppConfig {
@@ -18,6 +20,8 @@ export function getConfig(): AppConfig {
         googleClientId?: string;
         revenueCatIosKey?: string;
         revenueCatAndroidKey?: string;
+        termsUrl?: string;
+        privacyUrl?: string;
       }
     | undefined;
 
@@ -26,5 +30,8 @@ export function getConfig(): AppConfig {
     googleClientId: extra?.googleClientId ?? "",
     revenueCatIosKey: extra?.revenueCatIosKey ?? "stub_ios_key",
     revenueCatAndroidKey: extra?.revenueCatAndroidKey ?? "stub_android_key",
+    // §1a: pawcareright.app is the provisional web placeholder until T102.
+    termsUrl: extra?.termsUrl ?? "https://pawcareright.app/terms",
+    privacyUrl: extra?.privacyUrl ?? "https://pawcareright.app/privacy",
   };
 }

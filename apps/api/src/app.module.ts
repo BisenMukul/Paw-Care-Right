@@ -23,6 +23,7 @@ import { QueueModule } from "./queue/queue.module";
 import { QuotaModule } from "./quota/quota.module";
 import { RedisModule } from "./redis/redis.module";
 import { RemindersModule } from "./reminders/reminders.module";
+import { RemoteConfigModule } from "./remote-config/remote-config.module";
 import { WorkersModule } from "./workers/workers.module";
 
 @Module({
@@ -44,6 +45,7 @@ import { WorkersModule } from "./workers/workers.module";
     RemindersModule,
     HealthLogsModule,
     NotificationPrefsModule,
+    RemoteConfigModule,
     WorkersModule,
     ThrottlerModule.forRoot([{ name: "default", ...THROTTLE_DEFAULT }]),
   ],

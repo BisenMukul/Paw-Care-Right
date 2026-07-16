@@ -24,6 +24,7 @@ export const apiEnvSchema = z.object({
     .string()
     .min(1)
     .default("dev-insecure-rc-webhook-token-do-not-use-in-production"),
+  PAYWALL_VARIANT: z.enum(["A", "B"]).default("A"),
 });
 
 export type ApiEnv = z.infer<typeof apiEnvSchema>;

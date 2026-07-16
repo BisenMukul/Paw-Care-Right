@@ -102,6 +102,7 @@ export const strings = {
     body: "Account and household settings will live here.",
     family: "Family",
     notifications: "Notifications",
+    premium: (appName: string) => `Upgrade to ${appName} Plus`,
   },
   auth: {
     welcome: {
@@ -348,6 +349,42 @@ export const strings = {
       offlineBanner: "You're offline — showing your saved checks.",
       dateA11y: (date: string) => `Checked on ${date}`,
     },
+  },
+  paywall: {
+    // A/B copy variants (T074 plan decision 5): the server only ever sends
+    // the variant ID, never prose (§7 review + i18n-ready). NO health/
+    // medical claims, no "diagnos*"/drug/dose tokens in either variant.
+    variants: {
+      A: {
+        headline: (appName: string) => `Get more from ${appName}`,
+        subcopy:
+          "Unlock unlimited symptom checks, faster answers, and sharing across your whole family.",
+      },
+      B: {
+        headline: (appName: string) => `${appName} Plus`,
+        subcopy:
+          "Go further with unlimited symptom checks, priority guidance, and a plan the whole family can share.",
+      },
+    },
+    planNames: {
+      monthly: "Monthly",
+      annual: "Annual",
+      family: "Family",
+    },
+    familyExplainer: "Share one subscription across everyone who cares for your pets.",
+    annualBadge: "Best value",
+    trialCta: "7-day free trial",
+    trialCtaWithPrice: (price: string) => `Start your 7-day free trial — then ${price}`,
+    subscribeCta: (price: string) => `Subscribe — ${price}`,
+    restore: "Restore purchases",
+    restoreNone: "We couldn't find any previous purchases.",
+    terms: "Terms of Service",
+    privacy: "Privacy Policy",
+    maybeLater: "Maybe later",
+    unavailable: "Plans aren't available right now. Please try again later.",
+    pending: "Your purchase is pending approval — we'll unlock your plan as soon as it's confirmed.",
+    error: "Something went wrong. Please try again.",
+    success: "You're all set!",
   },
   family: {
     title: "Family",

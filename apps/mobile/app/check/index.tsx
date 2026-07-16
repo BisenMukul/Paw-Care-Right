@@ -5,6 +5,7 @@ import { ActivityIndicator, Pressable, ScrollView, Text, View } from "react-nati
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useChecksList } from "../../src/api/checks-api";
+import { usePaywallOnboardingTrigger } from "../../src/billing/use-paywall-trigger";
 import { CategoryGrid } from "../../src/components/category-grid";
 import { CheckHistoryRow } from "../../src/components/check-history-row";
 import { strings } from "../../src/strings";
@@ -30,6 +31,12 @@ export default function CheckEntryScreen() {
   const isOffline = useIsOffline();
   const { data, isLoading, isError } = useChecksList(petId ?? "");
   const recent = (data?.pages[0]?.items ?? []).slice(0, 3);
+
+  // T074: the ONLY call site of the onboarding-paywall trigger (a
+  // side-effect hook, renders nothing) -- this screen is strictly
+  // upstream of the intake -> submit -> red-flag -> emergency path, which
+  // never imports it (see `use-paywall-trigger.ts`).
+  usePaywallOnboardingTrigger({ completedCheckCount: data?.pages[0]?.items.length ?? 0 });
 
   const handleSelect = (category: SymptomCategory) => {
     router.push({ pathname: "/check/[category]", params: { category, petId } });

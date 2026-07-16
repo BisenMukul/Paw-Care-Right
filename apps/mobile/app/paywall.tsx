@@ -1,0 +1,268 @@
+import { APP_DISPLAY_NAME } from "@pawcareright/config";
+import * as Linking from "expo-linking";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useState } from "react";
+import { ActivityIndicator, Pressable, ScrollView, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+
+import { usePaywallConfig, useOfferings } from "../src/billing/paywall-queries";
+import { usePremiumStore } from "../src/billing/premium-store";
+import type { PaywallPackage } from "../src/billing/paywall-types";
+import { purchasePackage, restorePurchases } from "../src/billing/purchases";
+import { PrimaryButton } from "../src/components/primary-button";
+import { getConfig } from "../src/config";
+import { strings } from "../src/strings";
+
+type Notice = "none" | "pending" | "error" | "restoreNone" | "success";
+
+/**
+ * The paywall screen (T074 plan): a dismissible modal reached from
+ * `check/index.tsx` (onboarding, one-time) or the Settings "Upgrade" row.
+ * It NEVER gates a check and is NEVER on the intake/submit/red-flag/
+ * emergency path (see `use-paywall-trigger.ts`'s header comment for the
+ * structural guarantee). Prices/trial come exclusively from the RC
+ * offering (`useOfferings`); copy is entirely client-side (`strings.paywall`),
+ * chosen by the server-sent A/B variant (`usePaywallConfig`, offline-safe
+ * default `"A"`).
+ */
+export default function PaywallScreen() {
+  const router = useRouter();
+  // `source` (`"onboarding" | "settings"`) is carried for future analytics
+  // only; it does not change this screen's rendering or navigation.
+  useLocalSearchParams<{ source?: string }>();
+
+  const { data: config } = usePaywallConfig();
+  const { data: offering, isLoading: offeringLoading } = useOfferings();
+  const setFromCustomerInfo = usePremiumStore((state) => state.setFromCustomerInfo);
+  const setStatus = usePremiumStore((state) => state.setStatus);
+
+  const [busyPackageId, setBusyPackageId] = useState<string | null>(null);
+  const [restoreBusy, setRestoreBusy] = useState(false);
+  const [notice, setNotice] = useState<Notice>("none");
+
+  const variant = config?.variant ?? "A";
+  const copy = strings.paywall.variants[variant];
+
+  const annual = offering?.packages.find((p) => p.id === "annual");
+  const monthly = offering?.packages.find((p) => p.id === "monthly");
+  const family = offering?.packages.find((p) => p.id === "family");
+
+  const isBusy = busyPackageId !== null || restoreBusy;
+
+  async function handlePurchase(pkg: PaywallPackage) {
+    setNotice("none");
+    setBusyPackageId(pkg.id);
+    const outcome = await purchasePackage(pkg);
+    setBusyPackageId(null);
+
+    switch (outcome.status) {
+      case "success":
+        setFromCustomerInfo(outcome.customerInfo);
+        setNotice("success");
+        router.back();
+        break;
+      case "cancelled":
+        // Stays mounted, no navigation, no error notice (plan AC).
+        break;
+      case "pending":
+        setNotice("pending");
+        break;
+      case "error":
+        setNotice("error");
+        break;
+    }
+  }
+
+  async function handleRestore() {
+    setNotice("none");
+    setRestoreBusy(true);
+    const outcome = await restorePurchases();
+    setRestoreBusy(false);
+
+    if (outcome.status === "success" && outcome.entitled) {
+      setStatus("entitled");
+      setNotice("success");
+      router.back();
+    } else if (outcome.status === "success") {
+      setNotice("restoreNone");
+    } else {
+      setNotice("error");
+    }
+  }
+
+  function handleMaybeLater() {
+    router.back();
+  }
+
+  return (
+    <SafeAreaView testID="paywall-screen" className="flex-1 bg-white">
+      <View className="relative flex-1">
+        <ScrollView testID="paywall-scroll" className="flex-1">
+          <View className="gap-4 px-6 pb-8 pt-4">
+            <Text testID="paywall-headline" className="text-2xl font-bold text-brand-900">
+              {copy.headline(APP_DISPLAY_NAME)}
+            </Text>
+            <Text testID="paywall-subcopy" className="text-base text-brand-700">
+              {copy.subcopy}
+            </Text>
+
+            {notice === "pending" ? (
+              <View testID="paywall-pending-notice" className="rounded-lg bg-amber-100 px-4 py-3">
+                <Text className="text-center text-sm text-amber-950">{strings.paywall.pending}</Text>
+              </View>
+            ) : null}
+            {notice === "error" ? (
+              <View testID="paywall-error-notice" className="rounded-lg bg-red-100 px-4 py-3">
+                <Text className="text-center text-sm text-red-800">{strings.paywall.error}</Text>
+              </View>
+            ) : null}
+            {notice === "restoreNone" ? (
+              <View testID="paywall-restore-none" className="rounded-lg bg-amber-100 px-4 py-3">
+                <Text className="text-center text-sm text-amber-950">{strings.paywall.restoreNone}</Text>
+              </View>
+            ) : null}
+            {notice === "success" ? (
+              <View testID="paywall-success" className="rounded-lg bg-green-100 px-4 py-3">
+                <Text className="text-center text-sm text-green-900">{strings.paywall.success}</Text>
+              </View>
+            ) : null}
+
+            {offeringLoading ? (
+              <View testID="paywall-offerings-loading" className="items-center py-8">
+                <ActivityIndicator />
+              </View>
+            ) : offering === null || offering === undefined ? (
+              <View testID="paywall-unavailable" className="rounded-lg bg-brand-50 px-4 py-3">
+                <Text className="text-center text-sm text-brand-700">{strings.paywall.unavailable}</Text>
+              </View>
+            ) : (
+              <View className="gap-3">
+                {annual ? (
+                  <Pressable
+                    testID="paywall-plan-annual"
+                    accessibilityRole="button"
+                    onPress={() => handlePurchase(annual)}
+                    disabled={isBusy}
+                    className="gap-1 rounded-lg border-2 border-brand-700 px-4 py-3"
+                  >
+                    <View
+                      testID="paywall-plan-annual-highlight"
+                      className="self-start rounded bg-brand-700 px-2 py-1"
+                    >
+                      <Text className="text-xs font-semibold text-white">{strings.paywall.annualBadge}</Text>
+                    </View>
+                    <Text className="text-base font-semibold text-brand-900">
+                      {strings.paywall.planNames.annual}
+                    </Text>
+                    <Text testID="paywall-price-annual" className="text-base text-brand-700">
+                      {annual.priceString}
+                    </Text>
+                  </Pressable>
+                ) : null}
+
+                {monthly ? (
+                  <Pressable
+                    testID="paywall-plan-monthly"
+                    accessibilityRole="button"
+                    onPress={() => handlePurchase(monthly)}
+                    disabled={isBusy}
+                    className="gap-1 rounded-lg border border-brand-300 px-4 py-3"
+                  >
+                    <Text className="text-base font-semibold text-brand-900">
+                      {strings.paywall.planNames.monthly}
+                    </Text>
+                    <Text testID="paywall-price-monthly" className="text-base text-brand-700">
+                      {monthly.priceString}
+                    </Text>
+                    <Text testID="paywall-trial-badge" className="text-xs text-brand-700">
+                      {strings.paywall.trialCta}
+                    </Text>
+                  </Pressable>
+                ) : null}
+
+                {family ? (
+                  <Pressable
+                    testID="paywall-plan-family"
+                    accessibilityRole="button"
+                    onPress={() => handlePurchase(family)}
+                    disabled={isBusy}
+                    className="gap-1 rounded-lg border border-brand-300 px-4 py-3"
+                  >
+                    <Text className="text-base font-semibold text-brand-900">
+                      {strings.paywall.planNames.family}
+                    </Text>
+                    <Text testID="paywall-price-family" className="text-base text-brand-700">
+                      {family.priceString}
+                    </Text>
+                    <Text testID="paywall-family-explainer" className="text-sm text-brand-700">
+                      {strings.paywall.familyExplainer}
+                    </Text>
+                  </Pressable>
+                ) : null}
+
+                {monthly ? (
+                  <PrimaryButton
+                    testID="paywall-trial-cta"
+                    label={
+                      monthly.introPriceString !== undefined
+                        ? strings.paywall.trialCtaWithPrice(monthly.introPriceString)
+                        : strings.paywall.subscribeCta(monthly.priceString)
+                    }
+                    loading={busyPackageId === monthly.id}
+                    disabled={isBusy}
+                    onPress={() => handlePurchase(monthly)}
+                  />
+                ) : null}
+              </View>
+            )}
+
+            <Pressable
+              testID="paywall-restore"
+              accessibilityRole="button"
+              onPress={handleRestore}
+              disabled={isBusy}
+              className="items-center py-2"
+            >
+              <Text className="text-sm font-semibold text-brand-700">{strings.paywall.restore}</Text>
+            </Pressable>
+
+            <View className="flex-row justify-center gap-6">
+              <Pressable
+                testID="paywall-terms"
+                accessibilityRole="link"
+                onPress={() => void Linking.openURL(getConfig().termsUrl)}
+              >
+                <Text className="text-xs text-brand-700 underline">{strings.paywall.terms}</Text>
+              </Pressable>
+              <Pressable
+                testID="paywall-privacy"
+                accessibilityRole="link"
+                onPress={() => void Linking.openURL(getConfig().privacyUrl)}
+              >
+                <Text className="text-xs text-brand-700 underline">{strings.paywall.privacy}</Text>
+              </Pressable>
+            </View>
+
+            <Pressable
+              testID="paywall-maybe-later"
+              accessibilityRole="button"
+              onPress={handleMaybeLater}
+              className="items-center py-2"
+            >
+              <Text className="text-sm text-brand-700">{strings.paywall.maybeLater}</Text>
+            </Pressable>
+          </View>
+        </ScrollView>
+
+        {isBusy ? (
+          <View
+            testID="paywall-busy"
+            className="absolute inset-0 items-center justify-center bg-white/70"
+          >
+            <ActivityIndicator />
+          </View>
+        ) : null}
+      </View>
+    </SafeAreaView>
+  );
+}

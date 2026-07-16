@@ -1,3 +1,4 @@
+import { APP_DISPLAY_NAME } from "@pawcareright/config";
 import { useRouter } from "expo-router";
 import { Pressable, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -27,6 +28,14 @@ export default function SettingsScreen() {
         className="items-center rounded-lg bg-brand-700 px-6 py-3"
       >
         <Text className="text-base font-semibold text-white">{strings.settings.notifications}</Text>
+      </Pressable>
+      <Pressable
+        testID="settings-premium"
+        onPress={() => router.push({ pathname: "/paywall", params: { source: "settings" } })}
+        accessibilityRole="button"
+        className="items-center rounded-lg bg-brand-700 px-6 py-3"
+      >
+        <Text className="text-base font-semibold text-white">{strings.settings.premium(APP_DISPLAY_NAME)}</Text>
       </Pressable>
     </SafeAreaView>
   );
