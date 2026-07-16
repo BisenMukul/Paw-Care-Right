@@ -859,3 +859,17 @@
   5. Then set `loop/loop-state.json → checkpoints.C2.approved = true` + a journal note, and tell the loop to continue → Phase 8 (Chat + Content → M8).
 - **Standing founder list (accumulated):** the on-device M4/M5/M6 demo evidence rides the same dev-client rebuild; 5 region hotline numbers verification before store submission; milestone tags M0–M7 local-only (403 on tag push; land at PR merge); pnpm-lock .gitignore line (recommend revert); C2 vet-review list (toxin rows, golden tiers, care templates, detector limits, med-course copy, pets-stay-on-leave semantics).
 - **Actions:** milestones.M7 = passed; status → paused-checkpoint-C2; tag milestone/M7 local; branch + main pushed.
+
+## [2026-07-16] HOTFIX · Startup crash hardening + simplified entry (founder-directed, Fable-direct)
+- **Founder report:** app still crashes abruptly in Expo (Go) right after the splash screen; asked for a proper fix + a simpler entry, pushed to main.
+- **Audit (full startup import graph):** every MMKV usage (7 sites) confirmed behind the lazy createSafeStorage guard; react-native-purchases lazy-required only; no module-level native calls (notifications/network/secure-store all hook-scoped); config getters default-safe; analytics transport stub-safe. The remaining crash class is import-time/native-callback throws, which NO error boundary can catch — previously these died silently with zero trace.
+- **Fixes (orchestrator-direct, per founder request for Fable):**
+  1. `src/startup-guard.ts` (new): chained global JS error handler installed as the FIRST import of the root layout — every fatal error now prints `[pawcareright startup] FATAL: <stack>` to the Metro/adb console before the app dies (observes, never swallows; idempotent; no-ops without ErrorUtils).
+  2. `app/_layout.tsx` simplified: ONE provider tree (the restoring/ready branches previously duplicated the entire provider stack); `AppErrorBoundary` moved OUTERMOST (it previously sat inside PersistedApiQueryProvider — a provider failure rendered a blank screen); all side-effect hooks (restore/auth-gate/network/purchases) moved into an inner `AppRoot` so their failures surface inside the boundary.
+  3. `jest.config.js` + `jest.css-stub.js`: CSS module stub so tests can require the root layout (global.css import).
+- **Tests (new):** `startup-guard.test.ts` (logs+chains, ErrorUtils-absent no-throw, idempotent — 3) and `root-layout.test.tsx` (restoring splash in a single tree; signed-out renders the stack; **provider-throw renders the readable fallback — boundary-outermost regression pin** — 3). Mobile **590 → 596 (85 suites, stable ×3)**; api 81/860, typecheck/lint/build all green.
+- **⚠️ Founder — what to do if it STILL crashes on your phone (environment-level, not fixable in JS):**
+  1. With this fix, the crash will print `[pawcareright startup] FATAL: ...` in the `expo start` terminal — send that line and it becomes a one-step fix.
+  2. **Expo Go version mismatch is the likeliest remaining cause**: the project is Expo SDK 57 — Expo Go on the phone must support SDK 57 (`npx expo-doctor` and the `expo start` banner will say). A mismatched Expo Go crashes at load with no JS error at all.
+  3. Expo Go can never run the 3 native modules (mmkv/svg/purchases) — the app now boots without them (memory persistence, no chart, no billing), but the REAL fix remains the dev-client build: `eas build --profile development` with EXPO_PUBLIC_API_URL set.
+- Commit: fix(mobile): startup crash trap + simplified single-tree entry.
