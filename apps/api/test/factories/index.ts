@@ -3,7 +3,18 @@ import { randomUUID } from "node:crypto";
 import type { INestApplication } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import type { TestingModuleBuilder } from "@nestjs/testing";
-import type { Household, Membership, Pet, PrismaClient, Role, Species, User } from "@prisma/client";
+import type {
+  Household,
+  Membership,
+  Pet,
+  Prisma,
+  PrismaClient,
+  Role,
+  Species,
+  Subscription,
+  SubscriptionEntitlement,
+  User,
+} from "@prisma/client";
 import request from "supertest";
 
 import { DEFAULT_LOCALE, DEFAULT_REGION } from "../../src/auth/auth.constants";
@@ -189,6 +200,36 @@ export async function cleanupUsers(
   await prisma.device.deleteMany({ where: { userId: { in: ids } } });
   await prisma.household.deleteMany({ where: { ownerId: { in: ids } } });
   await prisma.user.deleteMany({ where: { id: { in: ids } } });
+}
+
+/**
+ * T072 billing factory: seeds a `Subscription` mirror row. `Subscription`
+ * FKs to both `User` (rcAppUserId, PK) and `Household` (both `onDelete:
+ * Cascade`), so `cleanupUsers`'s existing `household.deleteMany` cascade
+ * removes any row seeded here -- no cleanup-ordering change needed.
+ */
+export async function createSubscription(
+  prisma: PrismaClient,
+  args: {
+    rcAppUserId: string;
+    householdId: string;
+    entitlement: SubscriptionEntitlement;
+    plan?: string;
+    status?: string;
+    expiresAt?: Date | null;
+  },
+): Promise<Subscription> {
+  return prisma.subscription.create({
+    data: {
+      rcAppUserId: args.rcAppUserId,
+      householdId: args.householdId,
+      entitlement: args.entitlement,
+      plan: args.plan ?? null,
+      status: args.status ?? "active",
+      expiresAt: args.expiresAt ?? null,
+      rawEventJson: {} as Prisma.InputJsonValue,
+    },
+  });
 }
 
 export * from "./health-logs";

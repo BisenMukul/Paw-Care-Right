@@ -47,6 +47,11 @@ enum HealthLogKind {
   CHECK_REF
 }
 
+enum SubscriptionEntitlement {
+  FREE
+  PREMIUM
+}
+
 model User {
   id        String   @id @default(uuid())
   email     String   @unique
@@ -65,6 +70,7 @@ model User {
   acceptedInvites HouseholdInvite[] @relation("InviteAcceptor")
   createdChecks   SymptomCheck[]
   notificationPrefs UserNotificationPrefs?
+  subscription    Subscription?
 }
 
 model Household {
@@ -75,9 +81,10 @@ model Household {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  memberships Membership[]
-  pets        Pet[]
-  invites     HouseholdInvite[]
+  memberships   Membership[]
+  pets          Pet[]
+  invites       HouseholdInvite[]
+  subscriptions Subscription[]
 
   @@index([ownerId])
 }
@@ -302,4 +309,30 @@ model HealthLog {
   @@index([petId, occurredAt(sort: Desc)])
   // T064: powers the single-kind filtered timeline list page.
   @@index([petId, kind, occurredAt(sort: Desc)])
+}
+
+// Subscription (T072): a RevenueCat-mirror row, one per purchaser
+// (`rcAppUserId` == backend `User.id` -- T071 set purchaser identity via
+// `Purchases.logIn(user.id)`). Field list is exactly ARCHITECTURE §3
+// (plan decision 1/2); cardinality is per-purchaser (not per-household, as
+// the ERD's `||--o|` implies) per the plan's documented, card-authorized
+// conflict resolution -- ARCHITECTURE line 3 says follow the task card.
+// "Family" plans are detected via `FAMILY_PLAN_PRODUCT_ID` (packages/types),
+// not a stored column. T073 owns writes (RC webhook upsert by
+// `rcAppUserId`); this model is read-only from this task's perspective.
+model Subscription {
+  rcAppUserId  String                  @id
+  householdId  String
+  entitlement  SubscriptionEntitlement @default(FREE)
+  plan         String?
+  status       String
+  expiresAt    DateTime?
+  rawEventJson Json
+  createdAt    DateTime                @default(now())
+  updatedAt    DateTime                @updatedAt
+
+  user      User      @relation(fields: [rcAppUserId], references: [id], onDelete: Cascade)
+  household Household @relation(fields: [householdId], references: [id], onDelete: Cascade)
+
+  @@index([householdId])
 }

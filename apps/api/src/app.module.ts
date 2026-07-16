@@ -4,6 +4,7 @@ import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 
 import { AuthModule } from "./auth/auth.module";
 import { JwtAuthGuard } from "./auth/jwt-auth.guard";
+import { BillingModule } from "./billing/billing.module";
 import { BreedsModule } from "./breeds/breeds.module";
 import { ChecksModule } from "./checks/checks.module";
 import { HouseholdScopeGuard } from "./common/household-scope.guard";
@@ -35,6 +36,7 @@ import { WorkersModule } from "./workers/workers.module";
     HouseholdsModule,
     PetsModule,
     BreedsModule,
+    BillingModule,
     QueueModule,
     PhotosModule,
     QuotaModule,
