@@ -407,6 +407,14 @@ export const strings = {
     error: "Something went wrong. Please try again.",
     success: "You're all set!",
   },
+  updateGate: {
+    // Launch-time "please update" screen (T079 plan). Factual copy only --
+    // no medical/"diagnos*"/dosing tokens (CLAUDE.md §7). The display name
+    // is injected from `APP_DISPLAY_NAME` at render, never hardcoded.
+    title: (appName: string) => `Update ${appName}`,
+    body: "A newer version is required to keep using the app. Please update from the store to continue.",
+    cta: "Update now",
+  },
   family: {
     title: "Family",
     loading: "Loading…",

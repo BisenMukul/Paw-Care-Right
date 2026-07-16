@@ -1,5 +1,10 @@
 import { regionHotlineSchema } from "./schema";
-import { FALLBACK_REGION_HOTLINE, REGION_HOTLINES, resolveRegionHotline } from "./index";
+import {
+  BUNDLED_HOTLINE_PACK_VERSION,
+  FALLBACK_REGION_HOTLINE,
+  REGION_HOTLINES,
+  resolveRegionHotline,
+} from "./index";
 
 describe("region hotline dataset — resolution", () => {
   it("resolves a known region (US) with the correct ASPCA details", () => {
@@ -73,5 +78,11 @@ describe("region hotline dataset — integrity", () => {
       expect(row.poisonHotlineName.length).toBeGreaterThan(0);
       expect(row.source.length).toBeGreaterThan(0);
     }
+  });
+
+  // T079 plan: guards against accidental edits to the bundled version tag.
+  it("BUNDLED_HOTLINE_PACK_VERSION is a positive integer", () => {
+    expect(Number.isInteger(BUNDLED_HOTLINE_PACK_VERSION)).toBe(true);
+    expect(BUNDLED_HOTLINE_PACK_VERSION).toBeGreaterThan(0);
   });
 });

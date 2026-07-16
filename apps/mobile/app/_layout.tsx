@@ -7,6 +7,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { queryClient, queryPersister } from "../src/api/query";
 import { useAuthStore } from "../src/auth/auth-store";
 import { usePurchasesInit } from "../src/billing/use-purchases-init";
+import { UpdateGate } from "../src/components/update-gate";
 import { UpsellSheet } from "../src/components/upsell-sheet";
 import { AppErrorBoundary } from "../src/error-boundary";
 import { useNetworkListener } from "../src/offline/use-network-listener";
@@ -66,26 +67,28 @@ export default function RootLayout() {
     <PersistedApiQueryProvider client={queryClient} persister={queryPersister}>
       <AppErrorBoundary>
         <SafeAreaProvider>
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="(auth)" />
-            <Stack.Screen name="(tabs)" />
-            <Stack.Screen name="push-rationale" />
-            <Stack.Screen name="add-pet" options={{ presentation: "modal" }} />
-            <Stack.Screen name="pets/[id]" />
-            <Stack.Screen name="care-plan/[petId]" />
-            <Stack.Screen name="reminders/edit" options={{ presentation: "modal" }} />
-            <Stack.Screen name="check/index" />
-            <Stack.Screen name="check/[category]" />
-            <Stack.Screen name="check/waiting/[checkId]" />
-            <Stack.Screen name="check/result/[checkId]" />
-            <Stack.Screen name="check/emergency/[checkId]" options={{ gestureEnabled: false }} />
-            <Stack.Screen name="check/history/[petId]" />
-            <Stack.Screen name="checks/[id]" />
-            <Stack.Screen name="paywall" options={{ presentation: "modal" }} />
-            <Stack.Screen name="family" />
-            <Stack.Screen name="join/[code]" />
-          </Stack>
-          <UpsellSheet />
+          <UpdateGate>
+            <Stack screenOptions={{ headerShown: false }}>
+              <Stack.Screen name="(auth)" />
+              <Stack.Screen name="(tabs)" />
+              <Stack.Screen name="push-rationale" />
+              <Stack.Screen name="add-pet" options={{ presentation: "modal" }} />
+              <Stack.Screen name="pets/[id]" />
+              <Stack.Screen name="care-plan/[petId]" />
+              <Stack.Screen name="reminders/edit" options={{ presentation: "modal" }} />
+              <Stack.Screen name="check/index" />
+              <Stack.Screen name="check/[category]" />
+              <Stack.Screen name="check/waiting/[checkId]" />
+              <Stack.Screen name="check/result/[checkId]" />
+              <Stack.Screen name="check/emergency/[checkId]" options={{ gestureEnabled: false }} />
+              <Stack.Screen name="check/history/[petId]" />
+              <Stack.Screen name="checks/[id]" />
+              <Stack.Screen name="paywall" options={{ presentation: "modal" }} />
+              <Stack.Screen name="family" />
+              <Stack.Screen name="join/[code]" />
+            </Stack>
+            <UpsellSheet />
+          </UpdateGate>
         </SafeAreaProvider>
       </AppErrorBoundary>
     </PersistedApiQueryProvider>

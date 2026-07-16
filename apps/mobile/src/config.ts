@@ -41,3 +41,8 @@ export function getConfig(): AppConfig {
     posthogHost: extra?.posthogHost ?? "https://us.i.posthog.com",
   };
 }
+
+/** The installed app's own version (T079 plan decision 3), read via Expo's config, defaulting permissively when absent (e.g. a bare Jest environment). */
+export function getAppVersion(): string {
+  return Constants.expoConfig?.version ?? "0.0.0";
+}

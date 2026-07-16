@@ -1,7 +1,8 @@
-import { appConfigResponseSchema, type PaywallVariant } from "@pawcareright/types";
+import type { PaywallVariant } from "@pawcareright/types";
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";
 
-import { apiClient } from "../api/client";
+import { readCachedConfig } from "../config/app-config-cache";
+import { DEFAULT_APP_CONFIG, fetchAppConfig } from "../config/app-config-queries";
 
 import { fetchOfferings as fetchOfferingsFromNative } from "./purchases";
 import type { PaywallOffering } from "./paywall-types";
@@ -14,32 +15,28 @@ export interface PaywallConfig {
 export const DEFAULT_PAYWALL_CONFIG: PaywallConfig = { variant: "A" };
 
 /**
- * `GET /v1/config`, parsed with the shared `appConfigResponseSchema`. ANY
- * failure -- network error, offline, non-200, schema-invalid body --
- * resolves to the safe default (`variant: "A"`) rather than throwing, so
- * the paywall never blocks or shows undefined copy when the endpoint is
- * unreachable.
+ * Thin selector over the shared `fetchAppConfig()` (T079 plan decision 5) --
+ * ONE network call/cache backs both the paywall variant and the rest of
+ * `AppConfig`. Preserves the original `PaywallConfig` public shape so
+ * `paywall.tsx` is unchanged.
  */
 export async function fetchPaywallConfig(): Promise<PaywallConfig> {
-  try {
-    const body = await apiClient.get<unknown>("/v1/config");
-    const parsed = appConfigResponseSchema.parse(body);
-    return { variant: parsed.paywall.variant };
-  } catch {
-    return DEFAULT_PAYWALL_CONFIG;
-  }
+  const config = await fetchAppConfig();
+  return { variant: config.variant };
 }
 
 /**
- * Wraps `fetchPaywallConfig` with `initialData` seeded to the safe default
- * so the paywall screen NEVER renders a loading/undefined variant (plan
- * Risk 6) -- a later successful fetch swaps the copy once, in place.
+ * Thin `select` over the SAME `["app-config"]` query used by `useAppConfig`
+ * (T079 plan decision 5): one network call, shared cache. `initialData` is
+ * seeded from the cache-or-default so the paywall screen NEVER renders a
+ * loading/undefined variant (plan Risk 6).
  */
 export function usePaywallConfig(): UseQueryResult<PaywallConfig> {
   return useQuery({
-    queryKey: ["paywall-config"],
-    queryFn: fetchPaywallConfig,
-    initialData: DEFAULT_PAYWALL_CONFIG,
+    queryKey: ["app-config"],
+    queryFn: fetchAppConfig,
+    initialData: readCachedConfig() ?? DEFAULT_APP_CONFIG,
+    select: (config): PaywallConfig => ({ variant: config.variant }),
   });
 }
 

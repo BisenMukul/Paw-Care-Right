@@ -9,6 +9,7 @@ import { AuthController } from "./auth.controller";
 import { AuthService } from "./auth.service";
 import { DevLogOtpTransport, OTP_TRANSPORT } from "./otp-transport";
 import { OtpService } from "./otp.service";
+import { OptionalJwtAuthGuard } from "./optional-jwt-auth.guard";
 import { OtpRateLimitGuard } from "./rate-limit.guard";
 import { RefreshTokenService } from "./refresh-token.service";
 import { APPLE_JWKS_RESOLVER, APPLE_JWKS_URL, AppleTokenVerifier } from "./social/apple-token-verifier";
@@ -32,12 +33,16 @@ import { SOCIAL_TOKEN_VERIFIERS, type SocialTokenVerifier } from "./social/socia
   // JwtModule is re-exported so the AppModule-scoped `JwtAuthGuard`
   // (registered via APP_GUARD) injects the SAME secret-configured
   // `JwtService` instance used for token issuance in `AuthService`.
-  exports: [JwtModule],
+  // `OptionalJwtAuthGuard` is exported so `RemoteConfigModule` (T079 plan
+  // decision 2) can `@UseGuards(OptionalJwtAuthGuard)` on its `@Public()`
+  // config route -- best-effort identity, never a 401.
+  exports: [JwtModule, OptionalJwtAuthGuard],
   providers: [
     AuthService,
     OtpService,
     RefreshTokenService,
     OtpRateLimitGuard,
+    OptionalJwtAuthGuard,
     { provide: OTP_TRANSPORT, useClass: DevLogOtpTransport },
     SocialAuthService,
     AppleTokenVerifier,

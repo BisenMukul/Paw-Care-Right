@@ -75,6 +75,14 @@ export class AppConfigService {
     return this.env.PAYWALL_VARIANT;
   }
 
+  get minSupportedVersion(): string {
+    return this.env.MIN_SUPPORTED_VERSION;
+  }
+
+  get hotlinePackVersion(): number {
+    return this.env.HOTLINE_PACK_VERSION;
+  }
+
   get posthogApiKey(): string {
     return this.env.POSTHOG_API_KEY;
   }

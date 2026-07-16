@@ -12,6 +12,15 @@ export const regionHotlineByCode: ReadonlyMap<string, RegionHotlineRow> = new Ma
   REGION_HOTLINES.map((row) => [row.regionCode, row]),
 );
 
+/**
+ * The version tag of the bundled hotline region data (T079 plan decision
+ * 4). Bump this whenever `REGION_HOTLINE_ROWS` changes, so the mobile
+ * `hotlinePackVersion` comparison (server-sent vs. bundled) can signal a
+ * future OTA refresh is available. This is plumbing only -- it never
+ * alters the numbers actually rendered, which stay bundled here.
+ */
+export const BUNDLED_HOTLINE_PACK_VERSION = 1;
+
 /** Public, fully-resolved shape — never carries the internal `source` citation field. */
 export interface ResolvedRegionHotline {
   known: boolean;
