@@ -1,7 +1,7 @@
 {
   "project": "Paw Care Right +",
   "version": 6,
-  "status": "running",
+  "status": "paused-checkpoint-C2",
   "currentPhase": "P7",
   "phases": {
     "P0": {
@@ -692,7 +692,8 @@
       "taggedAt": "2026-07-15"
     },
     "M7": {
-      "status": "pending"
+      "status": "passed",
+      "taggedAt": "2026-07-16"
     },
     "M8": {
       "status": "pending"
