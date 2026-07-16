@@ -74,4 +74,12 @@ export class AppConfigService {
   get paywallVariant(): ApiEnv["PAYWALL_VARIANT"] {
     return this.env.PAYWALL_VARIANT;
   }
+
+  get posthogApiKey(): string {
+    return this.env.POSTHOG_API_KEY;
+  }
+
+  get posthogHost(): string {
+    return this.env.POSTHOG_HOST;
+  }
 }

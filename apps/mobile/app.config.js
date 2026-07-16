@@ -55,6 +55,8 @@ const config = {
     revenueCatAndroidKey: process.env.EXPO_PUBLIC_RC_ANDROID_KEY ?? "stub_android_key",
     termsUrl: process.env.EXPO_PUBLIC_TERMS_URL ?? "https://pawcareright.app/terms",
     privacyUrl: process.env.EXPO_PUBLIC_PRIVACY_URL ?? "https://pawcareright.app/privacy",
+    posthogKey: process.env.EXPO_PUBLIC_POSTHOG_KEY ?? "",
+    posthogHost: process.env.EXPO_PUBLIC_POSTHOG_HOST ?? "https://us.i.posthog.com",
     // `eas init` will create an EAS project with slug "pawcareright" (APP_SLUG)
     // and print its projectId — add it back here as `eas: { projectId: "<uuid>" }`.
     "eas": {

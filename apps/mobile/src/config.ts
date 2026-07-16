@@ -11,6 +11,8 @@ export interface AppConfig {
   revenueCatAndroidKey: string;
   termsUrl: string;
   privacyUrl: string;
+  posthogKey: string;
+  posthogHost: string;
 }
 
 export function getConfig(): AppConfig {
@@ -22,6 +24,8 @@ export function getConfig(): AppConfig {
         revenueCatAndroidKey?: string;
         termsUrl?: string;
         privacyUrl?: string;
+        posthogKey?: string;
+        posthogHost?: string;
       }
     | undefined;
 
@@ -33,5 +37,7 @@ export function getConfig(): AppConfig {
     // §1a: pawcareright.app is the provisional web placeholder until T102.
     termsUrl: extra?.termsUrl ?? "https://pawcareright.app/terms",
     privacyUrl: extra?.privacyUrl ?? "https://pawcareright.app/privacy",
+    posthogKey: extra?.posthogKey ?? "",
+    posthogHost: extra?.posthogHost ?? "https://us.i.posthog.com",
   };
 }

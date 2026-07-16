@@ -59,6 +59,21 @@ describe("rcWebhookEnvelopeSchema", () => {
   });
 });
 
+describe("rcWebhookEventSchema period_type (T078)", () => {
+  it("parses and round-trips period_type: 'TRIAL' through the envelope schema", () => {
+    const parsed = rcWebhookEnvelopeSchema.parse(realisticEnvelope({ period_type: "TRIAL" }));
+
+    expect(parsed.event.period_type).toBe("TRIAL");
+  });
+
+  it("period_type is optional -- absent is still valid", () => {
+    const result = rcWebhookEventSchema.safeParse({ id: "evt_1", type: "RENEWAL" });
+
+    expect(result.success).toBe(true);
+    expect(result.success && result.data.period_type).toBeUndefined();
+  });
+});
+
 describe("rcWebhookEventSchema numeric ms fields", () => {
   it("accepts valid numeric ms fields", () => {
     const result = rcWebhookEventSchema.safeParse({

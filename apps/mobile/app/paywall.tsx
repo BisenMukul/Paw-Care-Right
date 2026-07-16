@@ -1,10 +1,12 @@
 import { APP_DISPLAY_NAME } from "@pawcareright/config";
 import * as Linking from "expo-linking";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { captureEvent } from "../src/analytics/analytics";
+import { useAuthStore } from "../src/auth/auth-store";
 import { usePaywallConfig, useOfferings } from "../src/billing/paywall-queries";
 import { usePremiumStore } from "../src/billing/premium-store";
 import type { PaywallPackage } from "../src/billing/paywall-types";
@@ -27,9 +29,24 @@ type Notice = "none" | "pending" | "error" | "restoreNone" | "success";
  */
 export default function PaywallScreen() {
   const router = useRouter();
-  // `source` (`"onboarding" | "settings"`) is carried for future analytics
-  // only; it does not change this screen's rendering or navigation.
-  useLocalSearchParams<{ source?: string }>();
+  // `source` (`"onboarding" | "settings"`) drives the `paywall_view`
+  // analytics event below; it does not otherwise change this screen's
+  // rendering or navigation.
+  const params = useLocalSearchParams<{ source?: string }>();
+
+  // Mount-once emission (T078 plan): `[]` deps so remounting the screen
+  // (not just re-rendering) is what re-fires this, matching "once per view".
+  useEffect(() => {
+    const householdId = useAuthStore.getState().householdId;
+    captureEvent("paywall_view", {
+      source: params.source === "settings" ? "settings" : "onboarding",
+      // `householdId` is optional (not `string | undefined`) under this
+      // repo's `exactOptionalPropertyTypes` -- a conditional spread (rather
+      // than `?? undefined`) omits the key entirely when there is none.
+      ...(householdId !== null ? { householdId } : {}),
+    });
+    // Intentional mount-once emission -- `[]` deps, not a reactive effect on params/store.
+  }, []);
 
   const { data: config } = usePaywallConfig();
   const { data: offering, isLoading: offeringLoading } = useOfferings();

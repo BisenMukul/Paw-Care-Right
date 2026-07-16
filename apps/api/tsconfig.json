@@ -9,6 +9,7 @@
     "types": ["node"],
     "paths": {
       "@pawcareright/ai": ["../ai/dist/index.d.ts"],
+      "@pawcareright/analytics": ["../analytics/dist/index.d.ts"],
       "@pawcareright/types": ["../types/dist/index.d.ts"],
       "@pawcareright/data": ["../data/dist/index.d.ts"],
       "@pawcareright/config": ["../config/src/index.ts"],

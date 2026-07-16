@@ -25,6 +25,8 @@ export const apiEnvSchema = z.object({
     .min(1)
     .default("dev-insecure-rc-webhook-token-do-not-use-in-production"),
   PAYWALL_VARIANT: z.enum(["A", "B"]).default("A"),
+  POSTHOG_API_KEY: z.string().default(""),
+  POSTHOG_HOST: z.string().url().default("https://us.i.posthog.com"),
 });
 
 export type ApiEnv = z.infer<typeof apiEnvSchema>;

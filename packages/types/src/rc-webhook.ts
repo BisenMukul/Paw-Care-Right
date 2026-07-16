@@ -19,6 +19,10 @@ export const rcWebhookEventSchema = z
     event_timestamp_ms: z.number().nullish(),
     environment: z.string().optional(),
     store: z.string().optional(),
+    // T078: RC's trial-vs-paid marker on a subscription lifecycle event.
+    // `.passthrough()` already retained this field on any raw payload; this
+    // typing lets `rc-webhook.service.ts` read it to detect `trial_start`.
+    period_type: z.string().nullish(),
   })
   .passthrough();
 export type RcWebhookEvent = z.infer<typeof rcWebhookEventSchema>;

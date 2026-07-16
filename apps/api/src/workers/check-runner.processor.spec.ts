@@ -3,6 +3,7 @@ import { FakeTextProvider, ProviderError, TRIAGE_PROMPT_VERSION, type TextProvid
 import { parseIntake, type CompletedIntake, type Sex, type Species } from "@pawcareright/types";
 import type { Job, Queue } from "bullmq";
 
+import type { AnalyticsService } from "../analytics/analytics.service";
 import type { ChecksJobData } from "../checks/checks.contract";
 import type { PrismaService } from "../prisma/prisma.service";
 import type { CostLogService } from "../quota/cost-log.service";
@@ -65,6 +66,7 @@ describe("CheckRunnerProcessor", () => {
       birthDate: Date | null;
       ageEstimateMonths: number | null;
       weightGrams: number | null;
+      householdId: string;
     }> = {},
   ) {
     return {
@@ -75,6 +77,7 @@ describe("CheckRunnerProcessor", () => {
       birthDate: overrides.birthDate ?? null,
       ageEstimateMonths: overrides.ageEstimateMonths ?? 24,
       weightGrams: overrides.weightGrams ?? 12000,
+      householdId: overrides.householdId ?? "household-1",
     };
   }
 
@@ -143,20 +146,30 @@ describe("CheckRunnerProcessor", () => {
     opts: {
       check?: ReturnType<typeof buildCheckRow> | null;
       update?: jest.Mock;
+      count?: jest.Mock;
     } = {},
   ) {
     const findUnique = jest.fn().mockResolvedValue("check" in opts ? opts.check : buildCheckRow());
     const update = opts.update ?? jest.fn().mockResolvedValue(undefined);
     const upsert = jest.fn().mockResolvedValue(undefined);
     const transaction = jest.fn((ops: unknown[]) => Promise.all(ops));
+    // Default = 2 (NOT the user's first terminal check), so all the
+    // existing (pre-T078) cases below keep their original behavior and
+    // never emit `first_check_completed` unless a test overrides this to 1.
+    const count = opts.count ?? jest.fn().mockResolvedValue(2);
 
     const prisma = {
-      symptomCheck: { findUnique, update },
+      symptomCheck: { findUnique, update, count },
       triageResult: { upsert },
       $transaction: transaction,
     } as unknown as PrismaService;
 
-    return { prisma, findUnique, update, upsert, transaction };
+    return { prisma, findUnique, update, upsert, transaction, count };
+  }
+
+  function buildAnalytics(overrides: { capture?: jest.Mock } = {}) {
+    const capture = overrides.capture ?? jest.fn();
+    return { analytics: { capture } as unknown as AnalyticsService, capture };
   }
 
   function buildVisionPrep(overrides: { prepare?: jest.Mock } = {}) {
@@ -183,7 +196,7 @@ describe("CheckRunnerProcessor", () => {
     const { followUpQueue, add } = buildFollowUpQueue();
     const provider = new FakeTextProvider({ script: [textResult(triageResultText({ urgency: "MONITOR" }))] });
     const generateSpy = jest.spyOn(provider, "generate");
-    const processor = new CheckRunnerProcessor(prisma, visionPrep, costLog, provider, MODEL_ID, followUpQueue);
+    const processor = new CheckRunnerProcessor(prisma, visionPrep, costLog, provider, MODEL_ID, followUpQueue, buildAnalytics().analytics);
 
     await processor.process(buildJob({ attemptsMade: 0, attempts: 3 }));
 
@@ -237,7 +250,7 @@ describe("CheckRunnerProcessor", () => {
       script: [textResult("not json at all"), textResult("still not json")],
     });
     const generateSpy = jest.spyOn(provider, "generate");
-    const processor = new CheckRunnerProcessor(prisma, visionPrep, costLog, provider, MODEL_ID, followUpQueue);
+    const processor = new CheckRunnerProcessor(prisma, visionPrep, costLog, provider, MODEL_ID, followUpQueue, buildAnalytics().analytics);
 
     await expect(processor.process(buildJob({ attemptsMade: 0, attempts: 3 }))).resolves.toBeUndefined();
 
@@ -266,7 +279,7 @@ describe("CheckRunnerProcessor", () => {
     const { followUpQueue } = buildFollowUpQueue();
     const generate = jest.fn().mockRejectedValue(new ProviderError("ollama", "timeout", "request timed out"));
     const provider: TextProvider = { generate };
-    const processor = new CheckRunnerProcessor(prisma, visionPrep, costLog, provider, MODEL_ID, followUpQueue);
+    const processor = new CheckRunnerProcessor(prisma, visionPrep, costLog, provider, MODEL_ID, followUpQueue, buildAnalytics().analytics);
 
     await expect(processor.process(buildJob({ attemptsMade: 0, attempts: 3 }))).resolves.toBeUndefined();
 
@@ -289,7 +302,7 @@ describe("CheckRunnerProcessor", () => {
     const { costLog, record } = buildCostLog();
     const { followUpQueue, add } = buildFollowUpQueue();
     const provider = new FakeTextProvider({ script: [textResult(triageResultText())] });
-    const processor = new CheckRunnerProcessor(prisma, visionPrep, costLog, provider, MODEL_ID, followUpQueue);
+    const processor = new CheckRunnerProcessor(prisma, visionPrep, costLog, provider, MODEL_ID, followUpQueue, buildAnalytics().analytics);
 
     await expect(processor.process(buildJob({ attemptsMade: 0, attempts: 3 }))).rejects.toThrow("db down");
 
@@ -306,7 +319,7 @@ describe("CheckRunnerProcessor", () => {
     const { costLog, record } = buildCostLog();
     const { followUpQueue, add } = buildFollowUpQueue();
     const provider = new FakeTextProvider({ script: [textResult(triageResultText())] });
-    const processor = new CheckRunnerProcessor(prisma, visionPrep, costLog, provider, MODEL_ID, followUpQueue);
+    const processor = new CheckRunnerProcessor(prisma, visionPrep, costLog, provider, MODEL_ID, followUpQueue, buildAnalytics().analytics);
 
     await expect(processor.process(buildJob({ attemptsMade: 2, attempts: 3 }))).resolves.toBeUndefined();
 
@@ -339,7 +352,7 @@ describe("CheckRunnerProcessor", () => {
     const provider = new FakeTextProvider({
       script: [textResult(triageResultText({ urgency: "REASSURE", confidence: "high" }))],
     });
-    const processor = new CheckRunnerProcessor(prisma, visionPrep, costLog, provider, MODEL_ID, followUpQueue);
+    const processor = new CheckRunnerProcessor(prisma, visionPrep, costLog, provider, MODEL_ID, followUpQueue, buildAnalytics().analytics);
 
     await processor.process(buildJob({ attemptsMade: 0, attempts: 3 }));
 
@@ -364,7 +377,7 @@ describe("CheckRunnerProcessor", () => {
     const { followUpQueue, add } = buildFollowUpQueue();
     const generate = jest.fn();
     const provider: TextProvider = { generate };
-    const processor = new CheckRunnerProcessor(prisma, visionPrep, costLog, provider, MODEL_ID, followUpQueue);
+    const processor = new CheckRunnerProcessor(prisma, visionPrep, costLog, provider, MODEL_ID, followUpQueue, buildAnalytics().analytics);
 
     await processor.process(buildJob());
 
@@ -384,7 +397,7 @@ describe("CheckRunnerProcessor", () => {
     const { costLog } = buildCostLog();
     const { followUpQueue, add } = buildFollowUpQueue();
     const provider = new FakeTextProvider();
-    const processor = new CheckRunnerProcessor(prisma, visionPrep, costLog, provider, MODEL_ID, followUpQueue);
+    const processor = new CheckRunnerProcessor(prisma, visionPrep, costLog, provider, MODEL_ID, followUpQueue, buildAnalytics().analytics);
 
     await expect(processor.process(buildJob())).resolves.toBeUndefined();
 
@@ -406,7 +419,7 @@ describe("CheckRunnerProcessor", () => {
     const { costLog } = buildCostLog();
     const { followUpQueue } = buildFollowUpQueue();
     const provider = new FakeTextProvider({ script: [textResult(triageResultText())] });
-    const processor = new CheckRunnerProcessor(prisma, visionPrep, costLog, provider, MODEL_ID, followUpQueue);
+    const processor = new CheckRunnerProcessor(prisma, visionPrep, costLog, provider, MODEL_ID, followUpQueue, buildAnalytics().analytics);
 
     const logSpy = jest.spyOn(Logger.prototype, "log").mockImplementation(() => undefined);
     const warnSpy = jest.spyOn(Logger.prototype, "warn").mockImplementation(() => undefined);
@@ -452,6 +465,7 @@ describe("CheckRunnerProcessor", () => {
       provider1,
       MODEL_ID,
       followUpQueue1,
+      buildAnalytics().analytics,
     );
 
     await processorWithPhotos.process(buildJob());
@@ -470,6 +484,7 @@ describe("CheckRunnerProcessor", () => {
       provider2,
       MODEL_ID,
       followUpQueue2,
+      buildAnalytics().analytics,
     );
 
     await processorNoPhotos.process(buildJob());
@@ -484,7 +499,7 @@ describe("CheckRunnerProcessor", () => {
       const { costLog } = buildCostLog();
       const { followUpQueue, add } = buildFollowUpQueue();
       const provider = new FakeTextProvider({ script: [textResult(triageResultText({ followUpHours: null }))] });
-      const processor = new CheckRunnerProcessor(prisma, visionPrep, costLog, provider, MODEL_ID, followUpQueue);
+      const processor = new CheckRunnerProcessor(prisma, visionPrep, costLog, provider, MODEL_ID, followUpQueue, buildAnalytics().analytics);
 
       await processor.process(buildJob({ attemptsMade: 0, attempts: 3 }));
 
@@ -497,7 +512,7 @@ describe("CheckRunnerProcessor", () => {
       const { costLog, record } = buildCostLog();
       const { followUpQueue, add } = buildFollowUpQueue({ add: jest.fn().mockRejectedValue(new Error("redis down")) });
       const provider = new FakeTextProvider({ script: [textResult(triageResultText({ urgency: "MONITOR" }))] });
-      const processor = new CheckRunnerProcessor(prisma, visionPrep, costLog, provider, MODEL_ID, followUpQueue);
+      const processor = new CheckRunnerProcessor(prisma, visionPrep, costLog, provider, MODEL_ID, followUpQueue, buildAnalytics().analytics);
 
       await expect(processor.process(buildJob({ attemptsMade: 0, attempts: 3 }))).resolves.toBeUndefined();
 
@@ -519,7 +534,7 @@ describe("CheckRunnerProcessor", () => {
       const { costLog, record } = buildCostLog();
       const { followUpQueue, add } = buildFollowUpQueue({ add: jest.fn().mockRejectedValue(new Error("redis down")) });
       const provider = new FakeTextProvider({ script: [textResult(triageResultText())] });
-      const processor = new CheckRunnerProcessor(prisma, visionPrep, costLog, provider, MODEL_ID, followUpQueue);
+      const processor = new CheckRunnerProcessor(prisma, visionPrep, costLog, provider, MODEL_ID, followUpQueue, buildAnalytics().analytics);
 
       await expect(processor.process(buildJob({ attemptsMade: 2, attempts: 3 }))).resolves.toBeUndefined();
 
@@ -543,6 +558,110 @@ describe("CheckRunnerProcessor", () => {
       [0, undefined, true],
     ])("attemptsMade=%p, opts.attempts=%p -> %p", (attemptsMade, attempts, expected) => {
       expect(isFinalAttempt({ attemptsMade, opts: { attempts } })).toBe(expected);
+    });
+  });
+
+  describe("first_check_completed analytics emission (T078 plan)", () => {
+    it("a completing check whose user has exactly one terminal check (count -> 1) emits once", async () => {
+      const { prisma, count } = buildPrisma({
+        check: buildCheckRow({ status: "QUEUED", pet: buildPet({ householdId: "household-1" }) }),
+        count: jest.fn().mockResolvedValue(1),
+      });
+      const { visionPrep } = buildVisionPrep();
+      const { costLog } = buildCostLog();
+      const { followUpQueue } = buildFollowUpQueue();
+      const { analytics, capture } = buildAnalytics();
+      const provider = new FakeTextProvider({ script: [textResult(triageResultText({ urgency: "MONITOR" }))] });
+      const processor = new CheckRunnerProcessor(prisma, visionPrep, costLog, provider, MODEL_ID, followUpQueue, analytics);
+
+      await processor.process(buildJob({ attemptsMade: 0, attempts: 3 }));
+
+      expect(count).toHaveBeenCalledWith({ where: { createdById: USER_ID, status: { in: ["DONE", "FALLBACK"] } } });
+      expect(capture).toHaveBeenCalledTimes(1);
+      expect(capture).toHaveBeenCalledWith(USER_ID, "first_check_completed", {
+        checkId: CHECK_ID,
+        householdId: "household-1",
+        status: "DONE",
+        urgency: "MONITOR",
+      });
+    });
+
+    it("a completing check where count -> 2 (not the first) does NOT emit", async () => {
+      const { prisma } = buildPrisma({
+        check: buildCheckRow({ status: "QUEUED" }),
+        count: jest.fn().mockResolvedValue(2),
+      });
+      const { visionPrep } = buildVisionPrep();
+      const { costLog } = buildCostLog();
+      const { followUpQueue } = buildFollowUpQueue();
+      const { analytics, capture } = buildAnalytics();
+      const provider = new FakeTextProvider({ script: [textResult(triageResultText({ urgency: "MONITOR" }))] });
+      const processor = new CheckRunnerProcessor(prisma, visionPrep, costLog, provider, MODEL_ID, followUpQueue, analytics);
+
+      await processor.process(buildJob({ attemptsMade: 0, attempts: 3 }));
+
+      expect(capture).not.toHaveBeenCalled();
+    });
+
+    it("the infra-fallback path with count -> 1 emits with status: FALLBACK", async () => {
+      const update = jest.fn().mockRejectedValueOnce(new Error("db down"));
+      const { prisma } = buildPrisma({
+        check: buildCheckRow({ status: "QUEUED", pet: buildPet({ householdId: "household-2" }) }),
+        update,
+        count: jest.fn().mockResolvedValue(1),
+      });
+      const { visionPrep } = buildVisionPrep();
+      const { costLog } = buildCostLog();
+      const { followUpQueue } = buildFollowUpQueue();
+      const { analytics, capture } = buildAnalytics();
+      const provider = new FakeTextProvider({ script: [textResult(triageResultText())] });
+      const processor = new CheckRunnerProcessor(prisma, visionPrep, costLog, provider, MODEL_ID, followUpQueue, analytics);
+
+      await expect(processor.process(buildJob({ attemptsMade: 2, attempts: 3 }))).resolves.toBeUndefined();
+
+      expect(capture).toHaveBeenCalledTimes(1);
+      expect(capture).toHaveBeenCalledWith(
+        USER_ID,
+        "first_check_completed",
+        expect.objectContaining({ householdId: "household-2", status: "FALLBACK" }),
+      );
+    });
+
+    it("an analytics throw does NOT fail the job", async () => {
+      const { prisma } = buildPrisma({
+        check: buildCheckRow({ status: "QUEUED" }),
+        count: jest.fn().mockResolvedValue(1),
+      });
+      const { visionPrep } = buildVisionPrep();
+      const { costLog } = buildCostLog();
+      const { followUpQueue } = buildFollowUpQueue();
+      const capture = jest.fn(() => {
+        throw new Error("analytics boom");
+      });
+      const { analytics } = buildAnalytics({ capture });
+      const provider = new FakeTextProvider({ script: [textResult(triageResultText())] });
+      const processor = new CheckRunnerProcessor(prisma, visionPrep, costLog, provider, MODEL_ID, followUpQueue, analytics);
+
+      await expect(processor.process(buildJob({ attemptsMade: 0, attempts: 3 }))).resolves.toBeUndefined();
+
+      expect(capture).toHaveBeenCalledTimes(1);
+    });
+
+    it("an analytics count() rejection does NOT fail the job (no emission, no throw)", async () => {
+      const { prisma } = buildPrisma({
+        check: buildCheckRow({ status: "QUEUED" }),
+        count: jest.fn().mockRejectedValue(new Error("db down")),
+      });
+      const { visionPrep } = buildVisionPrep();
+      const { costLog } = buildCostLog();
+      const { followUpQueue } = buildFollowUpQueue();
+      const { analytics, capture } = buildAnalytics();
+      const provider = new FakeTextProvider({ script: [textResult(triageResultText())] });
+      const processor = new CheckRunnerProcessor(prisma, visionPrep, costLog, provider, MODEL_ID, followUpQueue, analytics);
+
+      await expect(processor.process(buildJob({ attemptsMade: 0, attempts: 3 }))).resolves.toBeUndefined();
+
+      expect(capture).not.toHaveBeenCalled();
     });
   });
 });

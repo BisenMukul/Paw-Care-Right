@@ -2,6 +2,7 @@ import { BullModule } from "@nestjs/bullmq";
 import { Module } from "@nestjs/common";
 import { getTextProvider, loadAiEnv } from "@pawcareright/ai";
 
+import { AnalyticsModule } from "../analytics/analytics.module";
 import { CHECKS_QUEUE } from "../checks/checks.contract";
 import { PrismaModule } from "../prisma/prisma.module";
 import { QuotaModule } from "../quota/quota.module";
@@ -33,6 +34,7 @@ import { REMINDERS_QUEUE } from "./reminders-scheduler.contract";
     VisionModule,
     QuotaModule,
     RedisModule,
+    AnalyticsModule,
     BullModule.registerQueue(
       { name: IMAGES_QUEUE },
       { name: CHECKS_QUEUE },

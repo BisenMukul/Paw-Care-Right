@@ -11,7 +11,8 @@ import {
 import { SAFE_FALLBACK, parseIntake, type CheckStatus, type TriageResult, type Urgency } from "@pawcareright/types";
 import type { Job, Queue } from "bullmq";
 
-import { assertTransition, isTerminalCheckStatus } from "../checks/check-status";
+import { AnalyticsService } from "../analytics/analytics.service";
+import { assertTransition, isTerminalCheckStatus, TERMINAL_CHECK_STATUSES } from "../checks/check-status";
 import { CHECKS_QUEUE, type ChecksJobData } from "../checks/checks.contract";
 import { buildRedFlagIntake, type PetProfileInput } from "../checks/red-flag-intake.mapper";
 import { PrismaService } from "../prisma/prisma.service";
@@ -61,8 +62,37 @@ export class CheckRunnerProcessor extends WorkerHost {
     @Inject(TRIAGE_TEXT_PROVIDER) private readonly textProvider: TextProvider,
     @Inject(TRIAGE_TEXT_MODEL_ID) private readonly textModelId: string,
     @InjectQueue(FOLLOWUPS_QUEUE) private readonly followUpQueue: Queue<FollowUpJobData>,
+    private readonly analytics: AnalyticsService,
   ) {
     super();
+  }
+
+  /**
+   * `first_check_completed` (T078 plan): fire-and-forget, emitted ONLY when
+   * this terminal persist is the user's FIRST-EVER terminal check. `count`
+   * is supported by the existing `@@unique([createdById, idempotencyKey])`
+   * btree (`createdById` leading column) -- no new index/migration. Never
+   * throws -- an analytics/count failure must not fail the (already
+   * persisted) triage job.
+   */
+  private async emitFirstCheckCompleted(
+    userId: string,
+    householdId: string,
+    checkId: string,
+    status: "DONE" | "FALLBACK",
+    urgency: Urgency,
+  ): Promise<void> {
+    try {
+      const terminalCount = await this.prisma.symptomCheck.count({
+        where: { createdById: userId, status: { in: [...TERMINAL_CHECK_STATUSES] } },
+      });
+      if (terminalCount === 1) {
+        this.analytics.capture(userId, "first_check_completed", { checkId, householdId, status, urgency });
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      this.logger.warn({ event: "analytics_emit_failed", checkId, message });
+    }
   }
 
   /**
@@ -244,6 +274,7 @@ export class CheckRunnerProcessor extends WorkerHost {
         costMicroUsd,
       });
 
+      await this.emitFirstCheckCompleted(check.createdById, check.pet.householdId, checkId, target, outcome.result.urgency);
       await this.scheduleFollowUp(checkId, outcome.result);
     } catch (err) {
       // Infra errors ARE retried. A provider timeout never reaches here
@@ -309,6 +340,7 @@ export class CheckRunnerProcessor extends WorkerHost {
 
       this.logger.error({ event: "triage_infra_fallback", checkId, message });
 
+      await this.emitFirstCheckCompleted(check.createdById, check.pet.householdId, checkId, "FALLBACK", outcome.result.urgency);
       await this.scheduleFollowUp(checkId, outcome.result);
       return;
     }

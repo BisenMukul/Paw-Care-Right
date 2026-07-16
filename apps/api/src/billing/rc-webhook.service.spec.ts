@@ -1,5 +1,6 @@
 import { Prisma } from "@prisma/client";
 
+import type { AnalyticsService } from "../analytics/analytics.service";
 import type { PrismaService } from "../prisma/prisma.service";
 import { RcWebhookService } from "./rc-webhook.service";
 
@@ -39,11 +40,20 @@ function buildTx(overrides: Partial<TxMock> = {}): TxMock {
   } as TxMock;
 }
 
-function buildService(tx: TxMock): { service: RcWebhookService; tx: TxMock } {
+function buildAnalytics(overrides: { capture?: jest.Mock } = {}) {
+  const capture = overrides.capture ?? jest.fn();
+  return { analytics: { capture } as unknown as AnalyticsService, capture };
+}
+
+function buildService(
+  tx: TxMock,
+  overrides: { analytics?: AnalyticsService } = {},
+): { service: RcWebhookService; tx: TxMock } {
   const prisma = {
     $transaction: jest.fn((cb: (tx: TxMock) => unknown) => cb(tx)),
   } as unknown as PrismaService;
-  return { service: new RcWebhookService(prisma), tx };
+  const analytics = overrides.analytics ?? buildAnalytics().analytics;
+  return { service: new RcWebhookService(prisma, analytics), tx };
 }
 
 describe("RcWebhookService.handle", () => {
@@ -147,7 +157,7 @@ describe("RcWebhookService.handle", () => {
   it("a malformed payload (schema parse failure) acks without touching the transaction", async () => {
     const tx = buildTx();
     const prisma = { $transaction: jest.fn() } as unknown as PrismaService;
-    const isolatedService = new RcWebhookService(prisma);
+    const isolatedService = new RcWebhookService(prisma, buildAnalytics().analytics);
 
     const result = await isolatedService.handle({ not: "a valid envelope" });
 
@@ -182,5 +192,65 @@ describe("RcWebhookService.handle", () => {
         }),
       }),
     );
+  });
+
+  describe("trial_start analytics emission (T078 plan)", () => {
+    it("INITIAL_PURCHASE with period_type: 'TRIAL' + resolvable household emits trial_start once", async () => {
+      const tx = buildTx();
+      const { analytics, capture } = buildAnalytics();
+      const { service } = buildService(tx, { analytics });
+
+      await service.handle(
+        buildEnvelope({ type: "INITIAL_PURCHASE", period_type: "TRIAL", product_id: "pawcareright_monthly" }),
+      );
+
+      expect(capture).toHaveBeenCalledTimes(1);
+      expect(capture).toHaveBeenCalledWith("user-1", "trial_start", {
+        householdId: "household-1",
+        plan: "pawcareright_monthly",
+      });
+    });
+
+    it("INITIAL_PURCHASE with period_type: 'NORMAL' does NOT emit", async () => {
+      const tx = buildTx();
+      const { analytics, capture } = buildAnalytics();
+      const { service } = buildService(tx, { analytics });
+
+      await service.handle(buildEnvelope({ type: "INITIAL_PURCHASE", period_type: "NORMAL" }));
+
+      expect(capture).not.toHaveBeenCalled();
+    });
+
+    it("a duplicate replay of the trial event does NOT emit (dedupe short-circuit)", async () => {
+      const tx = buildTx({
+        processedWebhookEvent: { create: jest.fn().mockRejectedValue(p2002()) },
+      });
+      const { analytics, capture } = buildAnalytics();
+      const { service } = buildService(tx, { analytics });
+
+      await service.handle(buildEnvelope({ type: "INITIAL_PURCHASE", period_type: "TRIAL" }));
+
+      expect(capture).not.toHaveBeenCalled();
+    });
+
+    it("RENEWAL does NOT emit trial_start even with period_type: 'TRIAL'", async () => {
+      const tx = buildTx();
+      const { analytics, capture } = buildAnalytics();
+      const { service } = buildService(tx, { analytics });
+
+      await service.handle(buildEnvelope({ type: "RENEWAL", period_type: "TRIAL" }));
+
+      expect(capture).not.toHaveBeenCalled();
+    });
+
+    it("EXPIRATION does NOT emit trial_start", async () => {
+      const tx = buildTx();
+      const { analytics, capture } = buildAnalytics();
+      const { service } = buildService(tx, { analytics });
+
+      await service.handle(buildEnvelope({ type: "EXPIRATION", period_type: "TRIAL" }));
+
+      expect(capture).not.toHaveBeenCalled();
+    });
   });
 });

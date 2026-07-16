@@ -1,11 +1,19 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { rcWebhookEnvelopeSchema } from "@pawcareright/types";
+import { RC_WEBHOOK_EVENT_TYPES, rcWebhookEnvelopeSchema } from "@pawcareright/types";
 import { Prisma } from "@prisma/client";
 
+import { AnalyticsService } from "../analytics/analytics.service";
 import { PrismaService } from "../prisma/prisma.service";
 import { computeSubscriptionUpdate } from "./rc-webhook.state";
 
 type PrismaTx = Prisma.TransactionClient;
+
+/** Plan decision 6/7: computed inside the transaction, emitted after commit. */
+interface TrialStart {
+  distinctId: string;
+  householdId: string;
+  plan: string | null;
+}
 
 /**
  * T073 plan §"Interfaces/contracts": handles a raw RevenueCat webhook body.
@@ -19,7 +27,10 @@ type PrismaTx = Prisma.TransactionClient;
 export class RcWebhookService {
   private readonly logger = new Logger(RcWebhookService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly analytics: AnalyticsService,
+  ) {}
 
   async handle(rawBody: unknown): Promise<{ received: true }> {
     const parsed = rcWebhookEnvelopeSchema.safeParse(rawBody);
@@ -32,12 +43,12 @@ export class RcWebhookService {
     const { event } = parsed.data;
     const receivedNow = new Date();
 
-    await this.prisma.$transaction(async (tx) => {
+    const trialStart = await this.prisma.$transaction(async (tx): Promise<TrialStart | null> => {
       const isDuplicate = await this.recordEventOrDetectDuplicate(tx, event.id);
 
       if (isDuplicate) {
         this.logger.log(`RC webhook event id=${event.id}: duplicate, replay no-op.`);
-        return;
+        return null;
       }
 
       const existing = event.app_user_id
@@ -52,14 +63,14 @@ export class RcWebhookService {
 
       if (result.action === "skip") {
         this.logger.log(`RC webhook event id=${event.id}: skipped (${result.reason}).`);
-        return;
+        return null;
       }
 
       const householdId = await this.resolveHouseholdId(tx, event.app_user_id, existing);
 
       if (!event.app_user_id || householdId === null) {
         this.logger.log(`RC webhook event id=${event.id}: no resolvable member/household, ack without write.`);
-        return;
+        return null;
       }
 
       await tx.subscription.upsert({
@@ -76,7 +87,24 @@ export class RcWebhookService {
           rawEventJson: rawBody as Prisma.InputJsonValue,
         },
       });
+
+      // `trial_start` (T078 plan decision 6/7): only for a committed,
+      // non-duplicate INITIAL_PURCHASE whose RC `period_type` is "TRIAL".
+      // The existing `ProcessedWebhookEvent` dedupe above already
+      // short-circuited any replay before this point (plan R5).
+      if (event.type === RC_WEBHOOK_EVENT_TYPES.INITIAL_PURCHASE && event.period_type === "TRIAL") {
+        return { distinctId: event.app_user_id, householdId, plan: result.data.plan };
+      }
+
+      return null;
     });
+
+    if (trialStart !== null) {
+      this.analytics.capture(trialStart.distinctId, "trial_start", {
+        householdId: trialStart.householdId,
+        plan: trialStart.plan,
+      });
+    }
 
     return { received: true };
   }

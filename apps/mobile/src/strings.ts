@@ -114,6 +114,8 @@ export const strings = {
       fix: "Update payment method",
       dismiss: "Dismiss",
     },
+    analyticsLabel: "Share anonymous usage data",
+    analyticsHint: "Helps us improve the app. Never includes your pet's symptoms, photos, or health details.",
   },
   auth: {
     welcome: {

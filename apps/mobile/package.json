@@ -12,6 +12,7 @@
     "build": "echo \"no native build in CI (T008)\" && exit 0"
   },
   "dependencies": {
+    "@pawcareright/analytics": "workspace:*",
     "@pawcareright/api-client": "workspace:*",
     "@pawcareright/config": "workspace:*",
     "@pawcareright/data": "workspace:*",

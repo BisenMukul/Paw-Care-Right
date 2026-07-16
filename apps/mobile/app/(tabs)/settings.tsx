@@ -1,9 +1,10 @@
 import { APP_DISPLAY_NAME } from "@pawcareright/config";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, Switch, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { useConsentStore } from "../../src/analytics/consent-store";
 import { useEntitlement } from "../../src/api/billing-api";
 import { openManageSubscription } from "../../src/billing/manage-subscription";
 import { usePremiumStore } from "../../src/billing/premium-store";
@@ -17,6 +18,8 @@ export default function SettingsScreen() {
   const router = useRouter();
   const { data: entitlement } = useEntitlement();
   const setStatus = usePremiumStore((state) => state.setStatus);
+  const analyticsEnabled = useConsentStore((state) => state.enabled);
+  const setAnalyticsEnabled = useConsentStore((state) => state.setEnabled);
 
   const [restoreBusy, setRestoreBusy] = useState(false);
   const [notice, setNotice] = useState<RestoreNotice>("none");
@@ -82,6 +85,17 @@ export default function SettingsScreen() {
           <Text className="text-center text-sm text-brand-900">{strings.settings.familyManagedNote}</Text>
         </View>
       ) : null}
+      <View testID="settings-analytics-row" className="w-full flex-row items-center justify-between gap-3 px-2">
+        <View className="flex-1">
+          <Text className="text-base text-brand-900">{strings.settings.analyticsLabel}</Text>
+          <Text className="text-xs text-brand-700">{strings.settings.analyticsHint}</Text>
+        </View>
+        <Switch
+          testID="settings-analytics-toggle"
+          value={analyticsEnabled}
+          onValueChange={setAnalyticsEnabled}
+        />
+      </View>
       <Pressable
         testID="settings-restore"
         onPress={() => void handleRestore()}
