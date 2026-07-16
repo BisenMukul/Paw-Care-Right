@@ -40,6 +40,7 @@
     "react-native-css-interop": "0.2.6",
     "react-native-mmkv": "^4.3.2",
     "react-native-nitro-modules": "0.36.1",
+    "react-native-purchases": "^10.4.2",
     "react-native-safe-area-context": "~5.7.0",
     "react-native-screens": "4.25.2",
     "react-native-svg": "15.15.4",

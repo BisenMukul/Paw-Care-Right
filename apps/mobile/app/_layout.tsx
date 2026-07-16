@@ -6,6 +6,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { queryClient, queryPersister } from "../src/api/query";
 import { useAuthStore } from "../src/auth/auth-store";
+import { usePurchasesInit } from "../src/billing/use-purchases-init";
 import { AppErrorBoundary } from "../src/error-boundary";
 import { useNetworkListener } from "../src/offline/use-network-listener";
 
@@ -46,6 +47,7 @@ export default function RootLayout() {
 
   useAuthGate();
   useNetworkListener();
+  usePurchasesInit();
 
   if (status === "restoring") {
     return (

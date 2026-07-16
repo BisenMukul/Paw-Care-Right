@@ -7,15 +7,24 @@ import Constants from "expo-constants";
 export interface AppConfig {
   apiBaseUrl: string;
   googleClientId: string;
+  revenueCatIosKey: string;
+  revenueCatAndroidKey: string;
 }
 
 export function getConfig(): AppConfig {
   const extra = Constants.expoConfig?.extra as
-    | { apiBaseUrl?: string; googleClientId?: string }
+    | {
+        apiBaseUrl?: string;
+        googleClientId?: string;
+        revenueCatIosKey?: string;
+        revenueCatAndroidKey?: string;
+      }
     | undefined;
 
   return {
     apiBaseUrl: extra?.apiBaseUrl ?? "http://localhost:3000",
     googleClientId: extra?.googleClientId ?? "",
+    revenueCatIosKey: extra?.revenueCatIosKey ?? "stub_ios_key",
+    revenueCatAndroidKey: extra?.revenueCatAndroidKey ?? "stub_android_key",
   };
 }

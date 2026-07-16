@@ -51,6 +51,8 @@ const config = {
   extra: {
     apiBaseUrl: process.env.EXPO_PUBLIC_API_URL ?? "http://localhost:3000",
     googleClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID ?? "",
+    revenueCatIosKey: process.env.EXPO_PUBLIC_RC_IOS_KEY ?? "stub_ios_key",
+    revenueCatAndroidKey: process.env.EXPO_PUBLIC_RC_ANDROID_KEY ?? "stub_android_key",
     // `eas init` will create an EAS project with slug "pawcareright" (APP_SLUG)
     // and print its projectId — add it back here as `eas: { projectId: "<uuid>" }`.
     "eas": {

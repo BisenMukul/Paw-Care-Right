@@ -149,4 +149,19 @@ jest.mock("react-native-svg", () => {
   return { __esModule: true, default: Svg, Svg, G, Path, Line, Rect, Circle, Text };
 });
 
+// react-native-purchases (T071) — the native module never loads in this
+// container; a stub default export keeps any transitive import (e.g.
+// `_layout`'s `usePurchasesInit`) headless. The "native absent" no-op path
+// itself is tested by injecting a null loader into `src/billing/purchases.ts`
+// (not by relying on this mock), so this stub only needs to prevent the real
+// `require` from throwing.
+jest.mock("react-native-purchases", () => ({
+  __esModule: true,
+  default: {
+    configure: jest.fn(),
+    logIn: jest.fn(async () => ({})),
+    logOut: jest.fn(async () => ({})),
+  },
+}));
+
 export {};
