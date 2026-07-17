@@ -909,3 +909,7 @@
 - Checker: `loop/reviews/HOTFIX-pet-profile-ui.review.md` → sole blocker was the concurrently-written docs/design-system.md sitting in the tree (separate founder deliverable — resolved by committing separately); all nine mobile files judged PASS-quality, gates re-run green. Non-blocking: CTA real height ~80px vs CTA_HEIGHT=56 minHeight budget (still SE-safe); pre-existing bg-brand-300 phantom token (fixed in the upcoming design-system sweep).
 - Gates: mobile **613 (87 suites, ×3+2)**, api 81/860 full green (MinIO restored), typecheck/lint/build 0. Mutations ×2 proven + restored.
 - Commit: feat(mobile): pet profile UI pass — rewired reminders, modern hero/CTA/tiles, retry feedback.
+
+## [2026-07-17] Design-system brief committed (founder-directed research)
+- `docs/design-system.md` — research-grounded (2025/26 M3-Expressive/iOS-HIG/WCAG-2.2 sources cited inline) design system for the app-wide modernization sweep: tokens (incl. fixing the PHANTOM bg-brand-300 token — disabled buttons currently render transparent; brand-500 restricted to icons/large text after failing AA at 3.96:1), component canon, ONE-loop motion rule + useReducedMotion gating contract, 44pt touch-target a11y contract, canonical sheet pattern (no new gesture-handler dep), and the ≤2-tap activity-logging spec (chip grid → pre-filled quantity stepper; 1-tap recents with undo; per-activity units). Ends with the per-screen sweep checklist future checkers enforce mechanically.
+- Next: Activity Log feature (tap-first, per the spec §5), then the consistency sweep screen-by-screen.
