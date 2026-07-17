@@ -1,5 +1,6 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { useEffect } from "react";
+
 import { StyleSheet, View } from "react-native";
 import Animated, {
   Easing,
@@ -8,6 +9,7 @@ import Animated, {
   withRepeat,
   withTiming,
 } from "react-native-reanimated";
+import { isNativeGradientAvailable } from "./native-gradient";
 
 // Soft brand tones (tailwind-preset.mjs `brand` scale + a warm cream) --
 // kept light so the dark `text-brand-900` copy drawn on top stays readable.
@@ -26,6 +28,11 @@ const HALF_CYCLE_MS = 5000;
  * shared-value loop drives this -- no per-frame JS, battery-friendly.
  */
 export function AnimatedGradientBackground() {
+  // Probed once per mount: a dev client built without expo-linear-gradient
+  // has no native ViewManager for it -- mounting would crash Fabric. Fall
+  // back to a calm solid brand tone; the animated gradient appears
+  // automatically once the app runs in a build that includes the module.
+  const nativeAvailable = isNativeGradientAvailable();
   const overlayOpacity = useSharedValue(0);
 
   useEffect(() => {
@@ -37,6 +44,16 @@ export function AnimatedGradientBackground() {
   }, [overlayOpacity]);
 
   const overlayStyle = useAnimatedStyle(() => ({ opacity: overlayOpacity.value }));
+
+  if (!nativeAvailable) {
+    return (
+      <View
+        testID="home-gradient-fallback"
+        pointerEvents="none"
+        style={[StyleSheet.absoluteFill, { backgroundColor: BASE_COLORS[0] }]}
+      />
+    );
+  }
 
   return (
     <View testID="home-gradient-background" pointerEvents="none" style={StyleSheet.absoluteFill}>

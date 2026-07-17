@@ -892,3 +892,10 @@
 - Checker: `loop/reviews/HOTFIX-home-ui.review.md` → **VERDICT: PASS**. /check tile's petId param matches the check screen's reader; old testIDs preserved; pet-switcher untouched; gradient loop verified single-animation; §6/§7 clean; T067/T080 suites unaffected by the new jest mocks. Non-blocking: greeting cutover hours not boundary-asserted; two raw brand-hex icon props.
 - **Gates:** mobile **596 → 609 (86 suites, ×3 + ×2 orchestrator re-runs)**, typecheck/lint/build 0, api unchanged 81/860. Mutations ×2 (wrong route → nav test fails; disabled guard removed → state test fails) proven + restored.
 - Commit: feat(mobile): home UI overhaul — tab icons, animated gradient, hero card, quick actions, today preview.
+
+## [2026-07-17] HOTFIX 4 · Gradient native-availability guard (founder-directed, Fable-direct)
+- **Founder report:** dev-client crash — Fabric "Can't find ViewManager 'ExpoLinearGradient'": their installed dev client predates the expo-linear-gradient dependency (native modules enter the binary only at build time; the registry dump confirmed svg/image/reanimated present, gradient absent).
+- **Fix (the project's standing pattern — never let a missing native module crash the app):** new `native-gradient.ts` probe via expo's `requireOptionalNativeModule("ExpoLinearGradient")` (try/catch, unavailable-on-any-surprise); `AnimatedGradientBackground` renders a calm solid brand-tone fallback (`home-gradient-fallback`) when the native view is absent — the animated gradient lights up automatically once the app runs in a build containing the module. Both paths pinned in `gradient-background.test.tsx` (repo convention: `await render`).
+- **Gates:** mobile **609 → 611 (87 suites, stable ×3)**, typecheck/lint/build 0. Scope: 3 files (component + probe + test).
+- **Founder note:** current dev client now renders home with the solid background; the animated gradient (plus mmkv persistence, weight chart, billing) arrives with the next `eas build --profile development`.
+- Commit: fix(mobile): gradient native-availability guard for stale dev clients.
