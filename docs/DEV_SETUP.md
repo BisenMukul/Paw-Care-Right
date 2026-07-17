@@ -64,6 +64,7 @@ lives. You basically never need to `cd` into a folder.
 
 ```bash
 pnpm i                                   # install (stop the API first — see §7 gotcha 2)
+pnpm build                               # REQUIRED before dev — builds packages/* dist (see §7 gotcha 7)
 docker compose up -d redis               # Redis 7 on 6379 (Postgres runs natively on 5432)
 # load .env  (see §0)
 pnpm --filter api prisma:migrate:dev     # apply migrations to the DB
@@ -85,11 +86,16 @@ REDIS_URL=redis://localhost:6379
 
 ## 4. Running the servers (daily) — from root, `.env` loaded
 
+> **Build the packages first if their source changed** (fresh clone, after a pull, or after editing
+> anything in `packages/*`): `pnpm build`. The turbo `dev` task has **no** `dependsOn: ["^build"]`,
+> so running dev never builds `packages/*` — the apps compile against a stale/missing `dist` and you
+> get "has no exported member" / "Cannot find module" errors. See §7 gotcha 7.
+
 | Server | Command | URL / notes |
 |---|---|---|
 | **API** (NestJS) | `pnpm --filter api dev` | http://localhost:3000 · routes under `/v1` · Swagger at `/docs` |
 | **Web** (Next.js) | `pnpm --filter web dev` | http://localhost:3001 (auto-bumps off 3000; or `-- --port 3001`) |
-| **Mobile** (Expo) | `pnpm --filter mobile start` | Metro at http://localhost:8081 |
+| **Mobile** (Expo) | `pnpm --filter mobile start` | Metro at http://localhost:8081 — **requires a dev build, not Expo Go** (§7 gotcha 10) |
 
 - Start the **API first** so it claims port 3000; Web then takes 3001.
 - **Only the API terminal needs `.env` loaded.** Web/Mobile don't.
@@ -141,3 +147,63 @@ infra and load `.env` first.
 6. **Postgres**: currently the **native** PG on 5432 (`postgres`/`root`, db `pawcareright`). The
    Docker PG on **5433** (`pawcareright-postgres-1`) is unused in this setup — leave it or
    `docker compose stop postgres`.
+7. **`dev` does not build `packages/*` → stale-`dist` errors.** The apps import each package's
+   **built `dist`** (via its `exports` field), not its source. In `turbo.json`, `build`, `typecheck`,
+   `lint`, and `test` all declare `dependsOn: ["^build"]`, but **`dev` does not** — so
+   `pnpm dev` / `pnpm --filter api dev` compiles against whatever `dist` exists. Symptoms:
+
+   ```
+   error TS2305: Module '"@pawcareright/types"' has no exported member 'X'
+   error TS2307: Cannot find module '@pawcareright/analytics'
+   ```
+
+   **Fix:** `pnpm build` (or `pnpm -r --filter "./packages/*" build`) from root, then restart dev.
+   Note `tsup` *cleans* the output folder before writing, so a build interrupted partway (e.g. the
+   process is killed) leaves `dist` wiped or partial — producing the same errors. If the symbol
+   exists in the package's `src` but not its `dist`, it's always this: rebuild.
+8. **Expo/EAS commands must run in the mobile workspace, not the repo root.** The Expo config is
+   `apps/mobile/app.config.js`; there is none at the root. Running `npx expo …` from the root fails
+   with:
+
+   ```
+   CommandError: No platforms are configured to use the Metro bundler in the project Expo config.
+   ```
+
+   **Fix:** `pnpm --filter mobile exec expo <cmd>` from root, or `cd apps/mobile` first. Example:
+   `pnpm --filter mobile exec expo export --platform android --clear` → writes `apps/mobile/dist`.
+   Also note `app.config.js` does `require("@pawcareright/config")` — it loads that package's **built**
+   output, so `packages/config/dist` must exist (see gotcha 7) or the config won't even load.
+9. **`pnpm build` (turbo) crashed once with exit `3221226505`** (`0xC0000409`,
+   STATUS_STACK_BUFFER_OVERRUN — a native crash) and printed no task output. It was not reproducible;
+   a retry ran 9/9 tasks fine. If it recurs, fall back to `pnpm -r --filter "./packages/*" build`
+   (bypasses turbo), and/or upgrade turbo. Running Node 20 against a repo requiring ≥22 (gotcha 3) is
+   a plausible contributor.
+10. **The app does NOT run in Expo Go — use a development build.** Expo Go lacks the native modules
+    this app depends on. Symptoms when you try:
+
+    ```
+    FATAL JS error: expo-notifications: Android Push notifications ... removed from Expo Go with SDK 53
+    Error configuring Purchases: Invalid API key. The native store is not available inside Expo Go
+    Route "./push-rationale.tsx" is missing the required default export.   <- red herring, see below
+    ```
+
+    - `src/push/use-push-registration.ts` **statically imports** `expo-notifications`, which runs a
+      side-effect on import and **throws in Expo Go**. This happens at *import* time, so the
+      `try/catch` inside `register()` cannot catch it.
+    - The "missing default export" warning is a **symptom, not a bug** — `push-rationale.tsx` does
+      export default; it just imports the throwing module, so expo-router never sees the export.
+    - RevenueCat needs the native store; the config's `stub_*` keys fail in Expo Go.
+
+    **Fix:** build and install a dev build (already configured — `expo-dev-client` is a dependency
+    and an `app.config.js` plugin; `eas.json` has a `development` profile with
+    `developmentClient: true`):
+
+    ```bash
+    cd apps/mobile
+    npx eas-cli login                                           # once
+    npx eas-cli build --profile development --platform android  # produces an installable APK
+    ```
+
+    Install the APK, then `pnpm --filter mobile start` and the dev client connects to Metro.
+    Local `expo run:android` needs a full Android SDK + JDK toolchain (`ANDROID_HOME`, `adb`, `java`),
+    which is not installed on this machine.
