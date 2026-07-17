@@ -7,8 +7,8 @@
 // `Image` so the wizard's photo preview/avatar renders headless. Imported
 // under a `mock`-prefixed alias so babel-plugin-jest-hoist allows the
 // jest.mock factory below (hoisted above this import) to reference it.
-import { createElement as mockCreateElement, type ReactNode } from "react";
-import { Image as mockImage, Text as mockText } from "react-native";
+import { createElement as mockCreateElement, useRef as mockUseRef, type ReactNode } from "react";
+import { Image as mockImage, Text as mockText, View as mockView } from "react-native";
 
 // T018: global mocks for the native modules the auth flow touches, so any
 // test importing a screen/store/component works headless (no device/
@@ -148,6 +148,81 @@ jest.mock("react-native-svg", () => {
   const Text = textPassthrough();
   return { __esModule: true, default: Svg, Svg, G, Path, Line, Rect, Circle, Text };
 });
+
+// react-native-reanimated (founder home UI overhaul) — the package's own
+// documented jest mock (`react-native-reanimated/mock`) transitively
+// `require`s the real `react-native-worklets` native bridge
+// (`NativeWorklets.native.ts`'s `loadUnpackers`), which throws under this
+// repo's jest environment (no native module registered) — a known
+// incompatibility between reanimated 4's split-out worklets package and its
+// classic mock. A minimal hand-rolled mock stands in instead, covering only
+// the subset of the real API this codebase actually uses (`Animated.View`,
+// `FadeInDown`'s chainable `.delay()/.duration()` builder, `Easing`,
+// `useSharedValue`, `useAnimatedStyle`, `withRepeat`, `withTiming`) — every
+// animation resolves synchronously/instantly so components render
+// deterministically and headless, same goal as the package's own mock.
+//
+// Every helper below is declared at MODULE scope (not inside the
+// `jest.mock` factory) and referenced only via the single `mock`-prefixed
+// `mockReanimatedModule` binding -- babel-plugin-jest-hoist's static scope
+// check only allows `mock`-prefixed identifiers to cross into a hoisted
+// factory, and (unlike a nested TS `interface`) a plain top-level
+// declaration sidesteps its AST walk entirely.
+function mockUseSharedValue<T>(initial: T): { value: T } {
+  return mockUseRef({ value: initial }).current;
+}
+
+function mockUseAnimatedStyle<T>(factory: () => T): T {
+  return factory();
+}
+
+function mockWithTiming<T>(toValue: T): T {
+  return toValue;
+}
+
+function mockWithRepeat<T>(animation: T): T {
+  return animation;
+}
+
+interface MockEnteringAnimationBuilder {
+  delay: (ms: number) => MockEnteringAnimationBuilder;
+  duration: (ms: number) => MockEnteringAnimationBuilder;
+}
+
+function mockMakeEnteringAnimationBuilder(): MockEnteringAnimationBuilder {
+  const builder: MockEnteringAnimationBuilder = {
+    delay: () => builder,
+    duration: () => builder,
+  };
+  return builder;
+}
+
+const mockEasing = {
+  inOut: (fn: (t: number) => number) => fn,
+  ease: (t: number) => t,
+  linear: (t: number) => t,
+};
+
+const mockReanimatedModule = {
+  __esModule: true,
+  default: { View: mockView },
+  FadeInDown: mockMakeEnteringAnimationBuilder(),
+  Easing: mockEasing,
+  useSharedValue: mockUseSharedValue,
+  useAnimatedStyle: mockUseAnimatedStyle,
+  withRepeat: mockWithRepeat,
+  withTiming: mockWithTiming,
+};
+
+jest.mock("react-native-reanimated", () => mockReanimatedModule);
+
+// expo-linear-gradient (founder home UI overhaul) — the real native view
+// (`requireNativeViewManager`) never loads under jest; the same
+// passthrough `View` stand-in (mirrors this file's other native-view
+// mocks, e.g. `react-native-svg` below) keeps the animated gradient
+// background headless.
+const mockLinearGradientModule = { LinearGradient: mockView };
+jest.mock("expo-linear-gradient", () => mockLinearGradientModule);
 
 // react-native-purchases (T071) — the native module never loads in this
 // container; a stub default export keeps any transitive import (e.g.

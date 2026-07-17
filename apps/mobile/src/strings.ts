@@ -61,9 +61,27 @@ export const strings = {
     timeline: "Timeline",
     settings: "Settings",
   },
+  // Home tab (founder UI overhaul): greeting/quick-actions/today-preview/
+  // empty-state copy only -- labels and record-keeping nouns, no
+  // "diagnosis"/dosing language anywhere below (CLAUDE §7).
   home: {
-    body: "Peace of mind between vet visits — your pet's care, all in one place.",
-    openActivePet: "Open pet home",
+    greetingMorning: "Good morning",
+    greetingAfternoon: "Good afternoon",
+    greetingEvening: "Good evening",
+    settingsA11y: "Settings",
+    quickActionsTitle: "Quick actions",
+    quickActions: {
+      symptomCheck: "Symptom check",
+    },
+    todayTitle: "Today",
+    todayEmpty: "Nothing due today.",
+    todayError: "We couldn't load today's agenda.",
+    todayRetry: "Retry",
+    todayOffline: "You're offline. Reconnect to see today's agenda.",
+    todayOfflineBanner: "You're offline — showing your last saved agenda.",
+    seeAll: "See all",
+    welcomeTitle: "Let's get started",
+    welcomeBody: "Peace of mind between vet visits — your pet's care, all in one place.",
   },
   switcher: {
     heading: "Your pets",

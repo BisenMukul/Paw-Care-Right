@@ -13,6 +13,7 @@
     "postinstall": "cd ../.. && pnpm -r --filter \"./packages/*\" build"
   },
   "dependencies": {
+    "@expo/vector-icons": "^15.1.1",
     "@pawcareright/analytics": "workspace:*",
     "@pawcareright/api-client": "workspace:*",
     "@pawcareright/config": "workspace:*",
@@ -28,6 +29,7 @@
     "expo-image": "~57.0.1",
     "expo-image-manipulator": "~57.0.4",
     "expo-image-picker": "~57.0.4",
+    "expo-linear-gradient": "~57.0.1",
     "expo-linking": "~57.0.3",
     "expo-localization": "~57.0.1",
     "expo-network": "~57.0.1",
