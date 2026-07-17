@@ -120,6 +120,18 @@ describe("HealthLogsService.create", () => {
       await expect(service.create(HOUSEHOLD_ID, PET_ID, dto)).rejects.toBeInstanceOf(BadRequestException);
       expect(healthLog.create).not.toHaveBeenCalled();
     });
+
+    it("ACTIVITY with a unit invalid for its activityType -> 400, no DB write", async () => {
+      const { service, healthLog } = buildHarness();
+      const dto: CreateLogDto = {
+        kind: "ACTIVITY",
+        occurredAt: "2026-07-15T09:00:00.000Z",
+        value: { activityType: "POTTY", unit: "grams" },
+      };
+
+      await expect(service.create(HOUSEHOLD_ID, PET_ID, dto)).rejects.toBeInstanceOf(BadRequestException);
+      expect(healthLog.create).not.toHaveBeenCalled();
+    });
   });
 
   describe("create_persists_valid", () => {
@@ -157,6 +169,27 @@ describe("HealthLogsService.create", () => {
 
       await expect(service.create(HOUSEHOLD_ID, PET_ID, dto)).rejects.toBeInstanceOf(BadRequestException);
       expect(healthLog.create).not.toHaveBeenCalled();
+    });
+
+    it("ACTIVITY with a valid activityType/quantity/unit persists", async () => {
+      const { service, healthLog } = buildHarness();
+      healthLog.create.mockResolvedValue(
+        buildHealthLogRow({
+          kind: "ACTIVITY",
+          valueJson: { activityType: "FOOD", quantity: 2, unit: "meals" },
+        }),
+      );
+      const dto: CreateLogDto = {
+        kind: "ACTIVITY",
+        occurredAt: "2026-07-15T09:00:00.000Z",
+        value: { activityType: "FOOD", quantity: 2, unit: "meals" },
+      };
+
+      const result = await service.create(HOUSEHOLD_ID, PET_ID, dto);
+
+      expect(result.kind).toBe("ACTIVITY");
+      expect(result.value).toEqual({ activityType: "FOOD", quantity: 2, unit: "meals" });
+      expect(healthLog.create).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -437,5 +470,24 @@ describe("HealthLogsService.vetSummary", () => {
     const result = await service.vetSummary(HOUSEHOLD_ID, PET_ID);
 
     expect(result.summary).toContain("awaiting assessment");
+  });
+
+  // Non-vacuity mutation-proof #2 (service-level half -- see also the e2e
+  // "ACTIVITY entries do not appear in or affect the vet summary" test for
+  // the real-DB, full-round-trip half). If the gathering query in
+  // `vetSummary` were ever widened to also fetch ACTIVITY rows (e.g.
+  // `kind: { in: ["WEIGHT", "ACTIVITY"] }` or the `kind` filter dropped
+  // entirely), this assertion fails because the queried kinds would no
+  // longer be exactly `["NOTE", "WEIGHT"]`.
+  it("only ever queries HealthLog rows by kind WEIGHT or NOTE -- ACTIVITY is structurally excluded from the digest", async () => {
+    const { service, healthLog, symptomCheck, reminderEvent } = buildHarness();
+    mockGatheringQueries(healthLog.findMany, symptomCheck, reminderEvent);
+
+    await service.vetSummary(HOUSEHOLD_ID, PET_ID);
+
+    const kindsQueried = healthLog.findMany.mock.calls
+      .map((call) => (call[0] as { where: { kind: string } }).where.kind)
+      .sort();
+    expect(kindsQueried).toEqual(["NOTE", "WEIGHT"]);
   });
 });

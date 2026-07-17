@@ -100,6 +100,14 @@ const PHOTO_ITEM: TimelineItem = {
   photoKeys: ["pets/pet1/original/a.jpg"],
 };
 
+const ACTIVITY_ITEM: TimelineItem = {
+  id: "act1",
+  kind: "ACTIVITY",
+  occurredAt: "2024-03-11T00:00:00.000Z",
+  value: { activityType: "FOOD", quantity: 2, unit: "meals" },
+  photoKeys: [],
+};
+
 describe("timeline screen", () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -182,6 +190,17 @@ describe("timeline screen", () => {
     expect(screen.getByTestId("timeline-row-n1")).toBeTruthy();
   });
 
+  it("renders an ACTIVITY row with the kind label and a 'Fed · 2 meals' summary (activity-log addition)", async () => {
+    mockUseHealthTimeline.mockReturnValue({ ...BASE_MOCK, ...page([ACTIVITY_ITEM]) });
+
+    await render(<TimelineScreen />);
+
+    expect(screen.getByTestId("timeline-row-act1")).toHaveTextContent(strings.timeline.kindLabel.ACTIVITY, {
+      exact: false,
+    });
+    expect(screen.getByTestId("timeline-row-act1")).toHaveTextContent("Fed · 2 meals", { exact: false });
+  });
+
   it("selecting a kind chip re-queries with that kind", async () => {
     mockUseHealthTimeline.mockReturnValue({ ...BASE_MOCK, ...page([NOTE_ITEM]) });
 
@@ -193,6 +212,19 @@ describe("timeline screen", () => {
       string | null,
     ];
     expect(lastCall).toEqual(["pet1", "NOTE"]);
+  });
+
+  it("selecting the ACTIVITY kind chip re-queries with that kind (activity-log addition)", async () => {
+    mockUseHealthTimeline.mockReturnValue({ ...BASE_MOCK, ...page([]) });
+
+    await render(<TimelineScreen />);
+    await fireEvent.press(screen.getByTestId("timeline-filter-chip-ACTIVITY"));
+
+    const lastCall = mockUseHealthTimeline.mock.calls[mockUseHealthTimeline.mock.calls.length - 1] as [
+      string,
+      string | null,
+    ];
+    expect(lastCall).toEqual(["pet1", "ACTIVITY"]);
   });
 
   it("a CHECK_REF row with a well-formed checkId navigates to the result screen", async () => {

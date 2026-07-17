@@ -1,4 +1,4 @@
-import type { HealthLogKind, VetVisitValue } from "@pawcareright/types";
+import type { ActivityType, ActivityUnit, HealthLogKind, VetVisitValue } from "@pawcareright/types";
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { apiClient } from "./client";
@@ -114,6 +114,40 @@ export function useAddVetVisit(petId: string) {
         occurredAt: new Date().toISOString(),
         value: vars.value,
         ...(vars.photoKeys.length > 0 ? { photoKeys: vars.photoKeys } : {}),
+      }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: healthTimelineKeys.pet(petId) });
+    },
+  });
+}
+
+export interface AddActivityVars {
+  activityType: ActivityType;
+  quantity?: number;
+  unit?: ActivityUnit;
+  note?: string;
+}
+
+/**
+ * `POST /v1/pets/:petId/logs` with `kind: "ACTIVITY"` (founder-directed
+ * tap-first activity log). `quantity`/`unit`/`note` are included only when
+ * present (mirrors `useAddNote`'s "omit rather than send empty" pattern) --
+ * the sheet's ≤2-tap defaults still round-trip through
+ * `activityValueSchema` server-side either way.
+ */
+export function useAddActivity(petId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (vars: AddActivityVars) =>
+      apiClient.post(`/v1/pets/${petId}/logs`, {
+        kind: "ACTIVITY",
+        occurredAt: new Date().toISOString(),
+        value: {
+          activityType: vars.activityType,
+          ...(vars.quantity !== undefined ? { quantity: vars.quantity } : {}),
+          ...(vars.unit !== undefined ? { unit: vars.unit } : {}),
+          ...(vars.note !== undefined && vars.note.length > 0 ? { note: vars.note } : {}),
+        },
       }),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: healthTimelineKeys.pet(petId) });

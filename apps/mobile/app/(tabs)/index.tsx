@@ -34,9 +34,9 @@ export default function HomeScreen() {
       router.push({ pathname: "/weight/[petId]", params: { petId: pet.id } });
     }
   };
-  const goToNote = () => {
+  const goToActivity = () => {
     if (pet) {
-      router.push({ pathname: "/note/[petId]", params: { petId: pet.id } });
+      router.push({ pathname: "/activity/[petId]", params: { petId: pet.id } });
     }
   };
   const goToVetVisit = () => {
@@ -74,7 +74,7 @@ export default function HomeScreen() {
                 disabled={!hasActivePet}
                 onCheckSymptoms={goToCheck}
                 onLogWeight={goToWeight}
-                onAddNote={goToNote}
+                onLogActivity={goToActivity}
                 onVetVisit={goToVetVisit}
               />
             </View>

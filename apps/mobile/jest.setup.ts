@@ -239,4 +239,15 @@ jest.mock("react-native-purchases", () => ({
   },
 }));
 
+// expo-haptics (founder-directed activity log, `src/haptics.ts`) — the
+// native module never loads in this container; jest.fn() stand-ins so
+// `haptics.selection()`/`haptics.success()` resolve headless. Individual
+// tests may assert on these mocks via `jest.requireMock`.
+jest.mock("expo-haptics", () => ({
+  impactAsync: jest.fn(async () => undefined),
+  notificationAsync: jest.fn(async () => undefined),
+  ImpactFeedbackStyle: { Light: "light", Medium: "medium", Heavy: "heavy" },
+  NotificationFeedbackType: { Success: "success", Warning: "warning", Error: "error" },
+}));
+
 export {};

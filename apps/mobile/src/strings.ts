@@ -10,6 +10,8 @@ import {
   MEDICATION_NAME_LABEL,
   MEDICATION_NAME_PLACEHOLDER,
   MEDICATION_SAVE_LABEL,
+  type ActivityType,
+  type ActivityUnit,
   type HealthLogKind,
   type ReminderType,
 } from "@pawcareright/types";
@@ -52,6 +54,51 @@ const TIMELINE_KIND_LABELS: Record<HealthLogKind, string> = {
   VET_VISIT: "Vet visit",
   MED_GIVEN: "Medication",
   CHECK_REF: "Symptom check",
+  ACTIVITY: "Activity",
+};
+
+// Founder-directed tap-first activity log (design-system §5): plain
+// record-keeping nouns only, no "diagnosis"/interpretive language anywhere
+// below (CLAUDE §7).
+const ACTIVITY_TYPE_LABELS: Record<ActivityType, string> = {
+  FOOD: "Food",
+  WATER: "Water",
+  POTTY: "Potty",
+  SLEEP: "Sleep",
+  WALK: "Walk",
+  PLAY: "Play",
+  GROOMING: "Grooming",
+};
+
+const ACTIVITY_SUMMARY_VERB: Record<ActivityType, string> = {
+  FOOD: "Fed",
+  WATER: "Watered",
+  POTTY: "Potty",
+  SLEEP: "Slept",
+  WALK: "Walked",
+  PLAY: "Played",
+  GROOMING: "Groomed",
+};
+
+const ACTIVITY_UNIT_LABELS: Record<ActivityUnit, string> = {
+  meals: "meals",
+  grams: "g",
+  bowls: "bowls",
+  ml: "ml",
+  pee: "pee",
+  poop: "poop",
+  both: "pee & poop",
+  min: "min",
+  brush: "Brush",
+  bath: "Bath",
+  nails: "Nails",
+  teeth: "Teeth",
+  ears: "Ears",
+};
+
+const ACTIVITY_UNIT_LABELS_SINGULAR: Partial<Record<ActivityUnit, string>> = {
+  meals: "meal",
+  bowls: "bowl",
 };
 
 export const strings = {
@@ -237,7 +284,7 @@ export const strings = {
     somethingWrongSubtitle: "Get guidance on symptoms",
     quickActionsTitle: "Quick actions",
     logWeight: "Log weight",
-    logNote: "Log note",
+    logActivity: "Log activity",
     logVetVisit: "Vet visit",
     reminders: "Reminders",
     retry: "Retry",
@@ -296,6 +343,36 @@ export const strings = {
     save: "Save",
     errorReasonEmpty: "Enter a reason.",
     errorTooLong: "That entry is too long.",
+  },
+  // Founder-directed tap-first activity log (design-system §5): "click-click
+  // buttons, less writing" -- plain record-keeping copy only, no
+  // "diagnosis"/interpretive language, no medication/dose fields anywhere
+  // below (CLAUDE §7).
+  activity: {
+    title: "Log activity",
+    loading: "Loading…",
+    error: "We couldn't load this pet.",
+    empty: "This pet couldn't be found.",
+    retry: "Retry",
+    offline: "You're offline. Reconnect to log an activity.",
+    offlineBanner: "You're offline — showing your last saved info.",
+    typeLabel: ACTIVITY_TYPE_LABELS,
+    summaryVerb: ACTIVITY_SUMMARY_VERB,
+    unitLabel: ACTIVITY_UNIT_LABELS,
+    unitLabelSingular: ACTIVITY_UNIT_LABELS_SINGULAR,
+    typeChipA11y: (label: string) => `Log ${label}`,
+    quantityDecreaseA11y: "Decrease amount",
+    quantityIncreaseA11y: "Increase amount",
+    unitToggleA11y: (label: string) => `Switch unit to ${label}`,
+    notePlaceholder: "Add a short note (optional)",
+    save: "Save",
+    cancel: "Cancel",
+    writtenNoteLink: "Add a written note instead",
+    recentsTitle: "Recents",
+    recentChipA11y: (label: string) => `Log again: ${label}`,
+    loggedConfirmation: (label: string) => `Logged: ${label}`,
+    undo: "Undo",
+    undoneConfirmation: "Undone",
   },
   healthLogPhoto: {
     rationale: "Add photos to this entry. Optional.",

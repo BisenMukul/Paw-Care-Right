@@ -9,6 +9,7 @@ import type { VetVisitValue } from "@pawcareright/types";
 
 import {
   healthTimelineKeys,
+  useAddActivity,
   useAddNote,
   useAddVetVisit,
   useAddWeight,
@@ -207,6 +208,70 @@ describe("useAddVetVisit", () => {
     const { result } = await renderHook(() => useAddVetVisit("pet1"), { wrapper: makeWrapper(client) });
 
     await result.current.mutateAsync({ value: { reason: "Annual checkup" }, photoKeys: [] });
+
+    await waitFor(() => {
+      expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: healthTimelineKeys.pet("pet1") });
+    });
+  });
+});
+
+describe("useAddActivity", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("posts kind:ACTIVITY with the given activityType/quantity/unit and an occurredAt close to now", async () => {
+    mockedPost.mockResolvedValue({ id: "log1" });
+    const before = Date.now();
+
+    const client = createQueryClient();
+    const { result } = await renderHook(() => useAddActivity("pet1"), { wrapper: makeWrapper(client) });
+
+    await result.current.mutateAsync({ activityType: "FOOD", quantity: 2, unit: "meals" });
+
+    expect(mockedPost).toHaveBeenCalledTimes(1);
+    const [path, body] = mockedPost.mock.calls[0] as [
+      string,
+      { kind: string; occurredAt: string; value: unknown },
+    ];
+    expect(path).toBe("/v1/pets/pet1/logs");
+    expect(body.kind).toBe("ACTIVITY");
+    expect(body.value).toEqual({ activityType: "FOOD", quantity: 2, unit: "meals" });
+    expect(Math.abs(new Date(body.occurredAt).getTime() - before)).toBeLessThan(5000);
+  });
+
+  it("omits quantity/unit/note when not supplied (a chips-only GROOMING save)", async () => {
+    mockedPost.mockResolvedValue({ id: "log1" });
+
+    const client = createQueryClient();
+    const { result } = await renderHook(() => useAddActivity("pet1"), { wrapper: makeWrapper(client) });
+
+    await result.current.mutateAsync({ activityType: "GROOMING", unit: "brush" });
+
+    const [, body] = mockedPost.mock.calls[0] as [string, { value: unknown }];
+    expect(body.value).toEqual({ activityType: "GROOMING", unit: "brush" });
+  });
+
+  it("includes note only when non-empty", async () => {
+    mockedPost.mockResolvedValue({ id: "log1" });
+
+    const client = createQueryClient();
+    const { result } = await renderHook(() => useAddActivity("pet1"), { wrapper: makeWrapper(client) });
+
+    await result.current.mutateAsync({ activityType: "WALK", quantity: 20, unit: "min", note: "Extra long walk" });
+
+    const [, body] = mockedPost.mock.calls[0] as [string, { value: unknown }];
+    expect(body.value).toEqual({ activityType: "WALK", quantity: 20, unit: "min", note: "Extra long walk" });
+  });
+
+  it("invalidates healthTimelineKeys.pet(petId) on success", async () => {
+    mockedPost.mockResolvedValue({ id: "log1" });
+
+    const client = createQueryClient();
+    const invalidateSpy = jest.spyOn(client, "invalidateQueries");
+    const { result } = await renderHook(() => useAddActivity("pet1"), { wrapper: makeWrapper(client) });
+
+    await result.current.mutateAsync({ activityType: "FOOD", quantity: 1, unit: "meals" });
 
     await waitFor(() => {
       expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: healthTimelineKeys.pet("pet1") });

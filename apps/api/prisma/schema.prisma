@@ -45,6 +45,7 @@ enum HealthLogKind {
   VET_VISIT
   MED_GIVEN
   CHECK_REF
+  ACTIVITY
 }
 
 enum SubscriptionEntitlement {

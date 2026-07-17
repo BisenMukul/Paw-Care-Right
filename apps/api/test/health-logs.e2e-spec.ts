@@ -121,6 +121,36 @@ describe("Health logs (e2e)", () => {
       expect(errorResponseSchema.parse(res.body).error.code).toBe("VALIDATION_FAILED");
     });
 
+    it("POST creates an ACTIVITY log -> 201 with the stored record, and it round-trips through GET list", async () => {
+      const ctx = await owner();
+      const pet = await createPet(prisma, ctx.household.id);
+
+      const res = await ctx.authedAgent("post", `/v1/pets/${pet.id}/logs`).send(
+        validLogBody({ kind: "ACTIVITY", value: { activityType: "FOOD", quantity: 2, unit: "meals" } }),
+      );
+
+      expect(res.status).toBe(201);
+      expect(res.body.kind).toBe("ACTIVITY");
+      expect(res.body.value).toEqual({ activityType: "FOOD", quantity: 2, unit: "meals" });
+
+      const list = await ctx.authedAgent("get", `/v1/pets/${pet.id}/logs?kind=ACTIVITY`);
+      expect(list.status).toBe(200);
+      expect(list.body.items).toHaveLength(1);
+      expect(list.body.items[0].value).toEqual({ activityType: "FOOD", quantity: 2, unit: "meals" });
+    });
+
+    it("ACTIVITY with a unit invalid for its activityType (unit<->type refine) -> 400 VALIDATION_FAILED", async () => {
+      const ctx = await owner();
+      const pet = await createPet(prisma, ctx.household.id);
+
+      const res = await ctx
+        .authedAgent("post", `/v1/pets/${pet.id}/logs`)
+        .send(validLogBody({ kind: "ACTIVITY", value: { activityType: "POTTY", unit: "grams" } }));
+
+      expect(res.status).toBe(400);
+      expect(errorResponseSchema.parse(res.body).error.code).toBe("VALIDATION_FAILED");
+    });
+
     it("more than 6 photoKeys -> 400 VALIDATION_FAILED", async () => {
       const ctx = await owner();
       const pet = await createPet(prisma, ctx.household.id);
@@ -282,6 +312,11 @@ describe("Health logs (e2e)", () => {
         occurredAt: "2026-07-15T09:00:00.000Z",
         value: { reason: "checkup" },
       });
+      await createLog(ctx, pet.id, {
+        kind: "ACTIVITY",
+        occurredAt: "2026-07-15T09:00:00.000Z",
+        value: { activityType: "WALK", quantity: 20, unit: "min" },
+      });
 
       // CHECK_REF: no source writes it via the public API -- seed directly (R3: rendered without a join).
       await createHealthLog(prisma, pet.id, {
@@ -296,7 +331,7 @@ describe("Health logs (e2e)", () => {
         medNameAsEntered: "As prescribed",
       });
 
-      for (const kind of ["WEIGHT", "MEAL", "NOTE", "VET_VISIT", "MED_GIVEN", "CHECK_REF"]) {
+      for (const kind of ["WEIGHT", "MEAL", "NOTE", "VET_VISIT", "MED_GIVEN", "CHECK_REF", "ACTIVITY"]) {
         const res = await ctx.authedAgent("get", `/v1/pets/${pet.id}/logs?kind=${kind}`);
         expect(res.status).toBe(200);
         expect(res.body.items.length).toBeGreaterThanOrEqual(1);
@@ -463,6 +498,42 @@ describe("Health logs (e2e)", () => {
       expect(typeof res.body.summary).toBe("string");
       expect((res.body.summary as string).endsWith(VET_SUMMARY_DISCLAIMER)).toBe(true);
       expect((res.body.summary as string).length).toBeLessThanOrEqual(VET_SUMMARY_MAX_CHARS);
+    });
+
+    // Non-vacuity mutation-proof #2 (real-DB half -- see also the
+    // HealthLogsService.vetSummary unit test "only ever queries ... WEIGHT
+    // or NOTE" for the service-level half). ACTIVITY entries are kept OUT of
+    // the vet-summary digest for now (they'd flood it) -- adding several
+    // ACTIVITY rows inside the 90-day window must not change the summary at
+    // all versus the baseline computed without them.
+    it("ACTIVITY entries do not appear in or affect the vet summary (kept OUT of the digest)", async () => {
+      const ctx = await owner();
+      const pet = await createPet(prisma, ctx.household.id);
+      const recent = (daysAgo: number) => new Date(Date.now() - daysAgo * 86_400_000).toISOString();
+
+      await createLog(ctx, pet.id, { kind: "WEIGHT", occurredAt: recent(10), value: { weightGrams: 12_000 } });
+      await createLog(ctx, pet.id, { kind: "NOTE", occurredAt: recent(2), value: { text: "Ate normally today." } });
+
+      const baseline = await ctx.authedAgent("get", `/v1/pets/${pet.id}/vet-summary`);
+      expect(baseline.status).toBe(200);
+
+      await createLog(ctx, pet.id, {
+        kind: "ACTIVITY",
+        occurredAt: recent(1),
+        value: { activityType: "FOOD", quantity: 2, unit: "meals" },
+      });
+      await createLog(ctx, pet.id, {
+        kind: "ACTIVITY",
+        occurredAt: recent(1),
+        value: { activityType: "WALK", quantity: 20, unit: "min" },
+      });
+
+      const withActivity = await ctx.authedAgent("get", `/v1/pets/${pet.id}/vet-summary`);
+
+      expect(withActivity.status).toBe(200);
+      expect(withActivity.body.summary).toEqual(baseline.body.summary);
+      expect(withActivity.body.summary as string).not.toContain("FOOD");
+      expect(withActivity.body.summary as string).not.toContain("WALK");
     });
 
     it("no token -> 401 UNAUTHORIZED", async () => {

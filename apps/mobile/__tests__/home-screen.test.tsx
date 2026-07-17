@@ -113,7 +113,7 @@ describe("Home screen", () => {
       for (const testID of [
         "home-quick-action-check",
         "home-quick-action-weight",
-        "home-quick-action-note",
+        "home-quick-action-activity",
         "home-quick-action-vet-visit",
       ]) {
         expect(screen.getByTestId(testID).props.accessibilityState?.disabled).toBeFalsy();
@@ -138,9 +138,9 @@ describe("Home screen", () => {
         params: { petId: PET_A.id },
       });
 
-      await fireEvent.press(screen.getByTestId("home-quick-action-note"));
+      await fireEvent.press(screen.getByTestId("home-quick-action-activity"));
       expect(mockPush).toHaveBeenCalledWith({
-        pathname: "/note/[petId]",
+        pathname: "/activity/[petId]",
         params: { petId: PET_A.id },
       });
 
@@ -218,7 +218,7 @@ describe("Home screen", () => {
       const testIDs = [
         "home-quick-action-check",
         "home-quick-action-weight",
-        "home-quick-action-note",
+        "home-quick-action-activity",
         "home-quick-action-vet-visit",
       ];
       for (const testID of testIDs) {

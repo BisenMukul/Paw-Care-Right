@@ -10,7 +10,7 @@ type IconName = ComponentProps<typeof Ionicons>["name"];
 export interface QuickActionsProps {
   onLogWeight: () => void;
   onReminders: () => void;
-  onLogNote: () => void;
+  onLogActivity: () => void;
   onLogVetVisit: () => void;
 }
 
@@ -23,14 +23,17 @@ interface Tile {
 
 /**
  * Four quick actions wired to their entry points (T066 plan, restyled by
- * the founder UI/UX pass): weight, note, vet visit, and reminders. Each
- * tile carries an Ionicon, pressed-state feedback, and a short staggered
- * `FadeInDown` entrance (mirrors the home tab's `QuickActionsGrid` — a
- * one-shot mount animation, not a repeating loop). Wraps to a 2x2 grid via
+ * the founder UI/UX pass; the "note" tile became "Log activity" -> the
+ * tap-first activity logger under the founder-directed activity-log pass --
+ * `strings.note.title`'s written-note form stays reachable FROM the
+ * activity screen via its "written note" link). Each tile carries an
+ * Ionicon, pressed-state feedback, and a short staggered `FadeInDown`
+ * entrance (mirrors the home tab's `QuickActionsGrid` — a one-shot mount
+ * animation, not a repeating loop). Wraps to a 2x2 grid via
  * `flex-row flex-wrap` so each tile keeps a comfortable tap target
  * regardless of row count.
  */
-export function QuickActions({ onLogWeight, onReminders, onLogNote, onLogVetVisit }: QuickActionsProps) {
+export function QuickActions({ onLogWeight, onReminders, onLogActivity, onLogVetVisit }: QuickActionsProps) {
   const tiles: Tile[] = [
     {
       testID: "quick-action-log-weight",
@@ -39,10 +42,10 @@ export function QuickActions({ onLogWeight, onReminders, onLogNote, onLogVetVisi
       onPress: onLogWeight,
     },
     {
-      testID: "quick-action-log-note",
-      icon: "document-text-outline",
-      label: strings.petHome.logNote,
-      onPress: onLogNote,
+      testID: "quick-action-log-activity",
+      icon: "paw-outline",
+      label: strings.petHome.logActivity,
+      onPress: onLogActivity,
     },
     {
       testID: "quick-action-log-vet-visit",

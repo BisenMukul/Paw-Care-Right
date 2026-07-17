@@ -11,7 +11,7 @@ export interface QuickActionsGridProps {
   disabled: boolean;
   onCheckSymptoms: () => void;
   onLogWeight: () => void;
-  onAddNote: () => void;
+  onLogActivity: () => void;
   onVetVisit: () => void;
 }
 
@@ -24,16 +24,19 @@ interface Tile {
 
 /**
  * Home tab 2x2 quick-actions grid (founder UI overhaul): symptom check,
- * log weight, add note, and vet visit -- each entrance-animated with a
+ * log weight, log activity, and vet visit -- each entrance-animated with a
  * short staggered `FadeInDown` (a one-shot mount animation, not a repeating
  * loop, so it stays battery-friendly). Every tile is disabled (reduced
- * opacity, no navigation) when there is no active pet.
+ * opacity, no navigation) when there is no active pet. The former "add
+ * note" tile became "Log activity" -> the tap-first activity logger
+ * (founder-directed activity-log pass); the written-note form stays
+ * reachable FROM that screen via its "written note" link.
  */
 export function QuickActionsGrid({
   disabled,
   onCheckSymptoms,
   onLogWeight,
-  onAddNote,
+  onLogActivity,
   onVetVisit,
 }: QuickActionsGridProps) {
   const tiles: Tile[] = [
@@ -50,10 +53,10 @@ export function QuickActionsGrid({
       onPress: onLogWeight,
     },
     {
-      testID: "home-quick-action-note",
-      icon: "create-outline",
-      label: strings.petHome.logNote,
-      onPress: onAddNote,
+      testID: "home-quick-action-activity",
+      icon: "paw-outline",
+      label: strings.petHome.logActivity,
+      onPress: onLogActivity,
     },
     {
       testID: "home-quick-action-vet-visit",

@@ -10,8 +10,12 @@ import { ArrayMaxSize, IsArray, IsIn, IsISO8601, IsObject, IsOptional, IsString 
  * `@IsIn` guard. `value`'s deep per-kind shape is validated inside the
  * service via `parseHealthLogValue` (fail-closed `400` on mismatch) --
  * this DTO only guards the outer shape.
+ *
+ * `ACTIVITY` joins the creatable set (founder-directed tap-first activity
+ * log) -- it is a plain user-written record like `NOTE`/`VET_VISIT`, not a
+ * projection.
  */
-export const CREATABLE_HEALTH_LOG_KINDS = ["WEIGHT", "MEAL", "NOTE", "VET_VISIT"] as const;
+export const CREATABLE_HEALTH_LOG_KINDS = ["WEIGHT", "MEAL", "NOTE", "VET_VISIT", "ACTIVITY"] as const;
 export type CreatableHealthLogKind = (typeof CREATABLE_HEALTH_LOG_KINDS)[number];
 
 export class CreateLogDto {

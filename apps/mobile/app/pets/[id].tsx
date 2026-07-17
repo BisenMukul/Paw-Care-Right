@@ -131,7 +131,7 @@ export default function PetHomeScreen() {
             </Text>
             <QuickActions
               onLogWeight={() => router.push({ pathname: "/weight/[petId]", params: { petId: id } })}
-              onLogNote={() => router.push({ pathname: "/note/[petId]", params: { petId: id } })}
+              onLogActivity={() => router.push({ pathname: "/activity/[petId]", params: { petId: id } })}
               onLogVetVisit={() => router.push({ pathname: "/vet-visit/[petId]", params: { petId: id } })}
               onReminders={() => router.push("/(tabs)/care")}
             />

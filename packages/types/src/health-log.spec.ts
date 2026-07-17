@@ -7,11 +7,13 @@ import {
   vetVisitValueSchema,
   medGivenValueSchema,
   checkRefValueSchema,
+  activityValueSchema,
+  ACTIVITY_TYPES,
   parseHealthLogValue,
 } from "./health-log";
 
 describe("healthLogKindSchema", () => {
-  it("accepts all six ARCHITECTURE §3 kinds", () => {
+  it("accepts all seven kinds (ARCHITECTURE §3's original six plus ACTIVITY)", () => {
     for (const kind of HEALTH_LOG_KINDS) {
       expect(healthLogKindSchema.safeParse(kind).success).toBe(true);
     }
@@ -22,7 +24,15 @@ describe("healthLogKindSchema", () => {
   });
 
   it("mirrors the Prisma enum order", () => {
-    expect(HEALTH_LOG_KINDS).toEqual(["WEIGHT", "MEAL", "NOTE", "VET_VISIT", "MED_GIVEN", "CHECK_REF"]);
+    expect(HEALTH_LOG_KINDS).toEqual([
+      "WEIGHT",
+      "MEAL",
+      "NOTE",
+      "VET_VISIT",
+      "MED_GIVEN",
+      "CHECK_REF",
+      "ACTIVITY",
+    ]);
   });
 });
 
@@ -136,6 +146,64 @@ describe("checkRefValueSchema (CHECK_REF)", () => {
   });
 });
 
+describe("activityValueSchema (ACTIVITY)", () => {
+  it("accepts every activityType with no quantity/unit/note (all optional)", () => {
+    for (const activityType of ACTIVITY_TYPES) {
+      expect(activityValueSchema.safeParse({ activityType }).success).toBe(true);
+    }
+  });
+
+  it("accepts a valid activityType/quantity/unit combo", () => {
+    expect(activityValueSchema.safeParse({ activityType: "FOOD", quantity: 2, unit: "meals" }).success).toBe(true);
+    expect(activityValueSchema.safeParse({ activityType: "WALK", quantity: 20, unit: "min" }).success).toBe(true);
+    expect(activityValueSchema.safeParse({ activityType: "GROOMING", unit: "brush" }).success).toBe(true);
+  });
+
+  it("accepts an optional note up to 280 chars", () => {
+    expect(activityValueSchema.safeParse({ activityType: "FOOD", note: "a".repeat(280) }).success).toBe(true);
+  });
+
+  it("rejects a note over 280 chars", () => {
+    expect(activityValueSchema.safeParse({ activityType: "FOOD", note: "a".repeat(281) }).success).toBe(false);
+  });
+
+  it("rejects a missing activityType", () => {
+    expect(activityValueSchema.safeParse({ quantity: 1 }).success).toBe(false);
+  });
+
+  it("rejects an unknown activityType", () => {
+    expect(activityValueSchema.safeParse({ activityType: "NAP" }).success).toBe(false);
+  });
+
+  it("rejects quantity: 0, a negative quantity, and a float quantity", () => {
+    expect(activityValueSchema.safeParse({ activityType: "FOOD", quantity: 0 }).success).toBe(false);
+    expect(activityValueSchema.safeParse({ activityType: "FOOD", quantity: -1 }).success).toBe(false);
+    expect(activityValueSchema.safeParse({ activityType: "FOOD", quantity: 1.5 }).success).toBe(false);
+  });
+
+  it("rejects an unknown extra key (strict)", () => {
+    expect(activityValueSchema.safeParse({ activityType: "FOOD", extra: "nope" }).success).toBe(false);
+  });
+
+  // Non-vacuity mutation-proof #1: dropping the `.refine` in health-log.ts
+  // (the unit<->activityType cross-field gate) makes this test FAIL, because
+  // "grams" is a member of the flat `activityUnitSchema` enum and would then
+  // pass with no further check.
+  it("rejects a unit that does not belong to the activityType (unit<->activityType refine)", () => {
+    expect(activityValueSchema.safeParse({ activityType: "POTTY", unit: "grams" }).success).toBe(false);
+    expect(activityValueSchema.safeParse({ activityType: "FOOD", unit: "min" }).success).toBe(false);
+    expect(activityValueSchema.safeParse({ activityType: "GROOMING", unit: "meals" }).success).toBe(false);
+  });
+
+  it("accepts every activityType with its own matching units", () => {
+    expect(activityValueSchema.safeParse({ activityType: "FOOD", unit: "grams" }).success).toBe(true);
+    expect(activityValueSchema.safeParse({ activityType: "WATER", unit: "bowls" }).success).toBe(true);
+    expect(activityValueSchema.safeParse({ activityType: "POTTY", unit: "both" }).success).toBe(true);
+    expect(activityValueSchema.safeParse({ activityType: "SLEEP", unit: "min" }).success).toBe(true);
+    expect(activityValueSchema.safeParse({ activityType: "GROOMING", unit: "ears" }).success).toBe(true);
+  });
+});
+
 describe("parseHealthLogValue", () => {
   const VALID_CHECK_ID = "11111111-1111-4111-8111-111111111111";
 
@@ -146,6 +214,7 @@ describe("parseHealthLogValue", () => {
     VET_VISIT: { reason: "Annual checkup" },
     MED_GIVEN: { reminderEventId: "event-1" },
     CHECK_REF: { checkId: VALID_CHECK_ID },
+    ACTIVITY: { activityType: "FOOD", quantity: 1, unit: "meals" },
   };
 
   it("returns ok for each kind's valid payload", () => {

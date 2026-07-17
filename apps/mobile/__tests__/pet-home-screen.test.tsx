@@ -206,9 +206,9 @@ describe("pet home screen — 4-state matrix (AC1)", () => {
       params: { petId: "pet1" },
     });
 
-    await fireEvent.press(screen.getByTestId("quick-action-log-note"));
+    await fireEvent.press(screen.getByTestId("quick-action-log-activity"));
     expect(mockPush).toHaveBeenCalledWith({
-      pathname: "/note/[petId]",
+      pathname: "/activity/[petId]",
       params: { petId: "pet1" },
     });
 

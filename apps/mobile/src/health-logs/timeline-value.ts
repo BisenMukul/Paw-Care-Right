@@ -1,14 +1,31 @@
 import {
+  activityValueSchema,
   checkRefValueSchema,
   mealValueSchema,
   medGivenValueSchema,
   noteValueSchema,
   vetVisitValueSchema,
   weightValueSchema,
+  type ActivityValue,
 } from "@pawcareright/types";
 
 import type { TimelineItem } from "../api/health-logs-api";
 import { strings } from "../strings";
+
+/** "Fed · 2 meals" style, record-only (CLAUDE §7) -- never appends `note`, mirrors every other kind's single-fact summary line. */
+function summarizeActivityValue(value: ActivityValue): string {
+  const parts: string[] = [strings.activity.summaryVerb[value.activityType]];
+
+  if (value.unit !== undefined) {
+    const singular = strings.activity.unitLabelSingular[value.unit];
+    const label = value.quantity === 1 && singular !== undefined ? singular : strings.activity.unitLabel[value.unit];
+    parts.push(value.quantity !== undefined ? `${value.quantity} ${label}` : label);
+  } else if (value.quantity !== undefined) {
+    parts.push(String(value.quantity));
+  }
+
+  return parts.join(" · ");
+}
 
 /**
  * Record-only value summaries (T067 plan "Create" list). CLAUDE §7 rule 2 /
@@ -49,6 +66,10 @@ export function summarizeTimelineValue(item: TimelineItem): string | null {
     case "CHECK_REF": {
       const parsed = checkRefValueSchema.safeParse(item.value);
       return parsed.success ? strings.timeline.kindLabel.CHECK_REF : null;
+    }
+    case "ACTIVITY": {
+      const parsed = activityValueSchema.safeParse(item.value);
+      return parsed.success ? summarizeActivityValue(parsed.data) : null;
     }
     default:
       return null;

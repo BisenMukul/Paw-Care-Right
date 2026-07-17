@@ -135,6 +135,54 @@ describe("summarizeTimelineValue", () => {
     const item = makeItem({ id: "w2", kind: "WEIGHT", occurredAt: "2024-01-01T00:00:00.000Z", value: {} });
     expect(summarizeTimelineValue(item)).toBeNull();
   });
+
+  it("ACTIVITY with quantity+unit -> 'Verb · N unit' (singular for quantity 1)", () => {
+    const item = makeItem({
+      id: "a1",
+      kind: "ACTIVITY",
+      occurredAt: "2024-01-01T00:00:00.000Z",
+      value: { activityType: "FOOD", quantity: 2, unit: "meals" },
+    });
+    expect(summarizeTimelineValue(item)).toBe("Fed · 2 meals");
+
+    const singular = makeItem({
+      id: "a2",
+      kind: "ACTIVITY",
+      occurredAt: "2024-01-01T00:00:00.000Z",
+      value: { activityType: "FOOD", quantity: 1, unit: "meals" },
+    });
+    expect(summarizeTimelineValue(singular)).toBe("Fed · 1 meal");
+  });
+
+  it("ACTIVITY chips-only (GROOMING) -> 'Groomed · Brush'", () => {
+    const item = makeItem({
+      id: "a3",
+      kind: "ACTIVITY",
+      occurredAt: "2024-01-01T00:00:00.000Z",
+      value: { activityType: "GROOMING", unit: "brush" },
+    });
+    expect(summarizeTimelineValue(item)).toBe("Groomed · Brush");
+  });
+
+  it("ACTIVITY with no quantity/unit -> just the verb", () => {
+    const item = makeItem({
+      id: "a4",
+      kind: "ACTIVITY",
+      occurredAt: "2024-01-01T00:00:00.000Z",
+      value: { activityType: "SLEEP" },
+    });
+    expect(summarizeTimelineValue(item)).toBe("Slept");
+  });
+
+  it("ACTIVITY with an invalid value -> null (never throws)", () => {
+    const item = makeItem({
+      id: "a5",
+      kind: "ACTIVITY",
+      occurredAt: "2024-01-01T00:00:00.000Z",
+      value: { activityType: "POTTY", unit: "grams" },
+    });
+    expect(summarizeTimelineValue(item)).toBeNull();
+  });
 });
 
 describe("extractCheckRefId", () => {

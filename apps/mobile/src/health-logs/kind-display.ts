@@ -19,6 +19,7 @@ export const KIND_DISPLAY: Record<HealthLogKind, KindDisplay> = {
   VET_VISIT: { icon: "🏥", colorClass: "bg-purple-100" },
   MED_GIVEN: { icon: "💊", colorClass: "bg-green-100" },
   CHECK_REF: { icon: "🩺", colorClass: "bg-orange-100" },
+  ACTIVITY: { icon: "🐾", colorClass: "bg-teal-100" },
 };
 
 export const DEFAULT_KIND_DISPLAY: KindDisplay = { icon: "❓", colorClass: "bg-brand-100" };

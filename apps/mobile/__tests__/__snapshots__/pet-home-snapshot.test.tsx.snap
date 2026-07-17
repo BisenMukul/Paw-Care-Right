@@ -530,7 +530,7 @@ exports[`pet home screen snapshots loaded 1`] = `
                 onResponderTerminationRequest={[Function]}
                 onStartShouldSetResponder={[Function]}
                 style={null}
-                testID="quick-action-log-note"
+                testID="quick-action-log-activity"
               >
                 <View
                   className="h-11 w-11 items-center justify-center rounded-full bg-brand-100"
@@ -554,13 +554,13 @@ exports[`pet home screen snapshots loaded 1`] = `
                       ]
                     }
                   >
-                    
+                    
                   </Text>
                 </View>
                 <Text
                   className="text-center text-sm font-semibold text-brand-900"
                 >
-                  Log note
+                  Log activity
                 </Text>
               </View>
             </View>
