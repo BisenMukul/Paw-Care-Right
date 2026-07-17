@@ -6,7 +6,7 @@ import { Text, View } from "react-native";
 import { useAuthStore } from "../auth/auth-store";
 import { getConfig } from "../config";
 import { strings } from "../strings";
-import { PrimaryButton } from "./primary-button";
+import { SecondaryButton } from "./secondary-button";
 
 /**
  * Apple + Google social sign-in buttons. Both flows are wrapped in
@@ -83,20 +83,24 @@ export function SocialAuthButtons() {
   return (
     <View className="gap-3">
       {appleAvailable ? (
-        <PrimaryButton
+        <SecondaryButton
           testID="social-apple-button"
           label={strings.auth.social.apple}
           onPress={handleApplePress}
         />
       ) : null}
-      <PrimaryButton
+      <SecondaryButton
         testID="social-google-button"
         label={strings.auth.social.google}
         onPress={handleGooglePress}
         disabled={!request || googleClientId === ""}
       />
       {error !== null ? (
-        <Text testID="social-auth-error" className="text-center text-sm text-red-600">
+        <Text
+          testID="social-auth-error"
+          accessibilityRole="alert"
+          className="text-center text-sm text-red-700"
+        >
           {error}
         </Text>
       ) : null}

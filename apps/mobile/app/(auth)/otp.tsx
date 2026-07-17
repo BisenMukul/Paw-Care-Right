@@ -1,10 +1,11 @@
 import { isApiError } from "@pawcareright/api-client";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
-import { Pressable, Text } from "react-native";
+import { Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useAuthStore } from "../../src/auth/auth-store";
+import { GhostButton } from "../../src/components/ghost-button";
 import { OtpInput } from "../../src/components/otp-input";
 import { strings } from "../../src/strings";
 
@@ -56,8 +57,12 @@ export default function OtpScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 justify-center gap-6 bg-white px-6">
-      <Text className="text-center text-base text-brand-900">
+    <SafeAreaView className="flex-1 justify-center gap-6 bg-brand-50 px-6">
+      <Text
+        accessibilityRole="header"
+        maxFontSizeMultiplier={1.5}
+        className="text-center text-base text-brand-900"
+      >
         {strings.auth.otp.prompt}
       </Text>
       <OtpInput
@@ -68,7 +73,11 @@ export default function OtpScreen() {
         hasError={hasError}
       />
       {errorMessage !== null ? (
-        <Text testID="otp-error" className="text-center text-sm text-red-600">
+        <Text
+          testID="otp-error"
+          accessibilityRole="alert"
+          className="text-center text-sm text-red-700"
+        >
           {errorMessage}
         </Text>
       ) : null}
@@ -77,11 +86,7 @@ export default function OtpScreen() {
           {strings.auth.otp.verifying}
         </Text>
       ) : null}
-      <Pressable testID="otp-resend" onPress={handleResend}>
-        <Text className="text-center text-sm font-medium text-brand-700">
-          {strings.auth.otp.resend}
-        </Text>
-      </Pressable>
+      <GhostButton testID="otp-resend" label={strings.auth.otp.resend} onPress={handleResend} />
     </SafeAreaView>
   );
 }

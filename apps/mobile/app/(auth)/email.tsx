@@ -1,10 +1,11 @@
 import { useRouter } from "expo-router";
-import { useState } from "react";
-import { KeyboardAvoidingView, Platform, Text, TextInput } from "react-native";
+import { useRef, useState } from "react";
+import { AccessibilityInfo, KeyboardAvoidingView, Platform, TextInput, findNodeHandle } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useAuthStore } from "../../src/auth/auth-store";
 import { PrimaryButton } from "../../src/components/primary-button";
+import { TextField } from "../../src/components/text-field";
 import { strings } from "../../src/strings";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -15,12 +16,21 @@ export default function EmailScreen() {
   const [email, setEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const emailFieldRef = useRef<TextInput>(null);
+
+  function focusEmailField() {
+    const node = findNodeHandle(emailFieldRef.current);
+    if (node !== null) {
+      AccessibilityInfo.setAccessibilityFocus(node);
+    }
+  }
 
   async function handleSubmit() {
     const trimmed = email.trim();
 
     if (!EMAIL_PATTERN.test(trimmed)) {
       setError(strings.auth.email.invalidEmail);
+      focusEmailField();
       return;
     }
 
@@ -34,6 +44,7 @@ export default function EmailScreen() {
       router.push({ pathname: "/(auth)/otp", params: { email: trimmed } });
     } catch {
       setError(strings.auth.email.genericError);
+      focusEmailField();
     } finally {
       setLoading(false);
     }
@@ -44,25 +55,20 @@ export default function EmailScreen() {
       behavior={Platform.OS === "ios" ? "padding" : undefined}
       className="flex-1"
     >
-      <SafeAreaView className="flex-1 justify-center gap-4 bg-white px-6">
-        <Text className="text-base font-medium text-brand-900">
-          {strings.auth.email.label}
-        </Text>
-        <TextInput
+      <SafeAreaView className="flex-1 justify-center gap-4 bg-brand-50 px-6">
+        <TextField
+          ref={emailFieldRef}
           testID="email-input"
+          errorTestID="email-error"
+          label={strings.auth.email.label}
           value={email}
           onChangeText={setEmail}
           placeholder={strings.auth.email.placeholder}
           keyboardType="email-address"
           autoCapitalize="none"
           autoCorrect={false}
-          className="rounded-lg border border-gray-300 px-4 py-3 text-base text-gray-900"
+          error={error}
         />
-        {error !== null ? (
-          <Text testID="email-error" className="text-sm text-red-600">
-            {error}
-          </Text>
-        ) : null}
         <PrimaryButton
           testID="email-submit"
           label={strings.auth.email.submit}

@@ -1,8 +1,9 @@
 import type { ReactNode } from "react";
-import { KeyboardAvoidingView, Platform, Pressable, Text, View } from "react-native";
+import { KeyboardAvoidingView, Platform, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { strings } from "../strings";
+import { GhostButton } from "./ghost-button";
 import { PrimaryButton } from "./primary-button";
 
 export interface WizardScaffoldProps {
@@ -30,7 +31,7 @@ export function WizardScaffold({
   children,
 }: WizardScaffoldProps) {
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView className="flex-1 bg-brand-50">
       <KeyboardAvoidingView
         className="flex-1"
         behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -42,21 +43,17 @@ export function WizardScaffold({
           <View className="flex-1 gap-4 pt-4">{children}</View>
           <View className="flex-row items-center justify-between gap-4 pt-4">
             {onBack ? (
-              <Pressable testID="wizard-back" onPress={onBack}>
-                <Text className="text-base font-medium text-brand-700">
-                  {strings.addPet.common.back}
-                </Text>
-              </Pressable>
+              <GhostButton testID="wizard-back" label={strings.addPet.common.back} onPress={onBack} />
             ) : (
               <View />
             )}
             <View className="flex-row items-center gap-4">
               {onSkip ? (
-                <Pressable testID="wizard-skip" onPress={onSkip}>
-                  <Text className="text-base font-medium text-brand-700">
-                    {skipLabel ?? strings.addPet.common.skip}
-                  </Text>
-                </Pressable>
+                <GhostButton
+                  testID="wizard-skip"
+                  label={skipLabel ?? strings.addPet.common.skip}
+                  onPress={onSkip}
+                />
               ) : null}
               {onNext ? (
                 <PrimaryButton

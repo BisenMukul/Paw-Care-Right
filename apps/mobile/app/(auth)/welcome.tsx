@@ -11,7 +11,7 @@ export default function WelcomeScreen() {
   const router = useRouter();
 
   return (
-    <SafeAreaView className="flex-1 items-center justify-center gap-6 bg-white px-6">
+    <SafeAreaView className="flex-1 items-center justify-center gap-6 bg-brand-50 px-6">
       <AppTitle />
       <Text className="text-center text-base text-brand-900">
         {strings.auth.welcome.tagline}

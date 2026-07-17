@@ -67,17 +67,21 @@ export default function DoneScreen() {
   }, []);
 
   return (
-    <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-white px-6">
+    <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
       {error !== null ? (
         <>
-          <Text testID="add-pet-error" className="text-center text-base text-red-600">
+          <Text
+            testID="add-pet-error"
+            accessibilityRole="alert"
+            className="text-center text-base text-red-700"
+          >
             {error}
           </Text>
           <PrimaryButton testID="add-pet-retry" label={strings.addPet.done.retry} onPress={run} />
         </>
       ) : (
         <>
-          <ActivityIndicator testID="add-pet-submitting" />
+          <ActivityIndicator testID="add-pet-submitting" color="#1f6350" />
           <Text className="text-center text-base text-brand-900">
             {strings.addPet.done.submitting}
           </Text>

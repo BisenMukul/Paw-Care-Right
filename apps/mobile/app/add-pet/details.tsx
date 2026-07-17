@@ -1,8 +1,9 @@
 import { useRouter } from "expo-router";
-import { useState } from "react";
-import { Pressable, Switch, Text, TextInput, View } from "react-native";
+import { useRef, useState, type RefObject } from "react";
+import { AccessibilityInfo, Pressable, Switch, Text, TextInput, View, findNodeHandle } from "react-native";
 
 import { useAddPetStore } from "../../src/pets/add-pet-store";
+import { TextField } from "../../src/components/text-field";
 import { WizardScaffold } from "../../src/components/wizard-scaffold";
 import { strings } from "../../src/strings";
 
@@ -34,14 +35,34 @@ export default function DetailsScreen() {
   const draft = useAddPetStore((state) => state.draft);
   const setField = useAddPetStore((state) => state.setField);
   const [error, setError] = useState<string | null>(null);
+  const nameFieldRef = useRef<TextInput>(null);
+  const birthDateFieldRef = useRef<TextInput>(null);
+
+  // A single shared error region (testID `details-error`) carries both the
+  // name-required and the cross-field XOR message, so at most one of these
+  // two is non-null at a time -- each is rendered in the errored field's own
+  // TextField error slot, keeping the testID/text a single instance in the
+  // tree (no duplicate accessibility announcements).
+  const nameError = error === strings.addPet.details.nameRequired ? error : null;
+  const crossFieldError =
+    error !== null && error !== strings.addPet.details.nameRequired ? error : null;
+
+  function focusField(ref: RefObject<TextInput | null>) {
+    const node = findNodeHandle(ref.current);
+    if (node !== null) {
+      AccessibilityInfo.setAccessibilityFocus(node);
+    }
+  }
 
   function handleNext() {
     if (draft.name.trim().length === 0) {
       setError(strings.addPet.details.nameRequired);
+      focusField(nameFieldRef);
       return;
     }
     if (draft.birthDate !== null && draft.ageEstimateMonths !== null) {
       setError(strings.addPet.details.xorError);
+      focusField(birthDateFieldRef);
       return;
     }
     setError(null);
@@ -50,22 +71,24 @@ export default function DetailsScreen() {
 
   return (
     <WizardScaffold step={3} total={5} onBack={() => router.back()} onNext={handleNext}>
-      <Text className="text-xl font-semibold text-brand-900">
+      <Text
+        accessibilityRole="header"
+        maxFontSizeMultiplier={1.5}
+        className="text-xl font-semibold text-brand-900"
+      >
         {strings.addPet.details.title}
       </Text>
 
-      <View className="gap-2">
-        <Text className="text-sm font-medium text-brand-900">
-          {strings.addPet.details.nameLabel}
-        </Text>
-        <TextInput
-          testID="details-name-input"
-          value={draft.name}
-          onChangeText={(text) => setField("name", text)}
-          placeholder={strings.addPet.details.namePlaceholder}
-          className="rounded-lg border border-gray-300 px-4 py-3 text-base text-gray-900"
-        />
-      </View>
+      <TextField
+        ref={nameFieldRef}
+        testID="details-name-input"
+        errorTestID="details-error"
+        label={strings.addPet.details.nameLabel}
+        value={draft.name}
+        onChangeText={(text) => setField("name", text)}
+        placeholder={strings.addPet.details.namePlaceholder}
+        error={nameError}
+      />
 
       <View className="gap-2">
         <Text className="text-sm font-medium text-brand-900">
@@ -76,11 +99,13 @@ export default function DetailsScreen() {
             <Pressable
               key={option}
               testID={`details-sex-${option.toLowerCase()}`}
+              accessibilityRole="button"
+              accessibilityState={{ selected: draft.sex === option }}
               onPress={() => setField("sex", option)}
               className={
                 draft.sex === option
-                  ? "rounded-lg border-2 border-brand-700 bg-brand-100 px-4 py-2"
-                  : "rounded-lg border border-gray-300 px-4 py-2"
+                  ? "min-h-[44px] justify-center rounded-lg border-2 border-brand-700 bg-brand-100 px-4 py-2"
+                  : "min-h-[44px] justify-center rounded-lg border border-brand-100 px-4 py-2"
               }
             >
               <Text className="text-sm text-brand-900">{sexLabel(option)}</Text>
@@ -95,55 +120,38 @@ export default function DetailsScreen() {
         </Text>
         <Switch
           testID="details-neutered-toggle"
+          accessibilityLabel={strings.addPet.details.neuteredA11y}
           value={draft.neutered ?? false}
           onValueChange={(next) => setField("neutered", next)}
         />
       </View>
 
-      <View className="gap-2">
-        <Text className="text-sm font-medium text-brand-900">
-          {strings.addPet.details.birthDateLabel}
-        </Text>
-        <TextInput
-          testID="details-birthdate-input"
-          value={draft.birthDate ?? ""}
-          onChangeText={(text) => setField("birthDate", text.trim().length === 0 ? null : text)}
-          placeholder={strings.addPet.details.birthDatePlaceholder}
-          className="rounded-lg border border-gray-300 px-4 py-3 text-base text-gray-900"
-        />
-      </View>
+      <TextField
+        ref={birthDateFieldRef}
+        testID="details-birthdate-input"
+        errorTestID="details-error"
+        label={strings.addPet.details.birthDateLabel}
+        value={draft.birthDate ?? ""}
+        onChangeText={(text) => setField("birthDate", text.trim().length === 0 ? null : text)}
+        placeholder={strings.addPet.details.birthDatePlaceholder}
+        error={crossFieldError}
+      />
 
-      <View className="gap-2">
-        <Text className="text-sm font-medium text-brand-900">
-          {strings.addPet.details.ageEstimateLabel}
-        </Text>
-        <TextInput
-          testID="details-age-input"
-          value={draft.ageEstimateMonths === null ? "" : String(draft.ageEstimateMonths)}
-          onChangeText={(text) => setField("ageEstimateMonths", parseOptionalInt(text))}
-          keyboardType="number-pad"
-          className="rounded-lg border border-gray-300 px-4 py-3 text-base text-gray-900"
-        />
-      </View>
+      <TextField
+        testID="details-age-input"
+        label={strings.addPet.details.ageEstimateLabel}
+        value={draft.ageEstimateMonths === null ? "" : String(draft.ageEstimateMonths)}
+        onChangeText={(text) => setField("ageEstimateMonths", parseOptionalInt(text))}
+        keyboardType="number-pad"
+      />
 
-      <View className="gap-2">
-        <Text className="text-sm font-medium text-brand-900">
-          {strings.addPet.details.weightLabel}
-        </Text>
-        <TextInput
-          testID="details-weight-input"
-          value={draft.weightGrams === null ? "" : String(draft.weightGrams)}
-          onChangeText={(text) => setField("weightGrams", parseOptionalInt(text))}
-          keyboardType="number-pad"
-          className="rounded-lg border border-gray-300 px-4 py-3 text-base text-gray-900"
-        />
-      </View>
-
-      {error !== null ? (
-        <Text testID="details-error" className="text-sm text-red-600">
-          {error}
-        </Text>
-      ) : null}
+      <TextField
+        testID="details-weight-input"
+        label={strings.addPet.details.weightLabel}
+        value={draft.weightGrams === null ? "" : String(draft.weightGrams)}
+        onChangeText={(text) => setField("weightGrams", parseOptionalInt(text))}
+        keyboardType="number-pad"
+      />
     </WizardScaffold>
   );
 }

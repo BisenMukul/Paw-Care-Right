@@ -33,7 +33,13 @@ export default function BreedScreen() {
       onSkip={skip}
       skipLabel={strings.addPet.breed.skip}
     >
-      <Text className="text-xl font-semibold text-brand-900">{strings.addPet.breed.title}</Text>
+      <Text
+        accessibilityRole="header"
+        maxFontSizeMultiplier={1.5}
+        className="text-xl font-semibold text-brand-900"
+      >
+        {strings.addPet.breed.title}
+      </Text>
       <BreedAutocomplete species={species} value={breedSlug} onSelect={selectBreed} />
     </WizardScaffold>
   );

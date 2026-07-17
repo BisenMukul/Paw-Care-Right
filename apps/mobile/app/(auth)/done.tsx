@@ -9,8 +9,12 @@ export default function DoneScreen() {
   const router = useRouter();
 
   return (
-    <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-white px-6">
-      <Text className="text-xl font-semibold text-brand-900">
+    <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
+      <Text
+        accessibilityRole="header"
+        maxFontSizeMultiplier={1.5}
+        className="text-2xl font-bold text-brand-900"
+      >
         {strings.auth.done.title}
       </Text>
       <Text className="text-center text-base text-brand-900">

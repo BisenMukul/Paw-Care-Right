@@ -200,6 +200,7 @@ export const strings = {
       verifying: "Verifying...",
       wrongCode: "That code didn't work. Please try again.",
       genericError: "Something went wrong. Please try again.",
+      cellLabel: (index: number) => `Code digit ${index + 1}`,
     },
     done: {
       title: "You're all set",
@@ -250,6 +251,7 @@ export const strings = {
       female: "Female",
       unknown: "Unknown",
       neuteredLabel: "Neutered / spayed",
+      neuteredA11y: "Neutered or spayed",
       birthDateLabel: "Birth date (YYYY-MM-DD)",
       birthDatePlaceholder: "2022-05-01",
       ageEstimateLabel: "Estimated age (months)",
@@ -262,6 +264,7 @@ export const strings = {
       choosePhoto: "Choose photo",
       permissionError: "We couldn't access your photos. You can skip this step.",
       finish: "Finish",
+      previewA11y: "Your pet's photo",
     },
     done: {
       submitting: "Adding your pet…",

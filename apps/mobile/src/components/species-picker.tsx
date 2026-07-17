@@ -11,7 +11,7 @@ export interface SpeciesPickerProps {
 function cardClassName(selected: boolean): string {
   return selected
     ? "flex-1 items-center rounded-lg border-2 border-brand-700 bg-brand-100 px-6 py-8"
-    : "flex-1 items-center rounded-lg border border-gray-300 px-6 py-8";
+    : "flex-1 items-center rounded-lg border border-brand-200 px-6 py-8";
 }
 
 /** Two selectable DOG/CAT cards for the add-pet wizard's species step. */

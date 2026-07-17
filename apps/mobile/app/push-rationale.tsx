@@ -1,9 +1,10 @@
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { Pressable, Text } from "react-native";
+import { Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useAuthStore } from "../src/auth/auth-store";
+import { GhostButton } from "../src/components/ghost-button";
 import { PrimaryButton } from "../src/components/primary-button";
 import { usePushRegistration } from "../src/push/use-push-registration";
 import { strings } from "../src/strings";
@@ -36,8 +37,12 @@ export default function PushRationaleScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-white px-6">
-      <Text className="text-xl font-semibold text-brand-900">
+    <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
+      <Text
+        accessibilityRole="header"
+        maxFontSizeMultiplier={1.5}
+        className="text-xl font-semibold text-brand-900"
+      >
         {strings.auth.pushRationale.title}
       </Text>
       <Text className="text-center text-base text-brand-900">
@@ -49,11 +54,11 @@ export default function PushRationaleScreen() {
         onPress={handleEnable}
         loading={loading}
       />
-      <Pressable testID="push-rationale-skip" onPress={finish}>
-        <Text className="text-center text-sm font-medium text-brand-700">
-          {strings.auth.pushRationale.skip}
-        </Text>
-      </Pressable>
+      <GhostButton
+        testID="push-rationale-skip"
+        label={strings.auth.pushRationale.skip}
+        onPress={finish}
+      />
     </SafeAreaView>
   );
 }

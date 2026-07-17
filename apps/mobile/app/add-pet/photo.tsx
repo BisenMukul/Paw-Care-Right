@@ -2,8 +2,9 @@ import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { Pressable, Text } from "react-native";
+import { Text } from "react-native";
 
+import { SecondaryButton } from "../../src/components/secondary-button";
 import { WizardScaffold } from "../../src/components/wizard-scaffold";
 import { compressImage } from "../../src/pets/compress-image";
 import { useAddPetStore } from "../../src/pets/add-pet-store";
@@ -56,22 +57,29 @@ export default function PhotoScreen() {
       onNext={() => router.push("/add-pet/done")}
       nextLabel={strings.addPet.photo.finish}
     >
-      <Text className="text-xl font-semibold text-brand-900">{strings.addPet.photo.title}</Text>
+      <Text
+        accessibilityRole="header"
+        maxFontSizeMultiplier={1.5}
+        className="text-xl font-semibold text-brand-900"
+      >
+        {strings.addPet.photo.title}
+      </Text>
       <Text className="text-center text-sm text-brand-900">{strings.addPet.photo.rationale}</Text>
-      <Pressable testID="add-pet-choose-photo" onPress={choosePhoto}>
-        <Text className="text-center text-base font-medium text-brand-700">
-          {strings.addPet.photo.choosePhoto}
-        </Text>
-      </Pressable>
+      <SecondaryButton
+        testID="add-pet-choose-photo"
+        label={strings.addPet.photo.choosePhoto}
+        onPress={choosePhoto}
+      />
       {photoUri !== null ? (
         <Image
           testID="add-pet-photo-preview"
+          accessibilityLabel={strings.addPet.photo.previewA11y}
           source={{ uri: photoUri }}
-          className="h-32 w-32 rounded-xl"
+          className="h-32 w-32 rounded-2xl"
         />
       ) : null}
       {error !== null ? (
-        <Text testID="add-pet-photo-error" className="text-sm text-red-600">
+        <Text testID="add-pet-photo-error" accessibilityRole="alert" className="text-sm text-red-700">
           {error}
         </Text>
       ) : null}

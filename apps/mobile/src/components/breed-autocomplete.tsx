@@ -1,9 +1,11 @@
 import type { Species } from "@pawcareright/types";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Pressable, Text, TextInput, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 
 import { useBreedSearch } from "../api/breeds-api";
 import { strings } from "../strings";
+import { Skeleton } from "./skeleton";
+import { TextField } from "./text-field";
 
 export interface BreedOption {
   slug: string;
@@ -32,17 +34,17 @@ export function BreedAutocomplete({ species, onSelect }: BreedAutocompleteProps)
 
   return (
     <View className="gap-3">
-      <TextInput
+      <TextField
         testID="breed-search-input"
+        label={strings.addPet.breed.searchPlaceholder}
         value={query}
         onChangeText={setQuery}
         placeholder={strings.addPet.breed.searchPlaceholder}
-        className="rounded-lg border border-gray-300 px-4 py-3 text-base text-gray-900"
       />
       {isLoading ? (
-        <ActivityIndicator testID="breed-loading" />
+        <Skeleton lines={3} testID="breed-loading" />
       ) : isError ? (
-        <Text testID="breed-error" className="text-sm text-red-600">
+        <Text testID="breed-error" accessibilityRole="alert" className="text-sm text-red-700">
           {strings.addPet.breed.error}
         </Text>
       ) : !data || data.length === 0 ? (
@@ -54,8 +56,9 @@ export function BreedAutocomplete({ species, onSelect }: BreedAutocompleteProps)
           <Pressable
             key={breed.slug}
             testID={`breed-row-${breed.slug}`}
+            accessibilityRole="button"
             onPress={() => onSelect({ slug: breed.slug, name: breed.name })}
-            className="rounded-lg border border-gray-200 px-4 py-3"
+            className="min-h-[44px] justify-center rounded-lg border border-brand-100 px-4 py-3"
           >
             <Text className="text-base text-brand-900">{breed.name}</Text>
           </Pressable>

@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { TextInput, View } from "react-native";
 
+import { strings } from "../strings";
+
 export interface OtpInputProps {
   value: string;
   onChangeText: (next: string) => void;
@@ -99,6 +101,7 @@ export function OtpInput({
           }}
           testID={`${testID}-cell-${index}`}
           aria-invalid={hasError}
+          accessibilityLabel={strings.auth.otp.cellLabel(index)}
           value={cell}
           onChangeText={(text) => handleChangeText(index, text)}
           onKeyPress={({ nativeEvent }) => handleKeyPress(index, nativeEvent.key)}
@@ -107,8 +110,8 @@ export function OtpInput({
           textContentType={index === 0 ? "oneTimeCode" : undefined}
           className={
             hasError
-              ? "h-14 w-12 rounded-lg border-2 border-red-500 text-center text-xl text-red-600"
-              : "h-14 w-12 rounded-lg border border-gray-300 text-center text-xl text-gray-900"
+              ? "h-14 w-12 rounded-lg border-2 border-red-600 text-center text-xl text-red-700"
+              : "h-14 w-12 rounded-lg border border-brand-100 text-center text-xl text-brand-900"
           }
         />
       ))}

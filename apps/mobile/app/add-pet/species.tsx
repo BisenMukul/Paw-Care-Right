@@ -1,6 +1,7 @@
 import { useRouter } from "expo-router";
-import { Pressable, Text } from "react-native";
+import { Text } from "react-native";
 
+import { GhostButton } from "../../src/components/ghost-button";
 import { SpeciesPicker } from "../../src/components/species-picker";
 import { WizardScaffold } from "../../src/components/wizard-scaffold";
 import { useAddPetStore } from "../../src/pets/add-pet-store";
@@ -21,15 +22,19 @@ export default function SpeciesScreen() {
       nextDisabled={species === null}
       onNext={() => router.push("/add-pet/breed")}
     >
-      <Text className="text-xl font-semibold text-brand-900">
+      <Text
+        accessibilityRole="header"
+        maxFontSizeMultiplier={1.5}
+        className="text-xl font-semibold text-brand-900"
+      >
         {strings.addPet.species.title}
       </Text>
       <SpeciesPicker value={species} onChange={(next) => setField("species", next)} />
-      <Pressable testID="add-pet-start-over" onPress={reset}>
-        <Text className="text-center text-sm font-medium text-brand-700">
-          {strings.addPet.common.startOver}
-        </Text>
-      </Pressable>
+      <GhostButton
+        testID="add-pet-start-over"
+        label={strings.addPet.common.startOver}
+        onPress={reset}
+      />
     </WizardScaffold>
   );
 }
