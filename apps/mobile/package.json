@@ -9,7 +9,8 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "test": "jest",
-    "build": "echo \"no native build in CI (T008)\" && exit 0"
+    "build": "echo \"no native build in CI (T008)\" && exit 0",
+    "postinstall": "cd ../.. && pnpm -r --filter \"./packages/*\" build"
   },
   "dependencies": {
     "@pawcareright/analytics": "workspace:*",
