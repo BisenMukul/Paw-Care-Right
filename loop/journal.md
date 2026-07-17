@@ -899,3 +899,13 @@
 - **Gates:** mobile **609 → 611 (87 suites, stable ×3)**, typecheck/lint/build 0. Scope: 3 files (component + probe + test).
 - **Founder note:** current dev client now renders home with the solid background; the animated gradient (plus mmkv persistence, weight chart, billing) arrives with the next `eas build --profile development`.
 - Commit: fix(mobile): gradient native-availability guard for stale dev clients.
+
+## [2026-07-17] HOTFIX 5 · Pet profile UI/UX pass (founder-directed)
+- **Founder complaints:** dog profile + "Something wrong?" button not working as required; UI too basic; buttons/submissions not user friendly.
+- **Real bug fixed:** the Reminders quick action on the pet profile still routed to the T025-era /coming-soon placeholder — rewired to /(tabs)/care (route-form verified against the check-result precedent; not a silent-fail push).
+- **Redesign (home design language):** gradient-safe background; hero header card (larger avatar/initial, name, species/breed/age chips, FadeInDown); "Something wrong?" CTA → taller card-button with medkit icon + §7-neutral subtitle ("Get guidance on symptoms") + chevron + pressed feedback — testID and /check+petId wiring byte-identical; quick-action tiles gained Ionicons + pressed feedback + staggered entrance (testIDs unchanged); retry buttons now spin (loading=isFetching) with a refresh icon; offline vs server-unreachable copy split via the existing ApiError.httpStatus===0 transport marker.
+- **PrimaryButton:** pressed-state feedback + optional icon prop, public API unchanged (paywall/check-result snapshots picked up only the wrapper change — checker verified zero copy drift on those §5-adjacent screens).
+- **Submission audit:** every named form already wired loading={isPending} — zero changes needed.
+- Checker: `loop/reviews/HOTFIX-pet-profile-ui.review.md` → sole blocker was the concurrently-written docs/design-system.md sitting in the tree (separate founder deliverable — resolved by committing separately); all nine mobile files judged PASS-quality, gates re-run green. Non-blocking: CTA real height ~80px vs CTA_HEIGHT=56 minHeight budget (still SE-safe); pre-existing bg-brand-300 phantom token (fixed in the upcoming design-system sweep).
+- Gates: mobile **613 (87 suites, ×3+2)**, api 81/860 full green (MinIO restored), typecheck/lint/build 0. Mutations ×2 proven + restored.
+- Commit: feat(mobile): pet profile UI pass — rewired reminders, modern hero/CTA/tiles, retry feedback.

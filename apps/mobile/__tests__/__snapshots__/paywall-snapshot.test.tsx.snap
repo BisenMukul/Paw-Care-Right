@@ -219,7 +219,7 @@ exports[`paywall screen — variant A renders and matches the snapshot 1`] = `
                 }
               }
               accessible={true}
-              className="items-center rounded-lg bg-brand-700 px-6 py-3"
+              className="flex-row items-center justify-center gap-2 rounded-lg bg-brand-700 px-6 py-3"
               collapsable={false}
               focusable={true}
               onBlur={[Function]}
@@ -231,6 +231,7 @@ exports[`paywall screen — variant A renders and matches the snapshot 1`] = `
               onResponderTerminate={[Function]}
               onResponderTerminationRequest={[Function]}
               onStartShouldSetResponder={[Function]}
+              style={null}
               testID="paywall-trial-cta"
             >
               <Text
@@ -628,7 +629,7 @@ exports[`paywall screen — variant B renders and matches the snapshot 1`] = `
                 }
               }
               accessible={true}
-              className="items-center rounded-lg bg-brand-700 px-6 py-3"
+              className="flex-row items-center justify-center gap-2 rounded-lg bg-brand-700 px-6 py-3"
               collapsable={false}
               focusable={true}
               onBlur={[Function]}
@@ -640,6 +641,7 @@ exports[`paywall screen — variant B renders and matches the snapshot 1`] = `
               onResponderTerminate={[Function]}
               onResponderTerminationRequest={[Function]}
               onStartShouldSetResponder={[Function]}
+              style={null}
               testID="paywall-trial-cta"
             >
               <Text

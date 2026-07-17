@@ -1,4 +1,4 @@
-import { setOnline } from "@pawcareright/api-client";
+import { ApiError, setOnline } from "@pawcareright/api-client";
 import { petIdSchema, type Pet } from "@pawcareright/types";
 import { act, fireEvent, render, screen, within } from "@testing-library/react-native";
 import { Dimensions, StyleSheet } from "react-native";
@@ -89,14 +89,47 @@ describe("pet home screen — 4-state matrix (AC1)", () => {
       data: undefined,
       isLoading: false,
       isError: true,
+      isFetching: false,
       refetch: mockRefetch,
     });
 
     await render(<PetHomeScreen />);
 
     expect(screen.getByTestId("pet-home-error")).toBeTruthy();
+    expect(screen.getByTestId("pet-home-error")).toHaveTextContent("We couldn't load this pet.");
     await fireEvent.press(screen.getByTestId("pet-home-retry"));
     expect(mockRefetch).toHaveBeenCalledTimes(1);
+  });
+
+  it("error (server unreachable): a network-transport ApiError (httpStatus 0) shows the friendlier server-unreachable copy", async () => {
+    mockedUsePet.mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      isError: true,
+      error: new ApiError({ code: "INTERNAL", message: "Network request failed", httpStatus: 0, requestId: null }),
+      isFetching: false,
+      refetch: mockRefetch,
+    });
+
+    await render(<PetHomeScreen />);
+
+    expect(screen.getByTestId("pet-home-error")).toHaveTextContent(
+      "We can't reach our servers right now. Please try again in a moment.",
+    );
+  });
+
+  it("error: retry button's loading prop follows isFetching (spins while refetching)", async () => {
+    mockedUsePet.mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      isError: true,
+      isFetching: true,
+      refetch: mockRefetch,
+    });
+
+    await render(<PetHomeScreen />);
+
+    expect(screen.getByTestId("pet-home-retry-spinner")).toBeTruthy();
   });
 
   it("empty/not-found: shows pet-home-empty", async () => {
@@ -117,6 +150,7 @@ describe("pet home screen — 4-state matrix (AC1)", () => {
       data: undefined,
       isLoading: false,
       isError: false,
+      isFetching: false,
       refetch: mockRefetch,
     });
     setOnline(false);
@@ -124,6 +158,9 @@ describe("pet home screen — 4-state matrix (AC1)", () => {
     await render(<PetHomeScreen />);
 
     expect(screen.getByTestId("pet-home-offline")).toBeTruthy();
+    expect(screen.getByTestId("pet-home-offline")).toHaveTextContent(
+      "You're offline. Reconnect to load this pet's profile.",
+    );
     await fireEvent.press(screen.getByTestId("pet-home-retry"));
     expect(mockRefetch).toHaveBeenCalledTimes(1);
   });
@@ -144,11 +181,12 @@ describe("pet home screen — 4-state matrix (AC1)", () => {
     expect(screen.getByTestId("pet-home-name")).toHaveTextContent("Rex");
   });
 
-  it("loaded (online): CTA navigates, log-weight/note/vet-visit quick actions open their form routes, reminders still stubs to /coming-soon", async () => {
+  it("loaded (online): CTA navigates, log-weight/note/vet-visit/reminders quick actions all open their real destinations", async () => {
     mockedUsePet.mockReturnValue({
       data: FIXTURE_PET,
       isLoading: false,
       isError: false,
+      isFetching: false,
       refetch: mockRefetch,
     });
 
@@ -181,10 +219,7 @@ describe("pet home screen — 4-state matrix (AC1)", () => {
     });
 
     await fireEvent.press(screen.getByTestId("quick-action-reminders"));
-    expect(mockPush).toHaveBeenCalledWith({
-      pathname: "/coming-soon",
-      params: { feature: "reminders" },
-    });
+    expect(mockPush).toHaveBeenCalledWith("/(tabs)/care");
   });
 });
 
@@ -195,6 +230,7 @@ describe("pet home screen — above-the-fold (AC2)", () => {
       data: FIXTURE_PET,
       isLoading: false,
       isError: false,
+      isFetching: false,
       refetch: mockRefetch,
     });
   });

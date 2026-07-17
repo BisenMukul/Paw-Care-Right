@@ -100,7 +100,7 @@ exports[`check result screen snapshots renders a distinct FALLBACK snapshot with
               }
             }
             accessible={true}
-            className="items-center rounded-lg bg-brand-700 px-6 py-3"
+            className="flex-row items-center justify-center gap-2 rounded-lg bg-brand-700 px-6 py-3"
             collapsable={false}
             focusable={true}
             onBlur={[Function]}
@@ -112,6 +112,7 @@ exports[`check result screen snapshots renders a distinct FALLBACK snapshot with
             onResponderTerminate={[Function]}
             onResponderTerminationRequest={[Function]}
             onStartShouldSetResponder={[Function]}
+            style={null}
             testID="check-result-find-vet"
           >
             <Text
@@ -140,7 +141,7 @@ exports[`check result screen snapshots renders a distinct FALLBACK snapshot with
               }
             }
             accessible={true}
-            className="items-center rounded-lg bg-brand-700 px-6 py-3"
+            className="flex-row items-center justify-center gap-2 rounded-lg bg-brand-700 px-6 py-3"
             collapsable={false}
             focusable={true}
             onBlur={[Function]}
@@ -152,6 +153,7 @@ exports[`check result screen snapshots renders a distinct FALLBACK snapshot with
             onResponderTerminate={[Function]}
             onResponderTerminationRequest={[Function]}
             onStartShouldSetResponder={[Function]}
+            style={null}
             testID="check-result-share"
           >
             <Text
@@ -180,7 +182,7 @@ exports[`check result screen snapshots renders a distinct FALLBACK snapshot with
               }
             }
             accessible={true}
-            className="items-center rounded-lg bg-brand-700 px-6 py-3"
+            className="flex-row items-center justify-center gap-2 rounded-lg bg-brand-700 px-6 py-3"
             collapsable={false}
             focusable={true}
             onBlur={[Function]}
@@ -192,6 +194,7 @@ exports[`check result screen snapshots renders a distinct FALLBACK snapshot with
             onResponderTerminate={[Function]}
             onResponderTerminationRequest={[Function]}
             onStartShouldSetResponder={[Function]}
+            style={null}
             testID="check-result-done"
           >
             <Text
@@ -262,7 +265,7 @@ exports[`check result screen snapshots renders a distinct snapshot with the emer
               }
             }
             accessible={true}
-            className="items-center rounded-lg bg-brand-700 px-6 py-3"
+            className="flex-row items-center justify-center gap-2 rounded-lg bg-brand-700 px-6 py-3"
             collapsable={false}
             focusable={true}
             onBlur={[Function]}
@@ -274,6 +277,7 @@ exports[`check result screen snapshots renders a distinct snapshot with the emer
             onResponderTerminate={[Function]}
             onResponderTerminationRequest={[Function]}
             onStartShouldSetResponder={[Function]}
+            style={null}
             testID="check-result-emergency-cta"
           >
             <Text
@@ -409,7 +413,7 @@ exports[`check result screen snapshots renders a distinct snapshot with the emer
               }
             }
             accessible={true}
-            className="items-center rounded-lg bg-brand-700 px-6 py-3"
+            className="flex-row items-center justify-center gap-2 rounded-lg bg-brand-700 px-6 py-3"
             collapsable={false}
             focusable={true}
             onBlur={[Function]}
@@ -421,6 +425,7 @@ exports[`check result screen snapshots renders a distinct snapshot with the emer
             onResponderTerminate={[Function]}
             onResponderTerminationRequest={[Function]}
             onStartShouldSetResponder={[Function]}
+            style={null}
             testID="check-result-find-vet"
           >
             <Text
@@ -449,7 +454,7 @@ exports[`check result screen snapshots renders a distinct snapshot with the emer
               }
             }
             accessible={true}
-            className="items-center rounded-lg bg-brand-700 px-6 py-3"
+            className="flex-row items-center justify-center gap-2 rounded-lg bg-brand-700 px-6 py-3"
             collapsable={false}
             focusable={true}
             onBlur={[Function]}
@@ -461,6 +466,7 @@ exports[`check result screen snapshots renders a distinct snapshot with the emer
             onResponderTerminate={[Function]}
             onResponderTerminationRequest={[Function]}
             onStartShouldSetResponder={[Function]}
+            style={null}
             testID="check-result-share"
           >
             <Text
@@ -489,7 +495,7 @@ exports[`check result screen snapshots renders a distinct snapshot with the emer
               }
             }
             accessible={true}
-            className="items-center rounded-lg bg-brand-700 px-6 py-3"
+            className="flex-row items-center justify-center gap-2 rounded-lg bg-brand-700 px-6 py-3"
             collapsable={false}
             focusable={true}
             onBlur={[Function]}
@@ -501,6 +507,7 @@ exports[`check result screen snapshots renders a distinct snapshot with the emer
             onResponderTerminate={[Function]}
             onResponderTerminationRequest={[Function]}
             onStartShouldSetResponder={[Function]}
+            style={null}
             testID="check-result-done"
           >
             <Text
@@ -663,7 +670,7 @@ exports[`check result screen snapshots renders a stable snapshot for EMERGENCY_N
               }
             }
             accessible={true}
-            className="items-center rounded-lg bg-brand-700 px-6 py-3"
+            className="flex-row items-center justify-center gap-2 rounded-lg bg-brand-700 px-6 py-3"
             collapsable={false}
             focusable={true}
             onBlur={[Function]}
@@ -675,6 +682,7 @@ exports[`check result screen snapshots renders a stable snapshot for EMERGENCY_N
             onResponderTerminate={[Function]}
             onResponderTerminationRequest={[Function]}
             onStartShouldSetResponder={[Function]}
+            style={null}
             testID="check-result-find-vet"
           >
             <Text
@@ -703,7 +711,7 @@ exports[`check result screen snapshots renders a stable snapshot for EMERGENCY_N
               }
             }
             accessible={true}
-            className="items-center rounded-lg bg-brand-700 px-6 py-3"
+            className="flex-row items-center justify-center gap-2 rounded-lg bg-brand-700 px-6 py-3"
             collapsable={false}
             focusable={true}
             onBlur={[Function]}
@@ -715,6 +723,7 @@ exports[`check result screen snapshots renders a stable snapshot for EMERGENCY_N
             onResponderTerminate={[Function]}
             onResponderTerminationRequest={[Function]}
             onStartShouldSetResponder={[Function]}
+            style={null}
             testID="check-result-share"
           >
             <Text
@@ -743,7 +752,7 @@ exports[`check result screen snapshots renders a stable snapshot for EMERGENCY_N
               }
             }
             accessible={true}
-            className="items-center rounded-lg bg-brand-700 px-6 py-3"
+            className="flex-row items-center justify-center gap-2 rounded-lg bg-brand-700 px-6 py-3"
             collapsable={false}
             focusable={true}
             onBlur={[Function]}
@@ -755,6 +764,7 @@ exports[`check result screen snapshots renders a stable snapshot for EMERGENCY_N
             onResponderTerminate={[Function]}
             onResponderTerminationRequest={[Function]}
             onStartShouldSetResponder={[Function]}
+            style={null}
             testID="check-result-done"
           >
             <Text
@@ -932,7 +942,7 @@ exports[`check result screen snapshots renders a stable snapshot for MONITOR wit
               }
             }
             accessible={true}
-            className="items-center rounded-lg bg-brand-700 px-6 py-3"
+            className="flex-row items-center justify-center gap-2 rounded-lg bg-brand-700 px-6 py-3"
             collapsable={false}
             focusable={true}
             onBlur={[Function]}
@@ -944,6 +954,7 @@ exports[`check result screen snapshots renders a stable snapshot for MONITOR wit
             onResponderTerminate={[Function]}
             onResponderTerminationRequest={[Function]}
             onStartShouldSetResponder={[Function]}
+            style={null}
             testID="check-result-find-vet"
           >
             <Text
@@ -972,7 +983,7 @@ exports[`check result screen snapshots renders a stable snapshot for MONITOR wit
               }
             }
             accessible={true}
-            className="items-center rounded-lg bg-brand-700 px-6 py-3"
+            className="flex-row items-center justify-center gap-2 rounded-lg bg-brand-700 px-6 py-3"
             collapsable={false}
             focusable={true}
             onBlur={[Function]}
@@ -984,6 +995,7 @@ exports[`check result screen snapshots renders a stable snapshot for MONITOR wit
             onResponderTerminate={[Function]}
             onResponderTerminationRequest={[Function]}
             onStartShouldSetResponder={[Function]}
+            style={null}
             testID="check-result-share"
           >
             <Text
@@ -1012,7 +1024,7 @@ exports[`check result screen snapshots renders a stable snapshot for MONITOR wit
               }
             }
             accessible={true}
-            className="items-center rounded-lg bg-brand-700 px-6 py-3"
+            className="flex-row items-center justify-center gap-2 rounded-lg bg-brand-700 px-6 py-3"
             collapsable={false}
             focusable={true}
             onBlur={[Function]}
@@ -1024,6 +1036,7 @@ exports[`check result screen snapshots renders a stable snapshot for MONITOR wit
             onResponderTerminate={[Function]}
             onResponderTerminationRequest={[Function]}
             onStartShouldSetResponder={[Function]}
+            style={null}
             testID="check-result-done"
           >
             <Text
@@ -1201,7 +1214,7 @@ exports[`check result screen snapshots renders a stable snapshot for REASSURE wi
               }
             }
             accessible={true}
-            className="items-center rounded-lg bg-brand-700 px-6 py-3"
+            className="flex-row items-center justify-center gap-2 rounded-lg bg-brand-700 px-6 py-3"
             collapsable={false}
             focusable={true}
             onBlur={[Function]}
@@ -1213,6 +1226,7 @@ exports[`check result screen snapshots renders a stable snapshot for REASSURE wi
             onResponderTerminate={[Function]}
             onResponderTerminationRequest={[Function]}
             onStartShouldSetResponder={[Function]}
+            style={null}
             testID="check-result-find-vet"
           >
             <Text
@@ -1241,7 +1255,7 @@ exports[`check result screen snapshots renders a stable snapshot for REASSURE wi
               }
             }
             accessible={true}
-            className="items-center rounded-lg bg-brand-700 px-6 py-3"
+            className="flex-row items-center justify-center gap-2 rounded-lg bg-brand-700 px-6 py-3"
             collapsable={false}
             focusable={true}
             onBlur={[Function]}
@@ -1253,6 +1267,7 @@ exports[`check result screen snapshots renders a stable snapshot for REASSURE wi
             onResponderTerminate={[Function]}
             onResponderTerminationRequest={[Function]}
             onStartShouldSetResponder={[Function]}
+            style={null}
             testID="check-result-share"
           >
             <Text
@@ -1281,7 +1296,7 @@ exports[`check result screen snapshots renders a stable snapshot for REASSURE wi
               }
             }
             accessible={true}
-            className="items-center rounded-lg bg-brand-700 px-6 py-3"
+            className="flex-row items-center justify-center gap-2 rounded-lg bg-brand-700 px-6 py-3"
             collapsable={false}
             focusable={true}
             onBlur={[Function]}
@@ -1293,6 +1308,7 @@ exports[`check result screen snapshots renders a stable snapshot for REASSURE wi
             onResponderTerminate={[Function]}
             onResponderTerminationRequest={[Function]}
             onStartShouldSetResponder={[Function]}
+            style={null}
             testID="check-result-done"
           >
             <Text
@@ -1455,7 +1471,7 @@ exports[`check result screen snapshots renders a stable snapshot for VET_24H wit
               }
             }
             accessible={true}
-            className="items-center rounded-lg bg-brand-700 px-6 py-3"
+            className="flex-row items-center justify-center gap-2 rounded-lg bg-brand-700 px-6 py-3"
             collapsable={false}
             focusable={true}
             onBlur={[Function]}
@@ -1467,6 +1483,7 @@ exports[`check result screen snapshots renders a stable snapshot for VET_24H wit
             onResponderTerminate={[Function]}
             onResponderTerminationRequest={[Function]}
             onStartShouldSetResponder={[Function]}
+            style={null}
             testID="check-result-find-vet"
           >
             <Text
@@ -1495,7 +1512,7 @@ exports[`check result screen snapshots renders a stable snapshot for VET_24H wit
               }
             }
             accessible={true}
-            className="items-center rounded-lg bg-brand-700 px-6 py-3"
+            className="flex-row items-center justify-center gap-2 rounded-lg bg-brand-700 px-6 py-3"
             collapsable={false}
             focusable={true}
             onBlur={[Function]}
@@ -1507,6 +1524,7 @@ exports[`check result screen snapshots renders a stable snapshot for VET_24H wit
             onResponderTerminate={[Function]}
             onResponderTerminationRequest={[Function]}
             onStartShouldSetResponder={[Function]}
+            style={null}
             testID="check-result-share"
           >
             <Text
@@ -1535,7 +1553,7 @@ exports[`check result screen snapshots renders a stable snapshot for VET_24H wit
               }
             }
             accessible={true}
-            className="items-center rounded-lg bg-brand-700 px-6 py-3"
+            className="flex-row items-center justify-center gap-2 rounded-lg bg-brand-700 px-6 py-3"
             collapsable={false}
             focusable={true}
             onBlur={[Function]}
@@ -1547,6 +1565,7 @@ exports[`check result screen snapshots renders a stable snapshot for VET_24H wit
             onResponderTerminate={[Function]}
             onResponderTerminationRequest={[Function]}
             onStartShouldSetResponder={[Function]}
+            style={null}
             testID="check-result-done"
           >
             <Text
@@ -1724,7 +1743,7 @@ exports[`check result screen snapshots renders a stable snapshot for VET_SOON wi
               }
             }
             accessible={true}
-            className="items-center rounded-lg bg-brand-700 px-6 py-3"
+            className="flex-row items-center justify-center gap-2 rounded-lg bg-brand-700 px-6 py-3"
             collapsable={false}
             focusable={true}
             onBlur={[Function]}
@@ -1736,6 +1755,7 @@ exports[`check result screen snapshots renders a stable snapshot for VET_SOON wi
             onResponderTerminate={[Function]}
             onResponderTerminationRequest={[Function]}
             onStartShouldSetResponder={[Function]}
+            style={null}
             testID="check-result-find-vet"
           >
             <Text
@@ -1764,7 +1784,7 @@ exports[`check result screen snapshots renders a stable snapshot for VET_SOON wi
               }
             }
             accessible={true}
-            className="items-center rounded-lg bg-brand-700 px-6 py-3"
+            className="flex-row items-center justify-center gap-2 rounded-lg bg-brand-700 px-6 py-3"
             collapsable={false}
             focusable={true}
             onBlur={[Function]}
@@ -1776,6 +1796,7 @@ exports[`check result screen snapshots renders a stable snapshot for VET_SOON wi
             onResponderTerminate={[Function]}
             onResponderTerminationRequest={[Function]}
             onStartShouldSetResponder={[Function]}
+            style={null}
             testID="check-result-share"
           >
             <Text
@@ -1804,7 +1825,7 @@ exports[`check result screen snapshots renders a stable snapshot for VET_SOON wi
               }
             }
             accessible={true}
-            className="items-center rounded-lg bg-brand-700 px-6 py-3"
+            className="flex-row items-center justify-center gap-2 rounded-lg bg-brand-700 px-6 py-3"
             collapsable={false}
             focusable={true}
             onBlur={[Function]}
@@ -1816,6 +1837,7 @@ exports[`check result screen snapshots renders a stable snapshot for VET_SOON wi
             onResponderTerminate={[Function]}
             onResponderTerminationRequest={[Function]}
             onStartShouldSetResponder={[Function]}
+            style={null}
             testID="check-result-done"
           >
             <Text

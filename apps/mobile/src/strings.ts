@@ -225,16 +225,23 @@ export const strings = {
   petHome: {
     loading: "Loading…",
     error: "We couldn't load this pet.",
+    // Founder UI pass: friendlier copy split by cause (new keys) — the
+    // generic `error` string above is kept as-is for the fallback/unknown
+    // case (a non-network API error). Neither adds urgency/diagnosis
+    // language (CLAUDE §7).
+    serverUnreachable: "We can't reach our servers right now. Please try again in a moment.",
+    offlineNoCache: "You're offline. Reconnect to load this pet's profile.",
     empty: "This pet couldn't be found.",
     done: "Done",
     somethingWrong: "Something wrong?",
+    somethingWrongSubtitle: "Get guidance on symptoms",
+    quickActionsTitle: "Quick actions",
     logWeight: "Log weight",
     logNote: "Log note",
     logVetVisit: "Vet visit",
     reminders: "Reminders",
     retry: "Retry",
     offlineBanner: "You're offline — showing your last saved info.",
-    offline: "You're offline. Reconnect to load this pet.",
     age: { yr: "yr", mo: "mo", approx: "~", unknown: "Age unknown" },
   },
   // T065 weight chart: the typical-range band caption is strictly factual

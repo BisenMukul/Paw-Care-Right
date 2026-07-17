@@ -59,7 +59,7 @@ exports[`pet home screen snapshots error 1`] = `
       }
     }
     accessible={true}
-    className="items-center rounded-lg bg-brand-700 px-6 py-3"
+    className="flex-row items-center justify-center gap-2 rounded-lg bg-brand-700 px-6 py-3"
     collapsable={false}
     focusable={true}
     onBlur={[Function]}
@@ -71,8 +71,30 @@ exports[`pet home screen snapshots error 1`] = `
     onResponderTerminate={[Function]}
     onResponderTerminationRequest={[Function]}
     onStartShouldSetResponder={[Function]}
+    style={null}
     testID="pet-home-retry"
   >
+    <Text
+      allowFontScaling={false}
+      selectable={false}
+      style={
+        [
+          {
+            "color": "#ffffff",
+            "fontSize": 18,
+          },
+          undefined,
+          {
+            "fontFamily": "ionicons",
+            "fontStyle": "normal",
+            "fontWeight": "normal",
+          },
+          {},
+        ]
+      }
+    >
+      
+    </Text>
     <Text
       className="text-base font-semibold text-white"
     >
@@ -83,284 +105,623 @@ exports[`pet home screen snapshots error 1`] = `
 `;
 
 exports[`pet home screen snapshots loaded 1`] = `
-<RNCSafeAreaView
-  className="flex-1 bg-white"
-  edges={
-    {
-      "bottom": "additive",
-      "left": "additive",
-      "right": "additive",
-      "top": "additive",
-    }
-  }
+<View
+  className="flex-1"
 >
   <View
-    className="gap-3 px-6 pb-4 pt-2"
-    testID="pet-home-header-region"
+    pointerEvents="none"
+    style={
+      {
+        "bottom": 0,
+        "left": 0,
+        "position": "absolute",
+        "right": 0,
+        "top": 0,
+      }
+    }
+    testID="home-gradient-background"
   >
     <View
-      className="flex-row items-center gap-4 rounded-lg bg-brand-50 px-4"
-      style={
+      colors={
+        [
+          "#f2f8f6",
+          "#ffffff",
+          "#dcece6",
+        ]
+      }
+      end={
         {
-          "height": 140,
+          "x": 1,
+          "y": 1,
         }
       }
-      testID="pet-home-header-card"
-    >
-      <Image
-        className="h-20 w-20 rounded-full"
-        source={
+      start={
+        {
+          "x": 0,
+          "y": 0,
+        }
+      }
+      style={
+        {
+          "bottom": 0,
+          "left": 0,
+          "position": "absolute",
+          "right": 0,
+          "top": 0,
+        }
+      }
+    />
+    <View
+      style={
+        [
           {
-            "uri": "file:///snap.jpg",
+            "bottom": 0,
+            "left": 0,
+            "position": "absolute",
+            "right": 0,
+            "top": 0,
+          },
+          {
+            "opacity": 0,
+          },
+        ]
+      }
+    >
+      <View
+        colors={
+          [
+            "#fdf8ef",
+            "#f2f8f6",
+            "#eef7f1",
+          ]
+        }
+        end={
+          {
+            "x": 0,
+            "y": 1,
           }
         }
-        testID="pet-home-photo"
+        start={
+          {
+            "x": 1,
+            "y": 0,
+          }
+        }
+        style={
+          {
+            "bottom": 0,
+            "left": 0,
+            "position": "absolute",
+            "right": 0,
+            "top": 0,
+          }
+        }
       />
-      <View
-        className="flex-1 gap-1"
-      >
-        <Text
-          className="text-xl font-semibold text-brand-900"
-          testID="pet-home-name"
-        >
-          Rex
-        </Text>
-        <Text
-          className="text-base text-brand-900"
-          testID="pet-home-age"
-        >
-          2 yr
-        </Text>
-        <Text
-          className="text-base text-brand-900"
-          testID="pet-home-breed"
-        >
-          labrador-retriever
-        </Text>
-      </View>
-    </View>
-    <View
-      accessibilityRole="button"
-      accessibilityState={
-        {
-          "busy": undefined,
-          "checked": undefined,
-          "disabled": undefined,
-          "expanded": undefined,
-          "selected": undefined,
-        }
-      }
-      accessibilityValue={
-        {
-          "max": undefined,
-          "min": undefined,
-          "now": undefined,
-          "text": undefined,
-        }
-      }
-      accessible={true}
-      className="items-center justify-center rounded-lg bg-brand-700 px-6"
-      collapsable={false}
-      focusable={true}
-      onBlur={[Function]}
-      onClick={[Function]}
-      onFocus={[Function]}
-      onResponderGrant={[Function]}
-      onResponderMove={[Function]}
-      onResponderRelease={[Function]}
-      onResponderTerminate={[Function]}
-      onResponderTerminationRequest={[Function]}
-      onStartShouldSetResponder={[Function]}
-      style={
-        {
-          "minHeight": 56,
-        }
-      }
-      testID="pet-home-cta"
-    >
-      <Text
-        className="text-base font-semibold text-white"
-      >
-        Something wrong?
-      </Text>
     </View>
   </View>
-  <RCTScrollView
+  <RNCSafeAreaView
     className="flex-1"
-    testID="pet-home-scroll"
+    edges={
+      {
+        "bottom": "additive",
+        "left": "additive",
+        "right": "additive",
+        "top": "additive",
+      }
+    }
   >
-    <View>
+    <View
+      className="gap-3 px-6 pb-4 pt-2"
+      testID="pet-home-header-region"
+    >
       <View
-        className="gap-4 px-6 pb-8 pt-4"
+        className="flex-row items-center gap-4 rounded-2xl bg-white px-4 shadow-md"
+        entering={
+          {
+            "delay": [Function],
+            "duration": [Function],
+          }
+        }
+        style={
+          {
+            "height": 140,
+          }
+        }
+        testID="pet-home-header-card"
       >
+        <Image
+          className="h-24 w-24 rounded-full"
+          source={
+            {
+              "uri": "file:///snap.jpg",
+            }
+          }
+          testID="pet-home-photo"
+        />
         <View
-          className="flex-row flex-wrap gap-3"
+          className="flex-1 gap-2"
         >
-          <View
-            accessibilityRole="button"
-            accessibilityState={
-              {
-                "busy": undefined,
-                "checked": undefined,
-                "disabled": undefined,
-                "expanded": undefined,
-                "selected": undefined,
-              }
-            }
-            accessibilityValue={
-              {
-                "max": undefined,
-                "min": undefined,
-                "now": undefined,
-                "text": undefined,
-              }
-            }
-            accessible={true}
-            className="min-w-[45%] flex-1 basis-[45%] items-center rounded-lg bg-brand-100 px-4 py-3"
-            collapsable={false}
-            focusable={true}
-            onBlur={[Function]}
-            onClick={[Function]}
-            onFocus={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-            testID="quick-action-log-weight"
+          <Text
+            className="text-2xl font-bold text-brand-900"
+            testID="pet-home-name"
           >
-            <Text
-              className="text-base font-semibold text-brand-900"
-            >
-              Log weight
-            </Text>
-          </View>
+            Rex
+          </Text>
           <View
-            accessibilityRole="button"
-            accessibilityState={
-              {
-                "busy": undefined,
-                "checked": undefined,
-                "disabled": undefined,
-                "expanded": undefined,
-                "selected": undefined,
-              }
-            }
-            accessibilityValue={
-              {
-                "max": undefined,
-                "min": undefined,
-                "now": undefined,
-                "text": undefined,
-              }
-            }
-            accessible={true}
-            className="min-w-[45%] flex-1 basis-[45%] items-center rounded-lg bg-brand-100 px-4 py-3"
-            collapsable={false}
-            focusable={true}
-            onBlur={[Function]}
-            onClick={[Function]}
-            onFocus={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-            testID="quick-action-log-note"
+            className="flex-row flex-wrap items-center gap-2"
           >
-            <Text
-              className="text-base font-semibold text-brand-900"
+            <View
+              className="rounded-full bg-brand-50 px-3 py-1"
+              testID="pet-home-species"
             >
-              Log note
-            </Text>
-          </View>
-          <View
-            accessibilityRole="button"
-            accessibilityState={
-              {
-                "busy": undefined,
-                "checked": undefined,
-                "disabled": undefined,
-                "expanded": undefined,
-                "selected": undefined,
-              }
-            }
-            accessibilityValue={
-              {
-                "max": undefined,
-                "min": undefined,
-                "now": undefined,
-                "text": undefined,
-              }
-            }
-            accessible={true}
-            className="min-w-[45%] flex-1 basis-[45%] items-center rounded-lg bg-brand-100 px-4 py-3"
-            collapsable={false}
-            focusable={true}
-            onBlur={[Function]}
-            onClick={[Function]}
-            onFocus={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-            testID="quick-action-log-vet-visit"
-          >
-            <Text
-              className="text-base font-semibold text-brand-900"
+              <Text
+                className="text-xs font-medium text-brand-700"
+              >
+                Dog
+              </Text>
+            </View>
+            <View
+              className="rounded-full bg-brand-50 px-3 py-1"
             >
-              Vet visit
-            </Text>
-          </View>
-          <View
-            accessibilityRole="button"
-            accessibilityState={
-              {
-                "busy": undefined,
-                "checked": undefined,
-                "disabled": undefined,
-                "expanded": undefined,
-                "selected": undefined,
-              }
-            }
-            accessibilityValue={
-              {
-                "max": undefined,
-                "min": undefined,
-                "now": undefined,
-                "text": undefined,
-              }
-            }
-            accessible={true}
-            className="min-w-[45%] flex-1 basis-[45%] items-center rounded-lg bg-brand-100 px-4 py-3"
-            collapsable={false}
-            focusable={true}
-            onBlur={[Function]}
-            onClick={[Function]}
-            onFocus={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-            testID="quick-action-reminders"
-          >
-            <Text
-              className="text-base font-semibold text-brand-900"
+              <Text
+                className="text-xs font-medium text-brand-700"
+                testID="pet-home-breed"
+              >
+                labrador-retriever
+              </Text>
+            </View>
+            <View
+              className="rounded-full bg-brand-50 px-3 py-1"
             >
-              Reminders
-            </Text>
+              <Text
+                className="text-xs font-medium text-brand-700"
+                testID="pet-home-age"
+              >
+                2 yr
+              </Text>
+            </View>
           </View>
         </View>
       </View>
+      <View
+        entering={
+          {
+            "delay": [Function],
+            "duration": [Function],
+          }
+        }
+      >
+        <View
+          accessibilityRole="button"
+          accessibilityState={
+            {
+              "busy": undefined,
+              "checked": undefined,
+              "disabled": undefined,
+              "expanded": undefined,
+              "selected": undefined,
+            }
+          }
+          accessibilityValue={
+            {
+              "max": undefined,
+              "min": undefined,
+              "now": undefined,
+              "text": undefined,
+            }
+          }
+          accessible={true}
+          className="flex-row items-center gap-4 rounded-2xl bg-brand-700 px-5 py-4 shadow-md"
+          collapsable={false}
+          focusable={true}
+          onBlur={[Function]}
+          onClick={[Function]}
+          onFocus={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          style={
+            [
+              {
+                "minHeight": 56,
+              },
+              null,
+            ]
+          }
+          testID="pet-home-cta"
+        >
+          <View
+            className="h-12 w-12 items-center justify-center rounded-full bg-white/20"
+          >
+            <Text
+              allowFontScaling={false}
+              selectable={false}
+              style={
+                [
+                  {
+                    "color": "#ffffff",
+                    "fontSize": 24,
+                  },
+                  undefined,
+                  {
+                    "fontFamily": "ionicons",
+                    "fontStyle": "normal",
+                    "fontWeight": "normal",
+                  },
+                  {},
+                ]
+              }
+            >
+              
+            </Text>
+          </View>
+          <View
+            className="flex-1 gap-1"
+          >
+            <Text
+              className="text-lg font-semibold text-white"
+            >
+              Something wrong?
+            </Text>
+            <Text
+              className="text-sm text-white/80"
+            >
+              Get guidance on symptoms
+            </Text>
+          </View>
+          <Text
+            allowFontScaling={false}
+            selectable={false}
+            style={
+              [
+                {
+                  "color": "#ffffff",
+                  "fontSize": 20,
+                },
+                undefined,
+                {
+                  "fontFamily": "ionicons",
+                  "fontStyle": "normal",
+                  "fontWeight": "normal",
+                },
+                {},
+              ]
+            }
+          >
+            
+          </Text>
+        </View>
+      </View>
     </View>
-  </RCTScrollView>
-</RNCSafeAreaView>
+    <RCTScrollView
+      className="flex-1"
+      testID="pet-home-scroll"
+    >
+      <View>
+        <View
+          className="gap-3 px-6 pb-8 pt-4"
+        >
+          <Text
+            className="text-base font-semibold text-brand-900"
+          >
+            Quick actions
+          </Text>
+          <View
+            className="flex-row flex-wrap gap-3"
+          >
+            <View
+              className="min-w-[45%] flex-1 basis-[45%]"
+              entering={
+                {
+                  "delay": [Function],
+                  "duration": [Function],
+                }
+              }
+            >
+              <View
+                accessibilityRole="button"
+                accessibilityState={
+                  {
+                    "busy": undefined,
+                    "checked": undefined,
+                    "disabled": undefined,
+                    "expanded": undefined,
+                    "selected": undefined,
+                  }
+                }
+                accessibilityValue={
+                  {
+                    "max": undefined,
+                    "min": undefined,
+                    "now": undefined,
+                    "text": undefined,
+                  }
+                }
+                accessible={true}
+                className="items-center gap-2 rounded-2xl bg-white px-4 py-5 shadow-sm"
+                collapsable={false}
+                focusable={true}
+                onBlur={[Function]}
+                onClick={[Function]}
+                onFocus={[Function]}
+                onResponderGrant={[Function]}
+                onResponderMove={[Function]}
+                onResponderRelease={[Function]}
+                onResponderTerminate={[Function]}
+                onResponderTerminationRequest={[Function]}
+                onStartShouldSetResponder={[Function]}
+                style={null}
+                testID="quick-action-log-weight"
+              >
+                <View
+                  className="h-11 w-11 items-center justify-center rounded-full bg-brand-100"
+                >
+                  <Text
+                    allowFontScaling={false}
+                    selectable={false}
+                    style={
+                      [
+                        {
+                          "color": "#1f6350",
+                          "fontSize": 22,
+                        },
+                        undefined,
+                        {
+                          "fontFamily": "ionicons",
+                          "fontStyle": "normal",
+                          "fontWeight": "normal",
+                        },
+                        {},
+                      ]
+                    }
+                  >
+                    
+                  </Text>
+                </View>
+                <Text
+                  className="text-center text-sm font-semibold text-brand-900"
+                >
+                  Log weight
+                </Text>
+              </View>
+            </View>
+            <View
+              className="min-w-[45%] flex-1 basis-[45%]"
+              entering={
+                {
+                  "delay": [Function],
+                  "duration": [Function],
+                }
+              }
+            >
+              <View
+                accessibilityRole="button"
+                accessibilityState={
+                  {
+                    "busy": undefined,
+                    "checked": undefined,
+                    "disabled": undefined,
+                    "expanded": undefined,
+                    "selected": undefined,
+                  }
+                }
+                accessibilityValue={
+                  {
+                    "max": undefined,
+                    "min": undefined,
+                    "now": undefined,
+                    "text": undefined,
+                  }
+                }
+                accessible={true}
+                className="items-center gap-2 rounded-2xl bg-white px-4 py-5 shadow-sm"
+                collapsable={false}
+                focusable={true}
+                onBlur={[Function]}
+                onClick={[Function]}
+                onFocus={[Function]}
+                onResponderGrant={[Function]}
+                onResponderMove={[Function]}
+                onResponderRelease={[Function]}
+                onResponderTerminate={[Function]}
+                onResponderTerminationRequest={[Function]}
+                onStartShouldSetResponder={[Function]}
+                style={null}
+                testID="quick-action-log-note"
+              >
+                <View
+                  className="h-11 w-11 items-center justify-center rounded-full bg-brand-100"
+                >
+                  <Text
+                    allowFontScaling={false}
+                    selectable={false}
+                    style={
+                      [
+                        {
+                          "color": "#1f6350",
+                          "fontSize": 22,
+                        },
+                        undefined,
+                        {
+                          "fontFamily": "ionicons",
+                          "fontStyle": "normal",
+                          "fontWeight": "normal",
+                        },
+                        {},
+                      ]
+                    }
+                  >
+                    
+                  </Text>
+                </View>
+                <Text
+                  className="text-center text-sm font-semibold text-brand-900"
+                >
+                  Log note
+                </Text>
+              </View>
+            </View>
+            <View
+              className="min-w-[45%] flex-1 basis-[45%]"
+              entering={
+                {
+                  "delay": [Function],
+                  "duration": [Function],
+                }
+              }
+            >
+              <View
+                accessibilityRole="button"
+                accessibilityState={
+                  {
+                    "busy": undefined,
+                    "checked": undefined,
+                    "disabled": undefined,
+                    "expanded": undefined,
+                    "selected": undefined,
+                  }
+                }
+                accessibilityValue={
+                  {
+                    "max": undefined,
+                    "min": undefined,
+                    "now": undefined,
+                    "text": undefined,
+                  }
+                }
+                accessible={true}
+                className="items-center gap-2 rounded-2xl bg-white px-4 py-5 shadow-sm"
+                collapsable={false}
+                focusable={true}
+                onBlur={[Function]}
+                onClick={[Function]}
+                onFocus={[Function]}
+                onResponderGrant={[Function]}
+                onResponderMove={[Function]}
+                onResponderRelease={[Function]}
+                onResponderTerminate={[Function]}
+                onResponderTerminationRequest={[Function]}
+                onStartShouldSetResponder={[Function]}
+                style={null}
+                testID="quick-action-log-vet-visit"
+              >
+                <View
+                  className="h-11 w-11 items-center justify-center rounded-full bg-brand-100"
+                >
+                  <Text
+                    allowFontScaling={false}
+                    selectable={false}
+                    style={
+                      [
+                        {
+                          "color": "#1f6350",
+                          "fontSize": 22,
+                        },
+                        undefined,
+                        {
+                          "fontFamily": "ionicons",
+                          "fontStyle": "normal",
+                          "fontWeight": "normal",
+                        },
+                        {},
+                      ]
+                    }
+                  >
+                    
+                  </Text>
+                </View>
+                <Text
+                  className="text-center text-sm font-semibold text-brand-900"
+                >
+                  Vet visit
+                </Text>
+              </View>
+            </View>
+            <View
+              className="min-w-[45%] flex-1 basis-[45%]"
+              entering={
+                {
+                  "delay": [Function],
+                  "duration": [Function],
+                }
+              }
+            >
+              <View
+                accessibilityRole="button"
+                accessibilityState={
+                  {
+                    "busy": undefined,
+                    "checked": undefined,
+                    "disabled": undefined,
+                    "expanded": undefined,
+                    "selected": undefined,
+                  }
+                }
+                accessibilityValue={
+                  {
+                    "max": undefined,
+                    "min": undefined,
+                    "now": undefined,
+                    "text": undefined,
+                  }
+                }
+                accessible={true}
+                className="items-center gap-2 rounded-2xl bg-white px-4 py-5 shadow-sm"
+                collapsable={false}
+                focusable={true}
+                onBlur={[Function]}
+                onClick={[Function]}
+                onFocus={[Function]}
+                onResponderGrant={[Function]}
+                onResponderMove={[Function]}
+                onResponderRelease={[Function]}
+                onResponderTerminate={[Function]}
+                onResponderTerminationRequest={[Function]}
+                onStartShouldSetResponder={[Function]}
+                style={null}
+                testID="quick-action-reminders"
+              >
+                <View
+                  className="h-11 w-11 items-center justify-center rounded-full bg-brand-100"
+                >
+                  <Text
+                    allowFontScaling={false}
+                    selectable={false}
+                    style={
+                      [
+                        {
+                          "color": "#1f6350",
+                          "fontSize": 22,
+                        },
+                        undefined,
+                        {
+                          "fontFamily": "ionicons",
+                          "fontStyle": "normal",
+                          "fontWeight": "normal",
+                        },
+                        {},
+                      ]
+                    }
+                  >
+                    
+                  </Text>
+                </View>
+                <Text
+                  className="text-center text-sm font-semibold text-brand-900"
+                >
+                  Reminders
+                </Text>
+              </View>
+            </View>
+          </View>
+        </View>
+      </View>
+    </RCTScrollView>
+  </RNCSafeAreaView>
+</View>
 `;
 
 exports[`pet home screen snapshots loading 1`] = `
