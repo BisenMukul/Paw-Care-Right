@@ -203,6 +203,14 @@ const mockEasing = {
   linear: (t: number) => t,
 };
 
+// SWEEP-1: the reduced-motion contract's mocks. `useReducedMotion` defaults
+// to `false` so every existing entrance/snapshot stays byte-identical
+// (design-system.md §3.2 risk note); individual tests override via
+// `jest.requireMock("react-native-reanimated").useReducedMotion`.
+// `ReducedMotionConfig` is a no-op `() => null` so mounting it in the root
+// layout never changes any rendered tree.
+const mockUseReducedMotion = jest.fn(() => false);
+
 const mockReanimatedModule = {
   __esModule: true,
   default: { View: mockView },
@@ -212,6 +220,9 @@ const mockReanimatedModule = {
   useAnimatedStyle: mockUseAnimatedStyle,
   withRepeat: mockWithRepeat,
   withTiming: mockWithTiming,
+  useReducedMotion: mockUseReducedMotion,
+  ReducedMotionConfig: () => null,
+  ReduceMotion: { System: "system", Always: "always", Never: "never" },
 };
 
 jest.mock("react-native-reanimated", () => mockReanimatedModule);

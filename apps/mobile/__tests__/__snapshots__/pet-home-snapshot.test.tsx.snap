@@ -166,6 +166,7 @@ exports[`pet home screen snapshots loaded 1`] = `
           },
         ]
       }
+      testID="home-gradient-overlay"
     >
       <View
         colors={

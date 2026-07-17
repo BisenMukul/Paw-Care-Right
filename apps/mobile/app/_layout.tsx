@@ -7,6 +7,7 @@ import { PersistedApiQueryProvider } from "@pawcareright/api-client";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { useEffect } from "react";
 import { View } from "react-native";
+import { ReduceMotion, ReducedMotionConfig } from "react-native-reanimated";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { queryClient, queryPersister } from "../src/api/query";
@@ -104,6 +105,10 @@ export default function RootLayout() {
     <AppErrorBoundary>
       <PersistedApiQueryProvider client={queryClient} persister={queryPersister}>
         <SafeAreaProvider>
+          {/* Belt-and-braces default (design-system.md §3.2): honours the OS
+              "Reduce Motion" setting for any animation an author forgets to
+              gate via `useReducedMotion()`. */}
+          <ReducedMotionConfig mode={ReduceMotion.System} />
           <AppRoot />
         </SafeAreaProvider>
       </PersistedApiQueryProvider>

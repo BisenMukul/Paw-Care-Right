@@ -130,6 +130,14 @@ describe("weight screen", () => {
     expect(mockMutate).toHaveBeenCalledWith({ grams: 25000 }, expect.anything());
   });
 
+  it("unit toggle meets the 44pt touch-target floor (design-system.md §4.1)", async () => {
+    mockedUsePet.mockReturnValue({ data: FIXTURE_PET, isLoading: false, isError: false, refetch: mockRefetch });
+
+    await render(<WeightScreen />);
+
+    expect(screen.getByTestId("weight-unit-toggle").props.className).toContain("min-h-[44px]");
+  });
+
   it("renders the chart's band caption when the pet has a resolvable breed", async () => {
     mockedUsePet.mockReturnValue({ data: FIXTURE_PET, isLoading: false, isError: false, refetch: mockRefetch });
     mockedUseWeightSeries.mockReturnValue({

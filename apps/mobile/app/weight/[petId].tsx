@@ -98,7 +98,7 @@ export default function WeightScreen() {
             onPress={toggle}
             accessibilityRole="button"
             accessibilityLabel={strings.weight.unitToggleA11y}
-            className="self-start rounded-full bg-brand-100 px-4 py-2"
+            className="min-h-[44px] justify-center self-start rounded-full bg-brand-100 px-4 py-2"
           >
             <Text className="text-base font-medium text-brand-900">{strings.weight.unitLabel[unit]}</Text>
           </Pressable>

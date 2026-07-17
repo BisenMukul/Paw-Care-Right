@@ -3,6 +3,7 @@ import { Image } from "expo-image";
 import { Text, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
+import { useReducedMotion } from "../hooks/use-reduced-motion";
 import { derivePetAgeLabel } from "../pets/pet-age";
 import { HEADER_CARD_HEIGHT } from "../pets/pet-home-layout";
 import { strings } from "../strings";
@@ -29,15 +30,16 @@ const SPECIES_LABEL: Record<Pet["species"], string> = {
  * style. No data fetching.
  */
 export function PetHeaderCard({ pet, localPhoto }: PetHeaderCardProps) {
+  const reduced = useReducedMotion();
   const ageLabel = derivePetAgeLabel(pet);
   const speciesLabel = SPECIES_LABEL[pet.species];
 
   return (
     <Animated.View
       testID="pet-home-header-card"
-      entering={FadeInDown.duration(320)}
       style={{ height: HEADER_CARD_HEIGHT }}
       className="flex-row items-center gap-4 rounded-2xl bg-white px-4 shadow-md"
+      {...(reduced ? {} : { entering: FadeInDown.duration(320) })}
     >
       {localPhoto ? (
         <Image testID="pet-home-photo" source={{ uri: localPhoto }} className="h-24 w-24 rounded-full" />

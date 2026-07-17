@@ -3,6 +3,7 @@ import type { ComponentProps } from "react";
 import { Pressable, Text, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
+import { useReducedMotion } from "../hooks/use-reduced-motion";
 import { strings } from "../strings";
 
 type IconName = ComponentProps<typeof Ionicons>["name"];
@@ -34,6 +35,7 @@ interface Tile {
  * regardless of row count.
  */
 export function QuickActions({ onLogWeight, onReminders, onLogActivity, onLogVetVisit }: QuickActionsProps) {
+  const reduced = useReducedMotion();
   const tiles: Tile[] = [
     {
       testID: "quick-action-log-weight",
@@ -66,8 +68,8 @@ export function QuickActions({ onLogWeight, onReminders, onLogActivity, onLogVet
       {tiles.map((tile, index) => (
         <Animated.View
           key={tile.testID}
-          entering={FadeInDown.delay(index * 80).duration(320)}
           className="min-w-[45%] flex-1 basis-[45%]"
+          {...(reduced ? {} : { entering: FadeInDown.delay(index * 80).duration(320) })}
         >
           <Pressable
             testID={tile.testID}

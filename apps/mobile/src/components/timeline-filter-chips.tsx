@@ -1,5 +1,5 @@
 import { HEALTH_LOG_KINDS, type HealthLogKind } from "@pawcareright/types";
-import { ScrollView, Text } from "react-native";
+import { Pressable, ScrollView, Text } from "react-native";
 
 import { strings } from "../strings";
 
@@ -8,8 +8,14 @@ export interface TimelineFilterChipsProps {
   onChange: (kind: HealthLogKind | null) => void;
 }
 
-const SELECTED_CLASS = "mr-2 rounded-full bg-brand-700 px-3 py-2 text-sm font-semibold text-white";
-const UNSELECTED_CLASS = "mr-2 rounded-full border border-brand-100 px-3 py-2 text-sm text-brand-900";
+// Touch-target-only fix (design-system.md §4.1): the bare `Text onPress`
+// chip is a ~33pt tall tap target -- wrapping in a `Pressable` with
+// `min-h-[44px]` reaches the WCAG/HIG floor without restyling colors
+// (full `Chip` canon extraction is deferred to batch 4).
+const CONTAINER_SELECTED = "mr-2 min-h-[44px] justify-center rounded-full bg-brand-700 px-3";
+const CONTAINER_UNSELECTED = "mr-2 min-h-[44px] justify-center rounded-full border border-brand-100 px-3";
+const TEXT_SELECTED = "text-sm font-semibold text-white";
+const TEXT_UNSELECTED = "text-sm text-brand-900";
 
 /**
  * `TimelineFilterChips` (T067 plan decision 4): `[All, …HEALTH_LOG_KINDS]`.
@@ -21,22 +27,28 @@ const UNSELECTED_CLASS = "mr-2 rounded-full border border-brand-100 px-3 py-2 te
 export function TimelineFilterChips({ value, onChange }: TimelineFilterChipsProps) {
   return (
     <ScrollView horizontal testID="timeline-filter-chips-scroll" showsHorizontalScrollIndicator={false}>
-      <Text
+      <Pressable
         testID="timeline-filter-chip-all"
         onPress={() => onChange(null)}
-        className={value === null ? SELECTED_CLASS : UNSELECTED_CLASS}
+        accessibilityRole="button"
+        accessibilityState={{ selected: value === null }}
+        className={value === null ? CONTAINER_SELECTED : CONTAINER_UNSELECTED}
       >
-        {strings.timeline.filterAll}
-      </Text>
+        <Text className={value === null ? TEXT_SELECTED : TEXT_UNSELECTED}>{strings.timeline.filterAll}</Text>
+      </Pressable>
       {HEALTH_LOG_KINDS.map((kind) => (
-        <Text
+        <Pressable
           key={kind}
           testID={`timeline-filter-chip-${kind}`}
           onPress={() => onChange(kind)}
-          className={value === kind ? SELECTED_CLASS : UNSELECTED_CLASS}
+          accessibilityRole="button"
+          accessibilityState={{ selected: value === kind }}
+          className={value === kind ? CONTAINER_SELECTED : CONTAINER_UNSELECTED}
         >
-          {strings.timeline.kindLabel[kind]}
-        </Text>
+          <Text className={value === kind ? TEXT_SELECTED : TEXT_UNSELECTED}>
+            {strings.timeline.kindLabel[kind]}
+          </Text>
+        </Pressable>
       ))}
     </ScrollView>
   );

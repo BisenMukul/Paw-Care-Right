@@ -193,6 +193,23 @@ describe("Home screen", () => {
     });
   });
 
+  describe("loading (SWEEP-1: ScreenScaffold/Skeleton reference adoption)", () => {
+    it("shows home-hero-skeleton while the pets query is pending", async () => {
+      // Never-resolving `apiClient.get` keeps `usePets()`'s query pending
+      // indefinitely, proving the loading hero renders `<Card><Skeleton/></Card>`
+      // (plan §AC3 "reference adoption").
+      mockedGet.mockImplementation(() => new Promise(() => {}));
+
+      await renderScreen();
+
+      await waitFor(() => {
+        expect(screen.getByTestId("home-hero-skeleton")).toBeTruthy();
+      });
+      expect(screen.queryByTestId("home-empty-state")).toBeNull();
+      expect(screen.queryByTestId("home-open-active-pet")).toBeNull();
+    });
+  });
+
   describe("no pet", () => {
     it("shows the empty hero with home-add-pet-cta; hides the hero card", async () => {
       mockGetRouting([]);

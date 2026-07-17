@@ -10,6 +10,7 @@ import { AnimatedGradientBackground } from "../../src/components/home/animated-g
 import { PetHeaderCard } from "../../src/components/pet-header-card";
 import { PrimaryButton } from "../../src/components/primary-button";
 import { QuickActions } from "../../src/components/quick-actions";
+import { useReducedMotion } from "../../src/hooks/use-reduced-motion";
 import { CTA_HEIGHT } from "../../src/pets/pet-home-layout";
 import { strings } from "../../src/strings";
 
@@ -34,6 +35,7 @@ export default function PetHomeScreen() {
   const { id, localPhoto } = useLocalSearchParams<{ id: string; localPhoto?: string }>();
   const { data: pet, isLoading, isError, error, isFetching, refetch } = usePet(id);
   const isOffline = useIsOffline();
+  const reduced = useReducedMotion();
 
   // A network/transport failure (never reached the server, `httpStatus: 0`
   // — see `packages/api-client`'s `normalizeNetworkError`) reads as
@@ -105,7 +107,7 @@ export default function PetHomeScreen() {
             </Text>
           ) : null}
           <PetHeaderCard pet={pet} {...(localPhoto ? { localPhoto } : {})} />
-          <Animated.View entering={FadeInDown.delay(80).duration(320)}>
+          <Animated.View {...(reduced ? {} : { entering: FadeInDown.delay(80).duration(320) })}>
             <Pressable
               testID="pet-home-cta"
               onPress={() => router.push({ pathname: "/check", params: { petId: id } })}

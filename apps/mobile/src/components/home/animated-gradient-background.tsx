@@ -9,6 +9,7 @@ import Animated, {
   withRepeat,
   withTiming,
 } from "react-native-reanimated";
+import { useReducedMotion } from "../../hooks/use-reduced-motion";
 import { isNativeGradientAvailable } from "./native-gradient";
 
 // Soft brand tones (tailwind-preset.mjs `brand` scale + a warm cream) --
@@ -33,15 +34,21 @@ export function AnimatedGradientBackground() {
   // back to a calm solid brand tone; the animated gradient appears
   // automatically once the app runs in a build that includes the module.
   const nativeAvailable = isNativeGradientAvailable();
+  const reduced = useReducedMotion();
   const overlayOpacity = useSharedValue(0);
 
   useEffect(() => {
+    // Reduced motion: the crossfade loop never starts -- the static base
+    // gradient is the whole picture (design-system.md §3.2).
+    if (reduced) {
+      return;
+    }
     overlayOpacity.value = withRepeat(
       withTiming(1, { duration: HALF_CYCLE_MS, easing: Easing.inOut(Easing.ease) }),
       -1,
       true,
     );
-  }, [overlayOpacity]);
+  }, [overlayOpacity, reduced]);
 
   const overlayStyle = useAnimatedStyle(() => ({ opacity: overlayOpacity.value }));
 
@@ -63,14 +70,19 @@ export function AnimatedGradientBackground() {
         end={{ x: 1, y: 1 }}
         style={StyleSheet.absoluteFill}
       />
-      <Animated.View style={[StyleSheet.absoluteFill, overlayStyle]}>
-        <LinearGradient
-          colors={OVERLAY_COLORS}
-          start={{ x: 1, y: 0 }}
-          end={{ x: 0, y: 1 }}
-          style={StyleSheet.absoluteFill}
-        />
-      </Animated.View>
+      {reduced ? null : (
+        <Animated.View
+          testID="home-gradient-overlay"
+          style={[StyleSheet.absoluteFill, overlayStyle]}
+        >
+          <LinearGradient
+            colors={OVERLAY_COLORS}
+            start={{ x: 1, y: 0 }}
+            end={{ x: 0, y: 1 }}
+            style={StyleSheet.absoluteFill}
+          />
+        </Animated.View>
+      )}
     </View>
   );
 }
