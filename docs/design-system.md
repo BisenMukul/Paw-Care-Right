@@ -273,3 +273,46 @@ Apply to every screen in `apps/mobile/app/**`; CHECKER verifies each item:
 ### Sources (key)
 
 Material 3 Expressive: https://m3.material.io/blog/building-with-m3-expressive · iOS 26 / Liquid Glass HIG patterns: https://www.learnui.design/blog/ios-design-guidelines-templates.html and https://www.apple.com/newsroom/2025/06/apple-introduces-a-delightful-and-elegant-new-software-design/ · WCAG 2.2 target size: https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html · Bottom sheets: https://www.nngroup.com/articles/bottom-sheet/ and https://www.digia.tech/post/bottom-sheets-vs-modals-interruption-layer/ · Skeletons: https://www.nngroup.com/articles/skeleton-screens/ and https://blog.logrocket.com/ux-design/skeleton-loading-screen-design/ · Reduced motion: https://docs.swmansion.com/react-native-reanimated/docs/device/useReducedMotion/ and https://docs.swmansion.com/react-native-reanimated/docs/guides/accessibility/ · Font scaling: https://ignitecookbook.com/docs/recipes/AccessibilityFontSizes/ · Haptics: https://saropa.com/articles/2025-guide-to-haptics-enhancing-mobile-ux-with-tactile-feedback/ · Onboarding/empty states: https://www.designstudiouiux.com/blog/mobile-app-onboarding-best-practices/ · Tap-first tracker patterns: https://play.google.com/store/apps/details?id=com.nighp.babytracker_android
+
+---
+
+## §7 Craft layer — founder-adopted rules from the `mobile-app-ui-design` skill
+
+> Source: github.com/ceorkm/mobile-app-ui-design (SKILL.md + references/industry-conventions.md), adopted by founder directive 2026-07-18 and adapted to this stack. These rules LAYER ON TOP of §1–§6; when §7 conflicts with the safety rules (CLAUDE §7 / PRODUCT_SPEC §5) the safety rule wins, and when it conflicts with §1–§6 tokens, §1–§6 win (§7 shapes composition, not the token set).
+
+### 7.1 Color balance — 60/30/10
+Per screen: ~60% neutral surface (`bg-brand-50` page + `bg-white` cards), ~30% content ink (`text-brand-900` / `text-brand-700`), ~10% brand accent (`bg-brand-700` primaries, brand icons, selected fills). Audit: if a screen reads "green everywhere," accent has leaked past 10% — demote non-primary fills to tints (`bg-brand-100`) or white. Reserve red strictly for errors/emergency (already §1.1 law). Accent-at-5%-opacity ≈ our `bg-brand-50`/`bg-brand-100` tints for secondary emphasis.
+
+### 7.2 Spacing — 8pt grid with relationship-based rhythm
+Tailwind units already sit on the 4/8pt grid — the §7 addition is RELATIONSHIP spacing: intra-group gap `gap-2`/`gap-3`, inter-group gap ≥2× that (`gap-6`), section padding `py-6`+. No arbitrary `[NNpx]` spacing values (the sole sanctioned arbitraries: `min-h-[44px]`/`min-h-[56px]` touch floors). Card internal padding stays `p-4` (canon §2.2); dense cards may not shrink below it.
+
+### 7.3 Typography discipline — 4 sizes / 2 weights per screen
+Each screen uses at most FOUR of the §1.4 sizes and TWO weights (regular + one of semibold/bold). Hierarchy comes from size + the muted-ink pair (`text-brand-700`), never from stacking weights. Numbers that carry meaning (weight entries, quantities, counts, prices) render with `tabular-nums` (`font-variant-numeric`) so digits align; prices already come formatted from RevenueCat.
+
+### 7.4 Thumb zone — primary action in the bottom third
+Every screen whose purpose is ONE action (forms, wizards, paywall, intake steps) pins its primary button to the bottom of the viewport (safe-area-padded, above the keyboard), not mid-scroll. Secondary/tertiary actions may live in-scroll. Tab screens and browse screens are exempt (their primary action is navigation). Implementation: fixed footer slot below the ScrollView (the WizardScaffold pattern), never `position:absolute` over content.
+
+### 7.5 Peak-End — every flow closes warm
+- **Peaks:** the moment a log/save succeeds is the emotional peak of a care flow — it gets the §3.3 haptic + a visible confirmation with ONE line of encouragement (record-only tone: "Logged — nice consistency" style; NEVER outcome claims like "your pet is healthier", NEVER streak-pressure around medical acts — CLAUDE §7 wins).
+- **Endings:** no flow dead-ends. After save → summary + gentle next step ("See it on the timeline"). After check result → the done/find-vet actions ARE the ending (already canon; do not add celebration to symptom results — §5 tone).
+- **Negative peaks:** waiting screens get calm reassuring microcopy (already the §5 fallback tone); error states stay gentle and specific, never clinical rejection.
+
+### 7.6 Trust & warmth (health-app conventions)
+Warm approachable surfaces over clinical ones (our brand-50 warmth is the base — keep it). The `<VetDisclaimer/>` and region hotlines are TRUST SIGNALS — §7 never dilutes them (safety law). Empty states teach-by-inviting with an illustrative icon + "what you'll get" line (EmptyState canon already does this — §7 adds: the body line should preview VALUE, e.g. "Once you log a few entries, you'll see patterns").
+
+### 7.7 Craft details
+- Shadows: soft only (`shadow-md` canon), and on tinted pages shadows read neutral — never introduce harsh black `shadow-lg`+ stacks.
+- Selection over input everywhere a value is enumerable (chips/steppers over TextInputs — the §5 activity + intake-descriptor patterns are the house standard).
+- Search/pickers never render blank: recents or suggestions first (activity recents row is the precedent).
+- Micro-feedback: every Pressable has a pressed state (§6 law); success moments may add ONE subtle scale/fade — still inside §3's one-entrance-group + reduced-motion contract. No glow/sparkle loops.
+- Anti-patterns (reject in review): >4 text sizes on a screen, accent-colored full-screen backgrounds, mid-scroll primary CTAs on single-action screens, generic "No data" empties, labels visually louder than their values, random spacing values.
+
+### 7.8 §7 sweep checklist (per screen, additive to §6)
+- [ ] 60/30/10 reads true (accent ≤ ~10% of painted area)
+- [ ] ≤4 text sizes, ≤2 weights; meaningful numbers `tabular-nums`
+- [ ] Relationship spacing: intra-group < inter-group, no arbitrary px
+- [ ] Single-action screens: primary CTA bottom-pinned (thumb zone)
+- [ ] Save/success moment: haptic + one-line warm confirmation + next-step nudge (record-only tone)
+- [ ] No flow dead-ends; waiting/error copy calm and specific
+- [ ] Empty-state body previews value
+- [ ] No §7.7 anti-patterns

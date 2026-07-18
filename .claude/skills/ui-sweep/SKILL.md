@@ -10,7 +10,7 @@ You are applying `docs/design-system.md` (the law for this repo's UI) to the scr
 ## Procedure
 
 1. **Read first**: `docs/design-system.md` in full, then the target screen file(s) under `apps/mobile/app/**` and every component they compose from `apps/mobile/src/components/`.
-2. **Diff against the §6 checklist** — every unchecked item is work:
+2. **Diff against the §6 checklist AND the §7 craft checklist (§7.8)** — every unchecked item is work. §7 (adopted from the `mobile-app-ui-design` skill) adds: 60/30/10 color balance, ≤4 text sizes / ≤2 weights per screen, relationship-based 8pt spacing, bottom-pinned primary CTAs on single-action screens (thumb zone), warm Peak-End save confirmations with next-step nudges (record-only tone — CLAUDE §7 always wins), value-previewing empty-state copy, and the §7.7 anti-pattern rejection list.
    - `ScreenScaffold` wrapper (safe-area, `bg-brand-50`, `px-4` gutter, `gap-6` sections); home alone keeps its gradient.
    - Header canon: `text-2xl font-bold text-brand-900` + `role="header"`.
    - All four data states: **skeleton** (content-shaped, never a bare full-screen spinner), error + Retry, `EmptyState` with one CTA, offline banner with `alert` role. Server-backed lists get pull-to-refresh.
