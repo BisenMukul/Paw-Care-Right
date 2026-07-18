@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:#0c140f}
+@keyframes floatUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes popIn{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:none}}
+@keyframes pulseRing{0%{transform:scale(.8);opacity:.6}100%{transform:scale(1.9);opacity:0}}
+@keyframes dash{to{stroke-dashoffset:var(--to)}}
+::-webkit-scrollbar{width:0;height:0}
+a{color:#1E6B54;text-decoration:none}
+a:hover{color:#2EA57C}
+</style>
+</helmet>
+<div style="min-height:100vh;width:100%;background:radial-gradient(120% 90% at 50% -10%,#1a3a2c 0%,#0c140f 60%);display:flex;align-items:center;justify-content:center;padding:28px 16px;font-family:'Plus Jakarta Sans',sans-serif">
+<x-import component-from-global-scope="image-slot" from="./image-slot.js" hint-size="1px,1px" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none"></x-import>
+
+<div style="width:392px;height:846px;background:#0b1712;border-radius:54px;padding:11px;box-shadow:0 40px 90px -30px rgba(0,0,0,.7),0 0 0 2px rgba(255,255,255,.04);position:relative;flex:none">
+<div style="position:absolute;top:20px;left:50%;transform:translateX(-50%);width:118px;height:32px;background:#0b1712;border-radius:20px;z-index:60"></div>
+<div style="width:100%;height:100%;background:#F4EFE6;border-radius:44px;overflow:hidden;position:relative;display:flex;flex-direction:column">
+
+<div style="height:52px;flex:none;display:flex;align-items:flex-end;justify-content:space-between;padding:0 26px 8px;font-size:14px;font-weight:700;color:#16241F;z-index:20">
+<span>9:41</span>
+<span style="display:flex;gap:6px;align-items:center">
+<svg width="18" height="12" viewBox="0 0 18 12" fill="none"><rect x="0" y="7" width="3" height="5" rx="1" fill="#16241F"/><rect x="5" y="4" width="3" height="8" rx="1" fill="#16241F"/><rect x="10" y="2" width="3" height="10" rx="1" fill="#16241F"/><rect x="15" y="0" width="3" height="12" rx="1" fill="#16241F"/></svg>
+<svg width="17" height="12" viewBox="0 0 17 12" fill="none"><path d="M8.5 3.2c1.9 0 3.6.7 4.9 1.9l1.2-1.3A9 9 0 0 0 8.5 1.4 9 9 0 0 0 1.9 3.8l1.2 1.3A7.2 7.2 0 0 1 8.5 3.2Z" fill="#16241F"/><path d="M8.5 6.4c1 0 2 .4 2.7 1.1l1.2-1.3a6 6 0 0 0-7.8 0l1.2 1.3c.7-.7 1.7-1.1 2.7-1.1Z" fill="#16241F"/><circle cx="8.5" cy="10" r="1.6" fill="#16241F"/></svg>
+<svg width="26" height="13" viewBox="0 0 26 13" fill="none"><rect x="0.5" y="0.5" width="22" height="12" rx="3.5" stroke="#16241F" opacity=".4"/><rect x="2" y="2" width="18" height="9" rx="2" fill="#16241F"/><rect x="24" y="4" width="2" height="5" rx="1" fill="#16241F" opacity=".4"/></svg>
+</span>
+</div>
+
+<div style="flex:1;overflow-y:auto;overflow-x:hidden;position:relative">
+<sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+<div style="padding:4px 18px 108px;animation:floatUp .4s ease">
+
+<div style="display:flex;align-items:center;justify-content:space-between;margin:6px 0 16px">
+<div>
+<div style="display:flex;align-items:center;gap:5px;color:#6E827A;font-size:12px;font-weight:700;margin-bottom:2px">{{ locIcon }} Bengaluru</div>
+<div style="font-family:'Bricolage Grotesque',serif;font-size:23px;font-weight:700;color:#143026;letter-spacing:-.4px">Good morning, Aarav</div>
+</div>
+<button style="width:46px;height:46px;border-radius:15px;background:#fff;border:1px solid #E7E0D3;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative">{{ bellIcon }}<span style="position:absolute;top:11px;right:12px;width:8px;height:8px;border-radius:50%;background:#FF7A59;border:2px solid #fff"></span></button>
+</div>
+
+<div style="display:flex;gap:4px;padding:5px;background:#EAE3D6;border-radius:15px;margin-bottom:18px">
+<sc-for list="{{ homeSeg }}" as="seg" hint-placeholder-count="3"><button onClick="{{ seg.go }}" style="{{ seg.style }}">{{ seg.label }}</button></sc-for>
+</div>
+
+<!-- ============ VARIANT A: COMPANION ============ -->
+<sc-if value="{{ homeVA }}" hint-placeholder-val="{{ true }}">
+<div style="border-radius:26px;padding:20px;background:linear-gradient(155deg,#1E6B54,#143026);position:relative;overflow:hidden;box-shadow:0 20px 40px -20px rgba(20,48,38,.6)">
+<div style="position:absolute;right:-30px;top:-30px;width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,.05)"></div>
+<div style="display:flex;gap:16px;align-items:center;position:relative">
+<div style="width:88px;height:88px;border-radius:24px;overflow:hidden;flex:none;border:2px solid rgba(255,255,255,.25)">
+<image-slot id="home-hero-pet" shape="rect" placeholder="Simba's photo"></image-slot>
+</div>
+<div style="flex:1">
+<div style="font-family:'Bricolage Grotesque',serif;font-size:23px;font-weight:700;color:#fff;line-height:1">{{ petName }}</div>
+<div style="font-size:13px;color:rgba(255,255,255,.7);font-weight:600;margin:5px 0 10px">{{ petBreed }} · {{ petAgeSex }}</div>
+<div style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.14);padding:5px 11px;border-radius:20px;font-size:11.5px;font-weight:700;color:#fff"><span style="width:7px;height:7px;border-radius:50%;background:#2EA57C"></span> Active & healthy</div>
+</div>
+</div>
+<div style="display:flex;align-items:center;gap:16px;margin-top:18px;padding-top:16px;border-top:1px solid rgba(255,255,255,.12);position:relative">
+<div style="position:relative;width:82px;height:82px;flex:none">
+<svg width="82" height="82" viewBox="0 0 82 82"><circle cx="41" cy="41" r="34" fill="none" stroke="rgba(255,255,255,.14)" stroke-width="8"/><circle cx="41" cy="41" r="34" fill="none" stroke="#2EA57C" stroke-width="8" stroke-linecap="round" stroke-dasharray="{{ ringCirc }}" stroke-dashoffset="{{ ringOffset }}" transform="rotate(-90 41 41)"/></svg>
+<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center"><span style="font-family:'Bricolage Grotesque',serif;font-size:24px;font-weight:700;color:#fff;line-height:1">{{ petScore }}</span><span style="font-size:9px;color:rgba(255,255,255,.6);font-weight:700">HEALTH</span></div>
+</div>
+<div style="flex:1">
+<div style="font-size:13px;color:#fff;font-weight:700;margin-bottom:4px">AI Health Score</div>
+<div style="font-size:12px;color:rgba(255,255,255,.72);line-height:1.5">Weight, activity & diet look great. Rabies booster due in 5 days.</div>
+</div>
+</div>
+</div>
+
+<div style="margin:22px 0 12px;font-family:'Bricolage Grotesque',serif;font-size:16px;font-weight:700;color:#143026">Quick actions</div>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px 6px">
+<sc-for list="{{ qa }}" as="a" hint-placeholder-count="6"><button onClick="{{ a.go }}" style="{{ a.wrap }}"><span style="{{ a.chip }}">{{ a.icon }}</span><span style="{{ a.txt }}">{{ a.label }}</span></button></sc-for>
+</div>
+
+<div style="display:flex;align-items:center;justify-content:space-between;margin:24px 0 12px">
+<span style="font-family:'Bricolage Grotesque',serif;font-size:16px;font-weight:700;color:#143026">Up next today</span>
+<a href="#" onClick="{{ goCareTimeline }}" style="font-size:12.5px;font-weight:700;color:#1E6B54">View all</a>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px">
+<sc-for list="{{ todayReminders }}" as="r" hint-placeholder-count="3">
+<div style="{{ r.row }}"><span style="{{ r.dot }}">{{ r.icon }}</span><div style="flex:1"><div style="font-size:14px;font-weight:700;color:#16241F">{{ r.title }}</div><div style="font-size:12px;color:#6E827A;font-weight:600;margin-top:1px">{{ r.due }}</div></div><span style="width:24px;height:24px;border-radius:8px;border:1.5px solid #E7E0D3"></span></div>
+</sc-for>
+</div>
+</sc-if>
+
+<!-- ============ VARIANT B: DASHBOARD ============ -->
+<sc-if value="{{ homeVB }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;gap:9px;overflow-x:auto;padding-bottom:4px;margin-bottom:18px">
+<sc-for list="{{ petChips }}" as="p" hint-placeholder-count="3"><button onClick="{{ p.go }}" style="{{ p.style }}"><span style="{{ p.dot }}"></span>{{ p.name }}</button></sc-for>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+<sc-for list="{{ statTiles }}" as="t" hint-placeholder-count="4">
+<div style="background:#fff;border:1px solid #E7E0D3;border-radius:20px;padding:15px"><div style="{{ t.iconWrap }}">{{ t.icon }}</div><div style="font-family:'Bricolage Grotesque',serif;font-size:26px;font-weight:700;color:#143026;margin:10px 0 0;line-height:1">{{ t.value }}</div><div style="font-size:12.5px;font-weight:700;color:#16241F;margin-top:5px">{{ t.label }}</div><div style="font-size:11.5px;color:#6E827A;font-weight:600;margin-top:1px">{{ t.sub }}</div></div>
+</sc-for>
+</div>
+<div style="margin:22px 0 12px;font-family:'Bricolage Grotesque',serif;font-size:16px;font-weight:700;color:#143026">Services</div>
+<div style="display:flex;flex-direction:column;gap:11px">
+<sc-for list="{{ svc }}" as="v" hint-placeholder-count="4">
+<button onClick="{{ v.go }}" style="{{ v.row }}"><span style="{{ v.dot }}">{{ v.icon }}</span><div style="flex:1"><div style="font-size:14.5px;font-weight:700;color:#16241F">{{ v.title }}</div><div style="font-size:12px;color:#6E827A;font-weight:600;margin-top:2px">{{ v.sub }}</div></div><span style="color:#C7CFCB;font-size:20px">›</span></button>
+</sc-for>
+</div>
+</sc-if>
+
+<!-- ============ VARIANT C: FEED ============ -->
+<sc-if value="{{ homeVC }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;justify-content:space-between;background:#143026;border-radius:20px;padding:15px 18px;margin-bottom:18px">
+<div><div style="font-size:12px;color:rgba(255,255,255,.6);font-weight:700">TODAY · 15 JUL</div><div style="font-family:'Bricolage Grotesque',serif;font-size:19px;font-weight:700;color:#fff;margin-top:2px">3 of 5 tasks done</div></div>
+<div style="width:52px;height:52px;border-radius:50%;background:conic-gradient(#2EA57C 216deg,rgba(255,255,255,.15) 0);display:flex;align-items:center;justify-content:center"><span style="width:40px;height:40px;border-radius:50%;background:#143026;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff">60%</span></div>
+</div>
+<div style="position:relative;padding-left:8px">
+<sc-for list="{{ feed }}" as="f" hint-placeholder-count="4">
+<div style="display:flex;gap:13px;margin-bottom:14px">
+<div style="display:flex;flex-direction:column;align-items:center;flex:none"><span style="{{ f.dot }}">{{ f.icon }}</span><span style="flex:1;width:2px;background:#E7E0D3;margin:4px 0"></span></div>
+<div style="flex:1;background:#fff;border:1px solid #E7E0D3;border-radius:18px;padding:13px 15px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px"><span style="font-size:11px;font-weight:700;color:#9AA8A1">{{ f.time }}</span><span style="{{ f.badgeStyle }}">{{ f.badge }}</span></div><div style="font-size:14.5px;font-weight:700;color:#16241F">{{ f.title }}</div><div style="font-size:12.5px;color:#6E827A;font-weight:600;margin-top:2px;line-height:1.4">{{ f.sub }}</div></div>
+</div>
+</sc-for>
+</div>
+</sc-if>
+
+</div>
+</sc-if>
+<sc-if value="{{ isCare }}" hint-placeholder-val="{{ false }}">
+<div style="padding:4px 18px 108px;animation:floatUp .35s ease">
+
+<!-- ===== CARE HUB ===== -->
+<sc-if value="{{ careHub }}" hint-placeholder-val="{{ true }}">
+<div style="margin:6px 0 16px"><div style="font-family:'Bricolage Grotesque',serif;font-size:26px;font-weight:700;color:#143026;letter-spacing:-.5px">Care Center</div><div style="font-size:13px;color:#6E827A;font-weight:600;margin-top:2px">Everything for {{ petName }}'s wellbeing</div></div>
+
+<div style="border-radius:22px;padding:18px;background:linear-gradient(150deg,#2EA57C,#1E6B54);display:flex;align-items:center;gap:16px;box-shadow:0 16px 34px -18px rgba(30,107,84,.7);margin-bottom:22px">
+<div style="position:relative;width:70px;height:70px;flex:none"><svg width="70" height="70" viewBox="0 0 70 70"><circle cx="35" cy="35" r="29" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="7"/><circle cx="35" cy="35" r="29" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" stroke-dasharray="182" stroke-dashoffset="15" transform="rotate(-90 35 35)"/></svg><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Bricolage Grotesque',serif;font-size:22px;font-weight:700;color:#fff">{{ petScore }}</div></div>
+<div style="flex:1"><div style="font-size:15px;font-weight:800;color:#fff">Health looks great</div><div style="font-size:12px;color:rgba(255,255,255,.8);margin:4px 0 10px;line-height:1.4">Run a quick AI checkup to stay ahead.</div><button onClick="{{ runCheckup }}" style="background:#fff;color:#1E6B54;border:none;padding:8px 16px;border-radius:12px;font-family:inherit;font-size:12.5px;font-weight:800;cursor:pointer">Run AI checkup</button></div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+<sc-for list="{{ careTools }}" as="c" hint-placeholder-count="6">
+<button onClick="{{ c.go }}" style="{{ c.card }}"><span style="{{ c.dot }}">{{ c.icon }}</span><div style="font-size:14.5px;font-weight:700;color:#16241F">{{ c.label }}</div><div style="font-size:12px;color:#6E827A;font-weight:600;margin-top:2px">{{ c.sub }}</div></button>
+</sc-for>
+</div>
+</sc-if>
+
+<!-- ===== POTTY ===== -->
+<sc-if value="{{ carePotty }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;gap:10px;margin:6px 0 18px"><button onClick="{{ backCare }}" style="width:42px;height:42px;border-radius:13px;background:#fff;border:1px solid #E7E0D3;display:flex;align-items:center;justify-content:center;cursor:pointer">{{ careBackIcon }}</button><div style="font-family:'Bricolage Grotesque',serif;font-size:22px;font-weight:700;color:#143026">Potty log</div></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:22px">
+<button onClick="{{ addPee }}" style="background:#fff;border:1px solid #E7E0D3;border-radius:20px;padding:22px 14px;cursor:pointer;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:10px"><span style="width:52px;height:52px;border-radius:16px;background:#F6A623;display:flex;align-items:center;justify-content:center">{{ locIcon }}</span><span style="font-size:15px;font-weight:800;color:#16241F">Log pee</span></button>
+<button onClick="{{ addPoop }}" style="background:#fff;border:1px solid #E7E0D3;border-radius:20px;padding:22px 14px;cursor:pointer;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:10px"><span style="width:52px;height:52px;border-radius:16px;background:#1E6B54;display:flex;align-items:center;justify-content:center">{{ bellIcon }}</span><span style="font-size:15px;font-weight:800;color:#16241F">Log poop</span></button>
+</div>
+<div style="font-family:'Bricolage Grotesque',serif;font-size:16px;font-weight:700;color:#143026;margin-bottom:12px">Today</div>
+<div style="display:flex;flex-direction:column;gap:10px">
+<sc-for list="{{ pottyRows }}" as="p" hint-placeholder-count="2">
+<div style="display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #E7E0D3;border-radius:16px;padding:12px"><span style="{{ p.dot }}">{{ p.icon }}</span><div style="flex:1"><div style="font-size:14px;font-weight:700;color:#16241F">{{ p.type }} · {{ p.where }}</div><div style="font-size:12px;color:#6E827A;font-weight:600;margin-top:1px">{{ p.note }}</div></div><span style="font-size:12px;font-weight:700;color:#9AA8A1">{{ p.t }}</span></div>
+</sc-for>
+</div>
+</sc-if>
+
+<!-- ===== FOOD ===== -->
+<sc-if value="{{ careFood }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;gap:10px;margin:6px 0 18px"><button onClick="{{ backCare }}" style="width:42px;height:42px;border-radius:13px;background:#fff;border:1px solid #E7E0D3;display:flex;align-items:center;justify-content:center;cursor:pointer">{{ careBackIcon }}</button><div style="font-family:'Bricolage Grotesque',serif;font-size:22px;font-weight:700;color:#143026">Food &amp; quantity</div></div>
+<div style="background:linear-gradient(150deg,#143026,#1E6B54);border-radius:22px;padding:20px;color:#fff;margin-bottom:20px">
+<div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:14px"><div><div style="font-size:12px;color:rgba(255,255,255,.7);font-weight:700">TODAY'S INTAKE</div><div style="font-family:'Bricolage Grotesque',serif;font-size:32px;font-weight:700;line-height:1;margin-top:4px">{{ foodKcal }} <span style="font-size:15px;font-weight:600;color:rgba(255,255,255,.7)">/ 650 kcal</span></div></div><div style="text-align:right"><div style="font-size:12px;color:rgba(255,255,255,.7);font-weight:700">QUANTITY</div><div style="font-size:20px;font-weight:800;margin-top:4px">{{ foodQty }} g</div></div></div>
+<div style="height:9px;background:rgba(255,255,255,.16);border-radius:20px;overflow:hidden"><div style="height:100%;width:{{ kcalPct }}%;background:#2EA57C;border-radius:20px;transition:.4s"></div></div>
+</div>
+<div style="font-family:'Bricolage Grotesque',serif;font-size:15px;font-weight:700;color:#143026;margin-bottom:10px">Quick add</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:22px">
+<sc-for list="{{ foodQuick }}" as="q" hint-placeholder-count="4">
+<button onClick="{{ q.go }}" style="background:#fff;border:1px solid #E7E0D3;border-radius:15px;padding:13px;cursor:pointer;font-family:inherit;text-align:left"><div style="font-size:13.5px;font-weight:700;color:#16241F">+ {{ q.label }}</div><div style="font-size:11px;color:#6E827A;font-weight:600;margin-top:2px">{{ q.kcal }}</div></button>
+</sc-for>
+</div>
+<div style="font-family:'Bricolage Grotesque',serif;font-size:16px;font-weight:700;color:#143026;margin-bottom:12px">Meals today</div>
+<div style="display:flex;flex-direction:column;gap:10px">
+<sc-for list="{{ foodRows }}" as="f" hint-placeholder-count="2">
+<div style="display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #E7E0D3;border-radius:16px;padding:13px"><div style="flex:1"><div style="font-size:11px;font-weight:800;color:#8B7BD8;letter-spacing:.3px">{{ f.meal }} · {{ f.t }}</div><div style="font-size:14px;font-weight:700;color:#16241F;margin-top:2px">{{ f.food }}</div></div><div style="text-align:right"><div style="font-size:13.5px;font-weight:800;color:#16241F">{{ f.qty }}</div><div style="font-size:11.5px;color:#6E827A;font-weight:600">{{ f.kcal }}</div></div></div>
+</sc-for>
+</div>
+</sc-if>
+
+<!-- ===== REMINDERS + VACCINES ===== -->
+<sc-if value="{{ careReminders }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;gap:10px;margin:6px 0 18px"><button onClick="{{ backCare }}" style="width:42px;height:42px;border-radius:13px;background:#fff;border:1px solid #E7E0D3;display:flex;align-items:center;justify-content:center;cursor:pointer">{{ careBackIcon }}</button><div style="font-family:'Bricolage Grotesque',serif;font-size:22px;font-weight:700;color:#143026">Reminders &amp; vaccines</div></div>
+<div style="font-family:'Bricolage Grotesque',serif;font-size:16px;font-weight:700;color:#143026;margin-bottom:12px">Upcoming</div>
+<div style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px">
+<sc-for list="{{ remRows }}" as="r" hint-placeholder-count="4">
+<div style="display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #E7E0D3;border-radius:16px;padding:12px"><span style="{{ r.dot }}">{{ r.icon }}</span><div style="flex:1"><div style="{{ r.title2 }}">{{ r.title }}</div><div style="font-size:12px;color:#6E827A;font-weight:600;margin-top:1px">{{ r.due }}</div></div><button onClick="{{ r.toggle }}" style="{{ r.box }}">{{ r.check }}</button></div>
+</sc-for>
+</div>
+<div style="font-family:'Bricolage Grotesque',serif;font-size:16px;font-weight:700;color:#143026;margin-bottom:12px">Vaccination history</div>
+<div style="background:#fff;border:1px solid #E7E0D3;border-radius:18px;overflow:hidden">
+<sc-for list="{{ vaxRows }}" as="v" hint-placeholder-count="5">
+<div style="display:flex;align-items:center;gap:12px;padding:14px 15px;border-bottom:1px solid #F1EBDD"><div style="flex:1"><div style="font-size:14px;font-weight:700;color:#16241F">{{ v.name }}</div><div style="font-size:11.5px;color:#6E827A;font-weight:600;margin-top:2px">Last: {{ v.last }} · Next: {{ v.next }}</div></div><span style="{{ v.pill }}">{{ v.lbl }}</span></div>
+</sc-for>
+</div>
+</sc-if>
+
+<!-- ===== TIMELINE ===== -->
+<sc-if value="{{ careTimeline }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;gap:10px;margin:6px 0 18px"><button onClick="{{ backCare }}" style="width:42px;height:42px;border-radius:13px;background:#fff;border:1px solid #E7E0D3;display:flex;align-items:center;justify-content:center;cursor:pointer">{{ careBackIcon }}</button><div style="font-family:'Bricolage Grotesque',serif;font-size:22px;font-weight:700;color:#143026">Health timeline</div></div>
+<div style="padding-left:4px">
+<sc-for list="{{ tlRows }}" as="t" hint-placeholder-count="5">
+<div style="display:flex;gap:13px;margin-bottom:14px"><div style="display:flex;flex-direction:column;align-items:center;flex:none"><span style="{{ t.dot }}">{{ t.icon }}</span><span style="flex:1;width:2px;background:#E7E0D3;margin:4px 0"></span></div><div style="flex:1;background:#fff;border:1px solid #E7E0D3;border-radius:16px;padding:13px 15px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px"><span style="{{ t.pill }}">{{ t.tag }}</span><span style="font-size:11px;font-weight:700;color:#9AA8A1">{{ t.date }}</span></div><div style="font-size:14px;font-weight:700;color:#16241F">{{ t.title }}</div><sc-if value="{{ t.note }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;color:#6E827A;font-weight:600;margin-top:3px">{{ t.note }}</div></sc-if></div></div>
+</sc-for>
+</div>
+</sc-if>
+
+<!-- ===== AI SCAN ===== -->
+<sc-if value="{{ careScan }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;gap:10px;margin:6px 0 18px"><button onClick="{{ backCare }}" style="width:42px;height:42px;border-radius:13px;background:#fff;border:1px solid #E7E0D3;display:flex;align-items:center;justify-content:center;cursor:pointer">{{ careBackIcon }}</button><div style="font-family:'Bricolage Grotesque',serif;font-size:22px;font-weight:700;color:#143026">AI skin scan</div></div>
+<div style="position:relative;border-radius:22px;overflow:hidden;height:260px;background:#0b1712;margin-bottom:18px">
+<image-slot id="scan-photo" shape="rect" placeholder="Photo of the affected area"></image-slot>
+<sc-if value="{{ scanRun }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;background:rgba(11,23,18,.55);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px"><div style="position:relative;width:60px;height:60px"><span style="position:absolute;inset:0;border-radius:50%;background:#2EA57C;animation:pulseRing 1.4s ease-out infinite"></span><span style="position:absolute;inset:14px;border-radius:50%;background:#2EA57C;display:flex;align-items:center;justify-content:center"></span></div><div style="color:#fff;font-size:14px;font-weight:700">Analyzing skin &amp; coat…</div></div></sc-if>
+</div>
+<sc-if value="{{ scanIdle }}" hint-placeholder-val="{{ true }}">
+<div style="background:#fff;border:1px solid #E7E0D3;border-radius:18px;padding:16px;margin-bottom:16px"><div style="font-size:13.5px;font-weight:700;color:#16241F;margin-bottom:6px">How it works</div><div style="font-size:12.5px;color:#6E827A;font-weight:600;line-height:1.55">Take a clear, well-lit photo of any rash, lump, wound or hair loss. Our AI compares it against thousands of vet-reviewed cases and flags whether it needs attention.</div></div>
+<button onClick="{{ runScan }}" style="width:100%;background:#1E6B54;color:#fff;border:none;padding:16px;border-radius:16px;font-family:inherit;font-size:15px;font-weight:800;cursor:pointer">Analyze photo</button>
+</sc-if>
+<sc-if value="{{ scanDone }}" hint-placeholder-val="{{ false }}">
+<div style="background:#E4F0EA;border:1px solid #b8ddc9;border-radius:18px;padding:18px;margin-bottom:14px;animation:popIn .3s ease"><div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><span style="width:40px;height:40px;border-radius:12px;background:#2EA57C;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:20px">✓</span><div><div style="font-family:'Bricolage Grotesque',serif;font-size:18px;font-weight:700;color:#143026">No urgent concerns</div><div style="font-size:12px;color:#1E6B54;font-weight:700">94% confidence · mild dryness</div></div></div><div style="font-size:12.5px;color:#3a5248;font-weight:600;line-height:1.55">Skin looks healthy with slight dryness. Keep the coat moisturised and monitor for 3–4 days. Book a vet if redness or itching increases.</div></div>
+<div style="display:flex;gap:10px"><button onClick="{{ resetScan }}" style="flex:1;background:#fff;border:1px solid #E7E0D3;color:#16241F;padding:14px;border-radius:14px;font-family:inherit;font-weight:800;font-size:13.5px;cursor:pointer">Scan again</button><button onClick="{{ consultVet }}" style="flex:1;background:#1E6B54;border:none;color:#fff;padding:14px;border-radius:14px;font-family:inherit;font-weight:800;font-size:13.5px;cursor:pointer">Consult a vet</button></div>
+</sc-if>
+</sc-if>
+
+<!-- ===== SYMPTOM ===== -->
+<sc-if value="{{ careSymptom }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;gap:10px;margin:6px 0 16px"><button onClick="{{ backCare }}" style="width:42px;height:42px;border-radius:13px;background:#fff;border:1px solid #E7E0D3;display:flex;align-items:center;justify-content:center;cursor:pointer">{{ careBackIcon }}</button><div><div style="font-family:'Bricolage Grotesque',serif;font-size:22px;font-weight:700;color:#143026;line-height:1">Symptom guide</div><div style="font-size:11.5px;color:#6E827A;font-weight:600">AI triage · not a diagnosis</div></div></div>
+<div style="display:flex;flex-direction:column;gap:12px;margin-bottom:16px">
+<div style="display:flex;gap:10px;align-items:flex-start"><span style="width:34px;height:34px;border-radius:10px;background:#2EA57C;display:flex;align-items:center;justify-content:center;flex:none">{{ toxIcon }}</span><div style="background:#fff;border:1px solid #E7E0D3;padding:12px 15px;border-radius:4px 18px 18px 18px;font-size:13px;color:#16241F;font-weight:500;line-height:1.5;max-width:88%">Hi! Tell me what's worrying you about {{ petName }} and I'll help you decide what to do next.</div></div>
+<sc-for list="{{ symRows }}" as="m" hint-placeholder-count="0"><div style="{{ m.bubble }}">{{ m.t }}</div></sc-for>
+</div>
+<div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:6px">
+<sc-for list="{{ symChips }}" as="c" hint-placeholder-count="4"><button onClick="{{ c.go }}" style="{{ c.style }}">{{ c.q }}</button></sc-for>
+</div>
+</sc-if>
+
+<!-- ===== TOXIN / FOOD SAFETY ===== -->
+<sc-if value="{{ careToxin }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;gap:10px;margin:6px 0 18px"><button onClick="{{ backCare }}" style="width:42px;height:42px;border-radius:13px;background:#fff;border:1px solid #E7E0D3;display:flex;align-items:center;justify-content:center;cursor:pointer">{{ careBackIcon }}</button><div style="font-family:'Bricolage Grotesque',serif;font-size:22px;font-weight:700;color:#143026">Food &amp; toxin safety</div></div>
+<div style="display:flex;gap:9px;overflow-x:auto;padding-bottom:8px;margin-bottom:8px">
+<sc-for list="{{ toxinChips }}" as="c" hint-placeholder-count="6"><button onClick="{{ c.go }}" style="{{ c.style }}">{{ c.name }}</button></sc-for>
+</div>
+<div style="background:#fff;border:1px solid #E7E0D3;border-radius:22px;padding:20px;animation:popIn .25s ease"><div style="display:flex;align-items:center;gap:14px;margin-bottom:14px"><span style="{{ toxIconBg }}">{{ toxIcon }}</span><div><div style="font-size:13px;color:#6E827A;font-weight:700">{{ toxName }}</div><div style="{{ toxHeadStyle }}">{{ toxHead }}</div></div></div><div style="font-size:13.5px;color:#3a5248;font-weight:600;line-height:1.6">{{ toxNote }}</div></div>
+</sc-if>
+
+</div>
+</sc-if>
+<sc-if value="{{ isBook }}" hint-placeholder-val="{{ false }}">
+<div style="padding:4px 18px 108px;animation:floatUp .35s ease">
+
+<!-- ===== BOOK MENU ===== -->
+<sc-if value="{{ bookMenu }}" hint-placeholder-val="{{ true }}">
+<div style="margin:6px 0 18px"><div style="font-family:'Bricolage Grotesque',serif;font-size:26px;font-weight:700;color:#143026;letter-spacing:-.5px">Book a service</div><div style="font-size:13px;color:#6E827A;font-weight:600;margin-top:2px">Trusted vets &amp; groomers near you</div></div>
+<button onClick="{{ goBookVet }}" style="width:100%;text-align:left;border:none;cursor:pointer;font-family:inherit;border-radius:24px;padding:22px;margin-bottom:14px;background:linear-gradient(150deg,#1E6B54,#143026);color:#fff;position:relative;overflow:hidden">
+<div style="position:absolute;right:-20px;bottom:-20px;width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,.06)"></div>
+<div style="width:52px;height:52px;border-radius:16px;background:rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center;margin-bottom:14px">{{ bkVetIcon }}</div>
+<div style="font-family:'Bricolage Grotesque',serif;font-size:20px;font-weight:700">Vet consultation</div>
+<div style="font-size:12.5px;color:rgba(255,255,255,.78);font-weight:600;margin-top:4px;line-height:1.4">Video call, clinic visit or home visit · from ₹449</div>
+</button>
+<button onClick="{{ goBookSalon }}" style="width:100%;text-align:left;border:none;cursor:pointer;font-family:inherit;border-radius:24px;padding:22px;background:linear-gradient(150deg,#FF7A59,#e85f3f);color:#fff;position:relative;overflow:hidden">
+<div style="position:absolute;right:-20px;bottom:-20px;width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,.1)"></div>
+<div style="width:52px;height:52px;border-radius:16px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;margin-bottom:14px">{{ bkSalonIcon }}</div>
+<div style="font-family:'Bricolage Grotesque',serif;font-size:20px;font-weight:700">Pet salon</div>
+<div style="font-size:12.5px;color:rgba(255,255,255,.85);font-weight:600;margin-top:4px;line-height:1.4">Grooming, bath &amp; spa · from ₹299</div>
+</button>
+</sc-if>
+
+<!-- ===== VET LIST ===== -->
+<sc-if value="{{ bookVet }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;gap:10px;margin:6px 0 16px"><button onClick="{{ backBookMenu }}" style="width:42px;height:42px;border-radius:13px;background:#fff;border:1px solid #E7E0D3;display:flex;align-items:center;justify-content:center;cursor:pointer">{{ bookBackIcon }}</button><div style="font-family:'Bricolage Grotesque',serif;font-size:22px;font-weight:700;color:#143026">Vet consultation</div></div>
+<div style="display:flex;gap:8px;margin-bottom:20px">
+<sc-for list="{{ modeSeg }}" as="m" hint-placeholder-count="3"><button onClick="{{ m.go }}" style="{{ m.style }}">{{ m.icon }}<span>{{ m.label }}</span></button></sc-for>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px">
+<sc-for list="{{ docCards }}" as="d" hint-placeholder-count="4">
+<div style="background:#fff;border:1px solid #E7E0D3;border-radius:20px;padding:15px">
+<div style="display:flex;gap:13px"><span style="{{ d.av }}">{{ d.initial }}</span><div style="flex:1"><div style="font-size:15.5px;font-weight:800;color:#16241F">{{ d.name }}</div><div style="font-size:12px;color:#6E827A;font-weight:600;margin:2px 0 6px">{{ d.spec }} · {{ d.exp }}</div><div style="display:flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:#16241F">{{ d.star }} {{ d.rating }} <span style="color:#9AA8A1;font-weight:600">{{ d.reviews }}</span></div></div></div>
+<div style="display:flex;align-items:center;justify-content:space-between;margin-top:13px;padding-top:13px;border-top:1px solid #F1EBDD"><div><span style="font-family:'Bricolage Grotesque',serif;font-size:18px;font-weight:700;color:#143026">{{ d.fee }}</span><span style="font-size:12px;color:#6E827A;font-weight:600"> / consult</span></div><button onClick="{{ d.go }}" style="background:#1E6B54;color:#fff;border:none;padding:10px 20px;border-radius:12px;font-family:inherit;font-size:13px;font-weight:800;cursor:pointer">Book</button></div>
+</div>
+</sc-for>
+</div>
+</sc-if>
+
+<!-- ===== SALON LIST ===== -->
+<sc-if value="{{ bookSalon }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;gap:10px;margin:6px 0 16px"><button onClick="{{ backBookMenu }}" style="width:42px;height:42px;border-radius:13px;background:#fff;border:1px solid #E7E0D3;display:flex;align-items:center;justify-content:center;cursor:pointer">{{ bookBackIcon }}</button><div style="font-family:'Bricolage Grotesque',serif;font-size:22px;font-weight:700;color:#143026">Pet salon</div></div>
+<div style="display:flex;flex-direction:column;gap:12px">
+<sc-for list="{{ salonCards }}" as="v" hint-placeholder-count="4">
+<button onClick="{{ v.go }}" style="width:100%;text-align:left;font-family:inherit;background:#fff;border:1px solid #E7E0D3;border-radius:20px;padding:15px;display:flex;gap:13px;align-items:center;cursor:pointer"><span style="{{ v.dot }}">{{ v.icon }}</span><div style="flex:1"><div style="font-size:15px;font-weight:800;color:#16241F">{{ v.name }}</div><div style="font-size:12px;color:#6E827A;font-weight:600;margin-top:2px">{{ v.dur }} · {{ v.desc }}</div></div><span style="font-family:'Bricolage Grotesque',serif;font-size:17px;font-weight:700;color:#143026">{{ v.price }}</span></button>
+</sc-for>
+</div>
+</sc-if>
+
+<!-- ===== SLOTS ===== -->
+<sc-if value="{{ bookSlots }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;gap:10px;margin:6px 0 18px"><button onClick="{{ backBookList }}" style="width:42px;height:42px;border-radius:13px;background:#fff;border:1px solid #E7E0D3;display:flex;align-items:center;justify-content:center;cursor:pointer">{{ bookBackIcon }}</button><div style="font-family:'Bricolage Grotesque',serif;font-size:22px;font-weight:700;color:#143026">Pick a slot</div></div>
+<div style="background:#fff;border:1px solid #E7E0D3;border-radius:20px;padding:15px;display:flex;gap:13px;align-items:center;margin-bottom:22px"><span style="{{ bkDot }}">{{ bkIcon }}</span><div style="flex:1"><div style="font-size:15px;font-weight:800;color:#16241F">{{ bkTitle }}</div><div style="font-size:12px;color:#6E827A;font-weight:600;margin-top:2px">{{ bkSub }}</div></div><span style="font-family:'Bricolage Grotesque',serif;font-size:17px;font-weight:700;color:#143026">{{ bkPrice }}</span></div>
+<div style="font-family:'Bricolage Grotesque',serif;font-size:15px;font-weight:700;color:#143026;margin-bottom:10px">Select day</div>
+<div style="display:flex;gap:9px;overflow-x:auto;padding-bottom:6px;margin-bottom:18px">
+<sc-for list="{{ daysChips }}" as="d" hint-placeholder-count="5"><button onClick="{{ d.go }}" style="{{ d.style }}"><span style="{{ d.dName }}">{{ d.d }}</span><span style="{{ d.dNum }}">{{ d.n }}</span></button></sc-for>
+</div>
+<div style="font-family:'Bricolage Grotesque',serif;font-size:15px;font-weight:700;color:#143026;margin-bottom:10px">Available times</div>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:24px">
+<sc-for list="{{ slotChips }}" as="t" hint-placeholder-count="6"><button onClick="{{ t.go }}" style="{{ t.style }}">{{ t.t }}</button></sc-for>
+</div>
+<button onClick="{{ confirmBooking }}" style="{{ confirmStyle }}">Confirm booking · {{ bkPrice }}</button>
+</sc-if>
+
+<!-- ===== CONFIRM ===== -->
+<sc-if value="{{ bookConfirm }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:40px 6px 20px;animation:popIn .4s ease">
+<div style="width:82px;height:82px;border-radius:50%;background:#2EA57C;display:flex;align-items:center;justify-content:center;color:#fff;font-size:44px;font-weight:900;margin-bottom:22px;box-shadow:0 16px 34px -12px rgba(46,165,124,.6)">✓</div>
+<div style="font-family:'Bricolage Grotesque',serif;font-size:26px;font-weight:700;color:#143026">Booking confirmed</div>
+<div style="font-size:13.5px;color:#6E827A;font-weight:600;margin-top:6px;line-height:1.5">We've added this to {{ petName }}'s care reminders. You'll get a confirmation on WhatsApp.</div>
+</div>
+<div style="background:#fff;border:1px solid #E7E0D3;border-radius:22px;padding:18px;margin:0 0 16px"><div style="display:flex;gap:13px;align-items:center;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid #F1EBDD"><span style="{{ bkDot }}">{{ bkIcon }}</span><div style="flex:1"><div style="font-size:15px;font-weight:800;color:#16241F">{{ bkTitle }}</div><div style="font-size:12px;color:#6E827A;font-weight:600;margin-top:2px">{{ bkSub }}</div></div></div>
+<div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:8px"><span style="color:#6E827A;font-weight:600">When</span><span style="font-weight:800;color:#16241F">{{ bkWhen }}</span></div>
+<div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:8px"><span style="color:#6E827A;font-weight:600">For</span><span style="font-weight:800;color:#16241F">{{ petName }}</span></div>
+<div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:#6E827A;font-weight:600">Amount</span><span style="font-family:'Bricolage Grotesque',serif;font-weight:700;font-size:16px;color:#143026">{{ bkPrice }}</span></div></div>
+<button onClick="{{ backBookMenu }}" style="width:100%;background:#fff;border:1px solid #E7E0D3;color:#16241F;padding:15px;border-radius:15px;font-family:inherit;font-weight:800;font-size:14px;cursor:pointer">Done</button>
+</sc-if>
+
+</div>
+</sc-if>
+<sc-if value="{{ isShop }}" hint-placeholder-val="{{ false }}">
+<div style="padding:4px 18px 108px;animation:floatUp .35s ease">
+
+<!-- ===== SHOP MENU ===== -->
+<sc-if value="{{ shopMenu }}" hint-placeholder-val="{{ true }}">
+<div style="margin:6px 0 18px"><div style="font-family:'Bricolage Grotesque',serif;font-size:26px;font-weight:700;color:#143026;letter-spacing:-.5px">Shop &amp; services</div><div style="font-size:13px;color:#6E827A;font-weight:600;margin-top:2px">Adopt, shop essentials &amp; more</div></div>
+<div style="display:flex;flex-direction:column;gap:12px">
+<sc-for list="{{ shopTiles }}" as="t" hint-placeholder-count="3">
+<button onClick="{{ t.go }}" style="width:100%;text-align:left;font-family:inherit;background:#fff;border:1px solid #E7E0D3;border-radius:20px;padding:16px;display:flex;gap:14px;align-items:center;cursor:pointer"><span style="{{ t.dot }}">{{ t.icon }}</span><div style="flex:1"><div style="display:flex;align-items:center;gap:8px"><span style="font-size:15.5px;font-weight:800;color:#16241F">{{ t.title }}</span><sc-if value="{{ t.badge }}" hint-placeholder-val="{{ false }}"><span style="{{ t.badgeStyle }}">{{ t.badge }}</span></sc-if></div><div style="font-size:12.5px;color:#6E827A;font-weight:600;margin-top:2px">{{ t.sub }}</div></div><span style="color:#C7CFCB;font-size:22px">›</span></button>
+</sc-for>
+</div>
+</sc-if>
+
+<!-- ===== ADOPT BROWSE ===== -->
+<sc-if value="{{ shopAdopt }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;justify-content:space-between;margin:6px 0 16px"><div style="display:flex;align-items:center;gap:10px"><button onClick="{{ shopBackMenu }}" style="width:42px;height:42px;border-radius:13px;background:#fff;border:1px solid #E7E0D3;display:flex;align-items:center;justify-content:center;cursor:pointer">{{ shopBackIcon }}</button><div style="font-family:'Bricolage Grotesque',serif;font-size:22px;font-weight:700;color:#143026">Adopt</div></div><button onClick="{{ favToggle }}" style="{{ favBtnStyle }}">{{ favIcon }} {{ favCount }}</button></div>
+<div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:8px"><sc-for list="{{ speciesChips }}" as="c" hint-placeholder-count="3"><button onClick="{{ c.go }}" style="{{ c.style }}">{{ c.label }}</button></sc-for></div>
+<div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:8px"><sc-for list="{{ cityChips }}" as="c" hint-placeholder-count="5"><button onClick="{{ c.go }}" style="{{ c.style }}">{{ c.label }}</button></sc-for></div>
+<div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:18px"><sc-for list="{{ ageChips }}" as="c" hint-placeholder-count="4"><button onClick="{{ c.go }}" style="{{ c.style }}">{{ c.label }}</button></sc-for></div>
+<sc-if value="{{ emptyAdopt }}" hint-placeholder-val="{{ false }}"><div style="text-align:center;padding:40px 20px;color:#6E827A;font-size:13.5px;font-weight:600">No pets match these filters yet. Try widening your search.</div></sc-if>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+<sc-for list="{{ adoptCards }}" as="a" hint-placeholder-count="4">
+<div style="background:#fff;border:1px solid #E7E0D3;border-radius:20px;overflow:hidden;cursor:pointer" onClick="{{ a.go }}">
+<div style="position:relative;height:130px;background:#e9e2d4"><image-slot id="{{ a.slotId }}" shape="rect" placeholder="{{ a.name }}"></image-slot><button onClick="{{ a.toggle }}" style="{{ a.heartBg }}">{{ a.heart }}</button><span style="{{ a.vaxStyle }}">{{ a.vaxPill }}</span></div>
+<div style="padding:12px"><div style="font-family:'Bricolage Grotesque',serif;font-size:17px;font-weight:700;color:#143026;line-height:1">{{ a.name }}</div><div style="font-size:11.5px;color:#6E827A;font-weight:600;margin:4px 0 2px">{{ a.breed }}</div><div style="font-size:11.5px;color:#16241F;font-weight:700">{{ a.meta }}</div></div>
+</div>
+</sc-for>
+</div>
+</sc-if>
+
+<!-- ===== ADOPT DETAIL ===== -->
+<sc-if value="{{ shopDetail }}" hint-placeholder-val="{{ false }}">
+<div style="position:relative;height:280px;background:#e9e2d4;border-radius:0 0 26px 26px;overflow:hidden;margin:-4px -18px 0">
+<image-slot id="{{ adSlotId }}" shape="rect" placeholder="{{ adName }}'s photo"></image-slot>
+<button onClick="{{ shopBackAdopt }}" style="position:absolute;top:12px;left:16px;width:42px;height:42px;border-radius:13px;background:rgba(255,255,255,.92);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer">{{ shopBackIcon }}</button>
+</div>
+<div style="display:flex;align-items:flex-start;justify-content:space-between;margin:18px 0 6px"><div><div style="font-family:'Bricolage Grotesque',serif;font-size:26px;font-weight:700;color:#143026;line-height:1">{{ adName }}</div><div style="font-size:13px;color:#6E827A;font-weight:600;margin-top:5px">{{ adBreed }} · {{ adMeta }}</div></div><button onClick="{{ adFavToggle }}" style="{{ adFavStyle }}">{{ adFavIcon }}</button></div>
+<div style="margin:14px 0"><span style="{{ adVaxStyle }}">{{ adVax }}</span></div>
+<div style="background:#fff;border:1px solid #E7E0D3;border-radius:18px;padding:16px;margin-bottom:14px"><div style="font-size:13.5px;font-weight:800;color:#16241F;margin-bottom:6px">About {{ adName }}</div><div style="font-size:13px;color:#6E827A;font-weight:600;line-height:1.6">A gentle, playful companion looking for a loving forever home. Good with kids and other pets, litter/potty trained, and up to date on basic health checks.</div></div>
+<div style="background:#F4EFE6;border:1px dashed #C9BFA8;border-radius:16px;padding:13px 15px;display:flex;align-items:center;gap:10px;margin-bottom:20px"><span style="font-size:12px;color:#6E827A;font-weight:700">Listed by</span><span style="font-size:13px;color:#16241F;font-weight:800">{{ adBy }}</span></div>
+<button onClick="{{ applyAdopt }}" style="width:100%;background:#1E6B54;color:#fff;border:none;padding:16px;border-radius:16px;font-family:inherit;font-size:15px;font-weight:800;cursor:pointer">Apply to adopt {{ adName }}</button>
+</sc-if>
+
+<!-- ===== APPLIED ===== -->
+<sc-if value="{{ shopApplied }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:50px 10px 24px;animation:popIn .4s ease"><div style="width:82px;height:82px;border-radius:50%;background:#8B7BD8;display:flex;align-items:center;justify-content:center;color:#fff;font-size:44px;margin-bottom:22px;box-shadow:0 16px 34px -12px rgba(139,123,216,.6)">♥</div><div style="font-family:'Bricolage Grotesque',serif;font-size:26px;font-weight:700;color:#143026">Application sent!</div><div style="font-size:13.5px;color:#6E827A;font-weight:600;margin-top:8px;line-height:1.55">{{ adBy }} will review your application and reach out within 2–3 days to arrange a meet &amp; greet with {{ adName }}.</div></div>
+<button onClick="{{ shopBackAdopt }}" style="width:100%;background:#fff;border:1px solid #E7E0D3;color:#16241F;padding:15px;border-radius:15px;font-family:inherit;font-weight:800;font-size:14px;cursor:pointer">Browse more pets</button>
+</sc-if>
+
+<!-- ===== INSURANCE COMING SOON ===== -->
+<sc-if value="{{ shopInsurance }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;gap:10px;margin:6px 0 18px"><button onClick="{{ shopBackMenu }}" style="width:42px;height:42px;border-radius:13px;background:#fff;border:1px solid #E7E0D3;display:flex;align-items:center;justify-content:center;cursor:pointer">{{ shopBackIcon }}</button><div style="font-family:'Bricolage Grotesque',serif;font-size:22px;font-weight:700;color:#143026">Pet insurance</div></div>
+<div style="border-radius:24px;padding:26px 22px;background:linear-gradient(155deg,#4C9BD6,#2f6ea8);color:#fff;text-align:center;position:relative;overflow:hidden;margin-bottom:22px"><div style="position:absolute;right:-30px;top:-30px;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,.08)"></div><div style="width:70px;height:70px;border-radius:20px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;margin:0 auto 16px">{{ shieldBig }}</div><div style="display:inline-block;font-size:11px;font-weight:800;letter-spacing:.5px;padding:5px 12px;border-radius:20px;background:rgba(255,255,255,.2);margin-bottom:12px">COMING SOON</div><div style="font-family:'Bricolage Grotesque',serif;font-size:24px;font-weight:700">Cover the unexpected</div><div style="font-size:13px;color:rgba(255,255,255,.85);font-weight:600;margin-top:8px;line-height:1.5">Accident &amp; illness cover, cashless vet claims and wellness add-ons — built for Indian pet parents.</div></div>
+<div style="display:flex;flex-direction:column;gap:12px;margin-bottom:22px">
+<div style="display:flex;gap:12px;align-items:center;background:#fff;border:1px solid #E7E0D3;border-radius:16px;padding:14px"><span style="width:38px;height:38px;border-radius:11px;background:#E4F0EA;display:flex;align-items:center;justify-content:center;color:#1E6B54;font-weight:900">✓</span><div style="font-size:13.5px;font-weight:700;color:#16241F">Cashless claims at partner clinics</div></div>
+<div style="display:flex;gap:12px;align-items:center;background:#fff;border:1px solid #E7E0D3;border-radius:16px;padding:14px"><span style="width:38px;height:38px;border-radius:11px;background:#E4F0EA;display:flex;align-items:center;justify-content:center;color:#1E6B54;font-weight:900">✓</span><div style="font-size:13.5px;font-weight:700;color:#16241F">Covers accidents, surgery &amp; illness</div></div>
+<div style="display:flex;gap:12px;align-items:center;background:#fff;border:1px solid #E7E0D3;border-radius:16px;padding:14px"><span style="width:38px;height:38px;border-radius:11px;background:#E4F0EA;display:flex;align-items:center;justify-content:center;color:#1E6B54;font-weight:900">✓</span><div style="font-size:13.5px;font-weight:700;color:#16241F">Plans from ₹99 / month</div></div>
+</div>
+<sc-if value="{{ waitlisted }}" hint-placeholder-val="{{ false }}"><div style="background:#E4F0EA;border:1px solid #b8ddc9;border-radius:16px;padding:18px;text-align:center;animation:popIn .3s ease"><div style="font-size:15px;font-weight:800;color:#143026">You're on the list! 🎉</div><div style="font-size:12.5px;color:#3a5248;font-weight:600;margin-top:4px">We'll notify you the moment insurance launches.</div></div></sc-if>
+<sc-if value="{{ waitlisted }}" hint-placeholder-val="{{ true }}"><button onClick="{{ joinWaitlist }}" style="width:100%;background:#4C9BD6;color:#fff;border:none;padding:16px;border-radius:16px;font-family:inherit;font-size:15px;font-weight:800;cursor:pointer">Notify me at launch</button></sc-if>
+</sc-if>
+
+<!-- ===== STORE ===== -->
+<sc-if value="{{ shopStore }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;gap:10px;margin:6px 0 18px"><button onClick="{{ shopBackMenu }}" style="width:42px;height:42px;border-radius:13px;background:#fff;border:1px solid #E7E0D3;display:flex;align-items:center;justify-content:center;cursor:pointer">{{ shopBackIcon }}</button><div style="font-family:'Bricolage Grotesque',serif;font-size:22px;font-weight:700;color:#143026">Pet store</div></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+<sc-for list="{{ storeCards }}" as="p" hint-placeholder-count="6">
+<div style="background:#fff;border:1px solid #E7E0D3;border-radius:20px;padding:12px"><div style="{{ p.top }}">{{ p.icon }}</div><div style="{{ p.tagStyle }}">{{ p.tag }}</div><div style="font-size:13px;font-weight:700;color:#16241F;margin:3px 0 8px;line-height:1.3">{{ p.name }}</div><div style="display:flex;align-items:center;justify-content:space-between"><span style="font-family:'Bricolage Grotesque',serif;font-size:16px;font-weight:700;color:#143026">{{ p.price }}</span><button style="width:32px;height:32px;border-radius:10px;background:#1E6B54;color:#fff;border:none;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1">+</button></div></div>
+</sc-for>
+</div>
+</sc-if>
+
+</div>
+</sc-if>
+<sc-if value="{{ isProfile }}" hint-placeholder-val="{{ false }}">
+<div style="padding:4px 18px 108px;animation:floatUp .35s ease">
+
+<div style="display:flex;align-items:center;gap:14px;margin:10px 0 22px">
+<div style="width:64px;height:64px;border-radius:20px;overflow:hidden;flex:none;border:2px solid #E7E0D3"><image-slot id="user-avatar" shape="rect" placeholder="You"></image-slot></div>
+<div style="flex:1"><div style="font-family:'Bricolage Grotesque',serif;font-size:21px;font-weight:700;color:#143026;line-height:1">Aarav Sharma</div><div style="display:flex;align-items:center;gap:4px;font-size:12.5px;color:#6E827A;font-weight:600;margin-top:4px">{{ locIcon }} Indiranagar, Bengaluru</div></div>
+<button style="width:44px;height:44px;border-radius:14px;background:#fff;border:1px solid #E7E0D3;display:flex;align-items:center;justify-content:center;cursor:pointer">{{ editIcon }}</button>
+</div>
+
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><span style="font-family:'Bricolage Grotesque',serif;font-size:17px;font-weight:700;color:#143026">My pets</span></div>
+<div style="display:flex;gap:12px;overflow-x:auto;padding-bottom:8px;margin:0 -18px 22px;padding-left:18px;padding-right:18px">
+<sc-for list="{{ petProfiles }}" as="p" hint-placeholder-count="3">
+<button onClick="{{ p.go }}" style="{{ p.card }}"><span style="{{ p.scoreStyle }}">{{ p.score }}</span><div style="width:56px;height:56px;border-radius:16px;overflow:hidden;margin-bottom:11px"><image-slot id="{{ p.slotId }}" shape="rect" placeholder="{{ p.name }}"></image-slot></div><div style="font-family:'Bricolage Grotesque',serif;font-size:17px;font-weight:700;color:#143026;text-align:left">{{ p.name }}</div><div style="font-size:11px;color:#6E827A;font-weight:600;text-align:left;margin-top:2px">{{ p.breed }}</div></button>
+</sc-for>
+<button style="flex:none;width:150px;border:2px dashed #C9BFA8;border-radius:22px;background:transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;font-family:inherit;color:#1E6B54">{{ addPetIcon }}<span style="font-size:13px;font-weight:800">Add a pet</span></button>
+</div>
+
+<div style="font-family:'Bricolage Grotesque',serif;font-size:17px;font-weight:700;color:#143026;margin-bottom:12px">Records</div>
+<div style="display:flex;flex-direction:column;gap:11px;margin-bottom:24px">
+<sc-for list="{{ recordLinks }}" as="r" hint-placeholder-count="4">
+<button onClick="{{ r.go }}" style="width:100%;text-align:left;font-family:inherit;background:#fff;border:1px solid #E7E0D3;border-radius:16px;padding:13px;display:flex;gap:13px;align-items:center;cursor:pointer"><span style="{{ r.dot }}">{{ r.icon }}</span><div style="flex:1"><div style="font-size:14px;font-weight:700;color:#16241F">{{ r.label }}</div><div style="font-size:12px;color:#6E827A;font-weight:600;margin-top:1px">{{ r.sub }}</div></div><span style="color:#C7CFCB;font-size:20px">›</span></button>
+</sc-for>
+</div>
+
+<div style="font-family:'Bricolage Grotesque',serif;font-size:17px;font-weight:700;color:#143026;margin-bottom:12px">Account</div>
+<div style="background:#fff;border:1px solid #E7E0D3;border-radius:18px;overflow:hidden">
+<sc-for list="{{ acctRows }}" as="a" hint-placeholder-count="4">
+<button style="width:100%;text-align:left;font-family:inherit;background:none;border:none;border-bottom:1px solid #F1EBDD;padding:15px;display:flex;gap:13px;align-items:center;cursor:pointer"><span style="width:34px;height:34px;border-radius:10px;background:#E4F0EA;display:flex;align-items:center;justify-content:center;flex:none">{{ a.icon }}</span><span style="flex:1;font-size:14px;font-weight:700;color:#16241F">{{ a.label }}</span><span style="color:#C7CFCB;font-size:20px">›</span></button>
+</sc-for>
+</div>
+<div style="text-align:center;margin-top:20px;font-size:12px;color:#9AA8A1;font-weight:600">PawSaathi · v1.0 · Made in India 🇮🇳</div>
+
+</div>
+</sc-if>
+</div>
+
+<div style="flex:none;height:82px;background:rgba(255,255,255,.86);backdrop-filter:blur(14px);border-top:1px solid #EAE3D6;display:flex;align-items:center;justify-content:space-around;padding:0 10px 16px;position:relative;z-index:30">
+<sc-for list="{{ navItems }}" as="nav" hint-placeholder-count="5">
+<button onClick="{{ nav.go }}" style="{{ nav.btnStyle }}">
+<span style="{{ nav.iconWrap }}">{{ nav.icon }}</span>
+<span style="{{ nav.labelStyle }}">{{ nav.label }}</span>
+</button>
+</sc-for>
+</div>
+
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:460,&quot;height&quot;:900},&quot;startTab&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;home&quot;,&quot;options&quot;:[&quot;home&quot;,&quot;care&quot;,&quot;book&quot;,&quot;shop&quot;,&quot;profile&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Demo&quot;},&quot;homeLayout&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;companion&quot;,&quot;options&quot;:[&quot;companion&quot;,&quot;dashboard&quot;,&quot;feed&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Demo&quot;},&quot;insuranceMode&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;coming_soon&quot;,&quot;options&quot;:[&quot;coming_soon&quot;,&quot;hidden&quot;],&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Stage gating&quot;}}">
+const C = {
+  paper:'#F4EFE6', ink:'#143026', green:'#1E6B54', bright:'#2EA57C',
+  mint:'#E4F0EA', coral:'#FF7A59', amber:'#F6A623', sky:'#4C9BD6',
+  card:'#FFFFFF', text:'#16241F', muted:'#6E827A', line:'#E7E0D3', lilac:'#8B7BD8'
+};
+
+// ---- inline line-icon set (Lucide-style, currentColor stroke) ----
+function ic(name, size, color, sw){
+  const s = size||22, col = color||'currentColor', w = sw||2;
+  const P = {
+    home:'M3 10.5 12 3l9 7.5M5 9.5V21h5v-6h4v6h5V9.5',
+    heart:'M20.8 5.6a5 5 0 0 0-7.1 0L12 7.3l-1.7-1.7a5 5 0 1 0-7.1 7.1L12 21l8.8-8.3a5 5 0 0 0 0-7.1Z',
+    calendar:'M8 3v3M16 3v3M4 8h16M5 6h14a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1Z',
+    bag:'M6 8h12l-1 12H7L6 8Zm3 0a3 3 0 0 1 6 0',
+    user:'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM5 21a7 7 0 0 1 14 0',
+    sparkles:'M12 3l1.6 4.4L18 9l-4.4 1.6L12 15l-1.6-4.4L6 9l4.4-1.6L12 3ZM19 14l.8 2.2L22 17l-2.2.8L19 20l-.8-2.2L16 17l2.2-.8L19 14Z',
+    scan:'M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2M4 12h16',
+    stethoscope:'M6 3v5a4 4 0 0 0 8 0V3M4 3h3M13 3h3M10 16a5 5 0 0 0 5 5 4 4 0 0 0 4-4v-2M19 11a2 2 0 1 0 0 0Z',
+    scissors:'M6 6a2.5 2.5 0 1 0 0 0ZM6 18a2.5 2.5 0 1 0 0 0ZM8 8l12 8M8 16l12-8M8 16l4-2.7',
+    bell:'M6 9a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6ZM10 20a2 2 0 0 0 4 0',
+    syringe:'M14 4l6 6M17 7l-9 9-4 4M8.5 12.5l3 3M11.5 9.5l3 3M4 20l2-2',
+    droplet:'M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11Z',
+    bowl:'M3 11h18a9 9 0 0 1-18 0ZM7 8c0-1.5 5-4 5-4s5 2.5 5 4',
+    plus:'M12 5v14M5 12h14',
+    minus:'M5 12h14',
+    chevR:'M9 6l6 6-6 6', chevL:'M15 6l-6 6 6 6', chevD:'M6 9l6 6 6-6',
+    check:'M4 12l5 5L20 6', star:'M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1-5.4-2.9L6.6 20l1-6.1L3.2 9.5l6.1-.9L12 3Z',
+    clock:'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18ZM12 7v5l3 2',
+    video:'M4 7a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7ZM16 10l5-3v10l-5-3',
+    map:'M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11ZM12 12a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z',
+    filter:'M4 5h16l-6 7v6l-4 2v-8L4 5Z',
+    search:'M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14ZM20 20l-4-4',
+    shield:'M12 3l7 3v5c0 5-3.5 8-7 10-3.5-2-7-5-7-10V6l7-3Z',
+    paw:'M8.5 10.5a1.8 2.2 0 1 0 0 0ZM15.5 10.5a1.8 2.2 0 1 0 0 0ZM5.5 14a1.6 2 0 1 0 0 0ZM18.5 14a1.6 2 0 1 0 0 0ZM12 14c-2.4 0-4 1.6-4 3.4 0 1.5 1.6 2.1 4 2.1s4-.6 4-2.1c0-1.8-1.6-3.4-4-3.4Z',
+    weight:'M6 8h12l2 12H4L6 8ZM9 8a3 3 0 0 1 6 0',
+    pill:'M10.5 3.5a5 5 0 0 1 7 7l-6.5 6.5a5 5 0 0 1-7-7l6.5-6.5ZM7 7l7 7',
+    flame:'M12 3s5 4 5 9a5 5 0 0 1-10 0c0-2 1-3 1-3s0 2 1.5 2S12 8 12 3Z',
+    settings:'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM19 12a7 7 0 0 0-.1-1l2-1.5-2-3.4-2.3 1a7 7 0 0 0-1.7-1L14.5 2h-4l-.4 2.6a7 7 0 0 0-1.7 1l-2.3-1-2 3.4L4.1 11a7 7 0 0 0 0 2l-2 1.5 2 3.4 2.3-1a7 7 0 0 0 1.7 1l.4 2.6h4l.4-2.6a7 7 0 0 0 1.7-1l2.3 1 2-3.4-2-1.5A7 7 0 0 0 19 12Z',
+    location:'M12 11a2 2 0 1 0 0-4 2 2 0 0 0 0 4ZM12 21s7-6 7-12a7 7 0 1 0-14 0c0 6 7 12 7 12Z',
+    arrow:'M5 12h14M13 6l6 6-6 6', gift:'M4 11h16v9H4v-9ZM3 7h18v4H3V7ZM12 7v13M12 7S9 3 7 5s5 2 5 2ZM12 7s3-4 5-2-5 2-5 2Z',
+    clip:'M9 4h6v3H9V4ZM7 5H5v16h14V5h-2M9 12h6M9 16h4'
+  };
+  const d = P[name]||P.paw;
+  const paths = d.split('M').filter(Boolean).map((seg,i)=>React.createElement('path',{key:i,d:'M'+seg,fill:'none',stroke:col,strokeWidth:w,strokeLinecap:'round',strokeLinejoin:'round'}));
+  return React.createElement('svg',{width:s,height:s,viewBox:'0 0 24 24',style:{display:'block'}},paths);
+}
+
+class Component extends DCLogic {
+  state = {
+    tab:'home', homeV:'a',
+    care:'hub', book:'menu', shop:'menu', profile:'main',
+    petIdx:0,
+    pottyLog:[
+      {t:'7:20 AM', type:'Pee', where:'Garden', note:'Normal', c:C.amber},
+      {t:'8:05 AM', type:'Poop', where:'Garden', note:'Firm · healthy', c:C.green}
+    ],
+    foodLog:[
+      {t:'7:30 AM', meal:'Breakfast', food:'Kibble + curd', qty:120, unit:'g', kcal:340},
+      {t:'1:15 PM', meal:'Lunch', food:'Boiled chicken + rice', qty:90, unit:'g', kcal:210}
+    ],
+    bookMode:'video', docIdx:0, daySel:2, slotSel:null, booked:false, salonSel:0, bookKind:'vet',
+    adoptFilters:{species:'all', city:'all', age:'all'}, favs:['a2'], adoptSel:null, applied:false,
+    waitlisted:false, symMsgs:[], toxinQuery:'chocolate', remDone:[], scanStage:0, favsOnly:false
+  };
+
+  symPresets = [
+    {q:'Vomiting', a:'Occasional single vomit can be normal. Watch for: repeated vomiting, blood, lethargy or no water intake for 12h \u2014 those need a vet. Withhold food 6\u201312h, offer small sips of water, then bland boiled rice + chicken.'},
+    {q:'Not eating', a:'Skipping one meal is usually fine. If Simba refuses food for 24h+, or shows lethargy/vomiting, book a consult. Try warming the food or adding a spoon of curd to tempt appetite.'},
+    {q:'Itching / scratching', a:'Common causes: fleas/ticks, food allergy, or dry skin. Check for redness or bald patches. If itching is intense or skin is broken, a dermatology consult is recommended. Keep up the tick spot-on.'},
+    {q:'Limping', a:'Rest for 24h and avoid stairs/jumping. If limping persists, there is swelling, or Simba yelps on touch, see an ortho vet \u2014 could be a sprain or paw injury.'}
+  ];
+
+  pets = [
+    {name:'Simba', breed:'Golden Retriever', age:'3 yrs', sex:'Male', wt:'28.4 kg', color:'#F6A623', score:92, city:'Bengaluru', id:'p1'},
+    {name:'Mishti', breed:'Indie · Pariah', age:'2 yrs', sex:'Female', wt:'16.2 kg', color:'#FF7A59', score:88, city:'Bengaluru', id:'p2'},
+    {name:'Kaju', breed:'Persian Cat', age:'4 yrs', sex:'Male', wt:'4.1 kg', color:'#8B7BD8', score:79, city:'Bengaluru', id:'p3'}
+  ];
+
+  doctors = [
+    {id:'d1', name:'Dr. Ananya Rao', spec:'General & Preventive', exp:'8 yrs', rating:4.9, reviews:412, fee:499, clinic:'PetWell Clinic, Indiranagar', avatar:'#2EA57C'},
+    {id:'d2', name:'Dr. Rohan Mehta', spec:'Dermatology & Allergy', exp:'11 yrs', rating:4.8, reviews:286, fee:799, clinic:'Furry Care, Koramangala', avatar:'#4C9BD6'},
+    {id:'d3', name:'Dr. Priya Nair', spec:'Surgery & Ortho', exp:'14 yrs', rating:5.0, reviews:531, fee:899, clinic:'Whisker Hospital, HSR', avatar:'#FF7A59'},
+    {id:'d4', name:'Dr. Karan Singh', spec:'Nutrition & Wellness', exp:'6 yrs', rating:4.7, reviews:198, fee:449, clinic:'Video only', avatar:'#8B7BD8'}
+  ];
+
+  salon = [
+    {id:'s1', name:'Full Groom & Spa', dur:'90 min', price:1499, desc:'Bath, blow-dry, haircut, ear & nail care', c:C.coral},
+    {id:'s2', name:'Bath & Brush', dur:'45 min', price:699, desc:'Shampoo, conditioner, brush-out', c:C.sky},
+    {id:'s3', name:'Nail Trim & Paw Care', dur:'20 min', price:299, desc:'Nail clip, file, paw balm', c:C.amber},
+    {id:'s4', name:'De-shedding Treatment', dur:'60 min', price:999, desc:'Undercoat removal, coat conditioning', c:C.lilac}
+  ];
+
+  adoptables = [
+    {id:'a1', name:'Laddu', species:'Dog', breed:'Indie pup', age:'3 mo', ageBucket:'baby', sex:'Male', city:'Bengaluru', by:'CUPA Shelter', color:'#F6A623', vax:true},
+    {id:'a2', name:'Noor', species:'Cat', breed:'Domestic short-hair', age:'1 yr', ageBucket:'young', sex:'Female', city:'Mumbai', by:'World for All', color:'#8B7BD8', vax:true},
+    {id:'a3', name:'Bhalu', species:'Dog', breed:'Labrador mix', age:'4 yrs', ageBucket:'adult', sex:'Male', city:'Delhi', by:'Friendicoes', color:'#4C9BD6', vax:false},
+    {id:'a4', name:'Rani', species:'Dog', breed:'Indie', age:'8 mo', ageBucket:'young', sex:'Female', city:'Pune', by:'ResQ Charitable', color:'#FF7A59', vax:true},
+    {id:'a5', name:'Coco', species:'Cat', breed:'Persian mix', age:'2 yrs', ageBucket:'adult', sex:'Female', city:'Bengaluru', by:'CUPA Shelter', color:'#2EA57C', vax:true},
+    {id:'a6', name:'Simba Jr', species:'Dog', breed:'Golden mix', age:'5 mo', ageBucket:'baby', sex:'Male', city:'Bengaluru', by:'Charlie\u2019s Home', color:'#F6A623', vax:true}
+  ];
+
+  reminders = [
+    {id:'r1', title:'Rabies booster', due:'Due in 5 days', kind:'vaccine', c:C.coral, icon:'syringe', done:false},
+    {id:'r2', title:'Tick & flea spot-on', due:'Tomorrow, 8 AM', kind:'meds', c:C.amber, icon:'droplet', done:false},
+    {id:'r3', title:'Deworming tablet', due:'Today, 9 PM', kind:'meds', c:C.sky, icon:'pill', done:false},
+    {id:'r4', title:'Evening walk', due:'Today, 6 PM', kind:'activity', c:C.green, icon:'paw', done:false}
+  ];
+
+  vaccines = [
+    {name:'Rabies', last:'12 Jun 2025', next:'12 Jun 2026', status:'ok'},
+    {name:'DHPPi (5-in-1)', last:'02 Mar 2025', next:'02 Mar 2026', status:'ok'},
+    {name:'Leptospirosis', last:'18 Jan 2025', next:'18 Jul 2025', status:'due'},
+    {name:'Corona', last:'\u2014', next:'Not started', status:'todo'},
+    {name:'Kennel Cough', last:'05 Aug 2025', next:'05 Aug 2026', status:'ok'}
+  ];
+
+  timeline = [
+    {date:'14 Jul 2026', title:'AI skin scan \u2014 all clear', tag:'AI Health', c:C.bright, icon:'sparkles'},
+    {date:'28 Jun 2026', title:'Vet visit \u2014 Dr. Ananya Rao', tag:'Consultation', c:C.sky, icon:'stethoscope', note:'Ear cleaning, weight 28.4kg'},
+    {date:'12 Jun 2026', title:'Rabies booster given', tag:'Vaccine', c:C.coral, icon:'syringe'},
+    {date:'02 Jun 2026', title:'Full Groom & Spa', tag:'Salon', c:C.amber, icon:'scissors'},
+    {date:'20 May 2026', title:'Switched to weight-control diet', tag:'Nutrition', c:C.green, icon:'bowl'}
+  ];
+
+  toxins = [
+    {q:'chocolate', name:'Chocolate', safe:false, note:'Toxic. Theobromine causes vomiting, seizures. Call vet if eaten.'},
+    {q:'grapes', name:'Grapes & Raisins', safe:false, note:'Highly toxic \u2014 can cause kidney failure even in small amounts.'},
+    {q:'onion', name:'Onion & Garlic', safe:false, note:'Damages red blood cells. Avoid all forms including powder.'},
+    {q:'carrot', name:'Carrot', safe:true, note:'Safe & healthy. Great low-cal crunchy treat, good for teeth.'},
+    {q:'curd', name:'Curd / Yogurt', safe:true, note:'Safe in moderation. Plain, unsweetened only. Good probiotic.'},
+    {q:'rice', name:'Rice', safe:true, note:'Safe & easily digestible. Good with boiled chicken for upset tummy.'}
+  ];
+
+  set(k){ return ()=> this.setState({[k[0]]:k[1], ...(k[2]||{})}); }
+  go(tab){ return ()=> this.setState({tab}); }
+  goCare(v){ return ()=> this.setState({care:v}); }
+  goBook(v){ return ()=> this.setState({book:v}); }
+  goShop(v){ return ()=> this.setState({shop:v}); }
+
+  toggleFav(id){ return ()=> this.setState(s=>({favs: s.favs.includes(id)? s.favs.filter(x=>x!==id): [...s.favs,id]})); }
+  setFilter(k,v){ return ()=> this.setState(s=>({adoptFilters:{...s.adoptFilters,[k]:v}})); }
+
+  addPotty(type){ return ()=> {
+    const now = new Date(); const t = ((now.getHours()%12)||12)+':'+String(now.getMinutes()).padStart(2,'0')+(now.getHours()<12?' AM':' PM');
+    this.setState(s=>({pottyLog:[{t, type, where:'Garden', note: type==='Poop'?'Firm · healthy':'Normal', c: type==='Poop'?C.green:C.amber}, ...s.pottyLog]}));
+  };}
+
+  toggleRem(id){ return ()=> this.setState(s=>({remDone: s.remDone.includes(id)? s.remDone.filter(x=>x!==id):[...s.remDone,id]})); }
+  addSym(p){ return ()=> this.setState(s=>({symMsgs:[...s.symMsgs,{role:'u',t:p.q},{role:'a',t:p.a}]})); }
+  setToxin(q){ return ()=> this.setState({toxinQuery:q}); }
+  runScan(){ return ()=>{ this.setState({scanStage:1}); setTimeout(()=>this.setState({scanStage:2}),1700); }; }
+  addFood(m){ const now=new Date(); const t=((now.getHours()%12)||12)+':'+String(now.getMinutes()).padStart(2,'0')+(now.getHours()<12?' AM':' PM'); return ()=> this.setState(s=>({foodLog:[{t,meal:m[3],food:m[0],qty:m[1],unit:'g',kcal:m[2]}, ...s.foodLog]})); }
+
+  days = [{d:'Sat',n:'12'},{d:'Sun',n:'13'},{d:'Mon',n:'14'},{d:'Tue',n:'15'},{d:'Wed',n:'16'}];
+  slots = ['10:00 AM','11:30 AM','1:00 PM','3:30 PM','5:00 PM','6:30 PM'];
+  modes = [['video','Video','video'],['clinic','Clinic','stethoscope'],['home','Home visit','location']];
+
+  selectDoc(i){ return ()=> this.setState({docIdx:i, book:'slots', bookKind:'vet', slotSel:null}); }
+  selectSalon(i){ return ()=> this.setState({salonSel:i, book:'slots', bookKind:'salon', slotSel:null}); }
+
+  filteredAdopt(){
+    const f = this.state.adoptFilters, s = this.state;
+    return this.adoptables.filter(a =>
+      (!s.favsOnly || s.favs.includes(a.id)) &&
+      (f.species==='all'||a.species.toLowerCase()===f.species) &&
+      (f.city==='all'||a.city===f.city) &&
+      (f.age==='all'||a.ageBucket===f.age)
+    );
+  }
+
+  store = [
+    {name:'Grain-free kibble · 2kg', price:1499, tag:'Food', c:'#F6A623'},
+    {name:'Chicken jerky treats', price:349, tag:'Treats', c:'#FF7A59'},
+    {name:'Tug rope toy', price:199, tag:'Toys', c:'#4C9BD6'},
+    {name:'Tick & flea shampoo', price:425, tag:'Care', c:'#2EA57C'},
+    {name:'Ceramic slow-feed bowl', price:599, tag:'Bowls', c:'#8B7BD8'},
+    {name:'Orthopedic pet bed', price:1899, tag:'Comfort', c:'#e85f3f'}
+  ];
+
+  navBtn(id,label,icon){
+    const active = this.state.tab===id;
+    return {
+      go:this.go(id), label,
+      icon: ic(icon,23, active?C.green:'#9AA8A1', active?2.3:2),
+      btnStyle:'flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;cursor:pointer;padding:8px 0 0;font-family:inherit',
+      iconWrap:'display:flex;align-items:center;justify-content:center;transform:translateY('+(active?'-1px':'0')+')',
+      labelStyle:'font-size:10.5px;font-weight:'+(active?800:600)+';color:'+(active?C.green:'#9AA8A1')+';letter-spacing:.2px'
+    };
+  }
+
+  jump(tab, sub){ return ()=> this.setState(Object.assign({tab}, sub||{})); }
+
+  componentDidMount(){
+    const p = this.props||{}, patch={}, hv={companion:'a',dashboard:'b',feed:'c'};
+    if(p.startTab) patch.tab = p.startTab;
+    if(p.homeLayout && hv[p.homeLayout]) patch.homeV = hv[p.homeLayout];
+    if(Object.keys(patch).length) this.setState(patch);
+  }
+
+  renderVals(){
+    const s = this.state;
+    const pet = this.pets[s.petIdx];
+    const circ = 2*Math.PI*34;
+
+    const homeSeg = [['a','Companion'],['b','Dashboard'],['c','Feed']].map(x=>({
+      label:x[1], go:()=>this.setState({homeV:x[0]}),
+      style:'flex:1;padding:9px 0;border:none;cursor:pointer;font-family:inherit;font-size:12px;font-weight:800;letter-spacing:.2px;border-radius:12px;transition:.2s;background:'+(s.homeV===x[0]?'#fff':'transparent')+';color:'+(s.homeV===x[0]?C.green:C.muted)+';box-shadow:'+(s.homeV===x[0]?'0 3px 10px rgba(20,48,38,.1)':'none')
+    }));
+
+    const qa = [
+      ['Log meal','bowl',C.coral,'care','food'],
+      ['Log potty','droplet',C.amber,'care','potty'],
+      ['AI scan','scan',C.bright,'care','scan'],
+      ['Symptoms','sparkles',C.sky,'care','symptom'],
+      ['Book vet','stethoscope',C.green,'book','vet'],
+      ['Reminders','bell',C.lilac,'care','reminders']
+    ].map(a=>({
+      label:a[0], icon:ic(a[1],21,'#fff',2.3),
+      go:()=>this.setState({tab:a[3], [a[3]]:a[4]}),
+      wrap:'display:flex;flex-direction:column;align-items:center;gap:8px;background:none;border:none;cursor:pointer;font-family:inherit;padding:0',
+      chip:'width:54px;height:54px;border-radius:17px;display:flex;align-items:center;justify-content:center;background:'+a[2]+';box-shadow:0 9px 18px -7px '+a[2],
+      txt:'font-size:11px;font-weight:700;color:'+C.text
+    }));
+
+    const todayReminders = this.reminders.slice(0,3).map(r=>({
+      title:r.title, due:r.due, icon:ic(r.icon,17,'#fff',2.3),
+      dot:'width:38px;height:38px;border-radius:12px;flex:none;display:flex;align-items:center;justify-content:center;background:'+r.c,
+      row:'display:flex;align-items:center;gap:12px;padding:12px;background:#fff;border-radius:16px;border:1px solid '+C.line
+    }));
+
+    const petChips = this.pets.map((p,i)=>({
+      name:p.name, go:()=>this.setState({petIdx:i}),
+      style:'display:flex;align-items:center;gap:7px;padding:7px 13px 7px 7px;border-radius:20px;border:1.5px solid '+(i===s.petIdx?C.green:C.line)+';background:'+(i===s.petIdx?C.mint:'#fff')+';cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;color:'+C.text,
+      dot:'width:26px;height:26px;border-radius:50%;flex:none;background:'+p.color
+    }));
+
+    const statTiles = [
+      ['Health score', pet.score+'', '/ 100 · Good', 'heart', C.bright],
+      ['Meals today', '2', '550 kcal logged', 'bowl', C.coral],
+      ['Potty logs', s.pottyLog.length+'', 'All normal', 'droplet', C.amber],
+      ['Next vaccine', 'Rabies', 'Due in 5 days', 'syringe', C.sky]
+    ].map(t=>({
+      label:t[0], value:t[1], sub:t[2], icon:ic(t[3],18,t[4],2.3),
+      iconWrap:'width:34px;height:34px;border-radius:11px;display:flex;align-items:center;justify-content:center;background:'+t[4]+'1c'
+    }));
+
+    const svc = [
+      ['Vet consultation','Video, clinic or home visit','stethoscope',C.green,'book',{book:'vet'}],
+      ['Pet salon','Grooming, bath & spa','scissors',C.coral,'book',{book:'salon'}],
+      ['Adopt a pet','Find a friend near you','heart',C.lilac,'shop',{shop:'adopt'}],
+      ['Pet insurance','Coming soon \u2014 join waitlist','shield',C.sky,'shop',{shop:'insurance'}]
+    ].map(x=>({
+      title:x[0], sub:x[1], icon:ic(x[2],20,'#fff',2.2),
+      go:()=>this.setState(Object.assign({tab:x[4]}, x[5])),
+      dot:'width:44px;height:44px;border-radius:14px;flex:none;display:flex;align-items:center;justify-content:center;background:'+x[3],
+      row:'display:flex;align-items:center;gap:13px;padding:13px;background:#fff;border-radius:18px;border:1px solid '+C.line+';cursor:pointer;width:100%;text-align:left;font-family:inherit'
+    }));
+
+    const feed = [
+      ['6:15 AM','Morning walk complete','2.1 km · 24 min','paw',C.green,'done'],
+      ['7:30 AM','Breakfast logged','Kibble + curd · 120 g · 340 kcal','bowl',C.coral,'done'],
+      ['9:00 PM','Deworming tablet','Upcoming reminder','pill',C.sky,'up'],
+      ['AI tip','Simba is 0.4 kg over ideal','Try 10% smaller portions this week','sparkles',C.bright,'tip']
+    ].map(f=>({
+      time:f[0], title:f[1], sub:f[2], icon:ic(f[3],17,'#fff',2.3), state:f[5],
+      dot:'width:36px;height:36px;border-radius:11px;flex:none;display:flex;align-items:center;justify-content:center;background:'+f[4],
+      badge: f[5]==='done'?'Done':(f[5]==='up'?'9 PM':'AI'),
+      badgeStyle:'font-size:10px;font-weight:800;padding:3px 9px;border-radius:20px;background:'+f[4]+'1c;color:'+f[4]
+    }));
+
+    const careTools = [
+      ['AI skin scan','Spot issues early','scan',C.bright,'scan'],
+      ['Symptom guide','Ask the AI vet','sparkles',C.sky,'symptom'],
+      ['Food & toxin','Is it safe to feed?','shield',C.coral,'toxin'],
+      ['Potty log','Track pee & poop','droplet',C.amber,'potty'],
+      ['Food log','Meals & calories','bowl',C.lilac,'food'],
+      ['Reminders','Vaccines & meds','bell',C.green,'reminders'],
+      ['Health timeline','Full history','clock',C.ink,'timeline']
+    ].map(x=>({
+      label:x[0], sub:x[1], icon:ic(x[2],20,'#fff',2.2), go:()=>this.setState({care:x[4]}),
+      dot:'width:42px;height:42px;border-radius:13px;display:flex;align-items:center;justify-content:center;margin-bottom:11px;background:'+x[3],
+      card:'background:#fff;border:1px solid '+C.line+';border-radius:20px;padding:15px;cursor:pointer;text-align:left;font-family:inherit;width:100%'
+    }));
+
+    const pottyRows = s.pottyLog.map(p=>({
+      t:p.t, type:p.type, where:p.where, note:p.note,
+      icon:ic(p.type==='Poop'?'paw':'droplet',17,'#fff',2.4),
+      dot:'width:38px;height:38px;border-radius:12px;flex:none;display:flex;align-items:center;justify-content:center;background:'+p.c
+    }));
+    const addPee=this.addPotty('Pee'), addPoop=this.addPotty('Poop');
+
+    const foodRows = s.foodLog.map(f=>({t:f.t, meal:f.meal, food:f.food, qty:f.qty+' '+f.unit, kcal:f.kcal+' kcal'}));
+    const foodKcal = s.foodLog.reduce((a,b)=>a+b.kcal,0);
+    const foodQty = s.foodLog.reduce((a,b)=>a+b.qty,0);
+    const foodQuick = [['Kibble',100,340,'Meal'],['Boiled chicken',80,190,'Meal'],['Curd',50,45,'Snack'],['Dental treat',20,70,'Treat']].map(m=>({
+      label:m[0], kcal:m[2]+' kcal · '+m[1]+'g', go:this.addFood(m)
+    }));
+    const kcalPct = Math.min(100, Math.round(foodKcal/650*100));
+
+    const remRows = this.reminders.map(r=>{
+      const done=s.remDone.includes(r.id);
+      return {title:r.title, due:r.due, done, toggle:this.toggleRem(r.id),
+        icon:ic(r.icon,17,'#fff',2.3),
+        dot:'width:38px;height:38px;border-radius:12px;flex:none;display:flex;align-items:center;justify-content:center;opacity:'+(done?.4:1)+';background:'+r.c,
+        box:'width:26px;height:26px;border-radius:9px;flex:none;display:flex;align-items:center;justify-content:center;cursor:pointer;border:1.5px solid '+(done?C.green:C.line)+';background:'+(done?C.green:'#fff'),
+        check: done?ic('check',15,'#fff',3):null,
+        title2:'font-size:14px;font-weight:700;color:'+C.text+';text-decoration:'+(done?'line-through':'none')+';opacity:'+(done?.5:1)};
+    });
+
+    const vaxRows = this.vaccines.map(v=>{
+      const col = v.status==='ok'?C.bright:(v.status==='due'?C.coral:C.muted);
+      const lbl = v.status==='ok'?'Up to date':(v.status==='due'?'Due soon':'Not started');
+      return {name:v.name, last:v.last, next:v.next, lbl,
+        pill:'font-size:10.5px;font-weight:800;padding:4px 10px;border-radius:20px;color:'+col+';background:'+col+'1c'};
+    });
+
+    const tlRows = this.timeline.map(t=>({
+      date:t.date, title:t.title, tag:t.tag, note:t.note, icon:ic(t.icon,16,'#fff',2.3),
+      dot:'width:34px;height:34px;border-radius:11px;flex:none;display:flex;align-items:center;justify-content:center;background:'+t.c,
+      pill:'font-size:10px;font-weight:800;padding:3px 9px;border-radius:20px;color:'+t.c+';background:'+t.c+'1c'
+    }));
+
+    const tox = this.toxins.find(x=>x.q===s.toxinQuery) || this.toxins[0];
+    const toxSafe = tox.safe;
+    const toxinChips = this.toxins.map(x=>({
+      name:x.name, go:this.setToxin(x.q),
+      style:'padding:8px 14px;border-radius:20px;border:1.5px solid '+(x.q===s.toxinQuery?C.green:C.line)+';background:'+(x.q===s.toxinQuery?C.mint:'#fff')+';font-family:inherit;font-size:12.5px;font-weight:700;color:'+C.text+';cursor:pointer;white-space:nowrap'
+    }));
+
+    const symChips = this.symPresets.map(p=>({q:p.q, go:this.addSym(p),
+      style:'padding:9px 14px;border-radius:20px;border:1.5px solid '+C.line+';background:#fff;font-family:inherit;font-size:12.5px;font-weight:700;color:'+C.text+';cursor:pointer;white-space:nowrap'}));
+    const symRows = s.symMsgs.map(m=>({t:m.t, isU:m.role==='u',
+      bubble: m.role==='u'
+        ? 'align-self:flex-end;max-width:82%;background:#1E6B54;color:#fff;padding:11px 15px;border-radius:18px 18px 4px 18px;font-size:13.5px;font-weight:600;line-height:1.45'
+        : 'align-self:flex-start;max-width:88%;background:#fff;border:1px solid '+C.line+';color:'+C.text+';padding:12px 15px;border-radius:18px 18px 18px 4px;font-size:13px;font-weight:500;line-height:1.55'}));
+
+    const modeSeg = this.modes.map(m=>({
+      label:m[1], icon:ic(m[2],17,s.bookMode===m[0]?'#fff':C.muted,2.2),
+      go:()=>this.setState({bookMode:m[0]}),
+      style:'flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;padding:11px 4px;border:none;border-radius:14px;cursor:pointer;font-family:inherit;font-size:11.5px;font-weight:800;background:'+(s.bookMode===m[0]?C.green:'#fff')+';color:'+(s.bookMode===m[0]?'#fff':C.text)+';box-shadow:'+(s.bookMode===m[0]?'0 8px 18px -8px '+C.green:'inset 0 0 0 1px '+C.line)
+    }));
+    const modeLabel = {video:'Video call',clinic:'Clinic visit',home:'Home visit'}[s.bookMode];
+
+    const docCards = this.doctors.map((d,i)=>({
+      name:d.name, spec:d.spec, exp:d.exp+' exp', rating:d.rating, reviews:'('+d.reviews+')', fee:'\u20b9'+d.fee, clinic:d.clinic,
+      go:this.selectDoc(i), star:ic('star',13,C.amber,1.5),
+      av:'width:56px;height:56px;border-radius:16px;flex:none;display:flex;align-items:center;justify-content:center;color:#fff;font-family:\'Bricolage Grotesque\',serif;font-size:22px;font-weight:700;background:'+d.avatar,
+      initial:d.name.split(' ')[1][0]
+    }));
+
+    const salonCards = this.salon.map((sv,i)=>({
+      name:sv.name, dur:sv.dur, price:'\u20b9'+sv.price, desc:sv.desc, go:this.selectSalon(i),
+      icon:ic('scissors',20,'#fff',2.2),
+      dot:'width:46px;height:46px;border-radius:14px;flex:none;display:flex;align-items:center;justify-content:center;background:'+sv.c
+    }));
+
+    const daysChips = this.days.map((d,i)=>({
+      d:d.d, n:d.n, go:()=>this.setState({daySel:i}),
+      style:'display:flex;flex-direction:column;align-items:center;gap:3px;padding:11px 0;width:52px;flex:none;border-radius:15px;cursor:pointer;font-family:inherit;border:1.5px solid '+(i===s.daySel?C.green:C.line)+';background:'+(i===s.daySel?C.green:'#fff'),
+      dName:'font-size:11px;font-weight:700;color:'+(i===s.daySel?'rgba(255,255,255,.8)':C.muted),
+      dNum:'font-size:17px;font-weight:800;color:'+(i===s.daySel?'#fff':C.text)
+    }));
+    const slotChips = this.slots.map((t,i)=>({
+      t, go:()=>this.setState({slotSel:i}),
+      style:'padding:12px 0;border-radius:13px;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700;text-align:center;border:1.5px solid '+(i===s.slotSel?C.green:C.line)+';background:'+(i===s.slotSel?C.mint:'#fff')+';color:'+(i===s.slotSel?C.green:C.text)
+    }));
+
+    const isVet = s.bookKind==='vet';
+    const doc = this.doctors[s.docIdx], sal = this.salon[s.salonSel];
+    const canConfirm = s.slotSel!==null;
+    const slotText = s.slotSel!==null ? this.slots[s.slotSel] : 'Select a time';
+    const dayText = this.days[s.daySel].d+' '+this.days[s.daySel].n+' Jul';
+    const bk = {
+      title: isVet? doc.name : sal.name,
+      sub: isVet? (modeLabel+' · '+doc.spec) : (sal.dur+' · '+sal.desc),
+      price: isVet? '\u20b9'+doc.fee : '\u20b9'+sal.price,
+      when: dayText+' · '+slotText,
+      color: isVet? C.green : C.coral,
+      icon: ic(isVet?'stethoscope':'scissors',22,'#fff',2.2)
+    };
+
+    const insMode = this.props.insuranceMode || 'coming_soon';
+    const shopTiles = [
+      ['Adopt a pet','Give a rescue a home','heart',C.lilac,'adopt','New'],
+      ['Pet store','Food, toys & essentials','bag',C.amber,'store',''],
+      ['Pet insurance','Coming soon','shield',C.sky,'insurance','Soon']
+    ].filter(x=> x[4]!=='insurance' || insMode!=='hidden').map(x=>({
+      title:x[0], sub:x[1], icon:ic(x[2],22,'#fff',2.2), go:()=>this.setState({shop:x[4]}), badge:x[5],
+      dot:'width:50px;height:50px;border-radius:15px;flex:none;display:flex;align-items:center;justify-content:center;background:'+x[3],
+      badgeStyle:'font-size:10px;font-weight:800;padding:3px 9px;border-radius:20px;background:'+x[3]+'1c;color:'+x[3]
+    }));
+
+    const mkFchip = (key,opts)=>opts.map(o=>({label:o[1], go:this.setFilter(key,o[0]),
+      style:'padding:8px 14px;border-radius:20px;cursor:pointer;font-family:inherit;font-size:12.5px;font-weight:700;white-space:nowrap;border:1.5px solid '+(s.adoptFilters[key]===o[0]?C.green:C.line)+';background:'+(s.adoptFilters[key]===o[0]?C.mint:'#fff')+';color:'+(s.adoptFilters[key]===o[0]?C.green:C.text)}));
+    const speciesChips = mkFchip('species',[['all','All'],['dog','Dogs'],['cat','Cats']]);
+    const cityChips = mkFchip('city',[['all','All cities'],['Bengaluru','Bengaluru'],['Mumbai','Mumbai'],['Delhi','Delhi'],['Pune','Pune']]);
+    const ageChips = mkFchip('age',[['all','Any age'],['baby','Baby'],['young','Young'],['adult','Adult']]);
+
+    const adoptList = this.filteredAdopt();
+    const adoptCards = adoptList.map(a=>{
+      const faved = s.favs.includes(a.id);
+      return {id:a.id, name:a.name, breed:a.breed, meta:a.age+' · '+a.sex, city:a.city,
+        faved, toggle:this.toggleFav(a.id), go:()=>this.setState({adoptSel:a.id, shop:'detail'}),
+        slotId:'adopt-'+a.id, heart:ic('heart',18,faved?'#FF7A59':'#fff',2.2),
+        heartBg:'position:absolute;top:10px;right:10px;width:34px;height:34px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;background:'+(faved?'#fff':'rgba(0,0,0,.35)'),
+        vaxPill: a.vax? 'Vaccinated':'Vax pending', vaxColor:a.vax?C.bright:C.amber,
+        vaxStyle:'position:absolute;bottom:10px;left:10px;font-size:9.5px;font-weight:800;padding:3px 8px;border-radius:20px;color:#fff;background:'+(a.vax?C.bright:C.amber)};
+    });
+    const favCount = s.favs.length;
+    const favToggle = ()=>this.setState(st=>({favsOnly:!st.favsOnly}));
+    const favBtnStyle = 'display:flex;align-items:center;gap:6px;padding:8px 13px;border-radius:20px;cursor:pointer;font-family:inherit;font-size:12.5px;font-weight:800;border:1.5px solid '+(s.favsOnly?C.coral:C.line)+';background:'+(s.favsOnly?'#FFE9E2':'#fff')+';color:'+(s.favsOnly?C.coral:C.text);
+    const favIcon = ic('heart',15,s.favsOnly?C.coral:C.muted, s.favsOnly?2.6:2.2);
+    const emptyAdopt = adoptList.length===0;
+
+    const ad = this.adoptables.find(a=>a.id===s.adoptSel) || this.adoptables[0];
+    const adInfo = {name:ad.name, breed:ad.breed, meta:ad.age+' · '+ad.sex+' · '+ad.city, by:ad.by,
+      vax:ad.vax?'Vaccinated & dewormed':'Vaccination pending', vaxColor:ad.vax?C.bright:C.amber,
+      slotId:'detail-'+ad.id};
+    const adFaved = s.favs.includes(ad.id);
+
+    const storeCards = this.store.map(p=>({
+      name:p.name, price:'\u20b9'+p.price.toLocaleString('en-IN'), tag:p.tag,
+      top:'height:96px;border-radius:16px;display:flex;align-items:center;justify-content:center;margin-bottom:11px;background:'+p.c+'22',
+      icon:ic('bag',26,p.c,2), tagStyle:'font-size:10px;font-weight:800;color:'+p.c
+    }));
+
+    const petProfiles = this.pets.map((p,i)=>({
+      name:p.name, breed:p.breed+' · '+p.age, score:p.score+'', wt:p.wt, active:i===s.petIdx,
+      go:()=>this.setState({petIdx:i}), slotId:'prof-'+p.id,
+      card:'position:relative;flex:none;width:150px;background:#fff;border-radius:22px;padding:14px;cursor:pointer;border:2px solid '+(i===s.petIdx?C.green:'transparent'),
+      dotColor:p.color,
+      scoreStyle:'position:absolute;top:12px;right:12px;font-size:11px;font-weight:800;padding:3px 9px;border-radius:20px;background:'+C.mint+';color:'+C.green
+    }));
+
+    const recordLinks = [
+      ['syringe','Vaccination records', 'Up to date',C.coral,()=>this.setState({tab:'care',care:'reminders'})],
+      ['clock','Health timeline','12 events',C.sky,()=>this.setState({tab:'care',care:'timeline'})],
+      ['heart','Adoption applications','1 in review',C.lilac,()=>this.setState({tab:'shop',shop:'applied'})],
+      ['shield','Insurance','Coming soon',C.bright,()=>this.setState({tab:'shop',shop:'insurance'})]
+    ].map(x=>({
+      label:x[1], sub:x[2], icon:ic(x[0],19,'#fff',2.2), go:x[4],
+      dot:'width:40px;height:40px;border-radius:12px;flex:none;display:flex;align-items:center;justify-content:center;background:'+x[3]
+    }));
+
+    const acctRows = [
+      ['bell','Notifications'],['settings','Preferences'],['location','Saved addresses'],['user','Help & support']
+    ].map(x=>({label:x[1], icon:ic(x[0],19,C.green,2.1)}));
+
+    return {
+      isHome:s.tab==='home', isCare:s.tab==='care', isBook:s.tab==='book', isShop:s.tab==='shop', isProfile:s.tab==='profile',
+      petProfiles, recordLinks, acctRows,
+      addPetIcon:ic('plus',24,C.green,2.4), editIcon:ic('settings',20,C.green,2),
+      shopMenu:s.shop==='menu', shopAdopt:s.shop==='adopt', shopDetail:s.shop==='detail', shopApplied:s.shop==='applied', shopInsurance:s.shop==='insurance', shopStore:s.shop==='store',
+      shopTiles, speciesChips, cityChips, ageChips, adoptCards, favCount, favToggle, favBtnStyle, favIcon, emptyAdopt,
+      adName:adInfo.name, adBreed:adInfo.breed, adMeta:adInfo.meta, adBy:adInfo.by, adVax:adInfo.vax, adSlotId:adInfo.slotId,
+      adVaxStyle:'display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:800;padding:6px 12px;border-radius:20px;color:'+adInfo.vaxColor+';background:'+adInfo.vaxColor+'1c',
+      adFaved, adFavToggle:this.toggleFav(ad.id),
+      adFavStyle:'width:52px;height:52px;border-radius:15px;flex:none;border:1.5px solid '+(adFaved?C.coral:C.line)+';background:'+(adFaved?'#FFE9E2':'#fff')+';cursor:pointer;display:flex;align-items:center;justify-content:center',
+      adFavIcon:ic('heart',22,adFaved?C.coral:C.muted,2.3),
+      applyAdopt:()=>this.setState({shop:'applied',applied:true}),
+      storeCards,
+      shopBackMenu:()=>this.setState({shop:'menu'}), shopBackAdopt:()=>this.setState({shop:'adopt'}),
+      joinWaitlist:()=>this.setState({waitlisted:true}), waitlisted:s.waitlisted,
+      shopBackIcon:ic('chevL',22,C.ink,2.4),
+      shieldBig:ic('shield',34,'#fff',2),
+      bookMenu:s.book==='menu', bookVet:s.book==='vet', bookSalon:s.book==='salon', bookSlots:s.book==='slots', bookConfirm:s.book==='confirm',
+      modeSeg, modeLabel, docCards, salonCards, daysChips, slotChips,
+      bkTitle:bk.title, bkSub:bk.sub, bkPrice:bk.price, bkWhen:bk.when, bkIcon:bk.icon,
+      bkDot:'width:52px;height:52px;border-radius:16px;flex:none;display:flex;align-items:center;justify-content:center;background:'+bk.color,
+      canConfirm, confirmStyle:'width:100%;border:none;padding:16px;border-radius:16px;font-family:inherit;font-size:15px;font-weight:800;cursor:'+(canConfirm?'pointer':'not-allowed')+';background:'+(canConfirm?C.green:'#C7CFCB')+';color:#fff',
+      goBookVet:()=>this.setState({book:'vet'}), goBookSalon:()=>this.setState({book:'salon'}),
+      confirmBooking:()=>{ if(s.slotSel!==null) this.setState({book:'confirm',booked:true}); },
+      backBookMenu:()=>this.setState({book:'menu',slotSel:null}), backBookList:()=>this.setState({book: s.bookKind==='vet'?'vet':'salon'}),
+      bookBackIcon:ic('chevL',22,C.ink,2.4),
+      bkIsVet:isVet, bkClinic:isVet?doc.clinic:sal.desc,
+      bkVetIcon:ic('stethoscope',24,'#fff',2.2), bkSalonIcon:ic('scissors',24,'#fff',2.2),
+      homeVA:s.homeV==='a', homeVB:s.homeV==='b', homeVC:s.homeV==='c',
+      homeSeg, qa, todayReminders, petChips, statTiles, svc, feed,
+      careHub:s.care==='hub', carePotty:s.care==='potty', careFood:s.care==='food', careReminders:s.care==='reminders', careTimeline:s.care==='timeline', careScan:s.care==='scan', careSymptom:s.care==='symptom', careToxin:s.care==='toxin',
+      careTools, pottyRows, addPee, addPoop, foodRows, foodKcal, foodQty, foodQuick, kcalPct,
+      remRows, vaxRows, tlRows,
+      toxName:tox.name, toxNote:tox.note, toxSafe, toxinChips,
+      toxHead: toxSafe?'Safe to feed':'Do NOT feed', toxHeadStyle:'font-family:\'Bricolage Grotesque\',serif;font-size:22px;font-weight:700;color:'+(toxSafe?C.green:C.coral),
+      toxIcon: ic(toxSafe?'check':'minus',30,'#fff',3), toxIconBg:'width:56px;height:56px;border-radius:18px;display:flex;align-items:center;justify-content:center;background:'+(toxSafe?C.bright:C.coral),
+      symChips, symRows, symEmpty:s.symMsgs.length===0,
+      scanIdle:s.scanStage===0, scanRun:s.scanStage===1, scanDone:s.scanStage===2, runScan:this.runScan(), resetScan:()=>this.setState({scanStage:0}),
+      backCare:()=>this.setState({care:'hub'}), careBackIcon:ic('chevL',22,C.ink,2.4),
+      runCheckup:()=>this.setState({care:'scan'}), consultVet:()=>this.setState({tab:'book',book:'vet'}),
+      petName:pet.name, petBreed:pet.breed, petAgeSex:pet.age+' · '+pet.sex, petWt:pet.wt,
+      petColor:pet.color, petScore:pet.score, ringCirc:circ, ringOffset:circ*(1-pet.score/100),
+      bellIcon:ic('bell',21,C.ink,2.1), locIcon:ic('location',14,C.muted,2.2),
+      goCareTimeline:this.jump('care',{care:'timeline'}),
+      navItems:[
+        this.navBtn('home','Home','home'),
+        this.navBtn('care','Care','heart'),
+        this.navBtn('book','Book','calendar'),
+        this.navBtn('shop','Shop','bag'),
+        this.navBtn('profile','You','user')
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>
