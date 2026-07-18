@@ -86,11 +86,23 @@ export interface InitPurchasesOptions {
 }
 
 /**
+ * Whether the resolved key is one of `app.config.js`'s placeholder values
+ * (used whenever the `EXPO_PUBLIC_RC_*` env vars are unset — local dev, CI).
+ * Configuring the SDK with a placeholder makes it phone home and spam
+ * `InvalidCredentialsError` (founder report), so a placeholder is treated
+ * exactly like an absent native module: skip configuration, no-op mode.
+ */
+function isPlaceholderKey(key: string): boolean {
+  return key === "" || key.startsWith("stub_");
+}
+
+/**
  * Configures RevenueCat anonymously (`appUserID: null`) exactly once.
  * Idempotent: a second call (double-mount / Fast Refresh) is a no-op that
  * returns the previous configure result. When the native module cannot be
- * loaded (Expo Go, jest), this no-ops gracefully and returns `false` — the
- * app boots regardless.
+ * loaded (Expo Go, jest) OR the resolved API key is a placeholder (no real
+ * `EXPO_PUBLIC_RC_*` env configured), this no-ops gracefully and returns
+ * `false` — the app boots regardless and billing stays in no-op mode.
  */
 export function initPurchases(opts: InitPurchasesOptions = {}): boolean {
   if (configured) {
@@ -110,6 +122,11 @@ export function initPurchases(opts: InitPurchasesOptions = {}): boolean {
   const iosKey = opts.iosKey ?? config.revenueCatIosKey;
   const androidKey = opts.androidKey ?? config.revenueCatAndroidKey;
   const apiKey = platformOS === "android" ? androidKey : iosKey;
+
+  if (isPlaceholderKey(apiKey)) {
+    native = null;
+    return false;
+  }
 
   native.configure({ apiKey, appUserID: null });
   return true;

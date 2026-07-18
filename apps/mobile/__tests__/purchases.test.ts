@@ -25,18 +25,18 @@ describe("initPurchases", () => {
     __resetPurchasesForTest();
   });
 
-  it("configures once with the stub key + anonymous appUserID", () => {
+  it("configures once with the real key + anonymous appUserID", () => {
     const native = makeMockNative();
     const result = initPurchases({
       loader: () => native,
-      iosKey: "stub_ios_key",
-      androidKey: "stub_android_key",
+      iosKey: "appl_test_ios_key",
+      androidKey: "goog_test_android_key",
       platformOS: "ios",
     });
 
     expect(result).toBe(true);
     expect(native.configure).toHaveBeenCalledTimes(1);
-    expect(native.configure).toHaveBeenCalledWith({ apiKey: "stub_ios_key", appUserID: null });
+    expect(native.configure).toHaveBeenCalledWith({ apiKey: "appl_test_ios_key", appUserID: null });
     expect(isPurchasesConfigured()).toBe(true);
   });
 
@@ -44,23 +44,23 @@ describe("initPurchases", () => {
     const native = makeMockNative();
     initPurchases({
       loader: () => native,
-      iosKey: "stub_ios_key",
-      androidKey: "stub_android_key",
+      iosKey: "appl_test_ios_key",
+      androidKey: "goog_test_android_key",
       platformOS: "android",
     });
 
-    expect(native.configure).toHaveBeenCalledWith({ apiKey: "stub_android_key", appUserID: null });
+    expect(native.configure).toHaveBeenCalledWith({ apiKey: "goog_test_android_key", appUserID: null });
   });
 
   it("is idempotent (no double-configure)", () => {
     const native = makeMockNative();
     const loader = jest.fn(() => native);
 
-    initPurchases({ loader, iosKey: "stub_ios_key", androidKey: "stub_android_key", platformOS: "ios" });
+    initPurchases({ loader, iosKey: "appl_test_ios_key", androidKey: "goog_test_android_key", platformOS: "ios" });
     const second = initPurchases({
       loader,
-      iosKey: "stub_ios_key",
-      androidKey: "stub_android_key",
+      iosKey: "appl_test_ios_key",
+      androidKey: "goog_test_android_key",
       platformOS: "ios",
     });
 
@@ -73,6 +73,34 @@ describe("initPurchases", () => {
     const result = initPurchases({ loader: () => null, platformOS: "ios" });
 
     expect(result).toBe(false);
+    expect(isPurchasesConfigured()).toBe(false);
+  });
+
+  it("SKIPS configure entirely on the app.config placeholder key (founder InvalidCredentialsError report)", () => {
+    const native = makeMockNative();
+    const result = initPurchases({
+      loader: () => native,
+      iosKey: "stub_ios_key",
+      androidKey: "stub_android_key",
+      platformOS: "android",
+    });
+
+    expect(result).toBe(false);
+    expect(native.configure).not.toHaveBeenCalled();
+    expect(isPurchasesConfigured()).toBe(false);
+  });
+
+  it("SKIPS configure on an empty key", () => {
+    const native = makeMockNative();
+    const result = initPurchases({
+      loader: () => native,
+      iosKey: "",
+      androidKey: "",
+      platformOS: "ios",
+    });
+
+    expect(result).toBe(false);
+    expect(native.configure).not.toHaveBeenCalled();
     expect(isPurchasesConfigured()).toBe(false);
   });
 });

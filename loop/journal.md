@@ -966,3 +966,11 @@
 - **Gates:** mobile **755 → 788 (107 → 111 suites)**, snapshots 17, typecheck/lint/build 0.
 - **THE FOUNDER-DIRECTED APP-WIDE CONSISTENCY SWEEP IS COMPLETE:** 4 batches, 4 PASS verdicts, mobile 673 → 788 tests, every screen in apps/mobile/app/** on the design-system canon, zero §5/§7 safety-copy changes across the entire sweep.
 - Commit: feat(mobile): SWEEP-4 final batch — Chip/EmptyState/ListRow canon, settings/paywall modernization, sweep complete.
+
+## [2026-07-18] HOTFIX 7 · RevenueCat placeholder-key guard (founder-directed, Fable-direct)
+- **Founder report:** dev client console spammed `[RevenueCat] InvalidCredentialsError: Invalid API Key` (configure + entitlement-mapping retries).
+- **Root cause:** with no `EXPO_PUBLIC_RC_*` env set, app.config.js falls back to `stub_android_key`/`stub_ios_key`, and `initPurchases` handed the placeholder straight to the SDK — which then phones home and errors. Harmless (all billing call sites already degrade gracefully) but noisy and wasteful.
+- **Fix (standing pattern — placeholder infra behaves like absent infra):** `initPurchases` now detects a placeholder key (`""` or `stub_*` prefix) and skips `configure` entirely, dropping into the same no-op mode as the missing-native-module path. Real keys behave identically to before. 2 new regression tests (stub key + empty key ⇒ no configure call, `isPurchasesConfigured()===false`); existing fixtures updated to real-shaped keys (`appl_/goog_` prefixes).
+- **Founder note:** the errors disappear on next reload; billing stays inert until real `EXPO_PUBLIC_RC_IOS_KEY`/`EXPO_PUBLIC_RC_ANDROID_KEY` values are set (a C2-checkpoint item — see docs/store-setup.md). No rebuild needed for this fix.
+- **Gates:** mobile **788 → 790 (111 suites)**, typecheck/lint 0.
+- Commit: fix(mobile): skip RevenueCat configure on placeholder API keys.

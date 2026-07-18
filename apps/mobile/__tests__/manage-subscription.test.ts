@@ -71,6 +71,8 @@ describe("openManageSubscription", () => {
         logOut: jest.fn(),
         getCustomerInfo: jest.fn().mockResolvedValue({ managementURL: "rc://manage-me" }),
       }),
+      iosKey: "appl_test_ios_key",
+      androidKey: "goog_test_android_key",
       platformOS: "ios",
     });
 
@@ -87,6 +89,8 @@ describe("openManageSubscription", () => {
         logOut: jest.fn(),
         getCustomerInfo: jest.fn().mockResolvedValue({}),
       }),
+      iosKey: "appl_test_ios_key",
+      androidKey: "goog_test_android_key",
       platformOS: "android",
     });
 
