@@ -16,6 +16,7 @@ import { usePurchasesInit } from "../src/billing/use-purchases-init";
 import { UpdateGate } from "../src/components/update-gate";
 import { UpsellSheet } from "../src/components/upsell-sheet";
 import { AppErrorBoundary } from "../src/error-boundary";
+import { useAppFonts } from "../src/fonts/use-app-fonts";
 import { useNetworkListener } from "../src/offline/use-network-listener";
 
 import "../global.css";
@@ -101,6 +102,12 @@ function AppRoot() {
  * primitives, so it needs no provider to render its fallback.
  */
 export default function RootLayout() {
+  // Non-blocking font load (PAWSAATHI-1 plan): called once here, above the
+  // boundary tree, and its return value is never read -- a pending load or
+  // a load error can NEVER stop `AppErrorBoundary`/`AppRoot` from mounting
+  // (see `use-app-fonts.ts`'s header comment).
+  useAppFonts();
+
   return (
     <AppErrorBoundary>
       <PersistedApiQueryProvider client={queryClient} persister={queryPersister}>

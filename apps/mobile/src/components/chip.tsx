@@ -8,10 +8,11 @@ export interface ChipProps {
   accessibilityLabel?: string;
 }
 
-const SELECTED_CLASS = "min-h-[44px] justify-center rounded-full bg-brand-700 px-4 py-2.5";
-const UNSELECTED_CLASS = "min-h-[44px] justify-center rounded-full border border-brand-100 bg-white px-4 py-2.5";
-const TEXT_SELECTED = "text-sm font-semibold text-white";
-const TEXT_UNSELECTED = "text-sm text-brand-900";
+const SELECTED_CLASS = "min-h-[44px] justify-center rounded-full bg-brand-700 dark:bg-accent-dark px-4 py-2.5";
+const UNSELECTED_CLASS =
+  "min-h-[44px] justify-center rounded-full border border-brand-100 dark:border-hairline-dark bg-white dark:bg-surface-card-dark px-4 py-2.5";
+const TEXT_SELECTED = "text-sm font-semibold text-white font-body-semibold";
+const TEXT_UNSELECTED = "text-sm text-brand-900 dark:text-ink-dark font-body-semibold";
 
 /**
  * The one selectable-pill surface (design-system.md §2.5): a single

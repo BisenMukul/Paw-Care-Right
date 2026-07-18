@@ -9,7 +9,7 @@ export interface CardProps {
   accessibilityLabel?: string;
 }
 
-const BASE_CLASS = "rounded-2xl bg-white p-4 shadow-md gap-2";
+const BASE_CLASS = "rounded-2xl bg-white dark:bg-surface-card-dark p-4 shadow-md gap-2";
 
 /**
  * The one card surface (design-system.md §2.2): static by default, or a

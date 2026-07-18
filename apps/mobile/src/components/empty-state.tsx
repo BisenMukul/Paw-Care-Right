@@ -27,10 +27,14 @@ export interface EmptyStateProps {
  */
 export function EmptyState({ testID, icon, title, body, ctaLabel, onCtaPress, ctaTestID }: EmptyStateProps) {
   return (
-    <View testID={testID} className="items-center gap-4 rounded-2xl bg-white px-6 py-10">
+    <View testID={testID} className="items-center gap-4 rounded-2xl bg-white dark:bg-surface-card-dark px-6 py-10">
       <Ionicons name={icon} size={56} color="#2f8f74" />
-      <Text className="text-center text-xl font-semibold text-brand-900">{title}</Text>
-      {body ? <Text className="text-center text-base text-brand-700">{body}</Text> : null}
+      <Text className="text-center text-xl font-semibold text-brand-900 dark:text-ink-dark font-display">
+        {title}
+      </Text>
+      {body ? (
+        <Text className="text-center text-base text-brand-700 dark:text-ink-muted-dark font-body">{body}</Text>
+      ) : null}
       {ctaLabel && onCtaPress ? (
         <PrimaryButton {...(ctaTestID !== undefined ? { testID: ctaTestID } : {})} label={ctaLabel} onPress={onCtaPress} />
       ) : null}

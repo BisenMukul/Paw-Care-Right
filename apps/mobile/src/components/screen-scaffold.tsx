@@ -56,11 +56,13 @@ export function ScreenScaffold({
           <Text
             accessibilityRole="header"
             maxFontSizeMultiplier={1.5}
-            className="text-2xl font-bold text-brand-900"
+            className="text-2xl font-bold text-brand-900 dark:text-ink-dark font-display"
           >
             {title}
           </Text>
-          {subtitle ? <Text className="text-sm text-brand-700">{subtitle}</Text> : null}
+          {subtitle ? (
+            <Text className="text-sm text-brand-700 dark:text-ink-muted-dark font-body">{subtitle}</Text>
+          ) : null}
         </View>
       ) : null}
       {children}
@@ -69,7 +71,7 @@ export function ScreenScaffold({
 
   if (footer === undefined) {
     return (
-      <SafeAreaView edges={["top"]} className="flex-1 bg-brand-50">
+      <SafeAreaView edges={["top"]} className="flex-1 bg-brand-50 dark:bg-surface-page-dark">
         {gradient ? <AnimatedGradientBackground /> : null}
         {scroll}
       </SafeAreaView>
@@ -77,11 +79,14 @@ export function ScreenScaffold({
   }
 
   return (
-    <SafeAreaView edges={["top"]} className="flex-1 bg-brand-50">
+    <SafeAreaView edges={["top"]} className="flex-1 bg-brand-50 dark:bg-surface-page-dark">
       {gradient ? <AnimatedGradientBackground /> : null}
       <KeyboardAvoidingView className="flex-1" behavior={Platform.OS === "ios" ? "padding" : undefined}>
         {scroll}
-        <View testID="screen-scaffold-footer" className="border-t border-brand-100 bg-brand-50 px-4 pb-6 pt-3">
+        <View
+          testID="screen-scaffold-footer"
+          className="border-t border-brand-100 dark:border-hairline-dark bg-brand-50 dark:bg-surface-page-dark px-4 pb-6 pt-3"
+        >
           {footer}
         </View>
       </KeyboardAvoidingView>

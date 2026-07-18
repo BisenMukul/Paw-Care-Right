@@ -50,7 +50,7 @@ export function Skeleton({ lines = DEFAULT_LINES, testID, className }: SkeletonP
       {Array.from({ length: lines }, (_, index) => {
         const isLast = index === lines - 1;
         const boneClassName = [
-          "h-4 rounded-lg bg-brand-100",
+          "h-4 rounded-lg bg-brand-100 dark:bg-surface-raised-dark",
           isLast ? "w-2/3" : "w-full",
           index > 0 ? "mt-2" : "",
         ]

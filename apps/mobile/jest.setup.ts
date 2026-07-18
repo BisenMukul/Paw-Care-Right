@@ -261,4 +261,16 @@ jest.mock("expo-haptics", () => ({
   NotificationFeedbackType: { Success: "success", Warning: "warning", Error: "error" },
 }));
 
+// expo-font (PAWSAATHI-1 plan): the real native font loader never runs
+// under jest -- `useFonts` is deterministically "already loaded" by
+// default so every screen renders headless without gating on it. Tests
+// that specifically exercise the pending/failure states (`fonts-
+// nonblocking.test.tsx`) override this per-test with
+// `mockReturnValueOnce`/`mockReturnValue`.
+jest.mock("expo-font", () => ({
+  useFonts: jest.fn(() => [true, null]),
+  loadAsync: jest.fn(async () => undefined),
+  isLoaded: jest.fn(() => true),
+}));
+
 export {};

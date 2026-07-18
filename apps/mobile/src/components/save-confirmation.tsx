@@ -19,12 +19,14 @@ export function SaveConfirmation({ testID, message, nudge }: SaveConfirmationPro
     <View
       {...(testID !== undefined ? { testID } : {})}
       accessibilityRole="alert"
-      className="flex-row items-start gap-2 rounded-lg bg-brand-50 px-4 py-3"
+      className="flex-row items-start gap-2 rounded-lg bg-brand-50 dark:bg-surface-raised-dark px-4 py-3"
     >
       <Ionicons name="checkmark-circle" size={20} color="#2f8f74" />
       <View className="flex-1 gap-1">
-        <Text className="text-sm font-semibold text-brand-900">{message}</Text>
-        {nudge !== undefined ? <Text className="text-sm text-brand-700">{nudge}</Text> : null}
+        <Text className="text-sm font-semibold text-brand-900 dark:text-ink-dark font-body-semibold">{message}</Text>
+        {nudge !== undefined ? (
+          <Text className="text-sm text-brand-700 dark:text-ink-muted-dark font-body">{nudge}</Text>
+        ) : null}
       </View>
     </View>
   );

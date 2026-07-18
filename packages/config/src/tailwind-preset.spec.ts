@@ -37,3 +37,37 @@ describe("tailwind-preset brand scale (design-system.md §1.1)", () => {
     expect(contents).toMatch(/900:\s*"#123a30"/);
   });
 });
+
+describe("tailwind-preset dual-theme semantic tokens (design-system.md §1.1/§1.6, PAWSAATHI-1 plan)", () => {
+  const contents = fs.readFileSync(path.join(__dirname, "../tailwind-preset.mjs"), "utf-8");
+
+  const REQUIRED_SEMANTIC_TOKENS: Record<string, string> = {
+    '"page-dark":\\s*"#0c140f"': "#0c140f",
+    '"card-dark":\\s*"#16241F"': "#16241F",
+    '"raised-dark":\\s*"#143026"': "#143026",
+    'dark:\\s*"#E7E0D3"': "#E7E0D3",
+    '"muted-dark":\\s*"#9AA8A1"': "#9AA8A1",
+    '"faint-dark":\\s*"#6E827A"': "#6E827A",
+    'dark:\\s*"#1E6B54"': "#1E6B54",
+    'bright:\\s*"#2EA57C"': "#2EA57C",
+    'warm:\\s*"#FF7A59"': "#FF7A59",
+    'lilac:\\s*"#8B7BD8"': "#8B7BD8",
+    'amber:\\s*"#F6A623"': "#F6A623",
+    'sky:\\s*"#4C9BD6"': "#4C9BD6",
+    "hairline:[^}]*dark:\\s*\"#22392F\"": "#22392F",
+  };
+
+  for (const [pattern, hex] of Object.entries(REQUIRED_SEMANTIC_TOKENS)) {
+    it(`defines the semantic token matching ${pattern} as ${hex}`, () => {
+      expect(contents).toMatch(new RegExp(pattern));
+    });
+  }
+
+  it("defines the weight-keyed fontFamily tokens", () => {
+    expect(contents).toMatch(/display:\s*\["BricolageGrotesque_700Bold"\]/);
+    expect(contents).toMatch(/"display-semibold":\s*\["BricolageGrotesque_600SemiBold"\]/);
+    expect(contents).toMatch(/body:\s*\["PlusJakartaSans_400Regular"\]/);
+    expect(contents).toMatch(/"body-semibold":\s*\["PlusJakartaSans_600SemiBold"\]/);
+    expect(contents).toMatch(/"body-bold":\s*\["PlusJakartaSans_700Bold"\]/);
+  });
+});

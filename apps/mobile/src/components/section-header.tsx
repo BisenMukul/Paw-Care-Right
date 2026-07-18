@@ -18,7 +18,10 @@ const ACTION_HIT_SLOP = { top: 8, bottom: 8, left: 8, right: 8 };
 export function SectionHeader({ title, actionLabel, onAction, actionTestID }: SectionHeaderProps) {
   return (
     <View className="flex-row items-center justify-between">
-      <Text accessibilityRole="header" className="text-lg font-semibold text-brand-900">
+      <Text
+        accessibilityRole="header"
+        className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold"
+      >
         {title}
       </Text>
       {actionLabel && onAction ? (
@@ -28,7 +31,9 @@ export function SectionHeader({ title, actionLabel, onAction, actionTestID }: Se
           testID={actionTestID}
           onPress={onAction}
         >
-          <Text className="text-sm font-semibold text-brand-700">{actionLabel}</Text>
+          <Text className="text-sm font-semibold text-brand-700 dark:text-accent-bright font-body-semibold">
+            {actionLabel}
+          </Text>
         </Pressable>
       ) : null}
     </View>

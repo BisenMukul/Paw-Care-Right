@@ -28,7 +28,10 @@ export function GhostButton({ label, onPress, disabled = false, testID }: GhostB
       style={({ pressed }) => (pressed && !disabled ? { opacity: 0.7 } : null)}
       className="px-4 py-3"
     >
-      <Text maxFontSizeMultiplier={1.5} className="text-base font-semibold text-brand-700">
+      <Text
+        maxFontSizeMultiplier={1.5}
+        className="text-base font-semibold text-brand-700 dark:text-accent-bright font-body-semibold"
+      >
         {label}
       </Text>
     </Pressable>

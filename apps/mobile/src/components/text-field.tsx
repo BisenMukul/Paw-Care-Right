@@ -45,7 +45,7 @@ export const TextField = forwardRef<TextInput, TextFieldProps>(function TextFiel
 
   return (
     <View className="gap-1.5">
-      <Text nativeID={nativeID} className="text-sm font-semibold text-brand-900">
+      <Text nativeID={nativeID} className="text-sm font-semibold text-brand-900 dark:text-ink-dark font-body-semibold">
         {label}
       </Text>
       <TextInput
@@ -62,12 +62,12 @@ export const TextField = forwardRef<TextInput, TextFieldProps>(function TextFiel
         accessibilityLabelledBy={nativeID}
         className={
           hasError
-            ? "rounded-lg border border-red-600 bg-white px-4 py-3 text-base text-brand-900"
-            : "rounded-lg border border-brand-100 bg-white px-4 py-3 text-base text-brand-900"
+            ? "rounded-lg border border-red-600 bg-white dark:bg-surface-card-dark px-4 py-3 text-base text-brand-900 dark:text-ink-dark font-body"
+            : "rounded-lg border border-brand-100 dark:border-hairline-dark bg-white dark:bg-surface-card-dark px-4 py-3 text-base text-brand-900 dark:text-ink-dark font-body"
         }
       />
       {hasError ? (
-        <Text testID={errorTestID} accessibilityRole="alert" className="text-sm text-red-700">
+        <Text testID={errorTestID} accessibilityRole="alert" className="text-sm text-red-700 dark:text-red-400">
           {error}
         </Text>
       ) : null}

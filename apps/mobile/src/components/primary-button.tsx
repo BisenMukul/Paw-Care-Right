@@ -41,8 +41,8 @@ export function PrimaryButton({
       style={({ pressed }) => (pressed && !isDisabled ? { opacity: 0.85 } : null)}
       className={
         isDisabled
-          ? "flex-row items-center justify-center gap-2 rounded-lg bg-brand-300 px-6 py-3"
-          : "flex-row items-center justify-center gap-2 rounded-lg bg-brand-700 px-6 py-3"
+          ? "flex-row items-center justify-center gap-2 rounded-lg bg-brand-300 dark:bg-surface-raised-dark px-6 py-3"
+          : "flex-row items-center justify-center gap-2 rounded-lg bg-brand-700 dark:bg-accent-dark px-6 py-3"
       }
     >
       {loading ? (
@@ -50,7 +50,7 @@ export function PrimaryButton({
       ) : (
         <>
           {icon ? <Ionicons name={icon} size={18} color="#ffffff" /> : null}
-          <Text className="text-base font-semibold text-white">{label}</Text>
+          <Text className="text-base font-semibold text-white font-body-semibold">{label}</Text>
         </>
       )}
     </Pressable>

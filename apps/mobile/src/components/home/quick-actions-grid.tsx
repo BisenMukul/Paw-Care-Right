@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import type { ComponentProps } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, Text, useColorScheme, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
 import { useReducedMotion } from "../../hooks/use-reduced-motion";
@@ -41,6 +41,8 @@ export function QuickActionsGrid({
   onVetVisit,
 }: QuickActionsGridProps) {
   const reduced = useReducedMotion();
+  const scheme = useColorScheme();
+  const iconColor = scheme === "dark" ? "#2EA57C" : "#1f6350";
   const tiles: Tile[] = [
     {
       testID: "home-quick-action-check",
@@ -84,12 +86,14 @@ export function QuickActionsGrid({
             accessibilityState={{ disabled }}
             className={
               disabled
-                ? "items-center gap-2 rounded-2xl bg-brand-50 px-4 py-5 opacity-40"
-                : "items-center gap-2 rounded-2xl bg-brand-50 px-4 py-5"
+                ? "items-center gap-2 rounded-2xl bg-brand-50 dark:bg-surface-raised-dark px-4 py-5 opacity-40"
+                : "items-center gap-2 rounded-2xl bg-brand-50 dark:bg-surface-raised-dark px-4 py-5"
             }
           >
-            <Ionicons name={tile.icon} size={26} color="#1f6350" />
-            <Text className="text-center text-sm font-semibold text-brand-900">{tile.label}</Text>
+            <Ionicons name={tile.icon} size={26} color={iconColor} />
+            <Text className="text-center text-sm font-semibold text-brand-900 dark:text-ink-dark font-body-semibold">
+              {tile.label}
+            </Text>
           </Pressable>
         </Animated.View>
       ))}

@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, Text, useColorScheme, View } from "react-native";
 
 import { strings } from "../../strings";
 import { AppTitle } from "../app-title";
@@ -24,13 +24,14 @@ const GREETING_TEXT: Record<GreetingKey, string> = {
  */
 export function HomeHeader() {
   const router = useRouter();
+  const scheme = useColorScheme();
   const greetingKey = greetingKeyForHour(new Date().getHours());
 
   return (
     <View testID="home-header" className="flex-row items-center justify-between gap-3">
       <View className="gap-1">
         <AppTitle />
-        <Text testID="home-greeting" className="text-lg font-semibold text-brand-900">
+        <Text testID="home-greeting" className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display">
           {GREETING_TEXT[greetingKey]}
         </Text>
       </View>
@@ -39,9 +40,9 @@ export function HomeHeader() {
         onPress={() => router.push("/settings")}
         accessibilityRole="button"
         accessibilityLabel={strings.home.settingsA11y}
-        className="h-10 w-10 items-center justify-center rounded-full bg-brand-50"
+        className="h-10 w-10 items-center justify-center rounded-full bg-brand-50 dark:bg-surface-raised-dark"
       >
-        <Ionicons name="settings-outline" size={22} color="#1f6350" />
+        <Ionicons name="settings-outline" size={22} color={scheme === "dark" ? "#2EA57C" : "#1f6350"} />
       </Pressable>
     </View>
   );

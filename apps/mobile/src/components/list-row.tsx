@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import type { ComponentProps, ReactNode } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, Text, useColorScheme, View } from "react-native";
 
 type IconName = ComponentProps<typeof Ionicons>["name"];
 
@@ -36,21 +36,29 @@ export function ListRow({
   disabled = false,
   showChevron = true,
 }: ListRowProps) {
+  // R7: `Ionicons` takes a `color` prop, not a class -- it never responds to
+  // `dark:`. Compute it from the OS scheme so icons stay legible on the
+  // dark surfaces the rest of this row's classes now support.
+  const scheme = useColorScheme();
+  const iconColor = scheme === "dark" ? "#2EA57C" : "#1f6350";
+
   const leading = leadingIcon ? (
-    <View className="h-10 w-10 items-center justify-center rounded-full bg-brand-100">
-      <Ionicons name={leadingIcon} size={20} color="#1f6350" />
+    <View className="h-10 w-10 items-center justify-center rounded-full bg-brand-100 dark:bg-surface-raised-dark">
+      <Ionicons name={leadingIcon} size={20} color={iconColor} />
     </View>
   ) : null;
 
   const middle = (
     <View className="flex-1">
-      <Text className="text-base font-semibold text-brand-900">{title}</Text>
-      {subtitle ? <Text className="text-sm text-brand-700">{subtitle}</Text> : null}
+      <Text className="text-base font-semibold text-brand-900 dark:text-ink-dark font-body-semibold">{title}</Text>
+      {subtitle ? (
+        <Text className="text-sm text-brand-700 dark:text-ink-muted-dark font-body">{subtitle}</Text>
+      ) : null}
     </View>
   );
 
   const resolvedTrailing =
-    trailing ?? (showChevron ? <Ionicons name="chevron-forward-outline" size={20} color="#1f6350" /> : null);
+    trailing ?? (showChevron ? <Ionicons name="chevron-forward-outline" size={20} color={iconColor} /> : null);
 
   if (onPress) {
     return (

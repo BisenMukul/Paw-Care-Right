@@ -11,6 +11,9 @@ module.exports = {
   // NativeWind's own preset MUST come first (v4 metro withNativeWind requires it),
   // then the shared brand preset. Web (plain Tailwind) needs only the brand preset.
   presets: [require("nativewind/preset"), brandPreset.default ?? brandPreset],
+  // Explicit, system/Appearance-driven dark theme (PAWSAATHI-1 plan): NativeWind
+  // resolves `dark:` variants from the OS color scheme, no in-app toggle yet.
+  darkMode: "media",
   content: ["./app/**/*.{ts,tsx}", "./src/**/*.{ts,tsx}"],
   theme: {
     extend: {},

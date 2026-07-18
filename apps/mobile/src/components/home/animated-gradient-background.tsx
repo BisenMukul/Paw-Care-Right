@@ -1,7 +1,7 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { useEffect } from "react";
 
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, useColorScheme, View } from "react-native";
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -16,6 +16,16 @@ import { isNativeGradientAvailable } from "./native-gradient";
 // kept light so the dark `text-brand-900` copy drawn on top stays readable.
 const BASE_COLORS = ["#f2f8f6", "#ffffff", "#dcece6"] as const;
 const OVERLAY_COLORS = ["#fdf8ef", "#f2f8f6", "#eef7f1"] as const;
+
+// Dark-theme stops (PAWSAATHI-1 plan Decision 5 / Risk R5): the exact same
+// `surface.page-dark`/`surface.raised-dark`/`surface.card-dark` tokens the
+// canon components use, so `text-ink-dark` copy drawn directly over this
+// background (e.g. `HomeHeader`'s greeting) stays inside the already
+// AA-verified ink-dark-on-{page,card,raised}-dark pairs
+// (`dual-theme-contrast.test.ts`). `expo-linear-gradient` is linear-only,
+// so this is a top-down approximation of the mockup's dark radial glow.
+const DARK_BASE_COLORS = ["#0c140f", "#0b1712", "#143026"] as const;
+const DARK_OVERLAY_COLORS = ["#16241F", "#0c140f", "#143026"] as const;
 
 // One full crossfade cycle is 2x this (up, then back down) -- ~10s, well
 // within the founder's "slow, subtle, ~8-12s loop" ask.
@@ -35,6 +45,10 @@ export function AnimatedGradientBackground() {
   // automatically once the app runs in a build that includes the module.
   const nativeAvailable = isNativeGradientAvailable();
   const reduced = useReducedMotion();
+  const scheme = useColorScheme();
+  const isDark = scheme === "dark";
+  const baseColors = isDark ? DARK_BASE_COLORS : BASE_COLORS;
+  const overlayColors = isDark ? DARK_OVERLAY_COLORS : OVERLAY_COLORS;
   const overlayOpacity = useSharedValue(0);
 
   useEffect(() => {
@@ -57,7 +71,7 @@ export function AnimatedGradientBackground() {
       <View
         testID="home-gradient-fallback"
         pointerEvents="none"
-        style={[StyleSheet.absoluteFill, { backgroundColor: BASE_COLORS[0] }]}
+        style={[StyleSheet.absoluteFill, { backgroundColor: baseColors[0] }]}
       />
     );
   }
@@ -65,7 +79,7 @@ export function AnimatedGradientBackground() {
   return (
     <View testID="home-gradient-background" pointerEvents="none" style={StyleSheet.absoluteFill}>
       <LinearGradient
-        colors={BASE_COLORS}
+        colors={baseColors}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={StyleSheet.absoluteFill}
@@ -76,7 +90,7 @@ export function AnimatedGradientBackground() {
           style={[StyleSheet.absoluteFill, overlayStyle]}
         >
           <LinearGradient
-            colors={OVERLAY_COLORS}
+            colors={overlayColors}
             start={{ x: 1, y: 0 }}
             end={{ x: 0, y: 1 }}
             style={StyleSheet.absoluteFill}

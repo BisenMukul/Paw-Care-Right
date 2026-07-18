@@ -247,7 +247,7 @@ exports[`paywall screen — variant A renders and matches the snapshot 1`] = `
               testID="paywall-restore"
             >
               <Text
-                className="text-base font-semibold text-brand-700"
+                className="text-base font-semibold text-brand-700 dark:text-accent-bright font-body-semibold"
                 maxFontSizeMultiplier={1.5}
               >
                 Restore purchases
@@ -383,7 +383,7 @@ exports[`paywall screen — variant A renders and matches the snapshot 1`] = `
               testID="paywall-maybe-later"
             >
               <Text
-                className="text-base font-semibold text-brand-700"
+                className="text-base font-semibold text-brand-700 dark:text-accent-bright font-body-semibold"
                 maxFontSizeMultiplier={1.5}
               >
                 Maybe later
@@ -416,7 +416,7 @@ exports[`paywall screen — variant A renders and matches the snapshot 1`] = `
           }
         }
         accessible={true}
-        className="flex-row items-center justify-center gap-2 rounded-lg bg-brand-700 px-6 py-3"
+        className="flex-row items-center justify-center gap-2 rounded-lg bg-brand-700 dark:bg-accent-dark px-6 py-3"
         collapsable={false}
         focusable={true}
         onBlur={[Function]}
@@ -432,7 +432,7 @@ exports[`paywall screen — variant A renders and matches the snapshot 1`] = `
         testID="paywall-trial-cta"
       >
         <Text
-          className="text-base font-semibold text-white"
+          className="text-base font-semibold text-white font-body-semibold"
         >
           Start your 7-day free trial — then Free for 7 days
         </Text>
@@ -689,7 +689,7 @@ exports[`paywall screen — variant B renders and matches the snapshot 1`] = `
               testID="paywall-restore"
             >
               <Text
-                className="text-base font-semibold text-brand-700"
+                className="text-base font-semibold text-brand-700 dark:text-accent-bright font-body-semibold"
                 maxFontSizeMultiplier={1.5}
               >
                 Restore purchases
@@ -825,7 +825,7 @@ exports[`paywall screen — variant B renders and matches the snapshot 1`] = `
               testID="paywall-maybe-later"
             >
               <Text
-                className="text-base font-semibold text-brand-700"
+                className="text-base font-semibold text-brand-700 dark:text-accent-bright font-body-semibold"
                 maxFontSizeMultiplier={1.5}
               >
                 Maybe later
@@ -858,7 +858,7 @@ exports[`paywall screen — variant B renders and matches the snapshot 1`] = `
           }
         }
         accessible={true}
-        className="flex-row items-center justify-center gap-2 rounded-lg bg-brand-700 px-6 py-3"
+        className="flex-row items-center justify-center gap-2 rounded-lg bg-brand-700 dark:bg-accent-dark px-6 py-3"
         collapsable={false}
         focusable={true}
         onBlur={[Function]}
@@ -874,7 +874,7 @@ exports[`paywall screen — variant B renders and matches the snapshot 1`] = `
         testID="paywall-trial-cta"
       >
         <Text
-          className="text-base font-semibold text-white"
+          className="text-base font-semibold text-white font-body-semibold"
         >
           Start your 7-day free trial — then Free for 7 days
         </Text>

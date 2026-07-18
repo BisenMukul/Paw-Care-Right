@@ -59,7 +59,7 @@ exports[`pet home screen snapshots error 1`] = `
       }
     }
     accessible={true}
-    className="flex-row items-center justify-center gap-2 rounded-lg bg-brand-700 px-6 py-3"
+    className="flex-row items-center justify-center gap-2 rounded-lg bg-brand-700 dark:bg-accent-dark px-6 py-3"
     collapsable={false}
     focusable={true}
     onBlur={[Function]}
@@ -96,7 +96,7 @@ exports[`pet home screen snapshots error 1`] = `
       
     </Text>
     <Text
-      className="text-base font-semibold text-white"
+      className="text-base font-semibold text-white font-body-semibold"
     >
       Retry
     </Text>

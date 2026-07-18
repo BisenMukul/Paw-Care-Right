@@ -40,6 +40,30 @@ brand: {
 
 Rules: body/headings `text-brand-900`; secondary line `text-brand-700` (as `pet-hero-card.tsx` already does). Never place normal-size `brand-500` text on any background. Never use gray-on-gray (`text-gray-400` etc.) for information — muted copy is `text-brand-700`. Text over the animated gradient is safe because all gradient stops (`#f2f8f6/#ffffff/#dcece6/#fdf8ef`) are ≥ brand-50 lightness — the table's brand-50/100 columns are the worst case, both pass. Tinted/gradient backgrounds must never get lighter text than these pairs; if a future darker gradient is proposed, re-run the contrast math first.
 
+#### 1.1a Dark-mode semantic tokens (PAWSAATHI-1 plan)
+
+`packages/config/tailwind-preset.mjs` additionally defines a **dark** semantic palette, wired via NativeWind `darkMode: "media"` (system/Appearance-driven; no in-app toggle yet). These are additive: every existing light class stays exactly as documented above, and every canon component appends the matching `dark:` class from this table — never a new bespoke dark color.
+
+```js
+surface: { "page-dark": "#0c140f", "card-dark": "#16241F", "raised-dark": "#143026" },
+ink:     { dark: "#E7E0D3", "muted-dark": "#9AA8A1", "faint-dark": "#6E827A" },
+accent:  { DEFAULT: "#1f6350", dark: "#1E6B54", bright: "#2EA57C", warm: "#FF7A59" },
+category:{ lilac: "#8B7BD8", amber: "#F6A623", sky: "#4C9BD6" },
+hairline:{ dark: "#22392F" },
+```
+
+**Dark-mode contrast pairings** (same WCAG relative-luminance formula, same 4.5:1 normal-text / 3:1 large-text-or-UI floors; verified by `apps/mobile/__tests__/dual-theme-contrast.test.ts`):
+
+| Pair | Ratio | Verdict |
+|---|---|---|
+| `text-ink-dark` on `bg-surface-page-dark` / `-card-dark` / `-raised-dark` | 14.25 / 12.25 / 10.81 | AAA — default dark body+heading text everywhere |
+| `text-ink-muted-dark` on `-card-dark` / `-page-dark` | 6.50 / 7.56 | AA — dark secondary/meta text |
+| white on `bg-accent-dark` | 6.39 | AA — the dark-mode primary-button fill |
+| `text-accent-bright` label/border on `-card-dark` | 5.20 | AA (also clears the 3:1 UI floor) — links, secondary-button label/border |
+| `text-red-700` (light-mode error text) on any dark surface | **~2.2–2.9** | **FAILS AA in dark mode.** `text-field.tsx`'s error text is `text-red-700 dark:text-red-400` — `text-red-400` (#f87171) measures 5.13–6.76 against page-dark/card-dark/raised-dark, so it's the dark-mode error color; light mode keeps `text-red-700` byte-identical |
+
+Rules: dark surfaces are `surface.page-dark` (page bg) → `surface.card-dark` (cards) → `surface.raised-dark` (tiles/pressed/skeleton bones) — same visual hierarchy as light `brand-50 → white → brand-100`. `accent.dark`/`accent.bright` replace `brand-700` as the dark-mode action fill/label pair. `category.*` (lilac/amber/sky) are reserved decorative/large-only accents (mirrors the brand-500 rule) — not yet wired to any component this batch. Any NEW dark pairing gets its own math in `dual-theme-contrast.test.ts` before use, same as light-mode §1.1.
+
 ### 1.2 Spacing scale (Tailwind units, 4pt grid)
 
 Only these: `gap-1` (4) fine, `gap-2` (8) intra-component, `gap-3` (12) between grid tiles/chips, `gap-4` (16) between cards & card padding, `gap-6` (24) between sections, `px-4` screen gutter (16), `py-5`/`py-6` hero paddings. Screen root is always `px-4` (existing screens use `px-6` for centered states — that stays for full-screen status states only).
@@ -65,6 +89,22 @@ Only these: `gap-1` (4) fine, `gap-2` (8) intra-component, `gap-3` (12) between 
 
 Max two weights per surface (regular + semibold/bold). Emphasis = weight or brand-700 color, never a third size.
 
+#### 1.4a Font-family tokens (PAWSAATHI-1 plan)
+
+`packages/config/tailwind-preset.mjs` also defines weight-keyed `fontFamily` tokens, backing the Bricolage Grotesque (display) / Plus Jakarta Sans (body) faces loaded non-blocking by `apps/mobile/src/fonts/use-app-fonts.ts` (`@expo-google-fonts/bricolage-grotesque` + `@expo-google-fonts/plus-jakarta-sans`, via `expo-font`'s `useFonts`):
+
+```js
+fontFamily: {
+  display: ["BricolageGrotesque_700Bold"],
+  "display-semibold": ["BricolageGrotesque_600SemiBold"],
+  body: ["PlusJakartaSans_400Regular"],
+  "body-semibold": ["PlusJakartaSans_600SemiBold"],
+  "body-bold": ["PlusJakartaSans_700Bold"],
+}
+```
+
+Why weight-keyed rather than a single `font-display`/`font-body` pair: RN pins the weight of a NAMED static font family — once a `className` names `fontFamily: BricolageGrotesque_700Bold`, the sibling `font-bold`/`font-semibold` Tailwind classes are ignored on native (they only affect the *default* system font). So each existing text weight gets its own token: `font-display` (Bricolage Bold) for greetings/screen titles/hero names, `font-display-semibold` (Bricolage SemiBold) for section headers, `font-body` (Jakarta Regular) for body/secondary copy, `font-body-semibold`/`font-body-bold` (Jakarta SemiBold/Bold) for labels, buttons, and card titles. Apply the token whose weight matches the Text's EXISTING `font-bold`/`font-semibold` class — never swap a component's visual weight as part of this token adoption. Font loading is non-blocking and best-effort: while pending or on failure, text falls back to the OS system font at the same size/weight class (never a blocked or blank screen) — see `use-app-fonts.ts` and `fonts-nonblocking.test.tsx`.
+
 ### 1.5 Elevation (always both platforms together)
 
 - **e0** flat tinted: `bg-brand-50` (quick-action tiles).
@@ -74,7 +114,13 @@ Max two weights per surface (regular + semibold/bold). Emphasis = weight or bran
 
 ### 1.6 Dark mode
 
-Deferred (not in current task cards) but do not block it: never hardcode `#ffffff`/`#123a30` in new style objects when a class exists; keep all colors as brand classes so a future `dark:` sweep is mechanical. 2026 consumer baseline expects dark mode eventually — write no code that fights it.
+**Real as of PAWSAATHI-1**: `apps/mobile/tailwind.config.js` sets `darkMode: "media"` — NativeWind resolves every `dark:` class from the OS Appearance/color-scheme setting; there is no in-app theme toggle yet (a future settings switch would need `darkMode: "class"` + a stored preference, deferred). The strategy is **additive-only**: every canon component keeps its existing light-mode class verbatim and appends the matching `dark:` class from §1.1a's semantic table — light-mode rendering is byte-identical to before this batch (no existing light-mode snapshot pixel/class changes).
+
+Rules:
+- Only use tokens from §1.1a (`surface.*-dark`, `ink.*`, `accent.dark`/`accent.bright`, `hairline.dark`) — never a bespoke dark hex. New pairing → new math in `dual-theme-contrast.test.ts` first (mirrors the light-mode §1.1 rule).
+- `Ionicons`/other native-icon `color` props do NOT respond to `dark:` classes (they're not CSS) — compute the color from `useColorScheme()` at the call site (light `#1f6350` → dark `#2EA57C`, or `#ffffff` where the light icon was already white-on-fill). Every icon-bearing canon/home component in this batch does this.
+- The home-tab `AnimatedGradientBackground` swaps its entire `colors` array (not just a shade) via `useColorScheme()` — `expo-linear-gradient` is linear-only, so the dark stops are a top-down approximation of a dark radial glow, built from the same `surface.*-dark` tokens so any text drawn directly over it (e.g. `HomeHeader`'s greeting) stays inside the AA-verified ink-dark pairs. This is the one place a scheme flip changes an actual RUNTIME value rather than a static class string (see `home-gradient-scheme.test.tsx`) — under this workspace's jest+NativeWind setup, `className` is a literal, un-resolved prop, so `dark:` class presence is verified by content (`dual-theme-tokens.test.tsx`), not runtime color diffing.
+- Never hardcode `#ffffff`/`#123a30` (or any raw hex) in a new style object when a class exists; keep colors as brand/semantic classes so future dark-mode/theming work stays mechanical.
 
 ---
 
