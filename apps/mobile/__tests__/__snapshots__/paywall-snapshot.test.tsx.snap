@@ -2,7 +2,7 @@
 
 exports[`paywall screen — variant A renders and matches the snapshot 1`] = `
 <RNCSafeAreaView
-  className="flex-1 bg-brand-50"
+  className="flex-1 bg-brand-50 dark:bg-surface-page-dark"
   edges={
     {
       "bottom": "additive",
@@ -25,13 +25,13 @@ exports[`paywall screen — variant A renders and matches the snapshot 1`] = `
           className="gap-6 px-4 pb-8 pt-4"
         >
           <Text
-            className="text-3xl font-bold text-brand-900"
+            className="text-3xl font-bold text-brand-900 dark:text-ink-dark font-display"
             testID="paywall-headline"
           >
             Get more from Paw Care Right +
           </Text>
           <Text
-            className="text-base text-brand-700"
+            className="text-base text-brand-700 dark:text-ink-muted-dark font-body"
             testID="paywall-subcopy"
           >
             Unlock unlimited symptom checks, faster answers, and sharing across your whole family.
@@ -59,7 +59,7 @@ exports[`paywall screen — variant A renders and matches the snapshot 1`] = `
                 }
               }
               accessible={true}
-              className="gap-1 rounded-2xl border-2 border-brand-700 bg-white p-4 shadow-md"
+              className="gap-1 rounded-2xl border-2 border-brand-700 dark:border-accent-bright bg-white dark:bg-surface-card-dark p-4 shadow-md"
               collapsable={false}
               focusable={true}
               onBlur={[Function]}
@@ -74,7 +74,7 @@ exports[`paywall screen — variant A renders and matches the snapshot 1`] = `
               testID="paywall-plan-annual"
             >
               <View
-                className="self-start rounded-full bg-brand-700 px-2 py-1"
+                className="self-start rounded-full bg-brand-700 dark:bg-accent-dark px-2 py-1"
                 testID="paywall-plan-annual-highlight"
               >
                 <Text
@@ -84,12 +84,12 @@ exports[`paywall screen — variant A renders and matches the snapshot 1`] = `
                 </Text>
               </View>
               <Text
-                className="text-base font-semibold text-brand-900"
+                className="text-base font-semibold text-brand-900 dark:text-ink-dark font-body-semibold"
               >
                 Annual
               </Text>
               <Text
-                className="text-base text-brand-700"
+                className="text-base text-brand-700 dark:text-ink-muted-dark font-body"
                 testID="paywall-price-annual"
               >
                 $39.99/yr
@@ -115,7 +115,7 @@ exports[`paywall screen — variant A renders and matches the snapshot 1`] = `
                 }
               }
               accessible={true}
-              className="gap-1 rounded-2xl bg-white p-4 shadow-md"
+              className="gap-1 rounded-2xl bg-white dark:bg-surface-card-dark p-4 shadow-md"
               collapsable={false}
               focusable={true}
               onBlur={[Function]}
@@ -130,18 +130,18 @@ exports[`paywall screen — variant A renders and matches the snapshot 1`] = `
               testID="paywall-plan-monthly"
             >
               <Text
-                className="text-base font-semibold text-brand-900"
+                className="text-base font-semibold text-brand-900 dark:text-ink-dark font-body-semibold"
               >
                 Monthly
               </Text>
               <Text
-                className="text-base text-brand-700"
+                className="text-base text-brand-700 dark:text-ink-muted-dark font-body"
                 testID="paywall-price-monthly"
               >
                 $4.99/mo
               </Text>
               <Text
-                className="text-xs text-brand-700"
+                className="text-xs text-brand-700 dark:text-ink-muted-dark font-body"
                 testID="paywall-trial-badge"
               >
                 7-day free trial
@@ -167,7 +167,7 @@ exports[`paywall screen — variant A renders and matches the snapshot 1`] = `
                 }
               }
               accessible={true}
-              className="gap-1 rounded-2xl bg-white p-4 shadow-md"
+              className="gap-1 rounded-2xl bg-white dark:bg-surface-card-dark p-4 shadow-md"
               collapsable={false}
               focusable={true}
               onBlur={[Function]}
@@ -182,18 +182,18 @@ exports[`paywall screen — variant A renders and matches the snapshot 1`] = `
               testID="paywall-plan-family"
             >
               <Text
-                className="text-base font-semibold text-brand-900"
+                className="text-base font-semibold text-brand-900 dark:text-ink-dark font-body-semibold"
               >
                 Family
               </Text>
               <Text
-                className="text-base text-brand-700"
+                className="text-base text-brand-700 dark:text-ink-muted-dark font-body"
                 testID="paywall-price-family"
               >
                 $59.99/yr
               </Text>
               <Text
-                className="text-sm text-brand-700"
+                className="text-sm text-brand-700 dark:text-ink-muted-dark font-body"
                 testID="paywall-family-explainer"
               >
                 Share one subscription across everyone who cares for your pets.
@@ -291,7 +291,7 @@ exports[`paywall screen — variant A renders and matches the snapshot 1`] = `
               testID="paywall-terms"
             >
               <Text
-                className="text-xs text-brand-700 underline"
+                className="text-xs text-brand-700 dark:text-accent-bright underline"
               >
                 Terms of Service
               </Text>
@@ -330,7 +330,7 @@ exports[`paywall screen — variant A renders and matches the snapshot 1`] = `
               testID="paywall-privacy"
             >
               <Text
-                className="text-xs text-brand-700 underline"
+                className="text-xs text-brand-700 dark:text-accent-bright underline"
               >
                 Privacy Policy
               </Text>
@@ -394,7 +394,7 @@ exports[`paywall screen — variant A renders and matches the snapshot 1`] = `
       </View>
     </RCTScrollView>
     <View
-      className="border-t border-brand-100 bg-brand-50 px-4 pb-6 pt-3"
+      className="border-t border-brand-100 dark:border-hairline-dark bg-brand-50 dark:bg-surface-page-dark px-4 pb-6 pt-3"
     >
       <View
         accessibilityRole="button"
@@ -444,7 +444,7 @@ exports[`paywall screen — variant A renders and matches the snapshot 1`] = `
 
 exports[`paywall screen — variant B renders and matches the snapshot 1`] = `
 <RNCSafeAreaView
-  className="flex-1 bg-brand-50"
+  className="flex-1 bg-brand-50 dark:bg-surface-page-dark"
   edges={
     {
       "bottom": "additive",
@@ -467,13 +467,13 @@ exports[`paywall screen — variant B renders and matches the snapshot 1`] = `
           className="gap-6 px-4 pb-8 pt-4"
         >
           <Text
-            className="text-3xl font-bold text-brand-900"
+            className="text-3xl font-bold text-brand-900 dark:text-ink-dark font-display"
             testID="paywall-headline"
           >
             Paw Care Right + Plus
           </Text>
           <Text
-            className="text-base text-brand-700"
+            className="text-base text-brand-700 dark:text-ink-muted-dark font-body"
             testID="paywall-subcopy"
           >
             Go further with unlimited symptom checks, priority guidance, and a plan the whole family can share.
@@ -501,7 +501,7 @@ exports[`paywall screen — variant B renders and matches the snapshot 1`] = `
                 }
               }
               accessible={true}
-              className="gap-1 rounded-2xl border-2 border-brand-700 bg-white p-4 shadow-md"
+              className="gap-1 rounded-2xl border-2 border-brand-700 dark:border-accent-bright bg-white dark:bg-surface-card-dark p-4 shadow-md"
               collapsable={false}
               focusable={true}
               onBlur={[Function]}
@@ -516,7 +516,7 @@ exports[`paywall screen — variant B renders and matches the snapshot 1`] = `
               testID="paywall-plan-annual"
             >
               <View
-                className="self-start rounded-full bg-brand-700 px-2 py-1"
+                className="self-start rounded-full bg-brand-700 dark:bg-accent-dark px-2 py-1"
                 testID="paywall-plan-annual-highlight"
               >
                 <Text
@@ -526,12 +526,12 @@ exports[`paywall screen — variant B renders and matches the snapshot 1`] = `
                 </Text>
               </View>
               <Text
-                className="text-base font-semibold text-brand-900"
+                className="text-base font-semibold text-brand-900 dark:text-ink-dark font-body-semibold"
               >
                 Annual
               </Text>
               <Text
-                className="text-base text-brand-700"
+                className="text-base text-brand-700 dark:text-ink-muted-dark font-body"
                 testID="paywall-price-annual"
               >
                 $39.99/yr
@@ -557,7 +557,7 @@ exports[`paywall screen — variant B renders and matches the snapshot 1`] = `
                 }
               }
               accessible={true}
-              className="gap-1 rounded-2xl bg-white p-4 shadow-md"
+              className="gap-1 rounded-2xl bg-white dark:bg-surface-card-dark p-4 shadow-md"
               collapsable={false}
               focusable={true}
               onBlur={[Function]}
@@ -572,18 +572,18 @@ exports[`paywall screen — variant B renders and matches the snapshot 1`] = `
               testID="paywall-plan-monthly"
             >
               <Text
-                className="text-base font-semibold text-brand-900"
+                className="text-base font-semibold text-brand-900 dark:text-ink-dark font-body-semibold"
               >
                 Monthly
               </Text>
               <Text
-                className="text-base text-brand-700"
+                className="text-base text-brand-700 dark:text-ink-muted-dark font-body"
                 testID="paywall-price-monthly"
               >
                 $4.99/mo
               </Text>
               <Text
-                className="text-xs text-brand-700"
+                className="text-xs text-brand-700 dark:text-ink-muted-dark font-body"
                 testID="paywall-trial-badge"
               >
                 7-day free trial
@@ -609,7 +609,7 @@ exports[`paywall screen — variant B renders and matches the snapshot 1`] = `
                 }
               }
               accessible={true}
-              className="gap-1 rounded-2xl bg-white p-4 shadow-md"
+              className="gap-1 rounded-2xl bg-white dark:bg-surface-card-dark p-4 shadow-md"
               collapsable={false}
               focusable={true}
               onBlur={[Function]}
@@ -624,18 +624,18 @@ exports[`paywall screen — variant B renders and matches the snapshot 1`] = `
               testID="paywall-plan-family"
             >
               <Text
-                className="text-base font-semibold text-brand-900"
+                className="text-base font-semibold text-brand-900 dark:text-ink-dark font-body-semibold"
               >
                 Family
               </Text>
               <Text
-                className="text-base text-brand-700"
+                className="text-base text-brand-700 dark:text-ink-muted-dark font-body"
                 testID="paywall-price-family"
               >
                 $59.99/yr
               </Text>
               <Text
-                className="text-sm text-brand-700"
+                className="text-sm text-brand-700 dark:text-ink-muted-dark font-body"
                 testID="paywall-family-explainer"
               >
                 Share one subscription across everyone who cares for your pets.
@@ -733,7 +733,7 @@ exports[`paywall screen — variant B renders and matches the snapshot 1`] = `
               testID="paywall-terms"
             >
               <Text
-                className="text-xs text-brand-700 underline"
+                className="text-xs text-brand-700 dark:text-accent-bright underline"
               >
                 Terms of Service
               </Text>
@@ -772,7 +772,7 @@ exports[`paywall screen — variant B renders and matches the snapshot 1`] = `
               testID="paywall-privacy"
             >
               <Text
-                className="text-xs text-brand-700 underline"
+                className="text-xs text-brand-700 dark:text-accent-bright underline"
               >
                 Privacy Policy
               </Text>
@@ -836,7 +836,7 @@ exports[`paywall screen — variant B renders and matches the snapshot 1`] = `
       </View>
     </RCTScrollView>
     <View
-      className="border-t border-brand-100 bg-brand-50 px-4 pb-6 pt-3"
+      className="border-t border-brand-100 dark:border-hairline-dark bg-brand-50 dark:bg-surface-page-dark px-4 pb-6 pt-3"
     >
       <View
         accessibilityRole="button"

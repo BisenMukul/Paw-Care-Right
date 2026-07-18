@@ -13,12 +13,16 @@ export default function ComingSoonScreen() {
   return (
     <SafeAreaView
       testID="coming-soon-screen"
-      className="flex-1 items-center justify-center gap-3 bg-brand-50 px-6"
+      className="flex-1 items-center justify-center gap-3 bg-brand-50 dark:bg-surface-page-dark px-6"
     >
-      <Text accessibilityRole="header" maxFontSizeMultiplier={1.5} className="text-xl font-semibold text-brand-900">
+      <Text
+        accessibilityRole="header"
+        maxFontSizeMultiplier={1.5}
+        className="text-xl font-semibold text-brand-900 dark:text-ink-dark font-display-semibold"
+      >
         {strings.comingSoon.title}
       </Text>
-      <Text className="text-center text-base text-brand-900">{strings.comingSoon.body}</Text>
+      <Text className="text-center text-base text-brand-900 dark:text-ink-dark font-body">{strings.comingSoon.body}</Text>
     </SafeAreaView>
   );
 }

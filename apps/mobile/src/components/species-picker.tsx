@@ -10,8 +10,8 @@ export interface SpeciesPickerProps {
 
 function cardClassName(selected: boolean): string {
   return selected
-    ? "flex-1 items-center rounded-lg border-2 border-brand-700 bg-brand-100 px-6 py-8"
-    : "flex-1 items-center rounded-lg border border-brand-200 px-6 py-8";
+    ? "flex-1 items-center rounded-lg border-2 border-brand-700 dark:border-accent-bright bg-brand-100 dark:bg-surface-raised-dark px-6 py-8"
+    : "flex-1 items-center rounded-lg border border-brand-200 dark:border-hairline-dark dark:bg-surface-card-dark px-6 py-8";
 }
 
 /** Two selectable DOG/CAT cards for the add-pet wizard's species step. */
@@ -25,7 +25,7 @@ export function SpeciesPicker({ value, onChange }: SpeciesPickerProps) {
         onPress={() => onChange("DOG")}
         className={cardClassName(value === "DOG")}
       >
-        <Text className="text-base font-semibold text-brand-900">
+        <Text className="text-base font-semibold text-brand-900 dark:text-ink-dark font-body-semibold">
           {strings.addPet.species.dog}
         </Text>
       </Pressable>
@@ -36,7 +36,7 @@ export function SpeciesPicker({ value, onChange }: SpeciesPickerProps) {
         onPress={() => onChange("CAT")}
         className={cardClassName(value === "CAT")}
       >
-        <Text className="text-base font-semibold text-brand-900">
+        <Text className="text-base font-semibold text-brand-900 dark:text-ink-dark font-body-semibold">
           {strings.addPet.species.cat}
         </Text>
       </Pressable>

@@ -12,9 +12,9 @@ function PetAvatar({ pet, testID }: { pet: Pet; testID: string }) {
   return (
     <View
       testID={testID}
-      className="h-10 w-10 items-center justify-center rounded-full bg-brand-100"
+      className="h-10 w-10 items-center justify-center rounded-full bg-brand-100 dark:bg-surface-raised-dark"
     >
-      <Text className="text-base font-semibold text-brand-900">
+      <Text className="text-base font-semibold text-brand-900 dark:text-ink-dark font-body-semibold">
         {pet.name.charAt(0).toUpperCase()}
       </Text>
     </View>
@@ -61,7 +61,7 @@ export function PetSwitcher() {
     return (
       <View testID="pet-switcher" className="flex-row items-center gap-3 py-2">
         <PetAvatar pet={onlyPet} testID={`pet-switcher-avatar-${onlyPet.id}`} />
-        <Text testID="pet-switcher-active-name" className="text-lg font-semibold text-brand-900">
+        <Text testID="pet-switcher-active-name" className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold">
           {onlyPet.name}
         </Text>
       </View>
@@ -77,10 +77,10 @@ export function PetSwitcher() {
         accessibilityLabel={strings.switcher.switchA11y}
         className="flex-row items-center gap-2"
       >
-        <Text testID="pet-switcher-active-name" className="text-lg font-semibold text-brand-900">
+        <Text testID="pet-switcher-active-name" className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold">
           {pet?.name ?? ""}
         </Text>
-        <Text className="text-base text-brand-900">{"▾"}</Text>
+        <Text className="text-base text-brand-900 dark:text-ink-dark font-body">{"▾"}</Text>
       </Pressable>
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -103,8 +103,8 @@ export function PetSwitcher() {
           className="flex-1 justify-center bg-black/40 px-6"
           onPress={() => setDropdownOpen(false)}
         >
-          <View className="gap-2 rounded-lg bg-white p-4">
-            <Text className="text-base font-semibold text-brand-900">
+          <View className="gap-2 rounded-lg bg-white dark:bg-surface-card-dark p-4">
+            <Text className="text-base font-semibold text-brand-900 dark:text-ink-dark font-body-semibold">
               {strings.switcher.heading}
             </Text>
             {pets.map((p) => (
@@ -118,7 +118,7 @@ export function PetSwitcher() {
                 className="flex-row items-center gap-3 py-2"
               >
                 <PetAvatar pet={p} testID={`pet-switcher-dropdown-avatar-${p.id}`} />
-                <Text className="text-base text-brand-900">{p.name}</Text>
+                <Text className="text-base text-brand-900 dark:text-ink-dark font-body">{p.name}</Text>
               </Pressable>
             ))}
           </View>

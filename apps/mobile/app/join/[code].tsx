@@ -42,18 +42,18 @@ export default function JoinScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 items-center justify-center gap-6 bg-brand-50 px-6">
+    <SafeAreaView className="flex-1 items-center justify-center gap-6 bg-brand-50 dark:bg-surface-page-dark px-6">
       <Text
         testID="join-title"
         accessibilityRole="header"
         maxFontSizeMultiplier={1.5}
-        className="text-center text-2xl font-bold text-brand-900"
+        className="text-center text-2xl font-bold text-brand-900 dark:text-ink-dark font-display"
       >
         {strings.join.title}
       </Text>
-      <Text className="text-center text-base text-brand-900">{strings.join.body}</Text>
+      <Text className="text-center text-base text-brand-900 dark:text-ink-dark font-body">{strings.join.body}</Text>
       {errorMessage !== null ? (
-        <Text testID="join-error" accessibilityRole="alert" className="text-center text-sm text-red-700">
+        <Text testID="join-error" accessibilityRole="alert" className="text-center text-sm text-red-700 dark:text-red-400">
           {errorMessage}
         </Text>
       ) : null}

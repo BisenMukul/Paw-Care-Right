@@ -99,7 +99,7 @@ export function SocialAuthButtons() {
         <Text
           testID="social-auth-error"
           accessibilityRole="alert"
-          className="text-center text-sm text-red-700"
+          className="text-center text-sm text-red-700 dark:text-red-400"
         >
           {error}
         </Text>

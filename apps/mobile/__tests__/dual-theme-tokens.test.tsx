@@ -6,6 +6,7 @@ import { Text } from "react-native";
 
 import type { TimelineItem } from "../src/api/health-logs-api";
 import { AgendaItem } from "../src/components/agenda-item";
+import { AddNoteForm } from "../src/components/add-note-form";
 import { AppTitle } from "../src/components/app-title";
 import { Card } from "../src/components/card";
 import { CategoryGrid } from "../src/components/category-grid";
@@ -21,14 +22,23 @@ import { PetHeroCard } from "../src/components/home/pet-hero-card";
 import { QuickActionsGrid } from "../src/components/home/quick-actions-grid";
 import { TodayPreviewCard } from "../src/components/home/today-preview-card";
 import { ListRow } from "../src/components/list-row";
+import { OtpInput } from "../src/components/otp-input";
+import { PetHeaderCard } from "../src/components/pet-header-card";
+import { PetSwitcher } from "../src/components/pet-switcher";
 import { PrimaryButton } from "../src/components/primary-button";
+import { QuickActions } from "../src/components/quick-actions";
 import { SaveConfirmation } from "../src/components/save-confirmation";
 import { ScreenScaffold } from "../src/components/screen-scaffold";
 import { SecondaryButton } from "../src/components/secondary-button";
 import { SectionHeader } from "../src/components/section-header";
 import { Skeleton } from "../src/components/skeleton";
+import { SpeciesPicker } from "../src/components/species-picker";
 import { TextField } from "../src/components/text-field";
 import { TimelineRow } from "../src/components/timeline-row";
+import { UpsellSheet } from "../src/components/upsell-sheet";
+import { WizardScaffold } from "../src/components/wizard-scaffold";
+import { useUpsellStore } from "../src/billing/upsell-store";
+import { usePet, usePets } from "../src/api/pets-api";
 import { strings } from "../src/strings";
 
 /**
@@ -50,6 +60,20 @@ const mockUseAgenda = jest.fn();
 jest.mock("../src/api/agenda-api", () => ({
   useAgenda: (...args: unknown[]) => mockUseAgenda(...args),
 }));
+
+jest.mock("../src/api/pets-api", () => ({
+  usePets: jest.fn(),
+  usePet: jest.fn(),
+}));
+
+const mockedUsePetsForSwitcher = usePets as unknown as jest.Mock;
+const mockedUsePetForSwitcher = usePet as unknown as jest.Mock;
+
+jest.mock("../src/billing/upsell-store", () => ({
+  useUpsellStore: jest.fn(),
+}));
+
+const mockedUseUpsellStore = useUpsellStore as unknown as jest.Mock;
 
 const FIXTURE_PET: Pet = {
   id: petIdSchema.parse("11111111-1111-4111-8111-111111111111"),
@@ -352,6 +376,85 @@ describe("dual-theme-tokens: PAWSAATHI-3 SYMPTOM-CHECK flow", () => {
 
     const tile = screen.getByTestId("check-category-vomiting");
     expect(tile.props.className).toContain("dark:bg-surface-card-dark");
+  });
+});
+
+describe("dual-theme-tokens: PAWSAATHI-4 remaining screens/components", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("PetHeaderCard: card + name + chips carry dark variants", async () => {
+    await render(<PetHeaderCard pet={FIXTURE_PET} />);
+
+    expect(screen.getByTestId("pet-home-header-card").props.className).toContain("dark:bg-surface-card-dark");
+    expect(screen.getByTestId("pet-home-name").props.className).toContain("dark:text-ink-dark");
+    expect(screen.getByTestId("pet-home-species").props.className).toContain("dark:bg-surface-raised-dark");
+  });
+
+  it("QuickActions: tile + label carry dark variants", async () => {
+    await render(
+      <QuickActions onLogWeight={jest.fn()} onReminders={jest.fn()} onLogActivity={jest.fn()} onLogVetVisit={jest.fn()} />,
+    );
+
+    const tile = screen.getByTestId("quick-action-log-weight");
+    expect(tile.props.className).toContain("dark:bg-surface-card-dark");
+    expect(screen.getByText(strings.petHome.logWeight).props.className).toContain("dark:text-ink-dark");
+  });
+
+  it("PetSwitcher: single-pet active name carries dark variants", async () => {
+    mockedUsePetsForSwitcher.mockReturnValue({ data: [FIXTURE_PET], isLoading: false, isError: false });
+    mockedUsePetForSwitcher.mockReturnValue({ data: FIXTURE_PET, isLoading: false, isError: false });
+
+    await render(<PetSwitcher />);
+
+    expect(screen.getByTestId("pet-switcher-active-name").props.className).toContain("dark:text-ink-dark");
+  });
+
+  it("WizardScaffold: progress text carries dark variants", async () => {
+    await render(
+      <WizardScaffold step={1} total={5}>
+        <Text>content</Text>
+      </WizardScaffold>,
+    );
+
+    expect(screen.getByTestId("wizard-progress").props.className).toContain("dark:text-ink-muted-dark");
+  });
+
+  it("SpeciesPicker: selected + unselected cards carry dark variants", async () => {
+    await render(<SpeciesPicker value="DOG" onChange={jest.fn()} />);
+
+    expect(screen.getByTestId("species-card-dog").props.className).toContain("dark:border-accent-bright");
+    expect(screen.getByTestId("species-card-cat").props.className).toContain("dark:border-hairline-dark");
+  });
+
+  it("OtpInput: normal + error cells carry dark variants", async () => {
+    const { rerender } = await render(
+      <OtpInput testID="otp" value="" onChangeText={jest.fn()} onComplete={jest.fn()} />,
+    );
+    expect(screen.getByTestId("otp-cell-0").props.className).toContain("dark:text-ink-dark");
+
+    await rerender(<OtpInput testID="otp" value="" onChangeText={jest.fn()} onComplete={jest.fn()} hasError />);
+    expect(screen.getByTestId("otp-cell-0").props.className).toContain("dark:text-red-400");
+  });
+
+  it("UpsellSheet: sheet + title + body carry dark variants", async () => {
+    mockedUseUpsellStore.mockImplementation(
+      (selector: (state: { visible: boolean; hide: () => void }) => unknown) =>
+        selector({ visible: true, hide: jest.fn() }),
+    );
+
+    await render(<UpsellSheet />);
+
+    expect(screen.getByTestId("upsell-sheet").props.className).toContain("dark:bg-surface-card-dark");
+    expect(screen.getByText(strings.upsell.title).props.className).toContain("dark:text-ink-dark");
+    expect(screen.getByText(strings.upsell.body).props.className).toContain("dark:text-ink-muted-dark");
+  });
+
+  it("AddNoteForm: input carries dark variants", async () => {
+    await render(<AddNoteForm petId="pet-1" submitting={false} onSubmit={jest.fn()} />);
+
+    expect(screen.getByTestId("add-note-input").props.className).toContain("dark:bg-surface-card-dark");
   });
 });
 

@@ -49,7 +49,7 @@ export default function VetVisitScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
         <Skeleton lines={5} testID="vet-visit-screen-loading" />
       </SafeAreaView>
     );
@@ -57,8 +57,8 @@ export default function VetVisitScreen() {
 
   if (isOffline && !pet) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
-        <Text testID="vet-visit-screen-offline" className="text-center text-base text-brand-900">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
+        <Text testID="vet-visit-screen-offline" className="text-center text-base text-brand-900 dark:text-ink-dark font-body">
           {strings.vetVisit.offline}
         </Text>
         <PrimaryButton testID="vet-visit-screen-retry" label={strings.vetVisit.retry} onPress={() => refetch()} />
@@ -68,8 +68,8 @@ export default function VetVisitScreen() {
 
   if (isError) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
-        <Text testID="vet-visit-screen-error" className="text-center text-base text-red-700">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
+        <Text testID="vet-visit-screen-error" className="text-center text-base text-red-700 dark:text-red-400">
           {strings.vetVisit.error}
         </Text>
         <PrimaryButton testID="vet-visit-screen-retry" label={strings.vetVisit.retry} onPress={() => refetch()} />
@@ -79,8 +79,8 @@ export default function VetVisitScreen() {
 
   if (!pet) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
-        <Text testID="vet-visit-screen-empty" className="text-center text-base text-brand-900">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
+        <Text testID="vet-visit-screen-empty" className="text-center text-base text-brand-900 dark:text-ink-dark font-body">
           {strings.vetVisit.empty}
         </Text>
       </SafeAreaView>
@@ -123,7 +123,7 @@ export default function VetVisitScreen() {
         />
       ) : null}
       {isOffline ? (
-        <Text testID="vet-visit-screen-offline-banner" className="text-center text-sm text-brand-700">
+        <Text testID="vet-visit-screen-offline-banner" className="text-center text-sm text-brand-700 dark:text-ink-muted-dark font-body">
           {strings.vetVisit.offlineBanner}
         </Text>
       ) : null}

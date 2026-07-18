@@ -79,19 +79,19 @@ export default function NotificationPrefsScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
         <Card testID="notifications-loading">
           <Skeleton lines={4} />
         </Card>
-        <Text className="text-center text-base text-brand-900">{strings.notifications.loading}</Text>
+        <Text className="text-center text-base text-brand-900 dark:text-ink-dark font-body">{strings.notifications.loading}</Text>
       </SafeAreaView>
     );
   }
 
   if (isOffline && !prefs) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
-        <Text testID="notifications-offline" className="text-center text-base text-brand-900">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
+        <Text testID="notifications-offline" className="text-center text-base text-brand-900 dark:text-ink-dark font-body">
           {strings.notifications.offline}
         </Text>
         <PrimaryButton testID="notifications-retry" label={strings.notifications.retry} onPress={() => refetch()} />
@@ -101,8 +101,8 @@ export default function NotificationPrefsScreen() {
 
   if (isError) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
-        <Text testID="notifications-error" className="text-center text-base text-red-700">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
+        <Text testID="notifications-error" className="text-center text-base text-red-700 dark:text-red-400">
           {strings.notifications.error}
         </Text>
         <PrimaryButton testID="notifications-retry" label={strings.notifications.retry} onPress={() => refetch()} />
@@ -112,8 +112,8 @@ export default function NotificationPrefsScreen() {
 
   if (!prefs) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
-        <Text testID="notifications-empty" className="text-center text-base text-brand-900">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
+        <Text testID="notifications-empty" className="text-center text-base text-brand-900 dark:text-ink-dark font-body">
           {strings.notifications.empty}
         </Text>
       </SafeAreaView>
@@ -126,14 +126,14 @@ export default function NotificationPrefsScreen() {
         <Text
           testID="notifications-offline-banner"
           accessibilityRole="alert"
-          className="text-center text-sm text-brand-700"
+          className="text-center text-sm text-brand-700 dark:text-ink-muted-dark font-body"
         >
           {strings.notifications.offlineBanner}
         </Text>
       ) : null}
 
       <View className="gap-2">
-        <Text className="text-base font-semibold text-brand-900">{strings.notifications.typesHeading}</Text>
+        <Text className="text-base font-semibold text-brand-900 dark:text-ink-dark font-body-semibold">{strings.notifications.typesHeading}</Text>
         <Card className="gap-0 p-0">
           <View className="px-4">
             {REMINDER_TYPES.map((type) => (
@@ -157,17 +157,17 @@ export default function NotificationPrefsScreen() {
 
       <View className="gap-2">
         <View className="flex-row items-center justify-between">
-          <Text className="text-base font-semibold text-brand-900">
+          <Text className="text-base font-semibold text-brand-900 dark:text-ink-dark font-body-semibold">
             {strings.notifications.quietHours.heading}
           </Text>
           <Switch testID="notifications-quiet-enable" value={quietEnabled} onValueChange={setQuietEnabled} />
         </View>
-        <Text className="text-sm text-brand-700">{strings.notifications.quietHours.body}</Text>
+        <Text className="text-sm text-brand-700 dark:text-ink-muted-dark font-body">{strings.notifications.quietHours.body}</Text>
 
         {quietEnabled ? (
           <View testID="notifications-quiet-pickers" className="gap-4">
             <View className="gap-2">
-              <Text className="text-sm font-semibold text-brand-900">{strings.notifications.quietHours.start}</Text>
+              <Text className="text-sm font-semibold text-brand-900 dark:text-ink-dark font-body-semibold">{strings.notifications.quietHours.start}</Text>
               <ScrollView horizontal testID="notifications-quiet-start-list" contentContainerClassName="gap-2">
                 {QUIET_TIME_OPTIONS.map((time) => (
                   <Chip
@@ -181,7 +181,7 @@ export default function NotificationPrefsScreen() {
               </ScrollView>
             </View>
             <View className="gap-2">
-              <Text className="text-sm font-semibold text-brand-900">{strings.notifications.quietHours.end}</Text>
+              <Text className="text-sm font-semibold text-brand-900 dark:text-ink-dark font-body-semibold">{strings.notifications.quietHours.end}</Text>
               <ScrollView horizontal testID="notifications-quiet-end-list" contentContainerClassName="gap-2">
                 {QUIET_TIME_OPTIONS.map((time) => (
                   <Chip
@@ -205,7 +205,7 @@ export default function NotificationPrefsScreen() {
         onPress={() => void handleSave()}
       />
       {saveError ? (
-        <Text testID="notifications-save-error" className="text-center text-sm text-red-700">
+        <Text testID="notifications-save-error" className="text-center text-sm text-red-700 dark:text-red-400">
           {strings.notifications.saveError}
         </Text>
       ) : null}

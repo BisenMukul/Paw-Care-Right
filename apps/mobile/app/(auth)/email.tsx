@@ -55,12 +55,16 @@ export default function EmailScreen() {
       behavior={Platform.OS === "ios" ? "padding" : undefined}
       className="flex-1"
     >
-      <SafeAreaView className="flex-1 justify-center gap-6 bg-brand-50 px-6">
+      <SafeAreaView className="flex-1 justify-center gap-6 bg-brand-50 dark:bg-surface-page-dark px-6">
         <View className="gap-1">
-          <Text accessibilityRole="header" maxFontSizeMultiplier={1.5} className="text-2xl font-bold text-brand-900">
+          <Text
+            accessibilityRole="header"
+            maxFontSizeMultiplier={1.5}
+            className="text-2xl font-bold text-brand-900 dark:text-ink-dark font-display"
+          >
             {strings.auth.email.title}
           </Text>
-          <Text className="text-sm text-brand-700">{strings.auth.email.subtitle}</Text>
+          <Text className="text-sm text-brand-700 dark:text-ink-muted-dark font-body">{strings.auth.email.subtitle}</Text>
         </View>
         <TextField
           ref={emailFieldRef}

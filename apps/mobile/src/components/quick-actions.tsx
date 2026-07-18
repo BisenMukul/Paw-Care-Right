@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import type { ComponentProps } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, Text, useColorScheme, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
 import { useReducedMotion } from "../hooks/use-reduced-motion";
@@ -36,6 +36,8 @@ interface Tile {
  */
 export function QuickActions({ onLogWeight, onReminders, onLogActivity, onLogVetVisit }: QuickActionsProps) {
   const reduced = useReducedMotion();
+  const scheme = useColorScheme();
+  const iconColor = scheme === "dark" ? "#2EA57C" : "#1f6350";
   const tiles: Tile[] = [
     {
       testID: "quick-action-log-weight",
@@ -76,12 +78,12 @@ export function QuickActions({ onLogWeight, onReminders, onLogActivity, onLogVet
             onPress={tile.onPress}
             accessibilityRole="button"
             style={({ pressed }) => (pressed ? { opacity: 0.7 } : null)}
-            className="items-center gap-2 rounded-2xl bg-white px-4 py-5 shadow-sm"
+            className="items-center gap-2 rounded-2xl bg-white dark:bg-surface-card-dark px-4 py-5 shadow-sm"
           >
-            <View className="h-11 w-11 items-center justify-center rounded-full bg-brand-100">
-              <Ionicons name={tile.icon} size={22} color="#1f6350" />
+            <View className="h-11 w-11 items-center justify-center rounded-full bg-brand-100 dark:bg-surface-raised-dark">
+              <Ionicons name={tile.icon} size={22} color={iconColor} />
             </View>
-            <Text className="text-center text-sm font-semibold text-brand-900">{tile.label}</Text>
+            <Text className="text-center text-sm font-semibold text-brand-900 dark:text-ink-dark font-body-semibold">{tile.label}</Text>
           </Pressable>
         </Animated.View>
       ))}

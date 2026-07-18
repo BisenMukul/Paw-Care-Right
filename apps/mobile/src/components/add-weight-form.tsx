@@ -54,7 +54,7 @@ export function AddWeightForm({ visible, unit, submitting, onSubmit, onClose }: 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={handleClose}>
       <View className="flex-1 justify-end bg-black/40">
-        <SafeAreaView className="rounded-t-2xl bg-white">
+        <SafeAreaView className="rounded-t-2xl bg-white dark:bg-surface-card-dark">
           <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined}>
             <View className="gap-4 p-6">
               <View className="flex-row items-end gap-2">
@@ -68,10 +68,10 @@ export function AddWeightForm({ visible, unit, submitting, onSubmit, onClose }: 
                     placeholder={strings.weight.inputPlaceholder}
                   />
                 </View>
-                <Text className="pb-3 text-base text-brand-700">{strings.weight.unitLabel[unit]}</Text>
+                <Text className="pb-3 text-base text-brand-700 dark:text-ink-muted-dark font-body">{strings.weight.unitLabel[unit]}</Text>
               </View>
               {error !== null ? (
-                <Text testID="add-weight-error" accessibilityRole="alert" className="text-sm text-red-700">
+                <Text testID="add-weight-error" accessibilityRole="alert" className="text-sm text-red-700 dark:text-red-400">
                   {ERROR_STRINGS[error]}
                 </Text>
               ) : null}

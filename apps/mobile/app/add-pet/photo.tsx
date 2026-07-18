@@ -60,11 +60,11 @@ export default function PhotoScreen() {
       <Text
         accessibilityRole="header"
         maxFontSizeMultiplier={1.5}
-        className="text-xl font-semibold text-brand-900"
+        className="text-xl font-semibold text-brand-900 dark:text-ink-dark font-display-semibold"
       >
         {strings.addPet.photo.title}
       </Text>
-      <Text className="text-center text-sm text-brand-900">{strings.addPet.photo.rationale}</Text>
+      <Text className="text-center text-sm text-brand-900 dark:text-ink-dark font-body">{strings.addPet.photo.rationale}</Text>
       <SecondaryButton
         testID="add-pet-choose-photo"
         label={strings.addPet.photo.choosePhoto}
@@ -79,7 +79,7 @@ export default function PhotoScreen() {
         />
       ) : null}
       {error !== null ? (
-        <Text testID="add-pet-photo-error" accessibilityRole="alert" className="text-sm text-red-700">
+        <Text testID="add-pet-photo-error" accessibilityRole="alert" className="text-sm text-red-700 dark:text-red-400">
           {error}
         </Text>
       ) : null}

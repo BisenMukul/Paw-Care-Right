@@ -62,19 +62,19 @@ export default function FamilyScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
         <Card testID="family-loading">
           <Skeleton lines={3} />
         </Card>
-        <Text className="text-center text-base text-brand-900">{strings.family.loading}</Text>
+        <Text className="text-center text-base text-brand-900 dark:text-ink-dark font-body">{strings.family.loading}</Text>
       </SafeAreaView>
     );
   }
 
   if (isError) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
-        <Text testID="family-error" className="text-center text-base text-red-700">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
+        <Text testID="family-error" className="text-center text-base text-red-700 dark:text-red-400">
           {strings.family.error}
         </Text>
         <PrimaryButton testID="family-retry" label={strings.family.retry} onPress={() => refetch()} />
@@ -84,7 +84,7 @@ export default function FamilyScreen() {
 
   if (!household) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
         <EmptyState testID="family-empty" icon="home-outline" title={strings.family.empty} />
       </SafeAreaView>
     );
@@ -106,7 +106,7 @@ export default function FamilyScreen() {
               trailing={
                 <Text
                   testID={`family-member-role-${member.userId}`}
-                  className="text-sm font-semibold text-brand-700"
+                  className="text-sm font-semibold text-brand-700 dark:text-ink-muted-dark font-body-semibold"
                 >
                   {member.role === "OWNER" ? strings.family.owner : strings.family.member}
                 </Text>
@@ -124,7 +124,7 @@ export default function FamilyScreen() {
             onPress={() => void handleInvite()}
           />
           {inviteError ? (
-            <Text testID="family-invite-error" className="text-center text-sm text-red-700">
+            <Text testID="family-invite-error" className="text-center text-sm text-red-700 dark:text-red-400">
               {strings.family.inviteError}
             </Text>
           ) : null}
@@ -133,11 +133,11 @@ export default function FamilyScreen() {
         <View className="gap-2">
           {showLeaveConfirm ? (
             <View testID="family-leave-confirm" className="gap-3">
-              <Text className="text-center text-sm text-brand-900">
+              <Text className="text-center text-sm text-brand-900 dark:text-ink-dark font-body">
                 {strings.family.leaveConfirmBody}
               </Text>
               {entitlement?.source === "family" ? (
-                <Text testID="family-leave-grace" className="text-center text-sm text-red-700">
+                <Text testID="family-leave-grace" className="text-center text-sm text-red-700 dark:text-red-400">
                   {strings.family.leaveGrace}
                 </Text>
               ) : null}
@@ -153,7 +153,7 @@ export default function FamilyScreen() {
                 onPress={() => setShowLeaveConfirm(false)}
               />
               {leaveError ? (
-                <Text testID="family-leave-error" className="text-center text-sm text-red-700">
+                <Text testID="family-leave-error" className="text-center text-sm text-red-700 dark:text-red-400">
                   {strings.family.leaveError}
                 </Text>
               ) : null}

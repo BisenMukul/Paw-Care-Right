@@ -34,10 +34,10 @@ export function UpsellSheet() {
     <Modal visible transparent animationType="fade" onRequestClose={hide}>
       <Pressable testID="upsell-sheet-backdrop" className="flex-1 justify-end bg-black/40" onPress={hide}>
         <Pressable onPress={(e) => e.stopPropagation()}>
-          <SafeAreaView testID="upsell-sheet" className="mt-auto gap-4 rounded-t-2xl bg-white p-4 pb-8">
-            <View className="h-1 w-10 self-center rounded-full bg-brand-200" />
-            <Text className="text-center text-lg font-semibold text-brand-900">{strings.upsell.title}</Text>
-            <Text className="text-center text-base text-brand-700">{strings.upsell.body}</Text>
+          <SafeAreaView testID="upsell-sheet" className="mt-auto gap-4 rounded-t-2xl bg-white dark:bg-surface-card-dark p-4 pb-8">
+            <View className="h-1 w-10 self-center rounded-full bg-brand-200 dark:bg-surface-raised-dark" />
+            <Text className="text-center text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold">{strings.upsell.title}</Text>
+            <Text className="text-center text-base text-brand-700 dark:text-ink-muted-dark font-body">{strings.upsell.body}</Text>
             <PrimaryButton testID="upsell-see-plans" label={strings.upsell.seePlans} onPress={handleSeePlans} />
             <GhostButton testID="upsell-dismiss" label={strings.upsell.dismiss} onPress={hide} />
           </SafeAreaView>

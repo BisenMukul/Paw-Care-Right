@@ -49,6 +49,12 @@ export default function SettingsScreen() {
       <Card className="gap-0 p-0">
         <View className="px-4">
           <ListRow
+            testID="settings-services"
+            title={strings.settings.services}
+            leadingIcon="grid-outline"
+            onPress={() => router.push("/services")}
+          />
+          <ListRow
             testID="settings-family"
             title={strings.settings.family}
             leadingIcon="people-outline"
@@ -85,8 +91,13 @@ export default function SettingsScreen() {
       </Card>
 
       {entitlement?.entitled === true && entitlement.source === "family" ? (
-        <View testID="settings-family-note" className="items-center rounded-lg bg-brand-50 px-6 py-3">
-          <Text className="text-center text-sm text-brand-900">{strings.settings.familyManagedNote}</Text>
+        <View
+          testID="settings-family-note"
+          className="items-center rounded-lg bg-brand-50 dark:bg-surface-raised-dark px-6 py-3"
+        >
+          <Text className="text-center text-sm text-brand-900 dark:text-ink-dark font-body">
+            {strings.settings.familyManagedNote}
+          </Text>
         </View>
       ) : null}
 

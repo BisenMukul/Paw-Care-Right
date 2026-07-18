@@ -74,7 +74,7 @@ export default function DetailsScreen() {
       <Text
         accessibilityRole="header"
         maxFontSizeMultiplier={1.5}
-        className="text-xl font-semibold text-brand-900"
+        className="text-xl font-semibold text-brand-900 dark:text-ink-dark font-display-semibold"
       >
         {strings.addPet.details.title}
       </Text>
@@ -91,7 +91,7 @@ export default function DetailsScreen() {
       />
 
       <View className="gap-2">
-        <Text className="text-sm font-semibold text-brand-900">
+        <Text className="text-sm font-semibold text-brand-900 dark:text-ink-dark font-body-semibold">
           {strings.addPet.details.sexLabel}
         </Text>
         <View className="flex-row gap-2">
@@ -104,18 +104,18 @@ export default function DetailsScreen() {
               onPress={() => setField("sex", option)}
               className={
                 draft.sex === option
-                  ? "min-h-[44px] justify-center rounded-lg border-2 border-brand-700 bg-brand-100 px-4 py-2"
-                  : "min-h-[44px] justify-center rounded-lg border border-brand-100 px-4 py-2"
+                  ? "min-h-[44px] justify-center rounded-lg border-2 border-brand-700 dark:border-accent-bright bg-brand-100 dark:bg-surface-raised-dark px-4 py-2"
+                  : "min-h-[44px] justify-center rounded-lg border border-brand-100 dark:border-hairline-dark dark:bg-surface-card-dark px-4 py-2"
               }
             >
-              <Text className="text-sm text-brand-900">{sexLabel(option)}</Text>
+              <Text className="text-sm text-brand-900 dark:text-ink-dark font-body">{sexLabel(option)}</Text>
             </Pressable>
           ))}
         </View>
       </View>
 
       <View className="flex-row items-center justify-between">
-        <Text className="text-sm font-semibold text-brand-900">
+        <Text className="text-sm font-semibold text-brand-900 dark:text-ink-dark font-body-semibold">
           {strings.addPet.details.neuteredLabel}
         </Text>
         <Switch

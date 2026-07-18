@@ -25,7 +25,7 @@ export default function SpeciesScreen() {
       <Text
         accessibilityRole="header"
         maxFontSizeMultiplier={1.5}
-        className="text-xl font-semibold text-brand-900"
+        className="text-xl font-semibold text-brand-900 dark:text-ink-dark font-display-semibold"
       >
         {strings.addPet.species.title}
       </Text>

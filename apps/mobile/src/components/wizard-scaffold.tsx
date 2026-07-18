@@ -31,13 +31,13 @@ export function WizardScaffold({
   children,
 }: WizardScaffoldProps) {
   return (
-    <SafeAreaView className="flex-1 bg-brand-50">
+    <SafeAreaView className="flex-1 bg-brand-50 dark:bg-surface-page-dark">
       <KeyboardAvoidingView
         className="flex-1"
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
         <View className="flex-1 px-6 py-4">
-          <Text testID="wizard-progress" className="text-center text-sm text-brand-700">
+          <Text testID="wizard-progress" className="text-center text-sm text-brand-700 dark:text-ink-muted-dark font-body">
             {strings.addPet.common.stepOf(step, total)}
           </Text>
           <View className="flex-1 gap-4 pt-4">{children}</View>

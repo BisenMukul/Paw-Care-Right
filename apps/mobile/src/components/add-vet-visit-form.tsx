@@ -1,6 +1,6 @@
 import type { VetVisitValue } from "@pawcareright/types";
 import { forwardRef, useImperativeHandle, useState } from "react";
-import { Text, TextInput, View } from "react-native";
+import { Text, TextInput, useColorScheme, View } from "react-native";
 
 import { validateVetVisitForm, type VetVisitFormErrors } from "../health-logs/health-log-forms";
 import { strings } from "../strings";
@@ -43,6 +43,8 @@ export const AddVetVisitForm = forwardRef<AddVetVisitFormHandle, AddVetVisitForm
   const [notes, setNotes] = useState("");
   const [photoKeys, setPhotoKeys] = useState<string[]>([]);
   const [errors, setErrors] = useState<VetVisitFormErrors>({});
+  const scheme = useColorScheme();
+  const placeholderColor = scheme === "dark" ? "#9AA8A1" : "#2f8f74";
 
   function handleSave() {
     const result = validateVetVisitForm({ reason, clinicName, notes });
@@ -65,7 +67,7 @@ export const AddVetVisitForm = forwardRef<AddVetVisitFormHandle, AddVetVisitForm
         onChangeText={setReason}
       />
       {errors.reason !== undefined ? (
-        <Text testID="add-vet-visit-error-reason" accessibilityRole="alert" className="text-sm text-red-700">
+        <Text testID="add-vet-visit-error-reason" accessibilityRole="alert" className="text-sm text-red-700 dark:text-red-400">
           {FIELD_ERROR_STRINGS.reason[errors.reason]}
         </Text>
       ) : null}
@@ -77,7 +79,7 @@ export const AddVetVisitForm = forwardRef<AddVetVisitFormHandle, AddVetVisitForm
         onChangeText={setClinicName}
       />
       {errors.clinicName !== undefined ? (
-        <Text testID="add-vet-visit-error-clinic" accessibilityRole="alert" className="text-sm text-red-700">
+        <Text testID="add-vet-visit-error-clinic" accessibilityRole="alert" className="text-sm text-red-700 dark:text-red-400">
           {FIELD_ERROR_STRINGS.clinicName[errors.clinicName]}
         </Text>
       ) : null}
@@ -88,11 +90,11 @@ export const AddVetVisitForm = forwardRef<AddVetVisitFormHandle, AddVetVisitForm
         onChangeText={setNotes}
         multiline
         placeholder={strings.vetVisit.notesPlaceholder}
-        placeholderTextColor="#2f8f74"
-        className="min-h-[100px] rounded-lg border border-brand-100 px-4 py-3 text-base text-brand-900"
+        placeholderTextColor={placeholderColor}
+        className="min-h-[100px] rounded-lg border border-brand-100 dark:border-hairline-dark dark:bg-surface-card-dark px-4 py-3 text-base text-brand-900 dark:text-ink-dark"
       />
       {errors.notes !== undefined ? (
-        <Text testID="add-vet-visit-error-notes" accessibilityRole="alert" className="text-sm text-red-700">
+        <Text testID="add-vet-visit-error-notes" accessibilityRole="alert" className="text-sm text-red-700 dark:text-red-400">
           {FIELD_ERROR_STRINGS.notes[errors.notes]}
         </Text>
       ) : null}

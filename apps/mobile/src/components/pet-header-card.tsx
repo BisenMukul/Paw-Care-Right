@@ -38,7 +38,7 @@ export function PetHeaderCard({ pet, localPhoto }: PetHeaderCardProps) {
     <Animated.View
       testID="pet-home-header-card"
       style={{ height: HEADER_CARD_HEIGHT }}
-      className="flex-row items-center gap-4 rounded-2xl bg-white px-4 shadow-md"
+      className="flex-row items-center gap-4 rounded-2xl bg-white dark:bg-surface-card-dark px-4 shadow-md"
       {...(reduced ? {} : { entering: FadeInDown.duration(320) })}
     >
       {localPhoto ? (
@@ -46,28 +46,28 @@ export function PetHeaderCard({ pet, localPhoto }: PetHeaderCardProps) {
       ) : (
         <View
           testID="pet-home-photo-placeholder"
-          className="h-24 w-24 items-center justify-center rounded-full bg-brand-100"
+          className="h-24 w-24 items-center justify-center rounded-full bg-brand-100 dark:bg-surface-raised-dark"
         >
-          <Text className="text-3xl font-bold text-brand-700">{pet.name.charAt(0).toUpperCase()}</Text>
+          <Text className="text-3xl font-bold text-brand-700 dark:text-accent-bright">{pet.name.charAt(0).toUpperCase()}</Text>
         </View>
       )}
       <View className="flex-1 gap-2">
-        <Text testID="pet-home-name" className="text-2xl font-bold text-brand-900">
+        <Text testID="pet-home-name" className="text-2xl font-bold text-brand-900 dark:text-ink-dark font-display">
           {pet.name}
         </Text>
         <View className="flex-row flex-wrap items-center gap-2">
-          <View testID="pet-home-species" className="rounded-full bg-brand-50 px-3 py-1">
-            <Text className="text-xs font-semibold text-brand-700">{speciesLabel}</Text>
+          <View testID="pet-home-species" className="rounded-full bg-brand-50 dark:bg-surface-raised-dark px-3 py-1">
+            <Text className="text-xs font-semibold text-brand-700 dark:text-ink-muted-dark font-body-semibold">{speciesLabel}</Text>
           </View>
           {pet.breedSlug ? (
-            <View className="rounded-full bg-brand-50 px-3 py-1">
-              <Text testID="pet-home-breed" className="text-xs font-semibold text-brand-700">
+            <View className="rounded-full bg-brand-50 dark:bg-surface-raised-dark px-3 py-1">
+              <Text testID="pet-home-breed" className="text-xs font-semibold text-brand-700 dark:text-ink-muted-dark font-body-semibold">
                 {pet.breedSlug}
               </Text>
             </View>
           ) : null}
-          <View className="rounded-full bg-brand-50 px-3 py-1">
-            <Text testID="pet-home-age" className="text-xs font-semibold text-brand-700">
+          <View className="rounded-full bg-brand-50 dark:bg-surface-raised-dark px-3 py-1">
+            <Text testID="pet-home-age" className="text-xs font-semibold text-brand-700 dark:text-ink-muted-dark font-body-semibold">
               {ageLabel}
             </Text>
           </View>

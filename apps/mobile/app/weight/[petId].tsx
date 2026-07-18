@@ -53,7 +53,7 @@ export default function WeightScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
         <Skeleton lines={4} testID="weight-screen-loading" />
       </SafeAreaView>
     );
@@ -61,8 +61,8 @@ export default function WeightScreen() {
 
   if (isOffline && !pet) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
-        <Text testID="weight-screen-offline" className="text-center text-base text-brand-900">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
+        <Text testID="weight-screen-offline" className="text-center text-base text-brand-900 dark:text-ink-dark font-body">
           {strings.weight.offline}
         </Text>
         <PrimaryButton testID="weight-screen-retry" label={strings.weight.retry} onPress={() => refetch()} />
@@ -72,8 +72,8 @@ export default function WeightScreen() {
 
   if (isError) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
-        <Text testID="weight-screen-error" className="text-center text-base text-red-700">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
+        <Text testID="weight-screen-error" className="text-center text-base text-red-700 dark:text-red-400">
           {strings.weight.error}
         </Text>
         <PrimaryButton testID="weight-screen-retry" label={strings.weight.retry} onPress={() => refetch()} />
@@ -83,8 +83,8 @@ export default function WeightScreen() {
 
   if (!pet) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
-        <Text testID="weight-screen-empty" className="text-center text-base text-brand-900">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
+        <Text testID="weight-screen-empty" className="text-center text-base text-brand-900 dark:text-ink-dark font-body">
           {strings.weight.empty}
         </Text>
       </SafeAreaView>
@@ -130,7 +130,7 @@ export default function WeightScreen() {
           />
         ) : null}
         {isOffline ? (
-          <Text testID="weight-screen-offline-banner" className="text-center text-sm text-brand-700">
+          <Text testID="weight-screen-offline-banner" className="text-center text-sm text-brand-700 dark:text-ink-muted-dark font-body">
             {strings.weight.offlineBanner}
           </Text>
         ) : null}
@@ -139,9 +139,9 @@ export default function WeightScreen() {
           onPress={toggle}
           accessibilityRole="button"
           accessibilityLabel={strings.weight.unitToggleA11y}
-          className="min-h-[44px] justify-center self-start rounded-full bg-brand-100 px-4 py-2"
+          className="min-h-[44px] justify-center self-start rounded-full bg-brand-100 dark:bg-surface-raised-dark px-4 py-2"
         >
-          <Text className="text-base font-semibold text-brand-900">{strings.weight.unitLabel[unit]}</Text>
+          <Text className="text-base font-semibold text-brand-900 dark:text-ink-dark font-body-semibold">{strings.weight.unitLabel[unit]}</Text>
         </Pressable>
         <WeightChart points={points} band={band} unit={unit} />
       </ScreenScaffold>

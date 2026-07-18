@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Text } from "react-native";
+import { ActivityIndicator, Text, useColorScheme } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -21,6 +21,8 @@ export default function DoneScreen() {
   const draft = useAddPetStore((state) => state.draft);
   const setCreatedPetId = useAddPetStore((state) => state.setCreatedPetId);
   const reset = useAddPetStore((state) => state.reset);
+  const scheme = useColorScheme();
+  const indicatorColor = scheme === "dark" ? "#2EA57C" : "#1f6350";
 
   const [error, setError] = useState<string | null>(null);
 
@@ -67,13 +69,13 @@ export default function DoneScreen() {
   }, []);
 
   return (
-    <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
+    <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
       {error !== null ? (
         <>
           <Text
             testID="add-pet-error"
             accessibilityRole="alert"
-            className="text-center text-base text-red-700"
+            className="text-center text-base text-red-700 dark:text-red-400"
           >
             {error}
           </Text>
@@ -81,8 +83,8 @@ export default function DoneScreen() {
         </>
       ) : (
         <>
-          <ActivityIndicator testID="add-pet-submitting" color="#1f6350" />
-          <Text className="text-center text-base text-brand-900">
+          <ActivityIndicator testID="add-pet-submitting" color={indicatorColor} />
+          <Text className="text-center text-base text-brand-900 dark:text-ink-dark font-body">
             {strings.addPet.done.submitting}
           </Text>
         </>

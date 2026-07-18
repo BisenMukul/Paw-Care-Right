@@ -57,18 +57,18 @@ export default function OtpScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 justify-center gap-6 bg-brand-50 px-6">
+    <SafeAreaView className="flex-1 justify-center gap-6 bg-brand-50 dark:bg-surface-page-dark px-6">
       <Text
         accessibilityRole="header"
         maxFontSizeMultiplier={1.5}
-        className="text-center text-2xl font-bold text-brand-900"
+        className="text-center text-2xl font-bold text-brand-900 dark:text-ink-dark font-display"
       >
         {strings.auth.otp.title}
       </Text>
       <Text
         accessibilityRole="header"
         maxFontSizeMultiplier={1.5}
-        className="text-center text-base text-brand-900"
+        className="text-center text-base text-brand-900 dark:text-ink-dark font-body"
       >
         {strings.auth.otp.prompt}
       </Text>
@@ -83,13 +83,13 @@ export default function OtpScreen() {
         <Text
           testID="otp-error"
           accessibilityRole="alert"
-          className="text-center text-sm text-red-700"
+          className="text-center text-sm text-red-700 dark:text-red-400"
         >
           {errorMessage}
         </Text>
       ) : null}
       {loading ? (
-        <Text testID="otp-loading" className="text-center text-sm text-brand-700">
+        <Text testID="otp-loading" className="text-center text-sm text-brand-700 dark:text-ink-muted-dark font-body">
           {strings.auth.otp.verifying}
         </Text>
       ) : null}

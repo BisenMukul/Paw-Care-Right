@@ -45,17 +45,17 @@ export default function PetHomeScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-white px-6">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-white dark:bg-surface-page-dark px-6">
         <ActivityIndicator testID="pet-home-loading" />
-        <Text className="text-center text-base text-brand-900">{strings.petHome.loading}</Text>
+        <Text className="text-center text-base text-brand-900 dark:text-ink-dark font-body">{strings.petHome.loading}</Text>
       </SafeAreaView>
     );
   }
 
   if (isOffline && !pet) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-white px-6">
-        <Text testID="pet-home-offline" className="text-center text-base text-brand-900">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-white dark:bg-surface-page-dark px-6">
+        <Text testID="pet-home-offline" className="text-center text-base text-brand-900 dark:text-ink-dark font-body">
           {strings.petHome.offlineNoCache}
         </Text>
         <PrimaryButton
@@ -71,8 +71,8 @@ export default function PetHomeScreen() {
 
   if (isError) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-white px-6">
-        <Text testID="pet-home-error" className="text-center text-base text-red-600">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-white dark:bg-surface-page-dark px-6">
+        <Text testID="pet-home-error" className="text-center text-base text-red-600 dark:text-red-400">
           {isServerUnreachable ? strings.petHome.serverUnreachable : strings.petHome.error}
         </Text>
         <PrimaryButton
@@ -88,8 +88,8 @@ export default function PetHomeScreen() {
 
   if (!pet) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-white px-6">
-        <Text testID="pet-home-empty" className="text-center text-base text-brand-900">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-white dark:bg-surface-page-dark px-6">
+        <Text testID="pet-home-empty" className="text-center text-base text-brand-900 dark:text-ink-dark font-body">
           {strings.petHome.empty}
         </Text>
       </SafeAreaView>
@@ -102,7 +102,7 @@ export default function PetHomeScreen() {
       <SafeAreaView className="flex-1">
         <View testID="pet-home-header-region" className="gap-3 px-6 pb-4 pt-2">
           {isOffline ? (
-            <Text testID="pet-home-offline-banner" className="text-center text-sm text-brand-700">
+            <Text testID="pet-home-offline-banner" className="text-center text-sm text-brand-700 dark:text-ink-muted-dark font-body">
               {strings.petHome.offlineBanner}
             </Text>
           ) : null}
@@ -113,7 +113,7 @@ export default function PetHomeScreen() {
               onPress={() => router.push({ pathname: "/check", params: { petId: id } })}
               accessibilityRole="button"
               style={({ pressed }) => [{ minHeight: CTA_HEIGHT }, pressed ? { opacity: 0.85 } : null]}
-              className="flex-row items-center gap-4 rounded-2xl bg-brand-700 px-5 py-4 shadow-md"
+              className="flex-row items-center gap-4 rounded-2xl bg-brand-700 dark:bg-accent-dark px-5 py-4 shadow-md"
             >
               <View className="h-12 w-12 items-center justify-center rounded-full bg-white/20">
                 <Ionicons name="medkit" size={24} color="#ffffff" />
@@ -128,7 +128,7 @@ export default function PetHomeScreen() {
         </View>
         <ScrollView testID="pet-home-scroll" className="flex-1">
           <View className="gap-3 px-6 pb-8 pt-4">
-            <Text className="text-base font-semibold text-brand-900">
+            <Text className="text-base font-semibold text-brand-900 dark:text-ink-dark font-body-semibold">
               {strings.petHome.quickActionsTitle}
             </Text>
             <QuickActions

@@ -110,8 +110,8 @@ export function OtpInput({
           textContentType={index === 0 ? "oneTimeCode" : undefined}
           className={
             hasError
-              ? "h-14 w-12 rounded-lg border-2 border-red-600 text-center text-xl text-red-700"
-              : "h-14 w-12 rounded-lg border border-brand-100 text-center text-xl text-brand-900"
+              ? "h-14 w-12 rounded-lg border-2 border-red-600 text-center text-xl text-red-700 dark:text-red-400"
+              : "h-14 w-12 rounded-lg border border-brand-100 dark:border-hairline-dark dark:bg-surface-card-dark text-center text-xl text-brand-900 dark:text-ink-dark"
           }
         />
       ))}

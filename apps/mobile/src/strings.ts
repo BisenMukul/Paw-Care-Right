@@ -171,6 +171,7 @@ export const strings = {
     notifications: "Notifications",
     premium: (appName: string) => `Upgrade to ${appName} Plus`,
     manage: "Manage subscription",
+    services: "Services",
     familyManagedNote: "Your Premium comes from your household's family plan. Only the plan owner can manage billing.",
     restore: "Restore purchases",
     restoreSuccess: "Your purchases were restored.",
@@ -684,6 +685,24 @@ export const strings = {
     loading: "Loading…",
     error: "We couldn't load this reminder.",
     retry: "Retry",
+  },
+  // Services hub (PAWSAATHI-4 plan, decisions 1-3): a static, informational
+  // "coming soon" list only -- no booking/adopt/shop flow, no "notify me"/
+  // waitlist capture (there is no backend to honor a signup), no price or
+  // launch-date copy anywhere below (HONESTY RULE + CLAUDE §7).
+  services: {
+    title: "Services",
+    subtitle: "Extra ways to care for your pet",
+    comingSoon: "Coming soon",
+    note: "These features aren't available yet.",
+    items: {
+      vet: { title: "Vet consultation", description: "Book a vet by video, at a clinic, or at home." },
+      salon: { title: "Pet salon", description: "Grooming, bath and spa for your pet." },
+      store: { title: "Pet store", description: "Food, treats and everyday essentials." },
+      adoption: { title: "Adoption", description: "Find a pet looking for a home." },
+      insurance: { title: "Pet insurance", description: "Health cover for accidents and illness." },
+    },
+    cardA11y: (title: string) => `${title}, coming soon`,
   },
   // T061 medication tracker: every value below comes from the
   // `MEDICATION_STATIC_COPY` SSOT (`@pawcareright/types`) -- CLAUDE §7 rule

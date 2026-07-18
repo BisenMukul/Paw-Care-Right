@@ -165,7 +165,7 @@ export function HealthLogPhotoPicker({
 
             {slot.status === "failed" ? (
               <View testID={`health-log-photo-failed-${slot.id}`} className="gap-1">
-                <Text className="text-xs text-red-600">{strings.healthLogPhoto.failed}</Text>
+                <Text className="text-xs text-red-600 dark:text-red-400">{strings.healthLogPhoto.failed}</Text>
                 <Pressable
                   testID={`health-log-photo-retry-${slot.id}`}
                   accessibilityRole="button"
@@ -188,7 +188,7 @@ export function HealthLogPhotoPicker({
       </View>
 
       {error !== undefined ? (
-        <Text testID="health-log-photo-error" className="text-sm text-red-600">
+        <Text testID="health-log-photo-error" className="text-sm text-red-600 dark:text-red-400">
           {error}
         </Text>
       ) : null}

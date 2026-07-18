@@ -44,11 +44,11 @@ export function BreedAutocomplete({ species, onSelect }: BreedAutocompleteProps)
       {isLoading ? (
         <Skeleton lines={3} testID="breed-loading" />
       ) : isError ? (
-        <Text testID="breed-error" accessibilityRole="alert" className="text-sm text-red-700">
+        <Text testID="breed-error" accessibilityRole="alert" className="text-sm text-red-700 dark:text-red-400">
           {strings.addPet.breed.error}
         </Text>
       ) : !data || data.length === 0 ? (
-        <Text testID="breed-empty" className="text-sm text-brand-700">
+        <Text testID="breed-empty" className="text-sm text-brand-700 dark:text-ink-muted-dark font-body">
           {strings.addPet.breed.empty}
         </Text>
       ) : (
@@ -58,9 +58,9 @@ export function BreedAutocomplete({ species, onSelect }: BreedAutocompleteProps)
             testID={`breed-row-${breed.slug}`}
             accessibilityRole="button"
             onPress={() => onSelect({ slug: breed.slug, name: breed.name })}
-            className="min-h-[44px] justify-center rounded-lg border border-brand-100 px-4 py-3"
+            className="min-h-[44px] justify-center rounded-lg border border-brand-100 dark:border-hairline-dark dark:bg-surface-card-dark px-4 py-3"
           >
-            <Text className="text-base text-brand-900">{breed.name}</Text>
+            <Text className="text-base text-brand-900 dark:text-ink-dark font-body">{breed.name}</Text>
           </Pressable>
         ))
       )}

@@ -16,7 +16,7 @@ export default function WelcomeScreen() {
   const reduced = useReducedMotion();
 
   return (
-    <SafeAreaView className="flex-1 bg-brand-50">
+    <SafeAreaView className="flex-1 bg-brand-50 dark:bg-surface-page-dark">
       <AnimatedGradientBackground />
       <Animated.View
         testID="welcome-hero"
@@ -25,7 +25,7 @@ export default function WelcomeScreen() {
       >
         <Ionicons name="paw" size={48} color="#2f8f74" />
         <AppTitle variant="hero" />
-        <Text className="text-center text-base text-brand-900">
+        <Text className="text-center text-base text-brand-900 dark:text-ink-dark font-body">
           {strings.auth.welcome.tagline}
         </Text>
         <PrimaryButton
