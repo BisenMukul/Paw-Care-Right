@@ -29,6 +29,13 @@ export function CheckHistoryRow({ item, onPress }: CheckHistoryRowProps) {
     >
       <View className="flex-1 gap-1">
         <Text className="text-base font-semibold text-brand-900">{getCategoryLabel(item.category)}</Text>
+        {/* design-system.md §7.3 calls for `tabular-nums` here (the date is a
+            short numeric/date string) -- deferred: nativewind@4.2.6/
+            react-native-css-interop@0.2.6 drop `font-variant-numeric` (absent
+            from `validProperties`), so the class is a silent no-op on-device
+            (CRAFT-1 checker finding, mirrored in `timeline-row.tsx`). Revisit
+            once css-interop maps it, or route a real `fontVariant` utility
+            through `packages/config` (follow-up task, not a per-screen fix). */}
         <Text className="text-sm text-brand-700" accessibilityLabel={strings.check.history.dateA11y(date)}>
           {date}
         </Text>

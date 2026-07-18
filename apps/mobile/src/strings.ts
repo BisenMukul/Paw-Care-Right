@@ -471,6 +471,7 @@ export const strings = {
     history: {
       title: "Check history",
       empty: "No checks yet. When you run a symptom check, it'll show up here.",
+      emptyBody: "Past checks stay here, so you can look back or bring them to your vet.",
       error: "We couldn't load your check history.",
       retry: "Retry",
       loadMore: "Load more",

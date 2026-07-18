@@ -188,7 +188,7 @@ export function IntakeForm({ categoryDef, onExit, onSubmit, photoUpload }: Intak
                         className="flex-row items-center justify-between gap-2 rounded-2xl bg-white p-4 shadow-md"
                       >
                         <View className="flex-1 gap-1">
-                          <Text className="text-sm font-medium text-brand-900">{question.prompt}</Text>
+                          <Text className="text-sm font-semibold text-brand-900">{question.prompt}</Text>
                           <Text className="text-sm text-brand-700">
                             {describeAnswer(question, answers[question.id]!)}
                           </Text>
@@ -199,7 +199,7 @@ export function IntakeForm({ categoryDef, onExit, onSubmit, photoUpload }: Intak
                             setStepIndex(questions.findIndex((candidateQuestion) => candidateQuestion.id === question.id))
                           }
                         >
-                          <Text className="text-sm font-medium text-brand-700">
+                          <Text className="text-sm font-semibold text-brand-700">
                             {strings.intake.review.edit}
                           </Text>
                         </Pressable>
@@ -211,7 +211,7 @@ export function IntakeForm({ categoryDef, onExit, onSubmit, photoUpload }: Intak
                       className="flex-row items-center justify-between gap-2 rounded-2xl bg-white p-4 shadow-md"
                     >
                       <View className="flex-1 gap-1">
-                        <Text className="text-sm font-medium text-brand-900">
+                        <Text className="text-sm font-semibold text-brand-900">
                           {strings.intake.freeText.title}
                         </Text>
                         <Text className="text-sm text-brand-700">{freeText.trim()}</Text>
@@ -220,7 +220,7 @@ export function IntakeForm({ categoryDef, onExit, onSubmit, photoUpload }: Intak
                         testID="intake-review-edit-freetext"
                         onPress={() => setStepIndex(freeTextStepIndex)}
                       >
-                        <Text className="text-sm font-medium text-brand-700">
+                        <Text className="text-sm font-semibold text-brand-700">
                           {strings.intake.review.edit}
                         </Text>
                       </Pressable>

@@ -67,7 +67,12 @@ describe("check history screen", () => {
 
     await render(<CheckHistoryScreen />);
 
-    expect(screen.getByTestId("check-history-empty")).toHaveTextContent(strings.check.history.empty);
+    expect(screen.getByTestId("check-history-empty")).toHaveTextContent(strings.check.history.empty, {
+      exact: false,
+    });
+    expect(screen.getByTestId("check-history-empty")).toHaveTextContent(strings.check.history.emptyBody, {
+      exact: false,
+    });
     expect(screen.queryByTestId("check-history-row-c1")).toBeNull();
   });
 
@@ -99,6 +104,7 @@ describe("check history screen", () => {
 
     const loadMore = screen.getByTestId("check-history-load-more");
     expect(loadMore).toHaveTextContent(strings.check.history.loadMore);
+    expect(loadMore.props.className).not.toContain("bg-brand-700");
     await fireEvent.press(loadMore);
 
     expect(fetchNextPage).toHaveBeenCalled();

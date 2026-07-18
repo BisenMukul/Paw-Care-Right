@@ -5,7 +5,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useChecksList } from "../../../src/api/checks-api";
 import { CheckHistoryRow } from "../../../src/components/check-history-row";
+import { EmptyState } from "../../../src/components/empty-state";
 import { PrimaryButton } from "../../../src/components/primary-button";
+import { SecondaryButton } from "../../../src/components/secondary-button";
 import { Skeleton } from "../../../src/components/skeleton";
 import { strings } from "../../../src/strings";
 
@@ -75,8 +77,12 @@ export default function CheckHistoryScreen() {
         </Text>
       </View>
       {items.length === 0 ? (
-        <View testID="check-history-empty" className="flex-1 items-center justify-center px-6">
-          <Text className="text-center text-base text-brand-700">{strings.check.history.empty}</Text>
+        <View testID="check-history-empty" className="flex-1 justify-center px-4">
+          <EmptyState
+            icon="time-outline"
+            title={strings.check.history.empty}
+            body={strings.check.history.emptyBody}
+          />
         </View>
       ) : (
         <ScrollView
@@ -92,7 +98,7 @@ export default function CheckHistoryScreen() {
             ))}
             {hasNextPage ? (
               <View className="px-4 pt-4">
-                <PrimaryButton
+                <SecondaryButton
                   testID="check-history-load-more"
                   label={isFetchingNextPage ? strings.check.history.loadingMore : strings.check.history.loadMore}
                   disabled={isFetchingNextPage}

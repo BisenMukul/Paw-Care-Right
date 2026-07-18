@@ -1,6 +1,6 @@
 import type { CategoryDef } from "@pawcareright/types";
 import { getCategoryDef } from "@pawcareright/types";
-import { fireEvent, render, screen } from "@testing-library/react-native";
+import { fireEvent, render, screen, within } from "@testing-library/react-native";
 
 import { IntakeForm } from "../src/components/intake/intake-form";
 import { strings } from "../src/strings";
@@ -197,6 +197,12 @@ describe("IntakeForm — supporting flow tests (real category)", () => {
     expect(screen.getByTestId("intake-review-freetext")).toHaveTextContent("extra notes", {
       exact: false,
     });
+
+    const editFreetextLabel = within(screen.getByTestId("intake-review-edit-freetext")).getByText(
+      strings.intake.review.edit,
+    );
+    expect(editFreetextLabel.props.className).toContain("font-semibold");
+    expect(editFreetextLabel.props.className).not.toContain("font-medium");
   });
 
   it("submits the exact valid CompletedIntake on the ok path", async () => {

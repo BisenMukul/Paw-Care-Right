@@ -993,3 +993,11 @@
 - **Gates (post-fix, orchestrator):** mobile **835 (115 suites)**, snapshots 17, typecheck/lint/build 0. (Api suite env-blocked — no Docker daemon; zero api files in diff.)
 - Next: CRAFT-2 — the same §7 pass over the check flow, safety-pinned.
 - Commit: feat(mobile): CRAFT-1 §7 craft sweep — thumb-zone footers, Peak-End confirmations, craft polish.
+
+## [2026-07-18] CRAFT-2 · §7 craft sweep, batch 2 — check flow (founder "rework all pages" COMPLETE)
+- **Planned audit-first** (`loop/plans/CRAFT-2.plan.md`) → executed (clean single run, full report) → adversarially checked (`loop/reviews/CRAFT-2.review.md` → **VERDICT: PASS**, mutation-proof re-run by checker with sha1 restore).
+- **Honest outcome:** the check flow already satisfied most of §7.8 from SWEEP-3 + FOUNDER-UX-1, so only 4 real deltas shipped: history empty → EmptyState canon with ONE new value-preview body string ("Past checks stay here…" — plan-verbatim, tone-scanned, planted-outcome-claim mutation proven); history load-more Primary→Secondary (one-primary rule; handler byte-identical); 4× font-medium→semibold in intake-form (§7.3 ≤2 weights); tabular-nums deferral comment in check-history-row (render-identical).
+- **Safety decisions honored:** result actions NOT footer-pinned (would push the disclaimer off-flow — hierarchy wins over §7.4); NO Peak-End celebration anywhere near symptom results; emergency/vet-disclaimer/result/waiting/index/[category]/checks-[id] all byte-identical to HEAD (checker-diffed); ZERO snapshot changes; Checkpoint C safety suites (64 tests incl. all 7 result snapshots) pass unedited.
+- **Gates:** mobile **841 (116 suites)**, typecheck/lint/build 0 (api env-blocked as before, zero api files in diff).
+- **THE FOUNDER "REWORK ALL PAGES" DIRECTIVE IS COMPLETE:** §7 craft layer adopted from the mobile-app-ui-design skill → CRAFT-1 (18 non-check surfaces) + CRAFT-2 (check flow) both landed. Session cumulative: mobile 673 → 841 tests across the sweep+craft arcs, zero safety-copy changes throughout.
+- Commit: feat(mobile): CRAFT-2 §7 craft pass on the check flow — history empty state, hierarchy, weight discipline.
