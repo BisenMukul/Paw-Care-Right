@@ -43,13 +43,14 @@ export function SingleQuestion({ question, answer, onChange }: SingleQuestionPro
             accessibilityRole="button"
             accessibilityState={{ selected }}
             onPress={() => onChange({ type: "single", questionId: question.id, value: option.value })}
+            style={({ pressed }) => (pressed ? { opacity: 0.85 } : null)}
             className={
               selected
-                ? "min-h-[44px] rounded-lg border-2 border-brand-700 bg-brand-100 px-4 py-3"
-                : "min-h-[44px] rounded-lg border border-brand-200 px-4 py-3"
+                ? "min-h-[44px] rounded-2xl border-2 border-brand-700 bg-brand-100 px-4 py-3 shadow-md"
+                : "min-h-[44px] rounded-2xl border border-brand-200 bg-white px-4 py-3 shadow-md"
             }
           >
-            <Text className="text-base text-brand-900">{option.label}</Text>
+            <Text className="text-base font-semibold text-brand-900">{option.label}</Text>
           </Pressable>
         );
       })}
@@ -99,15 +100,16 @@ export function MultiQuestion({ question, answer, onChange }: MultiQuestionProps
             accessibilityState={{ selected, disabled }}
             disabled={disabled}
             onPress={() => toggle(option.value)}
+            style={({ pressed }) => (pressed && !disabled ? { opacity: 0.85 } : null)}
             className={
               selected
-                ? "min-h-[44px] rounded-lg border-2 border-brand-700 bg-brand-100 px-4 py-3"
+                ? "min-h-[44px] rounded-2xl border-2 border-brand-700 bg-brand-100 px-4 py-3 shadow-md"
                 : disabled
-                  ? "min-h-[44px] rounded-lg border border-brand-100 px-4 py-3 opacity-50"
-                  : "min-h-[44px] rounded-lg border border-brand-200 px-4 py-3"
+                  ? "min-h-[44px] rounded-2xl border border-brand-100 bg-white px-4 py-3 opacity-50"
+                  : "min-h-[44px] rounded-2xl border border-brand-200 bg-white px-4 py-3 shadow-md"
             }
           >
-            <Text className="text-base text-brand-900">{option.label}</Text>
+            <Text className="text-base font-semibold text-brand-900">{option.label}</Text>
           </Pressable>
         );
       })}
@@ -140,13 +142,20 @@ export function ScaleQuestion({ question, answer, onChange }: ScaleQuestionProps
               accessibilityRole="button"
               accessibilityState={{ selected }}
               onPress={() => onChange({ type: "scale", questionId: question.id, value: n })}
+              style={({ pressed }) => (pressed ? { opacity: 0.85 } : null)}
               className={
                 selected
-                  ? "min-h-[44px] flex-1 items-center rounded-lg border-2 border-brand-700 bg-brand-100 py-3"
-                  : "min-h-[44px] flex-1 items-center rounded-lg border border-brand-200 py-3"
+                  ? "min-h-[44px] flex-1 items-center justify-center rounded-full bg-brand-700 py-3"
+                  : "min-h-[44px] flex-1 items-center justify-center rounded-full border border-brand-100 bg-white py-3"
               }
             >
-              <Text className="text-base text-brand-900">{n}</Text>
+              <Text
+                className={
+                  selected ? "text-base font-semibold text-white" : "text-base text-brand-900"
+                }
+              >
+                {n}
+              </Text>
             </Pressable>
           );
         })}
@@ -218,13 +227,20 @@ export function DurationQuestion({ question, answer, onChange }: DurationQuestio
               accessibilityRole="button"
               accessibilityState={{ selected }}
               onPress={() => handleSelectUnit(candidateUnit)}
+              style={({ pressed }) => (pressed ? { opacity: 0.85 } : null)}
               className={
                 selected
-                  ? "min-h-[44px] rounded-lg border-2 border-brand-700 bg-brand-100 px-4 py-2"
-                  : "min-h-[44px] rounded-lg border border-brand-200 px-4 py-2"
+                  ? "min-h-[44px] rounded-full bg-brand-700 px-4 py-2.5"
+                  : "min-h-[44px] rounded-full border border-brand-100 bg-white px-4 py-2.5"
               }
             >
-              <Text className="text-base text-brand-900">{candidateUnit}</Text>
+              <Text
+                className={
+                  selected ? "text-sm font-semibold text-white" : "text-sm text-brand-900"
+                }
+              >
+                {candidateUnit}
+              </Text>
             </Pressable>
           );
         })}

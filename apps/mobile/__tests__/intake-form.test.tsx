@@ -122,8 +122,8 @@ describe("IntakeForm — mutation-resistance (AC2)", () => {
     await fireEvent.press(screen.getByTestId("intake-option-synthetic-extra-x"));
     await fireEvent.press(screen.getByTestId("intake-next"));
 
-    // step 6: free-text — skip
-    expect(screen.getByTestId("intake-freetext-input")).toBeTruthy();
+    // step 6: quick-pick (free-text step's index) — skip
+    expect(screen.getByTestId("intake-descriptor-other-0")).toBeTruthy();
     await fireEvent.press(screen.getByTestId("intake-next"));
 
     // step 7: review
@@ -187,7 +187,8 @@ describe("IntakeForm — supporting flow tests (real category)", () => {
     await fireEvent.press(screen.getByTestId("intake-scale-severity-3"));
     await fireEvent.press(screen.getByTestId("intake-next"));
 
-    expect(screen.getByTestId("intake-freetext-input")).toBeTruthy();
+    await fireEvent.press(screen.getByTestId("intake-descriptor-other-0"));
+    await fireEvent.press(screen.getByTestId("intake-freetext-toggle"));
     expect(screen.getByTestId("intake-next").props.accessibilityState.disabled).toBe(false);
 
     await fireEvent.changeText(screen.getByTestId("intake-freetext-input"), "extra notes");

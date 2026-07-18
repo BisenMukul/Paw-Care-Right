@@ -61,6 +61,13 @@ export default function OtpScreen() {
       <Text
         accessibilityRole="header"
         maxFontSizeMultiplier={1.5}
+        className="text-center text-2xl font-bold text-brand-900"
+      >
+        {strings.auth.otp.title}
+      </Text>
+      <Text
+        accessibilityRole="header"
+        maxFontSizeMultiplier={1.5}
         className="text-center text-base text-brand-900"
       >
         {strings.auth.otp.prompt}

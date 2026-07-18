@@ -64,6 +64,32 @@ export function describeAnswer(question: QuestionDef, answer: Answer): string {
 }
 
 /**
+ * Serializes tap-selected descriptor chips (+ optional typed detail) into
+ * the single optional `freeText` string the payload already carries
+ * (FOUNDER-UX-1 plan §"Interfaces/contracts"). Selection order preserved;
+ * segments joined with ". "; empty in -> "". No schema change — the result
+ * is fed to the existing `buildIntakeCandidate`, which already trims and
+ * omits empty freeText.
+ */
+export function buildDescriptorFreeText(
+  selectedDescriptors: readonly string[],
+  extraDetail: string,
+): string {
+  const segments: string[] = [];
+  for (const descriptor of selectedDescriptors) {
+    const trimmed = descriptor.trim();
+    if (trimmed.length > 0) {
+      segments.push(trimmed);
+    }
+  }
+  const trimmedDetail = extraDetail.trim();
+  if (trimmedDetail.length > 0) {
+    segments.push(trimmedDetail);
+  }
+  return segments.join(". ").trim();
+}
+
+/**
  * Flattens every `photoPrompt` answer's `photoKeys` into a single top-level
  * array, in `intake.answers` order (T047 plan D8). The POST DTO takes a
  * top-level `photoKeys` array; the keys otherwise live nested inside

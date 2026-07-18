@@ -90,7 +90,7 @@ describe("auth + onboarding a11y/design-system sweep", () => {
       const { toJSON } = await render(<WelcomeScreen />);
 
       expect(findClassName(toJSON(), (c) => c.includes("bg-brand-50"))).toBe(true);
-      expect(screen.queryByTestId("home-gradient-background")).toBeNull();
+      expect(screen.queryByTestId("welcome-hero")).not.toBeNull();
 
       const title = screen.getByTestId("app-title");
       expect(title.props.accessibilityRole).toBe("header");

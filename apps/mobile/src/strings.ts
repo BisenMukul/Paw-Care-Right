@@ -189,6 +189,8 @@ export const strings = {
       continueWithEmail: "Continue with email",
     },
     email: {
+      title: "What's your email?",
+      subtitle: "We'll send you a 6-digit code to sign in.",
       label: "Email address",
       placeholder: "you@example.com",
       invalidEmail: "Enter a valid email address.",
@@ -196,6 +198,7 @@ export const strings = {
       genericError: "Something went wrong. Please try again.",
     },
     otp: {
+      title: "Check your email",
       prompt: "Enter the 6-digit code we sent you.",
       resend: "Resend code",
       verifying: "Verifying...",
@@ -597,6 +600,11 @@ export const strings = {
     next: "Next",
     skip: "Skip",
     maxSelectionsHint: (n: number) => `Choose up to ${n}`,
+    quickPick: {
+      title: "What are you noticing?",
+      hint: "Tap anything you've seen — pick as many as apply. This step is optional.",
+      addDetail: "Add more detail",
+    },
     freeText: {
       title: "Anything else you'd like to add?",
       placeholder: "Add any other details in your own words.",

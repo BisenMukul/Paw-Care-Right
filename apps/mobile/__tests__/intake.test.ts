@@ -1,7 +1,7 @@
 import { getCategoryDef, parseIntake } from "@pawcareright/types";
 import type { Answer, CategoryDef } from "@pawcareright/types";
 
-import { buildIntakeCandidate, describeAnswer } from "../src/checks/intake";
+import { buildDescriptorFreeText, buildIntakeCandidate, describeAnswer } from "../src/checks/intake";
 
 // Pure-helper tests (T045 plan §"Pure-helper tests").
 
@@ -41,6 +41,25 @@ describe("buildIntakeCandidate", () => {
     const result = parseIntake(candidate);
 
     expect(result.ok).toBe(true);
+  });
+});
+
+describe("buildDescriptorFreeText", () => {
+  it("joins chips-only selections with '. '", () => {
+    expect(buildDescriptorFreeText(["a", "b"], "")).toBe("a. b");
+  });
+
+  it("appends trimmed typed detail after chips", () => {
+    expect(buildDescriptorFreeText(["a", "b"], "  more  ")).toBe("a. b. more");
+  });
+
+  it("typed detail only (no chips)", () => {
+    expect(buildDescriptorFreeText([], "more")).toBe("more");
+  });
+
+  it("empty chips and empty detail -> \"\"", () => {
+    expect(buildDescriptorFreeText([], "")).toBe("");
+    expect(buildDescriptorFreeText([], "   ")).toBe("");
   });
 });
 

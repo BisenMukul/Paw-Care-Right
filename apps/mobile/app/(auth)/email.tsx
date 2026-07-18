@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import { useRef, useState } from "react";
-import { AccessibilityInfo, KeyboardAvoidingView, Platform, TextInput, findNodeHandle } from "react-native";
+import { AccessibilityInfo, KeyboardAvoidingView, Platform, Text, TextInput, View, findNodeHandle } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useAuthStore } from "../../src/auth/auth-store";
@@ -55,7 +55,13 @@ export default function EmailScreen() {
       behavior={Platform.OS === "ios" ? "padding" : undefined}
       className="flex-1"
     >
-      <SafeAreaView className="flex-1 justify-center gap-4 bg-brand-50 px-6">
+      <SafeAreaView className="flex-1 justify-center gap-6 bg-brand-50 px-6">
+        <View className="gap-1">
+          <Text accessibilityRole="header" maxFontSizeMultiplier={1.5} className="text-2xl font-bold text-brand-900">
+            {strings.auth.email.title}
+          </Text>
+          <Text className="text-sm text-brand-700">{strings.auth.email.subtitle}</Text>
+        </View>
         <TextField
           ref={emailFieldRef}
           testID="email-input"
