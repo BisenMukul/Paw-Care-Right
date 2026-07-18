@@ -1,7 +1,9 @@
+import { APP_DISPLAY_NAME } from "@pawcareright/config";
 import { HOME_CARE_ALLOWED_TIERS, SAFE_FALLBACK, URGENCY_TIERS, type TriageResult, type Urgency } from "@pawcareright/types";
 import { render, screen } from "@testing-library/react-native";
 
 import CheckResultScreen from "../app/check/result/[checkId]";
+import { strings } from "../src/strings";
 
 // T048 plan AC1 "Snapshot per tier" + "disclaimer presence asserted in every
 // snapshot": one stable snapshot per URGENCY_TIERS entry, plus AC2's
@@ -99,5 +101,27 @@ describe("check result screen snapshots", () => {
 
     expect(screen.getByTestId("check-result-fallback-notice")).toBeTruthy();
     expect(screen.getByTestId("vet-disclaimer")).toBeTruthy();
+  });
+
+  // PAWSAATHI-3 plan (decision 2 / Risk R2): `vet-disclaimer.tsx` is
+  // ZERO-DIFF this batch -- its `brand-900`-on-`brand-50` pair is already
+  // AAA on any OS scheme (its own opaque light container never sits on a
+  // dark surface), so it gets no `dark:`/`font-*` token. Pins that both the
+  // node's className and its rendered text stay byte-identical.
+  it("PAWSAATHI-3: vet-disclaimer carries no dark: token and its text is byte-identical", async () => {
+    mockUseCheck.mockReturnValue({
+      data: { id: "c1", status: "DONE", category: "vomiting", createdAt: "2024-01-01T00:00:00.000Z", result: fixtureFor("MONITOR") },
+      isError: false,
+      refetch: jest.fn(),
+    });
+
+    await render(<CheckResultScreen />);
+
+    const disclaimer = screen.getByTestId("vet-disclaimer");
+    expect(disclaimer.props.className).not.toContain("dark:");
+
+    const disclaimerText = screen.getByText(strings.check.result.disclaimer(APP_DISPLAY_NAME));
+    expect(disclaimerText.props.className).not.toContain("dark:");
+    expect(disclaimerText.props.children).toBe(strings.check.result.disclaimer(APP_DISPLAY_NAME));
   });
 });

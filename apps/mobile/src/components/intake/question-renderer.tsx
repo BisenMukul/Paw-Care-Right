@@ -46,11 +46,11 @@ export function SingleQuestion({ question, answer, onChange }: SingleQuestionPro
             style={({ pressed }) => (pressed ? { opacity: 0.85 } : null)}
             className={
               selected
-                ? "min-h-[44px] rounded-2xl border-2 border-brand-700 bg-brand-100 px-4 py-3 shadow-md"
-                : "min-h-[44px] rounded-2xl border border-brand-200 bg-white px-4 py-3 shadow-md"
+                ? "min-h-[44px] rounded-2xl border-2 border-brand-700 bg-brand-100 px-4 py-3 shadow-md dark:border-accent-bright dark:bg-surface-raised-dark"
+                : "min-h-[44px] rounded-2xl border border-brand-200 bg-white px-4 py-3 shadow-md dark:border-hairline-dark dark:bg-surface-card-dark"
             }
           >
-            <Text className="text-base font-semibold text-brand-900">{option.label}</Text>
+            <Text className="text-base font-semibold text-brand-900 dark:text-ink-dark">{option.label}</Text>
           </Pressable>
         );
       })}
@@ -85,7 +85,7 @@ export function MultiQuestion({ question, answer, onChange }: MultiQuestionProps
   return (
     <View className="gap-2">
       {question.maxSelections !== undefined ? (
-        <Text testID={`intake-multi-hint-${question.id}`} className="text-sm text-brand-700">
+        <Text testID={`intake-multi-hint-${question.id}`} className="text-sm text-brand-700 dark:text-ink-muted-dark font-body">
           {strings.intake.maxSelectionsHint(question.maxSelections)}
         </Text>
       ) : null}
@@ -103,13 +103,13 @@ export function MultiQuestion({ question, answer, onChange }: MultiQuestionProps
             style={({ pressed }) => (pressed && !disabled ? { opacity: 0.85 } : null)}
             className={
               selected
-                ? "min-h-[44px] rounded-2xl border-2 border-brand-700 bg-brand-100 px-4 py-3 shadow-md"
+                ? "min-h-[44px] rounded-2xl border-2 border-brand-700 bg-brand-100 px-4 py-3 shadow-md dark:border-accent-bright dark:bg-surface-raised-dark"
                 : disabled
-                  ? "min-h-[44px] rounded-2xl border border-brand-100 bg-white px-4 py-3 opacity-50"
-                  : "min-h-[44px] rounded-2xl border border-brand-200 bg-white px-4 py-3 shadow-md"
+                  ? "min-h-[44px] rounded-2xl border border-brand-100 bg-white px-4 py-3 opacity-50 dark:border-hairline-dark dark:bg-surface-card-dark"
+                  : "min-h-[44px] rounded-2xl border border-brand-200 bg-white px-4 py-3 shadow-md dark:border-hairline-dark dark:bg-surface-card-dark"
             }
           >
-            <Text className="text-base font-semibold text-brand-900">{option.label}</Text>
+            <Text className="text-base font-semibold text-brand-900 dark:text-ink-dark">{option.label}</Text>
           </Pressable>
         );
       })}
@@ -145,13 +145,13 @@ export function ScaleQuestion({ question, answer, onChange }: ScaleQuestionProps
               style={({ pressed }) => (pressed ? { opacity: 0.85 } : null)}
               className={
                 selected
-                  ? "min-h-[44px] flex-1 items-center justify-center rounded-full bg-brand-700 py-3"
-                  : "min-h-[44px] flex-1 items-center justify-center rounded-full border border-brand-100 bg-white py-3"
+                  ? "min-h-[44px] flex-1 items-center justify-center rounded-full bg-brand-700 py-3 dark:bg-accent-dark"
+                  : "min-h-[44px] flex-1 items-center justify-center rounded-full border border-brand-100 bg-white py-3 dark:border-hairline-dark dark:bg-surface-card-dark"
               }
             >
               <Text
                 className={
-                  selected ? "text-base font-semibold text-white" : "text-base text-brand-900"
+                  selected ? "text-base font-semibold text-white" : "text-base text-brand-900 dark:text-ink-dark"
                 }
               >
                 {n}
@@ -161,10 +161,10 @@ export function ScaleQuestion({ question, answer, onChange }: ScaleQuestionProps
         })}
       </View>
       <View className="flex-row justify-between">
-        <Text testID={`intake-scale-minlabel-${question.id}`} className="text-sm text-brand-700">
+        <Text testID={`intake-scale-minlabel-${question.id}`} className="text-sm text-brand-700 dark:text-ink-muted-dark font-body">
           {question.minLabel}
         </Text>
-        <Text testID={`intake-scale-maxlabel-${question.id}`} className="text-sm text-brand-700">
+        <Text testID={`intake-scale-maxlabel-${question.id}`} className="text-sm text-brand-700 dark:text-ink-muted-dark font-body">
           {question.maxLabel}
         </Text>
       </View>
@@ -230,13 +230,13 @@ export function DurationQuestion({ question, answer, onChange }: DurationQuestio
               style={({ pressed }) => (pressed ? { opacity: 0.85 } : null)}
               className={
                 selected
-                  ? "min-h-[44px] rounded-full bg-brand-700 px-4 py-2.5"
-                  : "min-h-[44px] rounded-full border border-brand-100 bg-white px-4 py-2.5"
+                  ? "min-h-[44px] rounded-full bg-brand-700 px-4 py-2.5 dark:bg-accent-dark"
+                  : "min-h-[44px] rounded-full border border-brand-100 bg-white px-4 py-2.5 dark:border-hairline-dark dark:bg-surface-card-dark"
               }
             >
               <Text
                 className={
-                  selected ? "text-sm font-semibold text-white" : "text-sm text-brand-900"
+                  selected ? "text-sm font-semibold text-white" : "text-sm text-brand-900 dark:text-ink-dark"
                 }
               >
                 {candidateUnit}
@@ -258,11 +258,11 @@ export function DurationQuestion({ question, answer, onChange }: DurationQuestio
 export function QuestionRenderer({ question, answer, onChange, photoUpload }: QuestionRendererProps) {
   return (
     <View className="gap-3">
-      <Text testID="intake-question-prompt" className="text-lg font-semibold text-brand-900">
+      <Text testID="intake-question-prompt" className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold">
         {question.prompt}
       </Text>
       {question.helpText !== undefined ? (
-        <Text className="text-sm text-brand-700">{question.helpText}</Text>
+        <Text className="text-sm text-brand-700 dark:text-ink-muted-dark font-body">{question.helpText}</Text>
       ) : null}
       {renderByType(question, answer, onChange, photoUpload)}
     </View>

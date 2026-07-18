@@ -128,12 +128,12 @@ export function PhotoPromptQuestion({ question, answer, onChange, photoUpload }:
   // Muted-copy rule (design-system.md §1.1): the disabled affordance already
   // conveys state via the limit-hint copy + `opacity-50` sibling pattern, so
   // the CTA label itself no longer needs a distinct disabled color.
-  const ctaTextClassName = "text-base font-medium text-brand-700";
+  const ctaTextClassName = "text-base font-medium text-brand-700 dark:text-accent-bright";
 
   if (photoUpload === undefined) {
     return (
       <View className="gap-3">
-        <Text className="text-sm text-brand-700">{strings.intake.photo.rationale}</Text>
+        <Text className="text-sm text-brand-700 dark:text-ink-muted-dark font-body">{strings.intake.photo.rationale}</Text>
         <View className="flex-row gap-3">
           <Pressable
             testID={`intake-photo-camera-${question.id}`}
@@ -141,7 +141,7 @@ export function PhotoPromptQuestion({ question, answer, onChange, photoUpload }:
             accessibilityState={{ disabled: true }}
             disabled
           >
-            <Text className="text-base font-medium text-brand-700">{strings.intake.photo.takePhoto}</Text>
+            <Text className="text-base font-medium text-brand-700 dark:text-accent-bright">{strings.intake.photo.takePhoto}</Text>
           </Pressable>
           <Pressable
             testID={`intake-photo-library-${question.id}`}
@@ -149,10 +149,10 @@ export function PhotoPromptQuestion({ question, answer, onChange, photoUpload }:
             accessibilityState={{ disabled: true }}
             disabled
           >
-            <Text className="text-base font-medium text-brand-700">{strings.intake.photo.chooseLibrary}</Text>
+            <Text className="text-base font-medium text-brand-700 dark:text-accent-bright">{strings.intake.photo.chooseLibrary}</Text>
           </Pressable>
         </View>
-        <Text testID={`intake-photo-unavailable-${question.id}`} className="text-sm text-brand-700">
+        <Text testID={`intake-photo-unavailable-${question.id}`} className="text-sm text-brand-700 dark:text-ink-muted-dark font-body">
           {strings.intake.photo.unavailable}
         </Text>
       </View>
@@ -161,7 +161,7 @@ export function PhotoPromptQuestion({ question, answer, onChange, photoUpload }:
 
   return (
     <View className="gap-3">
-      <Text className="text-sm text-brand-700">{strings.intake.photo.rationale}</Text>
+      <Text className="text-sm text-brand-700 dark:text-ink-muted-dark font-body">{strings.intake.photo.rationale}</Text>
 
       <View className="flex-row gap-3">
         <Pressable
@@ -185,7 +185,7 @@ export function PhotoPromptQuestion({ question, answer, onChange, photoUpload }:
       </View>
 
       {atLimit ? (
-        <Text testID={`intake-photo-limit-${question.id}`} className="text-sm text-brand-700">
+        <Text testID={`intake-photo-limit-${question.id}`} className="text-sm text-brand-700 dark:text-ink-muted-dark font-body">
           {strings.intake.photo.limitHint(question.maxPhotos)}
         </Text>
       ) : null}
@@ -202,25 +202,25 @@ export function PhotoPromptQuestion({ question, answer, onChange, photoUpload }:
             ) : (
               <View
                 testID={`intake-photo-placeholder-${question.id}-${slot.id}`}
-                className="h-20 w-20 rounded-lg bg-brand-100"
+                className="h-20 w-20 rounded-lg bg-brand-100 dark:bg-surface-raised-dark"
               />
             )}
 
             {slot.status === "uploading" ? (
-              <Text testID={`intake-photo-progress-${question.id}-${slot.id}`} className="text-xs text-brand-700">
+              <Text testID={`intake-photo-progress-${question.id}-${slot.id}`} className="text-xs text-brand-700 dark:text-ink-muted-dark font-body">
                 {strings.intake.photo.uploading(Math.round(slot.progress * 100))}
               </Text>
             ) : null}
 
             {slot.status === "failed" ? (
               <View className="gap-1">
-                <Text className="text-xs text-red-600">{strings.intake.photo.failed}</Text>
+                <Text className="text-xs text-red-600 dark:text-red-400">{strings.intake.photo.failed}</Text>
                 <Pressable
                   testID={`intake-photo-retry-${question.id}-${slot.id}`}
                   accessibilityRole="button"
                   onPress={() => retry(slot.id)}
                 >
-                  <Text className="text-xs font-medium text-brand-700">{strings.intake.photo.retry}</Text>
+                  <Text className="text-xs font-medium text-brand-700 dark:text-accent-bright">{strings.intake.photo.retry}</Text>
                 </Pressable>
               </View>
             ) : null}
@@ -230,14 +230,14 @@ export function PhotoPromptQuestion({ question, answer, onChange, photoUpload }:
               accessibilityRole="button"
               onPress={() => removeSlot(slot.id)}
             >
-              <Text className="text-xs font-medium text-brand-700">{strings.intake.photo.remove}</Text>
+              <Text className="text-xs font-medium text-brand-700 dark:text-accent-bright">{strings.intake.photo.remove}</Text>
             </Pressable>
           </View>
         ))}
       </View>
 
       {error !== undefined ? (
-        <Text testID={`intake-photo-error-${question.id}`} className="text-sm text-red-600">
+        <Text testID={`intake-photo-error-${question.id}`} className="text-sm text-red-600 dark:text-red-400">
           {error}
         </Text>
       ) : null}

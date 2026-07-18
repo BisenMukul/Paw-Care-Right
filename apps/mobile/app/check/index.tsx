@@ -52,21 +52,21 @@ export default function CheckEntryScreen() {
   };
 
   return (
-    <SafeAreaView testID="check-entry-screen" className="flex-1 bg-brand-50">
+    <SafeAreaView testID="check-entry-screen" className="flex-1 bg-brand-50 dark:bg-surface-page-dark">
       <View className="gap-3 px-4 pb-4 pt-2">
         {isOffline ? (
           <Text
             testID="check-offline-banner"
             accessibilityRole="alert"
-            className="text-center text-sm text-brand-700"
+            className="text-center text-sm text-brand-700 dark:text-ink-muted-dark"
           >
             {strings.check.offlineBanner}
           </Text>
         ) : null}
-        <Text accessibilityRole="header" maxFontSizeMultiplier={1.5} className="text-2xl font-bold text-brand-900">
+        <Text accessibilityRole="header" maxFontSizeMultiplier={1.5} className="text-2xl font-bold text-brand-900 dark:text-ink-dark font-display">
           {strings.check.title}
         </Text>
-        <Text className="text-sm text-brand-700">{strings.check.subtitle}</Text>
+        <Text className="text-sm text-brand-700 dark:text-ink-muted-dark font-body">{strings.check.subtitle}</Text>
       </View>
       <ScrollView
         testID="check-entry-scroll"
@@ -78,17 +78,17 @@ export default function CheckEntryScreen() {
         <View className="gap-6 px-4 pb-8">
           <CategoryGrid onSelect={handleSelect} />
           <View className="gap-2">
-            <Text className="text-base font-semibold text-brand-900">
+            <Text className="text-base font-semibold text-brand-900 dark:text-ink-dark font-body-semibold">
               {strings.check.recentTitle}
             </Text>
             {isLoading ? (
               <Skeleton testID="check-recent-loading" lines={3} />
             ) : isError ? (
-              <Text testID="check-recent-error" className="text-sm text-red-700">
+              <Text testID="check-recent-error" className="text-sm text-red-700 dark:text-red-400">
                 {strings.check.history.error}
               </Text>
             ) : recent.length === 0 ? (
-              <Text testID="check-recent-empty" className="text-sm text-brand-700">
+              <Text testID="check-recent-empty" className="text-sm text-brand-700 dark:text-ink-muted-dark font-body">
                 {strings.check.recentEmpty}
               </Text>
             ) : (
@@ -102,7 +102,7 @@ export default function CheckEntryScreen() {
                   onPress={handleSeeAll}
                   className="items-center py-2"
                 >
-                  <Text className="text-sm font-semibold text-brand-700">{strings.check.recentSeeAll}</Text>
+                  <Text className="text-sm font-semibold text-brand-700 dark:text-accent-bright font-body-semibold">{strings.check.recentSeeAll}</Text>
                 </Pressable>
               </View>
             )}

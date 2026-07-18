@@ -24,10 +24,10 @@ export function CategoryGrid({ categories = INTAKE_CATEGORIES, onSelect }: Categ
           testID={`check-category-${category.id}`}
           onPress={() => onSelect(category.id)}
           accessibilityRole="button"
-          className="min-h-[44px] w-[30%] items-center gap-2 rounded-2xl bg-white px-4 py-5 shadow-md"
+          className="min-h-[44px] w-[30%] items-center gap-2 rounded-2xl bg-white dark:bg-surface-card-dark px-4 py-5 shadow-md"
         >
           <Text className="text-2xl">{getCategoryIcon(category.id)}</Text>
-          <Text className="text-center text-sm font-semibold text-brand-900">
+          <Text className="text-center text-sm font-semibold text-brand-900 dark:text-ink-dark font-body-semibold">
             {category.label}
           </Text>
         </Pressable>

@@ -19,6 +19,18 @@ describe("CategoryGrid — schema-driven (AC1a)", () => {
     const grid = screen.getByTestId("check-category-grid");
     expect(grid.children.length).toBe(INTAKE_CATEGORIES.length);
   });
+
+  it("PAWSAATHI-3: tile carries bg-white + dark:bg-surface-card-dark, label carries dark:text-ink-dark", async () => {
+    await render(<CategoryGrid onSelect={jest.fn()} />);
+
+    const [firstCategory] = INTAKE_CATEGORIES;
+    const cell = screen.getByTestId(`check-category-${firstCategory!.id}`);
+    expect(cell.props.className).toContain("bg-white");
+    expect(cell.props.className).toContain("dark:bg-surface-card-dark");
+
+    const label = screen.getByText(firstCategory!.label);
+    expect(label.props.className).toContain("dark:text-ink-dark");
+  });
 });
 
 describe("CategoryGrid — injected schema (AC1b, mutation-resistance)", () => {

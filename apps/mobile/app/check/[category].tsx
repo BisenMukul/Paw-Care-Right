@@ -2,7 +2,7 @@ import { useIsOffline } from "@pawcareright/api-client";
 import { getCategoryDef } from "@pawcareright/types";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useMemo } from "react";
-import { ActivityIndicator, Text, View } from "react-native";
+import { ActivityIndicator, Text, useColorScheme, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { uploadIntakePhoto } from "../../src/api/intake-photos-api";
@@ -25,6 +25,8 @@ export default function IntakeScreen() {
   const router = useRouter();
   const { category, petId } = useLocalSearchParams<{ category?: string; petId?: string }>();
   const isOffline = useIsOffline();
+  const scheme = useColorScheme();
+  const spinnerColor = scheme === "dark" ? "#2EA57C" : "#1f6350";
 
   const categoryDef = category !== undefined ? getCategoryDef(category) : undefined;
 
@@ -49,16 +51,16 @@ export default function IntakeScreen() {
 
   if (categoryDef === undefined) {
     return (
-      <SafeAreaView testID="intake-invalid-category" className="flex-1 items-center justify-center bg-brand-50 px-6">
-        <Text className="text-center text-base text-brand-900">{strings.intake.invalidCategory}</Text>
+      <SafeAreaView testID="intake-invalid-category" className="flex-1 items-center justify-center bg-brand-50 dark:bg-surface-page-dark px-6">
+        <Text className="text-center text-base text-brand-900 dark:text-ink-dark">{strings.intake.invalidCategory}</Text>
       </SafeAreaView>
     );
   }
 
   return (
-    <View className="flex-1 bg-brand-50">
+    <View className="flex-1 bg-brand-50 dark:bg-surface-page-dark">
       {isOffline ? (
-        <Text testID="intake-offline-banner" className="px-6 pt-2 text-center text-sm text-brand-700">
+        <Text testID="intake-offline-banner" className="px-6 pt-2 text-center text-sm text-brand-700 dark:text-ink-muted-dark">
           {strings.intake.offlineBanner}
         </Text>
       ) : null}
@@ -66,19 +68,19 @@ export default function IntakeScreen() {
       {submission.state === "submitting" ? (
         <SafeAreaView
           testID="check-submit-submitting"
-          className="absolute inset-0 z-10 items-center justify-center gap-4 bg-brand-50/95 px-6"
+          className="absolute inset-0 z-10 items-center justify-center gap-4 bg-brand-50/95 dark:bg-surface-page-dark/95 px-6"
         >
-          <ActivityIndicator />
-          <Text className="text-center text-base text-brand-900">{strings.check.submit.submitting}</Text>
+          <ActivityIndicator color={spinnerColor} />
+          <Text className="text-center text-base text-brand-900 dark:text-ink-dark">{strings.check.submit.submitting}</Text>
         </SafeAreaView>
       ) : null}
 
       {submission.state === "offline" ? (
         <SafeAreaView
           testID="check-submit-offline"
-          className="absolute inset-0 z-10 items-center justify-center gap-4 bg-brand-50 px-6"
+          className="absolute inset-0 z-10 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6"
         >
-          <Text className="text-center text-base text-brand-900">{strings.check.submit.offlineBlocked}</Text>
+          <Text className="text-center text-base text-brand-900 dark:text-ink-dark">{strings.check.submit.offlineBlocked}</Text>
           <PrimaryButton
             testID="check-submit-offline-retry"
             label={strings.check.submit.offlineRetry}
@@ -90,12 +92,12 @@ export default function IntakeScreen() {
       {submission.state === "quota" ? (
         <SafeAreaView
           testID="check-submit-quota"
-          className="absolute inset-0 z-10 items-center justify-center gap-4 bg-brand-50 px-6"
+          className="absolute inset-0 z-10 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6"
         >
-          <Text className="text-center text-lg font-semibold text-brand-900">
+          <Text className="text-center text-lg font-semibold text-brand-900 dark:text-ink-dark font-body-semibold">
             {strings.check.submit.quotaTitle}
           </Text>
-          <Text className="text-center text-base text-brand-700">{strings.check.submit.quotaBody}</Text>
+          <Text className="text-center text-base text-brand-700 dark:text-ink-muted-dark">{strings.check.submit.quotaBody}</Text>
           {/* Neutral "See plans" affordance (SPEC F8) — deep-links to the
               paywall (T075); this screen's quota state stays bespoke rather
               than the global upsell sheet (the check mutation carries
@@ -111,9 +113,9 @@ export default function IntakeScreen() {
       {submission.state === "error" ? (
         <SafeAreaView
           testID="check-submit-error"
-          className="absolute inset-0 z-10 items-center justify-center gap-4 bg-brand-50 px-6"
+          className="absolute inset-0 z-10 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6"
         >
-          <Text className="text-center text-base text-brand-900">{strings.check.submit.error}</Text>
+          <Text className="text-center text-base text-brand-900 dark:text-ink-dark">{strings.check.submit.error}</Text>
           <PrimaryButton
             testID="check-submit-error-retry"
             label={strings.check.submit.errorRetry}

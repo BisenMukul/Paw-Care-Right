@@ -1,7 +1,7 @@
 import type { Answer, CategoryDef, CompletedIntake, QuestionDef } from "@pawcareright/types";
 import { parseIntake } from "@pawcareright/types";
 import { useState } from "react";
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, TextInput, View } from "react-native";
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, TextInput, useColorScheme, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -36,6 +36,8 @@ function omitKey(record: Record<string, Answer>, key: string): Record<string, An
  */
 export function IntakeForm({ categoryDef, onExit, onSubmit, photoUpload }: IntakeFormProps) {
   const reduced = useReducedMotion();
+  const scheme = useColorScheme();
+  const placeholderColor = scheme === "dark" ? "#9AA8A1" : "#2f8f74";
   const questions = categoryDef.questions;
   const total = questions.length + 2;
   const freeTextStepIndex = questions.length;
@@ -78,7 +80,7 @@ export function IntakeForm({ categoryDef, onExit, onSubmit, photoUpload }: Intak
   const descriptors = getDescriptors(categoryDef.id);
 
   return (
-    <SafeAreaView testID="intake-form" className="flex-1 bg-brand-50">
+    <SafeAreaView testID="intake-form" className="flex-1 bg-brand-50 dark:bg-surface-page-dark">
       <KeyboardAvoidingView className="flex-1" behavior={Platform.OS === "ios" ? "padding" : undefined}>
         <View className="flex-1 px-6 py-4">
           <View testID="intake-progress" className="gap-2">
@@ -86,11 +88,11 @@ export function IntakeForm({ categoryDef, onExit, onSubmit, photoUpload }: Intak
               {Array.from({ length: total }, (_, index) => (
                 <View
                   key={index}
-                  className={index <= stepIndex ? "h-1.5 flex-1 rounded-full bg-brand-500" : "h-1.5 flex-1 rounded-full bg-brand-100"}
+                  className={index <= stepIndex ? "h-1.5 flex-1 rounded-full bg-brand-500 dark:bg-accent-bright" : "h-1.5 flex-1 rounded-full bg-brand-100 dark:bg-surface-raised-dark"}
                 />
               ))}
             </View>
-            <Text className="text-center text-sm text-brand-700">
+            <Text className="text-center text-sm text-brand-700 dark:text-ink-muted-dark font-body">
               {strings.intake.stepOf(stepIndex + 1, total)}
             </Text>
           </View>
@@ -112,10 +114,10 @@ export function IntakeForm({ categoryDef, onExit, onSubmit, photoUpload }: Intak
 
               {isFreeTextStep ? (
                 <View className="gap-3">
-                  <Text className="text-lg font-semibold text-brand-900">
+                  <Text className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold">
                     {strings.intake.quickPick.title}
                   </Text>
-                  <Text className="text-sm text-brand-700">{strings.intake.quickPick.hint}</Text>
+                  <Text className="text-sm text-brand-700 dark:text-ink-muted-dark font-body">{strings.intake.quickPick.hint}</Text>
                   <View className="flex-row flex-wrap gap-2">
                     {descriptors.map((descriptor, index) => {
                       const selected = selectedDescriptors.includes(descriptor);
@@ -129,15 +131,15 @@ export function IntakeForm({ categoryDef, onExit, onSubmit, photoUpload }: Intak
                           style={({ pressed }) => (pressed ? { opacity: 0.85 } : null)}
                           className={
                             selected
-                              ? "min-h-[44px] items-center justify-center rounded-full bg-brand-700 px-4 py-2.5"
-                              : "min-h-[44px] items-center justify-center rounded-full border border-brand-100 bg-white px-4 py-2.5"
+                              ? "min-h-[44px] items-center justify-center rounded-full bg-brand-700 dark:bg-accent-dark px-4 py-2.5"
+                              : "min-h-[44px] items-center justify-center rounded-full border border-brand-100 bg-white dark:border-hairline-dark dark:bg-surface-card-dark px-4 py-2.5"
                           }
                         >
                           <Text
                             className={
                               selected
                                 ? "text-sm font-semibold text-white"
-                                : "text-sm text-brand-900"
+                                : "text-sm text-brand-900 dark:text-ink-dark"
                             }
                           >
                             {descriptor}
@@ -155,7 +157,7 @@ export function IntakeForm({ categoryDef, onExit, onSubmit, photoUpload }: Intak
 
                   {showFreeTextInput ? (
                     <View className="gap-2">
-                      <Text className="text-lg font-semibold text-brand-900">
+                      <Text className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold">
                         {strings.intake.freeText.title}
                       </Text>
                       <TextInput
@@ -163,12 +165,12 @@ export function IntakeForm({ categoryDef, onExit, onSubmit, photoUpload }: Intak
                         value={extraDetail}
                         onChangeText={setExtraDetail}
                         placeholder={strings.intake.freeText.placeholder}
-                        placeholderTextColor="#2f8f74"
+                        placeholderTextColor={placeholderColor}
                         multiline
                         maxLength={2000}
-                        className="min-h-[120px] rounded-lg border border-brand-100 px-4 py-3 text-base text-brand-900"
+                        className="min-h-[120px] rounded-lg border border-brand-100 dark:border-hairline-dark dark:bg-surface-card-dark px-4 py-3 text-base text-brand-900 dark:text-ink-dark"
                       />
-                      <Text className="text-sm text-brand-700">{strings.intake.freeText.optional}</Text>
+                      <Text className="text-sm text-brand-700 dark:text-ink-muted-dark font-body">{strings.intake.freeText.optional}</Text>
                     </View>
                   ) : null}
                 </View>
@@ -176,7 +178,7 @@ export function IntakeForm({ categoryDef, onExit, onSubmit, photoUpload }: Intak
 
               {isReviewStep ? (
                 <View className="gap-3">
-                  <Text className="text-lg font-semibold text-brand-900">
+                  <Text className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold">
                     {strings.intake.review.title}
                   </Text>
                   {questions
@@ -185,11 +187,11 @@ export function IntakeForm({ categoryDef, onExit, onSubmit, photoUpload }: Intak
                       <View
                         key={question.id}
                         testID={`intake-review-row-${question.id}`}
-                        className="flex-row items-center justify-between gap-2 rounded-2xl bg-white p-4 shadow-md"
+                        className="flex-row items-center justify-between gap-2 rounded-2xl bg-white dark:bg-surface-card-dark p-4 shadow-md"
                       >
                         <View className="flex-1 gap-1">
-                          <Text className="text-sm font-semibold text-brand-900">{question.prompt}</Text>
-                          <Text className="text-sm text-brand-700">
+                          <Text className="text-sm font-semibold text-brand-900 dark:text-ink-dark">{question.prompt}</Text>
+                          <Text className="text-sm text-brand-700 dark:text-ink-muted-dark">
                             {describeAnswer(question, answers[question.id]!)}
                           </Text>
                         </View>
@@ -199,7 +201,7 @@ export function IntakeForm({ categoryDef, onExit, onSubmit, photoUpload }: Intak
                             setStepIndex(questions.findIndex((candidateQuestion) => candidateQuestion.id === question.id))
                           }
                         >
-                          <Text className="text-sm font-semibold text-brand-700">
+                          <Text className="text-sm font-semibold text-brand-700 dark:text-accent-bright font-body-semibold">
                             {strings.intake.review.edit}
                           </Text>
                         </Pressable>
@@ -208,19 +210,19 @@ export function IntakeForm({ categoryDef, onExit, onSubmit, photoUpload }: Intak
                   {freeText.trim().length > 0 ? (
                     <View
                       testID="intake-review-freetext"
-                      className="flex-row items-center justify-between gap-2 rounded-2xl bg-white p-4 shadow-md"
+                      className="flex-row items-center justify-between gap-2 rounded-2xl bg-white dark:bg-surface-card-dark p-4 shadow-md"
                     >
                       <View className="flex-1 gap-1">
-                        <Text className="text-sm font-semibold text-brand-900">
+                        <Text className="text-sm font-semibold text-brand-900 dark:text-ink-dark">
                           {strings.intake.freeText.title}
                         </Text>
-                        <Text className="text-sm text-brand-700">{freeText.trim()}</Text>
+                        <Text className="text-sm text-brand-700 dark:text-ink-muted-dark">{freeText.trim()}</Text>
                       </View>
                       <Pressable
                         testID="intake-review-edit-freetext"
                         onPress={() => setStepIndex(freeTextStepIndex)}
                       >
-                        <Text className="text-sm font-semibold text-brand-700">
+                        <Text className="text-sm font-semibold text-brand-700 dark:text-accent-bright font-body-semibold">
                           {strings.intake.review.edit}
                         </Text>
                       </Pressable>
@@ -228,7 +230,7 @@ export function IntakeForm({ categoryDef, onExit, onSubmit, photoUpload }: Intak
                   ) : null}
 
                   {!validation.ok ? (
-                    <Text testID="intake-validation-error" className="text-sm text-red-600">
+                    <Text testID="intake-validation-error" className="text-sm text-red-600 dark:text-red-400">
                       {strings.intake.validationError}
                     </Text>
                   ) : null}

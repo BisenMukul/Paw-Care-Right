@@ -1,4 +1,4 @@
-import type { AgendaEntry } from "@pawcareright/types";
+import type { AgendaEntry, CheckResponse } from "@pawcareright/types";
 import { petIdSchema, type Pet } from "@pawcareright/types";
 import { render, screen } from "@testing-library/react-native";
 import React from "react";
@@ -8,6 +8,9 @@ import type { TimelineItem } from "../src/api/health-logs-api";
 import { AgendaItem } from "../src/components/agenda-item";
 import { AppTitle } from "../src/components/app-title";
 import { Card } from "../src/components/card";
+import { CategoryGrid } from "../src/components/category-grid";
+import { CheckHistoryRow } from "../src/components/check-history-row";
+import { getCategoryLabel } from "../src/checks/check-history";
 import { Chip } from "../src/components/chip";
 import { EmptyState } from "../src/components/empty-state";
 import { GhostButton } from "../src/components/ghost-button";
@@ -293,6 +296,62 @@ describe("dual-theme-tokens: PAWSAATHI-2 CARE + LOGGING screens", () => {
     expect(JSON.stringify(row)).toContain("dark:bg-surface-card-dark");
     expect(screen.getByText(strings.timeline.kindLabel.NOTE).props.className).toContain("dark:text-ink-dark");
     expect(screen.getByText("2026-07-10").props.className).toContain("dark:text-ink-muted-dark");
+  });
+});
+
+describe("dual-theme-tokens: PAWSAATHI-3 SYMPTOM-CHECK flow", () => {
+  const MONITOR_CHECK: CheckResponse = {
+    id: "c1",
+    status: "DONE",
+    category: "vomiting",
+    createdAt: "2024-01-01T00:00:00.000Z",
+    result: {
+      urgency: "MONITOR",
+      confidence: "high",
+      summary: "General guidance based on the information provided.",
+      possibleCauses: [{ name: "Mild upset stomach", whyItFits: "Reported symptoms are consistent with this." }],
+      redFlagsToWatch: ["Repeated vomiting"],
+      homeCare: ["Offer small amounts of water"],
+      doNot: ["Do not give human medications without veterinary guidance."],
+      vetQuestions: ["How long have symptoms been present?"],
+      followUpHours: 24,
+    },
+  } as unknown as CheckResponse;
+
+  const IN_PROGRESS_CHECK: CheckResponse = {
+    id: "c2",
+    status: "RUNNING",
+    category: "vomiting",
+    createdAt: "2024-01-02T00:00:00.000Z",
+  } as unknown as CheckResponse;
+
+  it("CheckHistoryRow: row + title carry dark variants, MONITOR tier chip carries its dark:bg-blue-900/dark:text-blue-100 pair", async () => {
+    await render(<CheckHistoryRow item={MONITOR_CHECK} onPress={jest.fn()} />);
+
+    const row = screen.getByTestId("check-history-row-c1");
+    expect(row.props.className).toContain("dark:border-hairline-dark");
+
+    const title = screen.getByText(getCategoryLabel("vomiting"));
+    expect(title.props.className).toContain("dark:text-ink-dark");
+
+    const chip = screen.getByTestId("check-history-chip-c1");
+    expect(chip.props.className).toContain("dark:bg-blue-900");
+    const chipLabel = screen.getByText(strings.check.result.tierLabel.MONITOR);
+    expect(chipLabel.props.className).toContain("dark:text-blue-100");
+  });
+
+  it("CheckHistoryRow: in-progress chip carries dark:bg-surface-card-dark", async () => {
+    await render(<CheckHistoryRow item={IN_PROGRESS_CHECK} onPress={jest.fn()} />);
+
+    const chip = screen.getByTestId("check-history-chip-c2");
+    expect(chip.props.className).toContain("dark:bg-surface-card-dark");
+  });
+
+  it("CategoryGrid: tile carries dark:bg-surface-card-dark", async () => {
+    await render(<CategoryGrid onSelect={jest.fn()} />);
+
+    const tile = screen.getByTestId("check-category-vomiting");
+    expect(tile.props.className).toContain("dark:bg-surface-card-dark");
   });
 });
 

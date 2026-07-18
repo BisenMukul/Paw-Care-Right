@@ -36,10 +36,10 @@ export default function CheckResultScreen() {
     return (
       <SafeAreaView
         testID="check-result-error"
-        className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6"
+        className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6"
       >
-        <Text className="text-center text-base text-red-700">{strings.check.result.error}</Text>
-        <Text className="text-center text-sm text-brand-700">{strings.check.result.errorHint}</Text>
+        <Text className="text-center text-base text-red-700 dark:text-red-400">{strings.check.result.error}</Text>
+        <Text className="text-center text-sm text-brand-700 dark:text-ink-muted-dark">{strings.check.result.errorHint}</Text>
         <PrimaryButton
           testID="check-result-retry"
           label={strings.check.result.retry}
@@ -51,7 +51,7 @@ export default function CheckResultScreen() {
 
   if (!data || !isTerminalCheckStatus(data.status)) {
     return (
-      <SafeAreaView testID="check-result-loading" className="flex-1 gap-4 bg-brand-50 px-4 pt-4">
+      <SafeAreaView testID="check-result-loading" className="flex-1 gap-4 bg-brand-50 dark:bg-surface-page-dark px-4 pt-4">
         <Skeleton lines={5} />
       </SafeAreaView>
     );
@@ -80,7 +80,7 @@ export default function CheckResultScreen() {
   }
 
   return (
-    <SafeAreaView testID="check-result-screen" className="flex-1 bg-brand-50">
+    <SafeAreaView testID="check-result-screen" className="flex-1 bg-brand-50 dark:bg-surface-page-dark">
       <ScrollView testID="check-result-scroll" className="flex-1">
         <View className="gap-6 px-4 pb-8 pt-4">
           {data.redFlag !== undefined ? (
@@ -113,19 +113,19 @@ export default function CheckResultScreen() {
           </View>
 
           <Card className="gap-4">
-            <Text testID="check-result-summary" className="text-base text-brand-900">
+            <Text testID="check-result-summary" className="text-base text-brand-900 dark:text-ink-dark font-body">
               {result.summary}
             </Text>
 
             {result.possibleCauses.length ? (
               <View testID="check-result-possible-causes" className="gap-2">
-                <Text className="text-lg font-semibold text-brand-900">
+                <Text className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold">
                   {strings.check.result.sections.possibleCauses}
                 </Text>
                 {result.possibleCauses.map((cause) => (
                   <View key={cause.name}>
-                    <Text className="text-base font-semibold text-brand-900">{cause.name}</Text>
-                    <Text className="text-sm text-brand-700">{cause.whyItFits}</Text>
+                    <Text className="text-base font-semibold text-brand-900 dark:text-ink-dark font-body-semibold">{cause.name}</Text>
+                    <Text className="text-sm text-brand-700 dark:text-ink-muted-dark font-body">{cause.whyItFits}</Text>
                   </View>
                 ))}
               </View>
@@ -133,11 +133,11 @@ export default function CheckResultScreen() {
 
             {result.redFlagsToWatch.length ? (
               <View testID="check-result-red-flags-to-watch" className="gap-2">
-                <Text className="text-lg font-semibold text-brand-900">
+                <Text className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold">
                   {strings.check.result.sections.redFlagsToWatch}
                 </Text>
                 {result.redFlagsToWatch.map((item) => (
-                  <Text key={item} className="text-sm text-brand-700">
+                  <Text key={item} className="text-sm text-brand-700 dark:text-ink-muted-dark font-body">
                     {`• ${item}`}
                   </Text>
                 ))}
@@ -146,11 +146,11 @@ export default function CheckResultScreen() {
 
             {result.homeCare.length ? (
               <View testID="check-result-home-care" className="gap-2">
-                <Text className="text-lg font-semibold text-brand-900">
+                <Text className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold">
                   {strings.check.result.sections.homeCare}
                 </Text>
                 {result.homeCare.map((item) => (
-                  <Text key={item} className="text-sm text-brand-700">
+                  <Text key={item} className="text-sm text-brand-700 dark:text-ink-muted-dark font-body">
                     {`• ${item}`}
                   </Text>
                 ))}
@@ -159,9 +159,9 @@ export default function CheckResultScreen() {
 
             {result.doNot.length ? (
               <View testID="check-result-do-not" className="gap-2">
-                <Text className="text-lg font-semibold text-brand-900">{strings.check.result.sections.doNot}</Text>
+                <Text className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold">{strings.check.result.sections.doNot}</Text>
                 {result.doNot.map((item) => (
-                  <Text key={item} className="text-sm text-brand-700">
+                  <Text key={item} className="text-sm text-brand-700 dark:text-ink-muted-dark font-body">
                     {`• ${item}`}
                   </Text>
                 ))}
@@ -170,11 +170,11 @@ export default function CheckResultScreen() {
 
             {result.vetQuestions.length ? (
               <View testID="check-result-vet-questions" className="gap-2">
-                <Text className="text-lg font-semibold text-brand-900">
+                <Text className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold">
                   {strings.check.result.sections.vetQuestions}
                 </Text>
                 {result.vetQuestions.map((item) => (
-                  <Text key={item} className="text-sm text-brand-700">
+                  <Text key={item} className="text-sm text-brand-700 dark:text-ink-muted-dark font-body">
                     {`• ${item}`}
                   </Text>
                 ))}

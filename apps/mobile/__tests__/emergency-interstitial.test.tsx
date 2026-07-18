@@ -211,3 +211,57 @@ describe("emergency interstitial — find-vet action", () => {
     expect(Linking.openURL).toHaveBeenCalledWith(expect.stringContaining("emergency"));
   });
 });
+
+// PAWSAATHI-3 plan (decision 1 / Risk R1): the emergency screen is
+// ZERO-DIFF this batch -- its opaque red-700/800/900 + white palette is
+// theme-INVARIANT (identical hex under either OS scheme) and already
+// >=7:1, so no dark-legibility problem exists to fix, and adding `dark:`
+// here would be pure no-op noise with structural-diff risk on a screen
+// whose law is "nothing else changing." This pins that reading: every
+// className this SCREEN OWNS (its View/Text elements) carries no "dark:"
+// token. The screen's three `PrimaryButton`s are an already-dual canon
+// component (swept in an earlier, unrelated batch) -- excluded here so the
+// assertion targets exactly this screen's own zero-diff wrapper/text, not a
+// pre-existing canon component's styling.
+type JsonNode = ReturnType<Awaited<ReturnType<typeof render>>["toJSON"]>;
+
+const CANON_BUTTON_TEST_IDS = ["emergency-call-hotline", "emergency-find-vet", "emergency-acknowledge"];
+
+function collectOwnClassNames(node: JsonNode | JsonNode[] | string | null | undefined, acc: string[] = []): string[] {
+  if (node == null || typeof node === "string") {
+    return acc;
+  }
+  if (Array.isArray(node)) {
+    node.forEach((child) => collectOwnClassNames(child, acc));
+    return acc;
+  }
+  const testID = (node.props as { testID?: unknown } | undefined)?.testID;
+  if (typeof testID === "string" && CANON_BUTTON_TEST_IDS.includes(testID)) {
+    return acc;
+  }
+  const className = (node.props as { className?: unknown } | undefined)?.className;
+  if (typeof className === "string") {
+    acc.push(className);
+  }
+  collectOwnClassNames(node.children as JsonNode[] | null, acc);
+  return acc;
+}
+
+describe("emergency interstitial — ZERO-DIFF (no dark: anywhere, plan decision 1)", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockGetDeviceRegionCode.mockReturnValue("US");
+  });
+
+  it("renders no className containing 'dark:' anywhere in the screen's own tree", async () => {
+    mockUseCheck.mockReturnValue({ data: checkWith("gdv-suspected", true) });
+
+    const { toJSON } = await render(<EmergencyInterstitialScreen />);
+
+    const classNames = collectOwnClassNames(toJSON());
+    expect(classNames.length).toBeGreaterThan(0);
+    for (const className of classNames) {
+      expect(className).not.toContain("dark:");
+    }
+  });
+});
