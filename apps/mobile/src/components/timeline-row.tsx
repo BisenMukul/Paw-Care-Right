@@ -44,11 +44,21 @@ export const TimelineRow = memo(function TimelineRow({ item, petId, onPressCheck
   const checkId = item.kind === "CHECK_REF" ? extractCheckRefId(item) : null;
 
   const content = (
-    <View className={`flex-row items-start gap-3 rounded-2xl px-4 py-3 ${display.colorClass}`}>
-      <Text className="text-xl">{display.icon}</Text>
-      <View className="flex-1 gap-1">
-        <Text className="text-base font-semibold text-brand-900">{strings.timeline.kindLabel[item.kind]}</Text>
-        <Text className="text-sm text-brand-700" accessibilityLabel={strings.timeline.dateA11y(date)}>
+    <View className="flex-row gap-3 px-4 py-3">
+      <View className="items-center">
+        <View className={`h-9 w-9 items-center justify-center rounded-full ${display.colorClass}`}>
+          <Text className="text-base">{display.icon}</Text>
+        </View>
+        <View className="mt-1 w-0.5 flex-1 bg-brand-200 dark:bg-hairline-dark" />
+      </View>
+      <View className="flex-1 gap-1 rounded-2xl border border-brand-100 dark:border-hairline-dark bg-white dark:bg-surface-card-dark p-3">
+        <Text className="text-base font-semibold text-brand-900 dark:text-ink-dark font-body-semibold">
+          {strings.timeline.kindLabel[item.kind]}
+        </Text>
+        <Text
+          className="text-sm text-brand-700 dark:text-ink-muted-dark font-body"
+          accessibilityLabel={strings.timeline.dateA11y(date)}
+        >
           {date}
         </Text>
         {/* design-system.md §7.3 calls for `tabular-nums` here (this summary
@@ -58,7 +68,9 @@ export const TimelineRow = memo(function TimelineRow({ item, petId, onPressCheck
             class is a silent no-op on-device. Revisit once css-interop maps
             it, or route a real `fontVariant` utility through
             `packages/config` (follow-up task, not a per-screen fix). */}
-        {summary !== null ? <Text className="text-sm text-brand-900">{summary}</Text> : null}
+        {summary !== null ? (
+          <Text className="text-sm text-brand-900 dark:text-ink-dark font-body">{summary}</Text>
+        ) : null}
       </View>
     </View>
   );

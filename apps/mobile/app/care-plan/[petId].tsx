@@ -18,7 +18,7 @@ const DEFAULT_TIMEZONE = Intl.DateTimeFormat().resolvedOptions().timeZone;
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 const STEPPER_HIT_SLOP = { top: 8, bottom: 8, left: 8, right: 8 };
-const STEPPER_CLASS = "min-h-[44px] justify-center rounded-lg border border-brand-100 px-2 py-1";
+const STEPPER_CLASS = "min-h-[44px] justify-center rounded-lg border border-brand-100 dark:border-hairline-dark px-2 py-1";
 
 function todayIso(): string {
   return new Date().toISOString();
@@ -130,19 +130,19 @@ export default function CarePlanWizardScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
         <Card testID="care-plan-loading">
           <Skeleton lines={3} />
         </Card>
-        <Text className="text-center text-base text-brand-900">{strings.carePlan.loading}</Text>
+        <Text className="text-center text-base text-brand-900 dark:text-ink-dark">{strings.carePlan.loading}</Text>
       </SafeAreaView>
     );
   }
 
   if (isOffline && !suggestions) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
-        <Text testID="care-plan-offline" className="text-center text-base text-brand-900">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
+        <Text testID="care-plan-offline" className="text-center text-base text-brand-900 dark:text-ink-dark">
           {strings.carePlan.offline}
         </Text>
         <PrimaryButton testID="care-plan-retry" label={strings.carePlan.retry} onPress={() => refetch()} />
@@ -152,8 +152,8 @@ export default function CarePlanWizardScreen() {
 
   if (isError) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
-        <Text testID="care-plan-error" className="text-center text-base text-red-700">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
+        <Text testID="care-plan-error" className="text-center text-base text-red-700 dark:text-red-400">
           {strings.carePlan.error}
         </Text>
         <PrimaryButton testID="care-plan-retry" label={strings.carePlan.retry} onPress={() => refetch()} />
@@ -163,7 +163,7 @@ export default function CarePlanWizardScreen() {
 
   if (!suggestions || suggestions.items.length === 0) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
         <EmptyState
           testID="care-plan-empty"
           icon="clipboard-outline"
@@ -193,7 +193,9 @@ export default function CarePlanWizardScreen() {
           return (
             <Card key={item.templateKey} testID={`care-plan-item-${item.templateKey}`} className="gap-2">
               <View className="flex-row items-center justify-between">
-                <Text className="flex-1 text-base font-semibold text-brand-900">{item.title}</Text>
+                <Text className="flex-1 text-base font-semibold text-brand-900 dark:text-ink-dark font-body-semibold">
+                  {item.title}
+                </Text>
                 <Switch
                   testID={`care-plan-toggle-${item.templateKey}`}
                   value={row?.enabled ?? false}
@@ -204,7 +206,7 @@ export default function CarePlanWizardScreen() {
               {item.emphasis ? (
                 <Text
                   testID={`care-plan-emphasis-${item.templateKey}`}
-                  className="text-xs font-semibold text-brand-700"
+                  className="text-xs font-semibold text-brand-700 dark:text-ink-muted-dark"
                 >
                   {strings.carePlan.emphasisBadge}
                 </Text>
@@ -213,13 +215,13 @@ export default function CarePlanWizardScreen() {
               {item.alreadyExists ? (
                 <Text
                   testID={`care-plan-already-exists-${item.templateKey}`}
-                  className="text-xs text-brand-700"
+                  className="text-xs text-brand-700 dark:text-ink-muted-dark"
                 >
                   {strings.carePlan.alreadyAddedBadge}
                 </Text>
               ) : null}
 
-              <Text testID={`care-plan-note-${item.templateKey}`} className="text-sm text-brand-700">
+              <Text testID={`care-plan-note-${item.templateKey}`} className="text-sm text-brand-700 dark:text-ink-muted-dark">
                 {item.note}
               </Text>
 
@@ -230,7 +232,9 @@ export default function CarePlanWizardScreen() {
                   hitSlop={STEPPER_HIT_SLOP}
                   className={STEPPER_CLASS}
                 >
-                  <Text className="text-sm text-brand-900">{strings.carePlan.dateEdit.earlier1w}</Text>
+                  <Text className="text-sm text-brand-900 dark:text-ink-dark font-body">
+                    {strings.carePlan.dateEdit.earlier1w}
+                  </Text>
                 </Pressable>
                 <Pressable
                   testID={`care-plan-stepper-${item.templateKey}-minus1d`}
@@ -238,9 +242,14 @@ export default function CarePlanWizardScreen() {
                   hitSlop={STEPPER_HIT_SLOP}
                   className={STEPPER_CLASS}
                 >
-                  <Text className="text-sm text-brand-900">{strings.carePlan.dateEdit.earlier1d}</Text>
+                  <Text className="text-sm text-brand-900 dark:text-ink-dark font-body">
+                    {strings.carePlan.dateEdit.earlier1d}
+                  </Text>
                 </Pressable>
-                <Text testID={`care-plan-date-${item.templateKey}`} className="text-sm font-semibold text-brand-900">
+                <Text
+                  testID={`care-plan-date-${item.templateKey}`}
+                  className="text-sm font-semibold text-brand-900 dark:text-ink-dark font-body"
+                >
                   {formatDate(startAt)}
                 </Text>
                 <Pressable
@@ -249,7 +258,9 @@ export default function CarePlanWizardScreen() {
                   hitSlop={STEPPER_HIT_SLOP}
                   className={STEPPER_CLASS}
                 >
-                  <Text className="text-sm text-brand-900">{strings.carePlan.dateEdit.later1d}</Text>
+                  <Text className="text-sm text-brand-900 dark:text-ink-dark font-body">
+                    {strings.carePlan.dateEdit.later1d}
+                  </Text>
                 </Pressable>
                 <Pressable
                   testID={`care-plan-stepper-${item.templateKey}-plus1w`}
@@ -257,7 +268,9 @@ export default function CarePlanWizardScreen() {
                   hitSlop={STEPPER_HIT_SLOP}
                   className={STEPPER_CLASS}
                 >
-                  <Text className="text-sm text-brand-900">{strings.carePlan.dateEdit.later1w}</Text>
+                  <Text className="text-sm text-brand-900 dark:text-ink-dark font-body">
+                    {strings.carePlan.dateEdit.later1w}
+                  </Text>
                 </Pressable>
               </View>
             </Card>

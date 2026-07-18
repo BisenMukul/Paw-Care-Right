@@ -22,4 +22,13 @@ describe("ActivityChipGrid", () => {
 
     expect(onSelect).toHaveBeenCalledWith("WALK");
   });
+
+  it("PAWSAATHI-2: a tile carries the white-on-page dark variant, its label carries dark:text-ink-dark", async () => {
+    await render(<ActivityChipGrid onSelect={jest.fn()} />);
+
+    const tile = screen.getByTestId("activity-chip-WALK");
+    expect(tile.props.className).toContain("bg-white");
+    expect(tile.props.className).toContain("dark:bg-surface-card-dark");
+    expect(screen.getByText(strings.activity.typeLabel.WALK).props.className).toContain("dark:text-ink-dark");
+  });
 });

@@ -1,8 +1,11 @@
+import type { AgendaEntry } from "@pawcareright/types";
 import { petIdSchema, type Pet } from "@pawcareright/types";
 import { render, screen } from "@testing-library/react-native";
 import React from "react";
 import { Text } from "react-native";
 
+import type { TimelineItem } from "../src/api/health-logs-api";
+import { AgendaItem } from "../src/components/agenda-item";
 import { AppTitle } from "../src/components/app-title";
 import { Card } from "../src/components/card";
 import { Chip } from "../src/components/chip";
@@ -22,6 +25,7 @@ import { SecondaryButton } from "../src/components/secondary-button";
 import { SectionHeader } from "../src/components/section-header";
 import { Skeleton } from "../src/components/skeleton";
 import { TextField } from "../src/components/text-field";
+import { TimelineRow } from "../src/components/timeline-row";
 import { strings } from "../src/strings";
 
 /**
@@ -243,6 +247,52 @@ describe("dual-theme-tokens: home Variant A components carry base + dark: varian
 
     expect(screen.getByTestId("home-today-card").props.className).toContain("dark:bg-surface-card-dark");
     expect(screen.getByText(strings.home.todayTitle).props.className).toContain("dark:text-ink-dark");
+  });
+});
+
+describe("dual-theme-tokens: PAWSAATHI-2 CARE + LOGGING screens", () => {
+  const AGENDA_ENTRY_WITH_DOSE: AgendaEntry = {
+    reminderId: "reminder-1",
+    petId: "pet-1",
+    type: "MEDICATION",
+    title: "Amoxicillin course",
+    dueAt: "2026-07-18T09:00:00.000Z",
+    status: "SCHEDULED",
+    virtual: true,
+    medDoseAsEntered: "1 tablet",
+  };
+
+  it("AgendaItem: title + dose carry dark+font tokens, and the dose line content is byte-identical", async () => {
+    await render(<AgendaItem entry={AGENDA_ENTRY_WITH_DOSE} onComplete={jest.fn()} onSnooze={jest.fn()} />);
+
+    expect(screen.getByText("Amoxicillin course").props.className).toContain("dark:text-ink-dark");
+    expect(screen.getByText("Amoxicillin course").props.className).toContain("font-body-semibold");
+
+    const doseNode = screen.getByTestId(
+      `agenda-item-dose-${AGENDA_ENTRY_WITH_DOSE.reminderId}-${new Date(AGENDA_ENTRY_WITH_DOSE.dueAt).getTime()}`,
+    );
+    expect(doseNode.props.className).toContain("dark:text-ink-muted-dark");
+    expect(doseNode.props.className).toContain("font-body");
+    expect(doseNode.props.children).toEqual([strings.agenda.medDoseLabel, ": ", "1 tablet"]);
+  });
+
+  const TIMELINE_NOTE_ITEM: TimelineItem = {
+    id: "note-1",
+    kind: "NOTE",
+    occurredAt: "2026-07-10T00:00:00.000Z",
+    value: { text: "Ate a bug" },
+    photoKeys: [],
+  };
+
+  it("TimelineRow: card + label/date carry dark variants", async () => {
+    await render(
+      <TimelineRow item={TIMELINE_NOTE_ITEM} petId="pet-1" onPressCheck={jest.fn()} onOpenPhoto={jest.fn()} />,
+    );
+
+    const row = screen.getByTestId("timeline-row-note-1");
+    expect(JSON.stringify(row)).toContain("dark:bg-surface-card-dark");
+    expect(screen.getByText(strings.timeline.kindLabel.NOTE).props.className).toContain("dark:text-ink-dark");
+    expect(screen.getByText("2026-07-10").props.className).toContain("dark:text-ink-muted-dark");
   });
 });
 

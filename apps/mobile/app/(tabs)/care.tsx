@@ -92,19 +92,19 @@ export default function CareScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
         <Card testID="agenda-loading">
           <Skeleton lines={3} />
         </Card>
-        <Text className="text-center text-base text-brand-900">{strings.agenda.loading}</Text>
+        <Text className="text-center text-base text-brand-900 dark:text-ink-dark">{strings.agenda.loading}</Text>
       </SafeAreaView>
     );
   }
 
   if (isOffline && !data) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
-        <Text testID="agenda-offline" className="text-center text-base text-brand-900">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
+        <Text testID="agenda-offline" className="text-center text-base text-brand-900 dark:text-ink-dark">
           {strings.agenda.offline}
         </Text>
         <PrimaryButton testID="agenda-retry" label={strings.agenda.retry} onPress={() => refetch()} />
@@ -114,8 +114,8 @@ export default function CareScreen() {
 
   if (isError) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
-        <Text testID="agenda-error" className="text-center text-base text-red-700">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
+        <Text testID="agenda-error" className="text-center text-base text-red-700 dark:text-red-400">
           {strings.agenda.error}
         </Text>
         <PrimaryButton testID="agenda-retry" label={strings.agenda.retry} onPress={() => refetch()} />
@@ -156,7 +156,9 @@ export default function CareScreen() {
       ) : (
         <>
           <View testID="agenda-section-today" className="gap-3">
-            <Text className="text-base font-semibold text-brand-900">{strings.agenda.today}</Text>
+            <Text className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold">
+              {strings.agenda.today}
+            </Text>
             {todayEntries.map((entry) => (
               <AgendaItem
                 key={`${entry.reminderId}:${entry.dueAt}`}
@@ -168,7 +170,9 @@ export default function CareScreen() {
           </View>
 
           <View testID="agenda-section-upcoming" className="gap-3">
-            <Text className="text-base font-semibold text-brand-900">{strings.agenda.upcoming}</Text>
+            <Text className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold">
+              {strings.agenda.upcoming}
+            </Text>
             {upcomingEntries.map((entry) => (
               <AgendaItem
                 key={`${entry.reminderId}:${entry.dueAt}`}

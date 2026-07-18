@@ -37,7 +37,9 @@ export function ActivityRecentsRow({ recents, onPress }: ActivityRecentsRowProps
 
   return (
     <View testID="activity-recents-row" className="gap-2">
-      <Text className="text-sm font-semibold text-brand-900">{strings.activity.recentsTitle}</Text>
+      <Text className="text-sm font-semibold text-brand-900 dark:text-ink-dark font-body-semibold">
+        {strings.activity.recentsTitle}
+      </Text>
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         <View className="flex-row gap-2">
           {recents.map((entry, index) => {
@@ -49,9 +51,9 @@ export function ActivityRecentsRow({ recents, onPress }: ActivityRecentsRowProps
                 accessibilityRole="button"
                 accessibilityLabel={strings.activity.recentChipA11y(label)}
                 onPress={() => onPress(entry)}
-                className="rounded-full border border-brand-100 bg-white px-4 py-2.5"
+                className="rounded-full border border-brand-100 dark:border-hairline-dark bg-white dark:bg-surface-card-dark px-4 py-2.5"
               >
-                <Text className="text-sm text-brand-900">{label}</Text>
+                <Text className="text-sm text-brand-900 dark:text-ink-dark">{label}</Text>
               </Pressable>
             );
           })}

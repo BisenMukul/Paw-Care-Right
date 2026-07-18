@@ -2,6 +2,7 @@ import type { AgendaResponse } from "@pawcareright/types";
 import { render, screen, waitFor, within } from "@testing-library/react-native";
 
 import CareScreen from "../app/(tabs)/care";
+import { strings } from "../src/strings";
 
 /**
  * Device-vs-server clock drift characterization (T062 plan carry-forward
@@ -67,6 +68,11 @@ describe("Care agenda screen -- device-vs-server clock drift (characterization)"
     const dueAtMs = new Date(dueAt).getTime();
     const todaySection = within(screen.getByTestId("agenda-section-today"));
     expect(todaySection.getByTestId(`agenda-item-reminder-1-${dueAtMs}`)).toBeTruthy();
+
+    // PAWSAATHI-2 scope 1: section header adopts the Bricolage section-header
+    // role (dark + font tokens) -- bucketing assertions above are untouched.
+    expect(screen.getByText(strings.agenda.today).props.className).toContain("dark:text-ink-dark");
+    expect(screen.getByText(strings.agenda.today).props.className).toContain("font-display-semibold");
   });
 
   it("buckets a next-day server dueAt into Upcoming even though it is only minutes away in absolute time (device-local midnight crossing)", async () => {

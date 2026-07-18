@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import type { ActivityType, ActivityUnit } from "@pawcareright/types";
 import { useEffect, useState } from "react";
-import { KeyboardAvoidingView, Modal, Platform, Pressable, Text, TextInput, View } from "react-native";
+import { KeyboardAvoidingView, Modal, Platform, Pressable, Text, TextInput, useColorScheme, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ACTIVITY_TYPE_CONFIG, clampQuantity, type StepRange } from "../health-logs/activity-config";
@@ -39,6 +39,9 @@ function QuantityStepper({
   range: StepRange;
   onChange: (next: number) => void;
 }) {
+  const scheme = useColorScheme();
+  const iconColor = scheme === "dark" ? "#2EA57C" : "#1f6350";
+
   return (
     <View className="flex-row items-center justify-center gap-4">
       <Pressable
@@ -47,11 +50,14 @@ function QuantityStepper({
         accessibilityLabel={strings.activity.quantityDecreaseA11y}
         hitSlop={8}
         onPress={() => onChange(clampQuantity(value - range.step, range))}
-        className="h-11 w-11 items-center justify-center rounded-full bg-brand-100"
+        className="h-11 w-11 items-center justify-center rounded-full bg-brand-100 dark:bg-surface-raised-dark"
       >
-        <Ionicons name="remove" size={20} color="#1f6350" />
+        <Ionicons name="remove" size={20} color={iconColor} />
       </Pressable>
-      <Text testID="activity-quantity-value" className="min-w-[56px] text-center text-2xl font-bold text-brand-900">
+      <Text
+        testID="activity-quantity-value"
+        className="min-w-[56px] text-center text-2xl font-bold text-brand-900 dark:text-ink-dark"
+      >
         {value}
       </Text>
       <Pressable
@@ -60,9 +66,9 @@ function QuantityStepper({
         accessibilityLabel={strings.activity.quantityIncreaseA11y}
         hitSlop={8}
         onPress={() => onChange(clampQuantity(value + range.step, range))}
-        className="h-11 w-11 items-center justify-center rounded-full bg-brand-100"
+        className="h-11 w-11 items-center justify-center rounded-full bg-brand-100 dark:bg-surface-raised-dark"
       >
-        <Ionicons name="add" size={20} color="#1f6350" />
+        <Ionicons name="add" size={20} color={iconColor} />
       </Pressable>
     </View>
   );
@@ -93,11 +99,15 @@ function UnitChipRow({
             onPress={() => onSelect(option)}
             className={
               isSelected
-                ? "rounded-full bg-brand-700 px-4 py-2.5"
-                : "rounded-full border border-brand-100 bg-white px-4 py-2.5"
+                ? "rounded-full bg-brand-700 dark:bg-accent-dark px-4 py-2.5"
+                : "rounded-full border border-brand-100 dark:border-hairline-dark bg-white dark:bg-surface-card-dark px-4 py-2.5"
             }
           >
-            <Text className={isSelected ? "text-sm font-semibold text-white" : "text-sm text-brand-900"}>
+            <Text
+              className={
+                isSelected ? "text-sm font-semibold text-white" : "text-sm text-brand-900 dark:text-ink-dark"
+              }
+            >
               {unitLabel(option)}
             </Text>
           </Pressable>
@@ -124,6 +134,7 @@ export function ActivityQuantitySheet({
   onClose,
   onWrittenNote,
 }: ActivityQuantitySheetProps) {
+  const scheme = useColorScheme();
   const [quantity, setQuantity] = useState<number | undefined>(undefined);
   const [unit, setUnit] = useState<ActivityUnit | undefined>(undefined);
   const [note, setNote] = useState("");
@@ -181,11 +192,11 @@ export function ActivityQuantitySheet({
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={handleClose}>
       <View className="flex-1 justify-end bg-black/40">
-        <SafeAreaView testID="activity-sheet" className="rounded-t-2xl bg-white">
+        <SafeAreaView testID="activity-sheet" className="rounded-t-2xl bg-white dark:bg-surface-card-dark">
           <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined}>
             <View className="gap-4 p-6">
-              <View className="self-center h-1 w-10 rounded-full bg-brand-200" />
-              <Text className="text-lg font-semibold text-brand-900">
+              <View className="self-center h-1 w-10 rounded-full bg-brand-200 dark:bg-surface-raised-dark" />
+              <Text className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-body-semibold">
                 {strings.activity.typeLabel[activityType]}
               </Text>
 
@@ -239,17 +250,22 @@ export function ActivityQuantitySheet({
                 value={note}
                 onChangeText={setNote}
                 placeholder={strings.activity.notePlaceholder}
+                placeholderTextColor={scheme === "dark" ? "#9AA8A1" : undefined}
                 maxLength={280}
-                className="rounded-lg border border-brand-100 px-4 py-3 text-base text-brand-900"
+                className="rounded-lg border border-brand-100 dark:border-hairline-dark px-4 py-3 text-base text-brand-900 dark:bg-surface-card-dark dark:text-ink-dark"
               />
 
               <Pressable testID="activity-sheet-written-note" accessibilityRole="button" onPress={onWrittenNote}>
-                <Text className="text-sm font-semibold text-brand-700">{strings.activity.writtenNoteLink}</Text>
+                <Text className="text-sm font-semibold text-brand-700 dark:text-accent-bright font-body-semibold">
+                  {strings.activity.writtenNoteLink}
+                </Text>
               </Pressable>
 
               <View className="flex-row justify-end gap-4">
                 <Pressable testID="activity-sheet-cancel" onPress={handleClose} accessibilityRole="button">
-                  <Text className="text-base font-semibold text-brand-700">{strings.activity.cancel}</Text>
+                  <Text className="text-base font-semibold text-brand-700 dark:text-accent-bright font-body-semibold">
+                    {strings.activity.cancel}
+                  </Text>
                 </Pressable>
                 <PrimaryButton
                   testID="activity-sheet-save"

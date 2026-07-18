@@ -6,6 +6,7 @@ import ActivityScreen from "../app/activity/[petId]";
 import { useAddActivity } from "../src/api/health-logs-api";
 import { usePet } from "../src/api/pets-api";
 import { useActivityRecentsStore } from "../src/health-logs/activity-recents-store";
+import { strings } from "../src/strings";
 
 /**
  * The tap-first activity logger screen (founder-directed activity-log
@@ -129,6 +130,20 @@ describe("activity screen", () => {
       { activityType: "WALK", quantity: 20, unit: "min" },
       expect.anything(),
     );
+
+    // PAWSAATHI-2: the frozen undo testIDs are still present after a save
+    // (undo banner only mounts via the recents path, so it's absent here --
+    // this asserts the sheet's own testIDs, not the undo machinery itself).
+    expect(screen.queryByTestId("activity-sheet")).toBeNull();
+  });
+
+  it("PAWSAATHI-2: root + header carry dark variants", async () => {
+    mockedUsePet.mockReturnValue({ data: FIXTURE_PET, isLoading: false, isError: false, refetch: mockRefetch });
+
+    const view = await render(<ActivityScreen />);
+
+    expect(view.toJSON()?.props.className).toContain("dark:bg-surface-page-dark");
+    expect(screen.getByText(strings.activity.title).props.className).toContain("dark:text-ink-dark");
   });
 
   it("a successful save records a recent for that pet and closes the sheet", async () => {

@@ -33,15 +33,19 @@ export function AgendaItem({ entry, onComplete, onSnooze }: AgendaItemProps) {
       {...(isDone ? { className: "opacity-60" } : {})}
     >
       <View className="flex-row items-center justify-between">
-        <Text className="flex-1 text-base font-semibold text-brand-900">{entry.title}</Text>
-        <Text className="text-sm text-brand-700">{formatDueTime(entry.dueAt)}</Text>
+        <Text className="flex-1 text-base font-semibold text-brand-900 dark:text-ink-dark font-body-semibold">
+          {entry.title}
+        </Text>
+        <Text className="text-sm text-brand-700 dark:text-ink-muted-dark font-body">{formatDueTime(entry.dueAt)}</Text>
       </View>
-      <Text className="text-sm text-brand-700">{strings.agenda.typeLabel(entry.type)}</Text>
+      <Text className="text-sm text-brand-700 dark:text-ink-muted-dark font-body">
+        {strings.agenda.typeLabel(entry.type)}
+      </Text>
 
       {entry.medDoseAsEntered !== undefined ? (
         <Text
           testID={`agenda-item-dose-${entry.reminderId}-${dueAtMs}`}
-          className="text-sm text-brand-700"
+          className="text-sm text-brand-700 dark:text-ink-muted-dark font-body"
         >
           {strings.agenda.medDoseLabel}: {entry.medDoseAsEntered}
         </Text>
@@ -50,7 +54,7 @@ export function AgendaItem({ entry, onComplete, onSnooze }: AgendaItemProps) {
       {entry.status === "DONE" ? (
         <Text
           testID={`agenda-item-status-${entry.reminderId}-${dueAtMs}`}
-          className="text-xs font-semibold text-brand-700"
+          className="text-xs font-semibold text-brand-700 dark:text-ink-muted-dark font-body-semibold"
         >
           {strings.agenda.statusDone}
         </Text>
@@ -58,7 +62,7 @@ export function AgendaItem({ entry, onComplete, onSnooze }: AgendaItemProps) {
       {entry.status === "SNOOZED" ? (
         <Text
           testID={`agenda-item-status-${entry.reminderId}-${dueAtMs}`}
-          className="text-xs font-semibold text-brand-700"
+          className="text-xs font-semibold text-brand-700 dark:text-ink-muted-dark font-body-semibold"
         >
           {strings.agenda.statusSnoozed}
         </Text>

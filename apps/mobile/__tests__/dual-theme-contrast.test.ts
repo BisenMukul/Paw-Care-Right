@@ -6,6 +6,17 @@
 // text-bearing pair the dual-theme sweep introduces clears its AA floor in
 // BOTH themes (design-system.md §1.1/§1.6, plan Interfaces "AA pairs").
 
+// This workspace has no `@types/node` (see `no-pawsaathi-branding.test.ts`'s
+// header comment), so `node:fs`/`node:path` can't be `import`ed by name --
+// but the Metro/Expo ambient `require` (`declare var require: NodeJS.Require`,
+// signature `(path: string) => any`) accepts any string id and resolves
+// correctly at Jest's real-Node runtime, so a `require()` call sidesteps the
+// missing module-augmentation cleanly. `__dirname` is likewise a real
+// per-module CJS free variable at runtime with no ambient type in this
+// workspace; declaring it locally (not importing a global) is a one-line,
+// fully-typed fix, not an `any` escape hatch.
+declare const __dirname: string;
+
 /** Hex values for exactly the tokens this sweep's `dark:`/light pairs use. */
 const HEX = {
   // Light (pre-existing brand scale, design-system.md §1.1)
@@ -91,5 +102,37 @@ describe("dual-theme-contrast: DARK theme pairs clear their AA floor", () => {
     expect(contrastRatio(HEX.red700, HEX.cardDark)).toBeLessThan(NORMAL_TEXT_FLOOR);
     expect(contrastRatio(HEX.red700, HEX.pageDark)).toBeLessThan(NORMAL_TEXT_FLOOR);
     expect(contrastRatio(HEX.red700, HEX.raisedDark)).toBeLessThan(NORMAL_TEXT_FLOOR);
+  });
+});
+
+// PAWSAATHI-2 follow-up 2: this file's local `HEX` map is a hand-copied
+// mirror of `tailwind-preset.mjs`'s semantic dark tokens (by design, so this
+// evidence file can't be broken by editing a shared helper -- see the header
+// comment above). That copy CAN silently drift from the actual preset if a
+// future edit changes one file and not the other. This `describe` reads the
+// real preset source and asserts each hex this file's math relies on is
+// still literally present there, closing that two-file drift gap.
+describe("dual-theme-contrast: HEX map stays literally in sync with tailwind-preset.mjs", () => {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports -- JUSTIFIED: locally-typed require avoids adding @types/node (a new dep is out of scope) just to read the preset source in this node-env test
+  const fs = require("node:fs") as { readFileSync: (path: string, encoding: string) => string };
+  // eslint-disable-next-line @typescript-eslint/no-require-imports -- JUSTIFIED: same as above
+  const nodePath = require("node:path") as { join: (...parts: string[]) => string };
+  const presetSource = fs.readFileSync(
+    nodePath.join(__dirname, "../../../packages/config/tailwind-preset.mjs"),
+    "utf8",
+  );
+
+  it.each([
+    ["inkDark", HEX.inkDark],
+    ["inkMutedDark", HEX.inkMutedDark],
+    ["pageDark", HEX.pageDark],
+    ["cardDark", HEX.cardDark],
+    ["raisedDark", HEX.raisedDark],
+    ["accentDark", HEX.accentDark],
+    ["accentBright", HEX.accentBright],
+    ["brand700 (light)", HEX.brand700],
+    ["page50 (light)", HEX.page50],
+  ])("%s (%s) is present verbatim in tailwind-preset.mjs", (_name, hex) => {
+    expect(presetSource).toContain(hex);
   });
 });

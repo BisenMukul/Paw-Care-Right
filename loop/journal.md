@@ -1015,3 +1015,12 @@
 - **Founder note:** fonts + dark theme require a `pnpm install` on your machine; fonts render in Expo Go immediately; the device follows system dark mode. Next dev-client rebuild now also picks up expo-font natively.
 - Next: PAWSAATHI-2 (care/logging screens), PAWSAATHI-3 (check flow, safety-pinned), PAWSAATHI-4 (services hub + remaining).
 - Commit: feat(mobile,config): PAWSAATHI-1 dual-theme foundation — dark tokens, fonts, canon dark variants, home Variant A.
+
+## [2026-07-18] PAWSAATHI-2 · Care + logging screens in the PawSaathi language (redesign batch 2/4)
+- **Planned** (`loop/plans/PAWSAATHI-2.plan.md`) → executed → adversarially checked (`loop/reviews/PAWSAATHI-2.review.md` → **VERDICT: PASS**; checker re-ran both mutation-proofs with sha1 restores and byte-audited every frozen surface).
+- **Shipped (both themes):** care hub → mockup Care Center layout (today/upcoming rhythm, card groupings); activity logger → POTTY/FOOD presentation language mapped onto the EXISTING single ≤2-tap logger (no new routes; undo/flush machinery + payload construction byte-identical, checker-diffed); care-plan/reminders → vaccination-history list treatment; timeline → card-rail with emoji rail dots (single getKindDisplay call + memo + render-count invariant preserved). Batch-1 follow-ups closed: secondary-button dark spinner/icon hex now scheme-aware (mutation-pinned); preset↔contrast-test two-file drift gap CLOSED via a describe that reads the real preset source and asserts every relied-on hex verbatim (mutation-proof: breaking card-dark fails BOTH files).
+- **Honesty held:** mockup's kcal/"Meals today" aggregate OMITTED (un-backed data — health-score precedent); zero new light AA pairs (decorative tints emoji-only); §7-frozen copy byte-identical; no new strings.
+- **Incidents:** executor stalled ×3 (resumed with punch lists), died before its final report; orchestrator ran gates, verified the four pinned snapshots byte-identical, and fixed the last lint items (2 JUSTIFIED require-disables on the drift-gap test — checker confirmed repo-precedent-consistent).
+- **Gates:** mobile **888 → 910 (123 suites)**, config green, typecheck/lint/build 0; pet-home/check-result/paywall/weight-chart snapshots byte-identical (jest -u prohibited and honored).
+- Next: PAWSAATHI-3 (check flow — AI scan/symptom/toxin mockup sections, safety-pinned), then PAWSAATHI-4 (services hub + coming-soon + account).
+- Commit: feat(mobile,config): PAWSAATHI-2 care/logging screens — Care Center, logger presentation, timeline rail, drift-gap closure.

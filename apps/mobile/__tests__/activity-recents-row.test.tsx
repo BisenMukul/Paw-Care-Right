@@ -38,4 +38,13 @@ describe("ActivityRecentsRow", () => {
     await fireEvent.press(screen.getByTestId("activity-recent-chip-1"));
     expect(onPress).toHaveBeenCalledWith(recents[1]);
   });
+
+  it("PAWSAATHI-2: a recent chip carries dark:bg-surface-card-dark; recentEntryLabel output is unchanged", async () => {
+    const recents: ActivityRecentEntry[] = [{ activityType: "FOOD", quantity: 2, unit: "meals" }];
+    await render(<ActivityRecentsRow recents={recents} onPress={jest.fn()} />);
+
+    const chip = screen.getByTestId("activity-recent-chip-0");
+    expect(chip.props.className).toContain("dark:bg-surface-card-dark");
+    expect(chip).toHaveTextContent("Fed · 2 meals");
+  });
 });

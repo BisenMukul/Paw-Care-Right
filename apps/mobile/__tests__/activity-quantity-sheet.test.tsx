@@ -253,4 +253,22 @@ describe("ActivityQuantitySheet", () => {
 
     expect(screen.getByTestId("activity-sheet-save-spinner")).toBeTruthy();
   });
+
+  it("PAWSAATHI-2: sheet carries dark:bg-surface-card-dark, stepper pill carries dark:bg-surface-raised-dark", async () => {
+    await render(
+      <ActivityQuantitySheet
+        visible
+        activityType="FOOD"
+        initialQuantity={undefined}
+        initialUnit={undefined}
+        submitting={false}
+        onSave={jest.fn()}
+        onClose={jest.fn()}
+        onWrittenNote={jest.fn()}
+      />,
+    );
+
+    expect(screen.getByTestId("activity-sheet").props.className).toContain("dark:bg-surface-card-dark");
+    expect(screen.getByTestId("activity-quantity-increase").props.className).toContain("dark:bg-surface-raised-dark");
+  });
 });

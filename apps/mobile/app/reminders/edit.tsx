@@ -27,7 +27,7 @@ const TIME_OF_DAY_OPTIONS: string[] = Array.from({ length: 48 }, (_, i) => {
 });
 
 const STEPPER_HIT_SLOP = { top: 8, bottom: 8, left: 8, right: 8 };
-const STEPPER_CLASS = "min-h-[44px] justify-center rounded-lg border border-brand-100 px-2 py-1";
+const STEPPER_CLASS = "min-h-[44px] justify-center rounded-lg border border-brand-100 dark:border-hairline-dark px-2 py-1";
 
 function pad2(n: number): string {
   return String(n).padStart(2, "0");
@@ -136,19 +136,19 @@ export default function ReminderEditScreen() {
 
   if (isEdit && isLoading) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
         <Card testID="reminder-form-loading">
           <Skeleton lines={3} />
         </Card>
-        <Text className="text-center text-base text-brand-900">{strings.reminderForm.loading}</Text>
+        <Text className="text-center text-base text-brand-900 dark:text-ink-dark">{strings.reminderForm.loading}</Text>
       </SafeAreaView>
     );
   }
 
   if (isEdit && isOffline && !existing) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
-        <Text testID="reminder-form-offline" className="text-center text-base text-brand-900">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
+        <Text testID="reminder-form-offline" className="text-center text-base text-brand-900 dark:text-ink-dark">
           {strings.reminderForm.error}
         </Text>
         <PrimaryButton testID="reminder-form-retry" label={strings.reminderForm.retry} onPress={() => refetch()} />
@@ -158,8 +158,8 @@ export default function ReminderEditScreen() {
 
   if (isEdit && isError) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
-        <Text testID="reminder-form-error" className="text-center text-base text-red-700">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
+        <Text testID="reminder-form-error" className="text-center text-base text-red-700 dark:text-red-400">
           {strings.reminderForm.error}
         </Text>
         <PrimaryButton testID="reminder-form-retry" label={strings.reminderForm.retry} onPress={() => refetch()} />
@@ -198,7 +198,9 @@ export default function ReminderEditScreen() {
         : {})}
     >
       <View className="gap-2">
-        <Text className="text-base font-semibold text-brand-900">{strings.reminderForm.typeHeading}</Text>
+        <Text className="text-base font-semibold text-brand-900 dark:text-ink-dark font-body-semibold">
+          {strings.reminderForm.typeHeading}
+        </Text>
         <View className="flex-row flex-wrap gap-2">
           {REMINDER_TYPES.map((option) => (
             <Chip
@@ -225,12 +227,16 @@ export default function ReminderEditScreen() {
           />
 
           <View className="gap-2">
-            <Text className="text-base font-semibold text-brand-900">{strings.reminderForm.scheduleHeading}</Text>
+            <Text className="text-base font-semibold text-brand-900 dark:text-ink-dark font-body-semibold">
+              {strings.reminderForm.scheduleHeading}
+            </Text>
             <ScheduleBuilder value={schedule} onChange={setSchedule} />
           </View>
 
           <View className="gap-2">
-            <Text className="text-base font-semibold text-brand-900">{strings.reminderForm.startDateLabel}</Text>
+            <Text className="text-base font-semibold text-brand-900 dark:text-ink-dark font-body-semibold">
+              {strings.reminderForm.startDateLabel}
+            </Text>
             <View className="flex-row items-center gap-2">
               <Pressable
                 testID="reminder-startdate-minus1w"
@@ -238,7 +244,7 @@ export default function ReminderEditScreen() {
                 hitSlop={STEPPER_HIT_SLOP}
                 className={STEPPER_CLASS}
               >
-                <Text className="text-sm text-brand-900">-1w</Text>
+                <Text className="text-sm text-brand-900 dark:text-ink-dark font-body">-1w</Text>
               </Pressable>
               <Pressable
                 testID="reminder-startdate-minus1d"
@@ -246,9 +252,12 @@ export default function ReminderEditScreen() {
                 hitSlop={STEPPER_HIT_SLOP}
                 className={STEPPER_CLASS}
               >
-                <Text className="text-sm text-brand-900">-1d</Text>
+                <Text className="text-sm text-brand-900 dark:text-ink-dark font-body">-1d</Text>
               </Pressable>
-              <Text testID="reminder-startdate" className="text-sm font-semibold text-brand-900">
+              <Text
+                testID="reminder-startdate"
+                className="text-sm font-semibold text-brand-900 dark:text-ink-dark font-body"
+              >
                 {startDate}
               </Text>
               <Pressable
@@ -257,7 +266,7 @@ export default function ReminderEditScreen() {
                 hitSlop={STEPPER_HIT_SLOP}
                 className={STEPPER_CLASS}
               >
-                <Text className="text-sm text-brand-900">+1d</Text>
+                <Text className="text-sm text-brand-900 dark:text-ink-dark font-body">+1d</Text>
               </Pressable>
               <Pressable
                 testID="reminder-startdate-plus1w"
@@ -265,13 +274,15 @@ export default function ReminderEditScreen() {
                 hitSlop={STEPPER_HIT_SLOP}
                 className={STEPPER_CLASS}
               >
-                <Text className="text-sm text-brand-900">+1w</Text>
+                <Text className="text-sm text-brand-900 dark:text-ink-dark font-body">+1w</Text>
               </Pressable>
             </View>
           </View>
 
           <View className="gap-2">
-            <Text className="text-base font-semibold text-brand-900">{strings.reminderForm.timeLabel}</Text>
+            <Text className="text-base font-semibold text-brand-900 dark:text-ink-dark font-body-semibold">
+              {strings.reminderForm.timeLabel}
+            </Text>
             <ScrollView horizontal testID="reminder-time-list" contentContainerClassName="gap-2">
               {TIME_OF_DAY_OPTIONS.map((time) => (
                 <Chip

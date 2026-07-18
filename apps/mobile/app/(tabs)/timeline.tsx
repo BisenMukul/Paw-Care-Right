@@ -79,25 +79,34 @@ export default function TimelineScreen() {
 
   if (activePetId === null) {
     return (
-      <SafeAreaView testID="timeline-no-pet" className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
-        <Text className="text-center text-base text-brand-900">{strings.timeline.noPet}</Text>
+      <SafeAreaView
+        testID="timeline-no-pet"
+        className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6"
+      >
+        <Text className="text-center text-base text-brand-900 dark:text-ink-dark">{strings.timeline.noPet}</Text>
       </SafeAreaView>
     );
   }
 
   if (isLoading) {
     return (
-      <SafeAreaView testID="timeline-loading" className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
+      <SafeAreaView
+        testID="timeline-loading"
+        className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6"
+      >
         <Skeleton lines={4} testID="timeline-loading-skeleton" />
-        <Text className="text-center text-base text-brand-900">{strings.timeline.loading}</Text>
+        <Text className="text-center text-base text-brand-900 dark:text-ink-dark">{strings.timeline.loading}</Text>
       </SafeAreaView>
     );
   }
 
   if (isOffline && !data) {
     return (
-      <SafeAreaView testID="timeline-offline" className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
-        <Text className="text-center text-base text-brand-900">{strings.timeline.offline}</Text>
+      <SafeAreaView
+        testID="timeline-offline"
+        className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6"
+      >
+        <Text className="text-center text-base text-brand-900 dark:text-ink-dark">{strings.timeline.offline}</Text>
         <PrimaryButton testID="timeline-retry" label={strings.timeline.retry} onPress={() => refetch()} />
       </SafeAreaView>
     );
@@ -105,8 +114,11 @@ export default function TimelineScreen() {
 
   if (isError && !data) {
     return (
-      <SafeAreaView testID="timeline-error" className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
-        <Text className="text-center text-base text-red-700">{strings.timeline.error}</Text>
+      <SafeAreaView
+        testID="timeline-error"
+        className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6"
+      >
+        <Text className="text-center text-base text-red-700 dark:text-red-400">{strings.timeline.error}</Text>
         <PrimaryButton testID="timeline-retry" label={strings.timeline.retry} onPress={() => refetch()} />
       </SafeAreaView>
     );
@@ -116,7 +128,7 @@ export default function TimelineScreen() {
   const sections: TimelineSection[] = groupTimelineByMonth(items);
 
   return (
-    <SafeAreaView testID="timeline-screen" className="flex-1 bg-brand-50">
+    <SafeAreaView testID="timeline-screen" className="flex-1 bg-brand-50 dark:bg-surface-page-dark">
       <SectionList
         testID="timeline-list"
         sections={sections}
@@ -128,7 +140,7 @@ export default function TimelineScreen() {
         renderSectionHeader={({ section }) => (
           <Text
             testID={`timeline-section-${section.title}`}
-            className="bg-brand-50 px-4 py-2 text-sm font-semibold text-brand-700"
+            className="bg-brand-50 dark:bg-surface-page-dark px-4 py-2 text-sm font-semibold text-brand-700 dark:text-ink-muted-dark font-body-semibold"
           >
             {section.title}
           </Text>
@@ -146,7 +158,7 @@ export default function TimelineScreen() {
               <Text
                 testID="timeline-offline-banner"
                 accessibilityRole="alert"
-                className="text-center text-sm text-brand-700"
+                className="text-center text-sm text-brand-700 dark:text-ink-muted-dark"
               >
                 {strings.timeline.offlineBanner}
               </Text>
@@ -154,7 +166,7 @@ export default function TimelineScreen() {
             <Text
               accessibilityRole="header"
               maxFontSizeMultiplier={1.5}
-              className="text-2xl font-bold text-brand-900"
+              className="text-2xl font-bold text-brand-900 dark:text-ink-dark font-display"
             >
               {strings.timeline.title}
             </Text>

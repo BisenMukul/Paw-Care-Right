@@ -109,7 +109,7 @@ export default function ActivityScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
         <Skeleton lines={4} testID="activity-screen-loading" />
       </SafeAreaView>
     );
@@ -117,8 +117,8 @@ export default function ActivityScreen() {
 
   if (isOffline && !pet) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
-        <Text testID="activity-screen-offline" className="text-center text-base text-brand-900">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
+        <Text testID="activity-screen-offline" className="text-center text-base text-brand-900 dark:text-ink-dark">
           {strings.activity.offline}
         </Text>
         <PrimaryButton testID="activity-screen-retry" label={strings.activity.retry} onPress={() => refetch()} />
@@ -128,8 +128,8 @@ export default function ActivityScreen() {
 
   if (isError) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
-        <Text testID="activity-screen-error" className="text-center text-base text-red-700">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
+        <Text testID="activity-screen-error" className="text-center text-base text-red-700 dark:text-red-400">
           {strings.activity.error}
         </Text>
         <PrimaryButton testID="activity-screen-retry" label={strings.activity.retry} onPress={() => refetch()} />
@@ -139,8 +139,8 @@ export default function ActivityScreen() {
 
   if (!pet) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
-        <Text testID="activity-screen-empty" className="text-center text-base text-brand-900">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
+        <Text testID="activity-screen-empty" className="text-center text-base text-brand-900 dark:text-ink-dark">
           {strings.activity.empty}
         </Text>
       </SafeAreaView>
@@ -220,9 +220,12 @@ export default function ActivityScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-brand-50">
+    <SafeAreaView className="flex-1 bg-brand-50 dark:bg-surface-page-dark">
       {isOffline ? (
-        <Text testID="activity-screen-offline-banner" className="px-6 pt-2 text-center text-sm text-brand-700">
+        <Text
+          testID="activity-screen-offline-banner"
+          className="px-6 pt-2 text-center text-sm text-brand-700 dark:text-ink-muted-dark"
+        >
           {strings.activity.offlineBanner}
         </Text>
       ) : null}
@@ -231,7 +234,7 @@ export default function ActivityScreen() {
           <Text
             accessibilityRole="header"
             maxFontSizeMultiplier={1.5}
-            className="text-2xl font-bold text-brand-900"
+            className="text-2xl font-bold text-brand-900 dark:text-ink-dark font-display"
           >
             {strings.activity.title}
           </Text>
@@ -248,9 +251,9 @@ export default function ActivityScreen() {
             <View
               testID="activity-undo-banner"
               accessibilityRole="alert"
-              className="flex-row items-center justify-between rounded-lg bg-brand-50 px-4 py-3"
+              className="flex-row items-center justify-between rounded-lg bg-brand-50 dark:bg-surface-raised-dark px-4 py-3"
             >
-              <Text className="flex-1 text-sm text-brand-900">
+              <Text className="flex-1 text-sm text-brand-900 dark:text-ink-dark">
                 {strings.activity.loggedConfirmation(pendingUndo.label)}
               </Text>
               <PrimaryButton testID="activity-undo-button" label={strings.activity.undo} onPress={handleUndo} />

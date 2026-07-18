@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import type { ActivityType } from "@pawcareright/types";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, Text, useColorScheme, View } from "react-native";
 
 import { ACTIVITY_TYPE_CONFIG, ACTIVITY_TYPES_ORDER } from "../health-logs/activity-config";
 import { strings } from "../strings";
@@ -18,6 +18,9 @@ export interface ActivityChipGridProps {
  * target, design-system §4.1).
  */
 export function ActivityChipGrid({ onSelect }: ActivityChipGridProps) {
+  const scheme = useColorScheme();
+  const iconColor = scheme === "dark" ? "#2EA57C" : "#1f6350";
+
   return (
     <View testID="activity-chip-grid" className="flex-row flex-wrap gap-3">
       {ACTIVITY_TYPES_ORDER.map((activityType) => {
@@ -31,10 +34,12 @@ export function ActivityChipGrid({ onSelect }: ActivityChipGridProps) {
             accessibilityRole="button"
             accessibilityLabel={strings.activity.typeChipA11y(label)}
             style={({ pressed }) => (pressed ? { opacity: 0.85 } : null)}
-            className="min-w-[28%] flex-1 basis-[28%] items-center gap-2 rounded-2xl bg-brand-50 px-3 py-5"
+            className="min-w-[28%] flex-1 basis-[28%] items-center gap-2 rounded-2xl bg-white dark:bg-surface-card-dark shadow-md px-3 py-5"
           >
-            <Ionicons name={config.icon} size={26} color="#1f6350" />
-            <Text className="text-center text-sm font-semibold text-brand-900">{label}</Text>
+            <Ionicons name={config.icon} size={26} color={iconColor} />
+            <Text className="text-center text-sm font-semibold text-brand-900 dark:text-ink-dark font-body-semibold">
+              {label}
+            </Text>
           </Pressable>
         );
       })}

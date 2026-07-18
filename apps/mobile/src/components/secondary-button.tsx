@@ -43,10 +43,13 @@ export function SecondaryButton({
       className="flex-row items-center justify-center gap-2 rounded-lg border border-brand-700 dark:border-accent-bright bg-white dark:bg-surface-card-dark px-6 py-3"
     >
       {loading ? (
-        <ActivityIndicator color="#1f6350" testID={testID ? `${testID}-spinner` : undefined} />
+        <ActivityIndicator
+          color={scheme === "dark" ? "#2EA57C" : "#1f6350"}
+          testID={testID ? `${testID}-spinner` : undefined}
+        />
       ) : (
         <>
-          {icon ? <Ionicons name={icon} size={18} color="#1f6350" /> : null}
+          {icon ? <Ionicons name={icon} size={18} color={scheme === "dark" ? "#2EA57C" : "#1f6350"} /> : null}
           <Text
             maxFontSizeMultiplier={1.5}
             className="text-base font-semibold text-brand-700 dark:text-accent-bright font-body-semibold"
