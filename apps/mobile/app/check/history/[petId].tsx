@@ -1,11 +1,12 @@
 import { useIsOffline } from "@pawcareright/api-client";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { ActivityIndicator, ScrollView, Text, View } from "react-native";
+import { RefreshControl, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useChecksList } from "../../../src/api/checks-api";
 import { CheckHistoryRow } from "../../../src/components/check-history-row";
 import { PrimaryButton } from "../../../src/components/primary-button";
+import { Skeleton } from "../../../src/components/skeleton";
 import { strings } from "../../../src/strings";
 
 /**
@@ -19,9 +20,16 @@ import { strings } from "../../../src/strings";
 export default function CheckHistoryScreen() {
   const router = useRouter();
   const { petId } = useLocalSearchParams<{ petId?: string }>();
-  const { data, isLoading, isError, refetch, hasNextPage, fetchNextPage, isFetchingNextPage } = useChecksList(
-    petId ?? "",
-  );
+  const {
+    data,
+    isLoading,
+    isError,
+    refetch,
+    isRefetching,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+  } = useChecksList(petId ?? "");
   const isOffline = useIsOffline();
 
   const items = data?.pages.flatMap((page) => page.items) ?? [];
@@ -32,12 +40,8 @@ export default function CheckHistoryScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView
-        testID="check-history-loading"
-        className="flex-1 items-center justify-center gap-4 bg-white px-6"
-      >
-        <ActivityIndicator />
-        <Text className="text-center text-base text-brand-900">{strings.check.history.title}</Text>
+      <SafeAreaView testID="check-history-loading" className="flex-1 gap-4 bg-brand-50 px-4 pt-4">
+        <Skeleton lines={4} />
       </SafeAreaView>
     );
   }
@@ -46,36 +50,48 @@ export default function CheckHistoryScreen() {
     return (
       <SafeAreaView
         testID="check-history-error"
-        className="flex-1 items-center justify-center gap-4 bg-white px-6"
+        className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6"
       >
-        <Text className="text-center text-base text-red-600">{strings.check.history.error}</Text>
+        <Text className="text-center text-base text-red-700">{strings.check.history.error}</Text>
         <PrimaryButton testID="check-history-retry" label={strings.check.history.retry} onPress={() => refetch()} />
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView testID="check-history-screen" className="flex-1 bg-white">
-      <View className="gap-3 px-6 pb-2 pt-2">
+    <SafeAreaView testID="check-history-screen" className="flex-1 bg-brand-50">
+      <View className="gap-3 px-4 pb-2 pt-2">
         {isOffline ? (
-          <Text testID="check-history-offline-banner" className="text-center text-sm text-brand-700">
+          <Text
+            testID="check-history-offline-banner"
+            accessibilityRole="alert"
+            className="text-center text-sm text-brand-700"
+          >
             {strings.check.history.offlineBanner}
           </Text>
         ) : null}
-        <Text className="text-xl font-semibold text-brand-900">{strings.check.history.title}</Text>
+        <Text accessibilityRole="header" maxFontSizeMultiplier={1.5} className="text-2xl font-bold text-brand-900">
+          {strings.check.history.title}
+        </Text>
       </View>
       {items.length === 0 ? (
         <View testID="check-history-empty" className="flex-1 items-center justify-center px-6">
           <Text className="text-center text-base text-brand-700">{strings.check.history.empty}</Text>
         </View>
       ) : (
-        <ScrollView testID="check-history-scroll" className="flex-1">
+        <ScrollView
+          testID="check-history-scroll"
+          className="flex-1"
+          refreshControl={
+            <RefreshControl tintColor="#1f6350" refreshing={isRefetching} onRefresh={() => void refetch()} />
+          }
+        >
           <View className="pb-8">
             {items.map((item) => (
               <CheckHistoryRow key={item.id} item={item} onPress={handlePressRow} />
             ))}
             {hasNextPage ? (
-              <View className="px-6 pt-4">
+              <View className="px-4 pt-4">
                 <PrimaryButton
                   testID="check-history-load-more"
                   label={isFetchingNextPage ? strings.check.history.loadingMore : strings.check.history.loadMore}

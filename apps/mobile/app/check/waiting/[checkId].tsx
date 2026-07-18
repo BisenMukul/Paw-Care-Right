@@ -5,7 +5,7 @@ import { ActivityIndicator, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useCheck } from "../../../src/api/checks-api";
-import { PrimaryButton } from "../../../src/components/primary-button";
+import { GhostButton } from "../../../src/components/ghost-button";
 import { strings } from "../../../src/strings";
 
 /**
@@ -33,11 +33,20 @@ export default function CheckWaitingScreen() {
   }
 
   return (
-    <SafeAreaView testID="check-waiting-screen" className="flex-1 items-center justify-center gap-4 bg-white px-6">
+    <SafeAreaView
+      testID="check-waiting-screen"
+      className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6"
+    >
       <ActivityIndicator testID="check-waiting-spinner" />
-      <Text className="text-center text-lg font-semibold text-brand-900">{strings.check.waiting.title}</Text>
+      <Text
+        accessibilityRole="header"
+        maxFontSizeMultiplier={1.5}
+        className="text-center text-lg font-semibold text-brand-900"
+      >
+        {strings.check.waiting.title}
+      </Text>
       <Text className="text-center text-base text-brand-700">{strings.check.waiting.body}</Text>
-      <PrimaryButton testID="check-waiting-cancel" label={strings.check.waiting.cancel} onPress={handleCancel} />
+      <GhostButton testID="check-waiting-cancel" label={strings.check.waiting.cancel} onPress={handleCancel} />
     </SafeAreaView>
   );
 }

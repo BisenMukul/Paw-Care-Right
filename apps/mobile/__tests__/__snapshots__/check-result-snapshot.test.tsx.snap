@@ -2,7 +2,7 @@
 
 exports[`check result screen snapshots renders a distinct FALLBACK snapshot with the fallback notice and disclaimer 1`] = `
 <RNCSafeAreaView
-  className="flex-1 bg-white"
+  className="flex-1 bg-brand-50"
   edges={
     {
       "bottom": "additive",
@@ -19,10 +19,10 @@ exports[`check result screen snapshots renders a distinct FALLBACK snapshot with
   >
     <View>
       <View
-        className="gap-4 px-6 pb-8 pt-4"
+        className="gap-6 px-4 pb-8 pt-4"
       >
         <View
-          className="rounded-lg bg-amber-100 px-4 py-3"
+          className="rounded-2xl bg-amber-100 px-4 py-3"
           testID="check-result-fallback-notice"
         >
           <Text
@@ -35,36 +35,40 @@ exports[`check result screen snapshots renders a distinct FALLBACK snapshot with
           testID="check-result-urgency-banner"
         >
           <View
-            className="items-center rounded-lg px-4 py-3 bg-amber-400"
+            className="items-center rounded-2xl px-4 py-3 bg-amber-400"
             testID="urgency-banner-VET_SOON"
           >
             <Text
-              className="text-center text-lg font-semibold text-amber-950"
+              className="text-center text-lg font-bold text-amber-950"
             >
               See a vet soon
             </Text>
           </View>
         </View>
-        <Text
-          className="text-base text-brand-900"
-          testID="check-result-summary"
-        >
-          We can't reliably assess this from the information provided. Please contact a licensed veterinarian to have your pet checked.
-        </Text>
         <View
-          className="gap-2"
-          testID="check-result-do-not"
+          className="rounded-2xl bg-white p-4 shadow-md gap-2 gap-4"
         >
           <Text
-            className="text-lg font-semibold text-brand-900"
+            className="text-base text-brand-900"
+            testID="check-result-summary"
           >
-            What not to do
+            We can't reliably assess this from the information provided. Please contact a licensed veterinarian to have your pet checked.
           </Text>
-          <Text
-            className="text-sm text-brand-700"
+          <View
+            className="gap-2"
+            testID="check-result-do-not"
           >
-            • Do not give human medications to your pet without a veterinarian's guidance.
-          </Text>
+            <Text
+              className="text-lg font-semibold text-brand-900"
+            >
+              What not to do
+            </Text>
+            <Text
+              className="text-sm text-brand-700"
+            >
+              • Do not give human medications to your pet without a veterinarian's guidance.
+            </Text>
+          </View>
         </View>
         <View
           accessibilityRole="text"
@@ -141,7 +145,7 @@ exports[`check result screen snapshots renders a distinct FALLBACK snapshot with
               }
             }
             accessible={true}
-            className="flex-row items-center justify-center gap-2 rounded-lg bg-brand-700 px-6 py-3"
+            className="flex-row items-center justify-center gap-2 rounded-lg border border-brand-700 bg-white px-6 py-3"
             collapsable={false}
             focusable={true}
             onBlur={[Function]}
@@ -157,7 +161,8 @@ exports[`check result screen snapshots renders a distinct FALLBACK snapshot with
             testID="check-result-share"
           >
             <Text
-              className="text-base font-semibold text-white"
+              className="text-base font-semibold text-brand-700"
+              maxFontSizeMultiplier={1.5}
             >
               Share as text
             </Text>
@@ -182,9 +187,17 @@ exports[`check result screen snapshots renders a distinct FALLBACK snapshot with
               }
             }
             accessible={true}
-            className="flex-row items-center justify-center gap-2 rounded-lg bg-brand-700 px-6 py-3"
+            className="px-4 py-3"
             collapsable={false}
             focusable={true}
+            hitSlop={
+              {
+                "bottom": 8,
+                "left": 8,
+                "right": 8,
+                "top": 8,
+              }
+            }
             onBlur={[Function]}
             onClick={[Function]}
             onFocus={[Function]}
@@ -198,7 +211,8 @@ exports[`check result screen snapshots renders a distinct FALLBACK snapshot with
             testID="check-result-done"
           >
             <Text
-              className="text-base font-semibold text-white"
+              className="text-base font-semibold text-brand-700"
+              maxFontSizeMultiplier={1.5}
             >
               Done
             </Text>
@@ -212,7 +226,7 @@ exports[`check result screen snapshots renders a distinct FALLBACK snapshot with
 
 exports[`check result screen snapshots renders a distinct snapshot with the emergency notice above all AI content when redFlag is present 1`] = `
 <RNCSafeAreaView
-  className="flex-1 bg-white"
+  className="flex-1 bg-brand-50"
   edges={
     {
       "bottom": "additive",
@@ -229,10 +243,10 @@ exports[`check result screen snapshots renders a distinct snapshot with the emer
   >
     <View>
       <View
-        className="gap-4 px-6 pb-8 pt-4"
+        className="gap-6 px-4 pb-8 pt-4"
       >
         <View
-          className="gap-2 rounded-lg bg-red-600 px-4 py-3"
+          className="gap-2 rounded-2xl bg-red-600 px-4 py-3"
           testID="check-result-emergency-notice"
         >
           <Text
@@ -291,93 +305,97 @@ exports[`check result screen snapshots renders a distinct snapshot with the emer
           testID="check-result-urgency-banner"
         >
           <View
-            className="items-center rounded-lg px-4 py-3 bg-red-600"
+            className="items-center rounded-2xl px-4 py-3 bg-red-600"
             testID="urgency-banner-EMERGENCY_NOW"
           >
             <Text
-              className="text-center text-lg font-semibold text-white"
+              className="text-center text-lg font-bold text-white"
             >
               Emergency — see a vet now
             </Text>
           </View>
         </View>
-        <Text
-          className="text-base text-brand-900"
-          testID="check-result-summary"
-        >
-          General guidance based on the information provided.
-        </Text>
         <View
-          className="gap-2"
-          testID="check-result-possible-causes"
+          className="rounded-2xl bg-white p-4 shadow-md gap-2 gap-4"
         >
           <Text
-            className="text-lg font-semibold text-brand-900"
+            className="text-base text-brand-900"
+            testID="check-result-summary"
           >
-            What this could be
+            General guidance based on the information provided.
           </Text>
-          <View>
+          <View
+            className="gap-2"
+            testID="check-result-possible-causes"
+          >
             <Text
-              className="text-base font-semibold text-brand-900"
+              className="text-lg font-semibold text-brand-900"
             >
-              Mild upset stomach
+              What this could be
+            </Text>
+            <View>
+              <Text
+                className="text-base font-semibold text-brand-900"
+              >
+                Mild upset stomach
+              </Text>
+              <Text
+                className="text-sm text-brand-700"
+              >
+                Reported symptoms are consistent with this.
+              </Text>
+            </View>
+          </View>
+          <View
+            className="gap-2"
+            testID="check-result-red-flags-to-watch"
+          >
+            <Text
+              className="text-lg font-semibold text-brand-900"
+            >
+              When to get help fast
             </Text>
             <Text
               className="text-sm text-brand-700"
             >
-              Reported symptoms are consistent with this.
+              • Repeated vomiting
+            </Text>
+            <Text
+              className="text-sm text-brand-700"
+            >
+              • Lethargy that worsens
             </Text>
           </View>
-        </View>
-        <View
-          className="gap-2"
-          testID="check-result-red-flags-to-watch"
-        >
-          <Text
-            className="text-lg font-semibold text-brand-900"
+          <View
+            className="gap-2"
+            testID="check-result-do-not"
           >
-            When to get help fast
-          </Text>
-          <Text
-            className="text-sm text-brand-700"
+            <Text
+              className="text-lg font-semibold text-brand-900"
+            >
+              What not to do
+            </Text>
+            <Text
+              className="text-sm text-brand-700"
+            >
+              • Do not give human medications without veterinary guidance.
+            </Text>
+          </View>
+          <View
+            className="gap-2"
+            testID="check-result-vet-questions"
           >
-            • Repeated vomiting
-          </Text>
-          <Text
-            className="text-sm text-brand-700"
-          >
-            • Lethargy that worsens
-          </Text>
-        </View>
-        <View
-          className="gap-2"
-          testID="check-result-do-not"
-        >
-          <Text
-            className="text-lg font-semibold text-brand-900"
-          >
-            What not to do
-          </Text>
-          <Text
-            className="text-sm text-brand-700"
-          >
-            • Do not give human medications without veterinary guidance.
-          </Text>
-        </View>
-        <View
-          className="gap-2"
-          testID="check-result-vet-questions"
-        >
-          <Text
-            className="text-lg font-semibold text-brand-900"
-          >
-            Questions to ask your vet
-          </Text>
-          <Text
-            className="text-sm text-brand-700"
-          >
-            • How long have symptoms been present?
-          </Text>
+            <Text
+              className="text-lg font-semibold text-brand-900"
+            >
+              Questions to ask your vet
+            </Text>
+            <Text
+              className="text-sm text-brand-700"
+            >
+              • How long have symptoms been present?
+            </Text>
+          </View>
         </View>
         <View
           accessibilityRole="text"
@@ -454,7 +472,7 @@ exports[`check result screen snapshots renders a distinct snapshot with the emer
               }
             }
             accessible={true}
-            className="flex-row items-center justify-center gap-2 rounded-lg bg-brand-700 px-6 py-3"
+            className="flex-row items-center justify-center gap-2 rounded-lg border border-brand-700 bg-white px-6 py-3"
             collapsable={false}
             focusable={true}
             onBlur={[Function]}
@@ -470,7 +488,8 @@ exports[`check result screen snapshots renders a distinct snapshot with the emer
             testID="check-result-share"
           >
             <Text
-              className="text-base font-semibold text-white"
+              className="text-base font-semibold text-brand-700"
+              maxFontSizeMultiplier={1.5}
             >
               Share as text
             </Text>
@@ -495,9 +514,17 @@ exports[`check result screen snapshots renders a distinct snapshot with the emer
               }
             }
             accessible={true}
-            className="flex-row items-center justify-center gap-2 rounded-lg bg-brand-700 px-6 py-3"
+            className="px-4 py-3"
             collapsable={false}
             focusable={true}
+            hitSlop={
+              {
+                "bottom": 8,
+                "left": 8,
+                "right": 8,
+                "top": 8,
+              }
+            }
             onBlur={[Function]}
             onClick={[Function]}
             onFocus={[Function]}
@@ -511,7 +538,8 @@ exports[`check result screen snapshots renders a distinct snapshot with the emer
             testID="check-result-done"
           >
             <Text
-              className="text-base font-semibold text-white"
+              className="text-base font-semibold text-brand-700"
+              maxFontSizeMultiplier={1.5}
             >
               Done
             </Text>
@@ -525,7 +553,7 @@ exports[`check result screen snapshots renders a distinct snapshot with the emer
 
 exports[`check result screen snapshots renders a stable snapshot for EMERGENCY_NOW with the disclaimer present 1`] = `
 <RNCSafeAreaView
-  className="flex-1 bg-white"
+  className="flex-1 bg-brand-50"
   edges={
     {
       "bottom": "additive",
@@ -542,99 +570,103 @@ exports[`check result screen snapshots renders a stable snapshot for EMERGENCY_N
   >
     <View>
       <View
-        className="gap-4 px-6 pb-8 pt-4"
+        className="gap-6 px-4 pb-8 pt-4"
       >
         <View
           testID="check-result-urgency-banner"
         >
           <View
-            className="items-center rounded-lg px-4 py-3 bg-red-600"
+            className="items-center rounded-2xl px-4 py-3 bg-red-600"
             testID="urgency-banner-EMERGENCY_NOW"
           >
             <Text
-              className="text-center text-lg font-semibold text-white"
+              className="text-center text-lg font-bold text-white"
             >
               Emergency — see a vet now
             </Text>
           </View>
         </View>
-        <Text
-          className="text-base text-brand-900"
-          testID="check-result-summary"
-        >
-          General guidance based on the information provided.
-        </Text>
         <View
-          className="gap-2"
-          testID="check-result-possible-causes"
+          className="rounded-2xl bg-white p-4 shadow-md gap-2 gap-4"
         >
           <Text
-            className="text-lg font-semibold text-brand-900"
+            className="text-base text-brand-900"
+            testID="check-result-summary"
           >
-            What this could be
+            General guidance based on the information provided.
           </Text>
-          <View>
+          <View
+            className="gap-2"
+            testID="check-result-possible-causes"
+          >
             <Text
-              className="text-base font-semibold text-brand-900"
+              className="text-lg font-semibold text-brand-900"
             >
-              Mild upset stomach
+              What this could be
+            </Text>
+            <View>
+              <Text
+                className="text-base font-semibold text-brand-900"
+              >
+                Mild upset stomach
+              </Text>
+              <Text
+                className="text-sm text-brand-700"
+              >
+                Reported symptoms are consistent with this.
+              </Text>
+            </View>
+          </View>
+          <View
+            className="gap-2"
+            testID="check-result-red-flags-to-watch"
+          >
+            <Text
+              className="text-lg font-semibold text-brand-900"
+            >
+              When to get help fast
             </Text>
             <Text
               className="text-sm text-brand-700"
             >
-              Reported symptoms are consistent with this.
+              • Repeated vomiting
+            </Text>
+            <Text
+              className="text-sm text-brand-700"
+            >
+              • Lethargy that worsens
             </Text>
           </View>
-        </View>
-        <View
-          className="gap-2"
-          testID="check-result-red-flags-to-watch"
-        >
-          <Text
-            className="text-lg font-semibold text-brand-900"
+          <View
+            className="gap-2"
+            testID="check-result-do-not"
           >
-            When to get help fast
-          </Text>
-          <Text
-            className="text-sm text-brand-700"
+            <Text
+              className="text-lg font-semibold text-brand-900"
+            >
+              What not to do
+            </Text>
+            <Text
+              className="text-sm text-brand-700"
+            >
+              • Do not give human medications without veterinary guidance.
+            </Text>
+          </View>
+          <View
+            className="gap-2"
+            testID="check-result-vet-questions"
           >
-            • Repeated vomiting
-          </Text>
-          <Text
-            className="text-sm text-brand-700"
-          >
-            • Lethargy that worsens
-          </Text>
-        </View>
-        <View
-          className="gap-2"
-          testID="check-result-do-not"
-        >
-          <Text
-            className="text-lg font-semibold text-brand-900"
-          >
-            What not to do
-          </Text>
-          <Text
-            className="text-sm text-brand-700"
-          >
-            • Do not give human medications without veterinary guidance.
-          </Text>
-        </View>
-        <View
-          className="gap-2"
-          testID="check-result-vet-questions"
-        >
-          <Text
-            className="text-lg font-semibold text-brand-900"
-          >
-            Questions to ask your vet
-          </Text>
-          <Text
-            className="text-sm text-brand-700"
-          >
-            • How long have symptoms been present?
-          </Text>
+            <Text
+              className="text-lg font-semibold text-brand-900"
+            >
+              Questions to ask your vet
+            </Text>
+            <Text
+              className="text-sm text-brand-700"
+            >
+              • How long have symptoms been present?
+            </Text>
+          </View>
         </View>
         <View
           accessibilityRole="text"
@@ -711,7 +743,7 @@ exports[`check result screen snapshots renders a stable snapshot for EMERGENCY_N
               }
             }
             accessible={true}
-            className="flex-row items-center justify-center gap-2 rounded-lg bg-brand-700 px-6 py-3"
+            className="flex-row items-center justify-center gap-2 rounded-lg border border-brand-700 bg-white px-6 py-3"
             collapsable={false}
             focusable={true}
             onBlur={[Function]}
@@ -727,7 +759,8 @@ exports[`check result screen snapshots renders a stable snapshot for EMERGENCY_N
             testID="check-result-share"
           >
             <Text
-              className="text-base font-semibold text-white"
+              className="text-base font-semibold text-brand-700"
+              maxFontSizeMultiplier={1.5}
             >
               Share as text
             </Text>
@@ -752,9 +785,17 @@ exports[`check result screen snapshots renders a stable snapshot for EMERGENCY_N
               }
             }
             accessible={true}
-            className="flex-row items-center justify-center gap-2 rounded-lg bg-brand-700 px-6 py-3"
+            className="px-4 py-3"
             collapsable={false}
             focusable={true}
+            hitSlop={
+              {
+                "bottom": 8,
+                "left": 8,
+                "right": 8,
+                "top": 8,
+              }
+            }
             onBlur={[Function]}
             onClick={[Function]}
             onFocus={[Function]}
@@ -768,7 +809,8 @@ exports[`check result screen snapshots renders a stable snapshot for EMERGENCY_N
             testID="check-result-done"
           >
             <Text
-              className="text-base font-semibold text-white"
+              className="text-base font-semibold text-brand-700"
+              maxFontSizeMultiplier={1.5}
             >
               Done
             </Text>
@@ -782,7 +824,7 @@ exports[`check result screen snapshots renders a stable snapshot for EMERGENCY_N
 
 exports[`check result screen snapshots renders a stable snapshot for MONITOR with the disclaimer present 1`] = `
 <RNCSafeAreaView
-  className="flex-1 bg-white"
+  className="flex-1 bg-brand-50"
   edges={
     {
       "bottom": "additive",
@@ -799,114 +841,118 @@ exports[`check result screen snapshots renders a stable snapshot for MONITOR wit
   >
     <View>
       <View
-        className="gap-4 px-6 pb-8 pt-4"
+        className="gap-6 px-4 pb-8 pt-4"
       >
         <View
           testID="check-result-urgency-banner"
         >
           <View
-            className="items-center rounded-lg px-4 py-3 bg-blue-500"
+            className="items-center rounded-2xl px-4 py-3 bg-blue-500"
             testID="urgency-banner-MONITOR"
           >
             <Text
-              className="text-center text-lg font-semibold text-white"
+              className="text-center text-lg font-bold text-white"
             >
               Monitor closely at home
             </Text>
           </View>
         </View>
-        <Text
-          className="text-base text-brand-900"
-          testID="check-result-summary"
-        >
-          General guidance based on the information provided.
-        </Text>
         <View
-          className="gap-2"
-          testID="check-result-possible-causes"
+          className="rounded-2xl bg-white p-4 shadow-md gap-2 gap-4"
         >
           <Text
-            className="text-lg font-semibold text-brand-900"
+            className="text-base text-brand-900"
+            testID="check-result-summary"
           >
-            What this could be
+            General guidance based on the information provided.
           </Text>
-          <View>
+          <View
+            className="gap-2"
+            testID="check-result-possible-causes"
+          >
             <Text
-              className="text-base font-semibold text-brand-900"
+              className="text-lg font-semibold text-brand-900"
             >
-              Mild upset stomach
+              What this could be
+            </Text>
+            <View>
+              <Text
+                className="text-base font-semibold text-brand-900"
+              >
+                Mild upset stomach
+              </Text>
+              <Text
+                className="text-sm text-brand-700"
+              >
+                Reported symptoms are consistent with this.
+              </Text>
+            </View>
+          </View>
+          <View
+            className="gap-2"
+            testID="check-result-red-flags-to-watch"
+          >
+            <Text
+              className="text-lg font-semibold text-brand-900"
+            >
+              When to get help fast
             </Text>
             <Text
               className="text-sm text-brand-700"
             >
-              Reported symptoms are consistent with this.
+              • Repeated vomiting
+            </Text>
+            <Text
+              className="text-sm text-brand-700"
+            >
+              • Lethargy that worsens
             </Text>
           </View>
-        </View>
-        <View
-          className="gap-2"
-          testID="check-result-red-flags-to-watch"
-        >
-          <Text
-            className="text-lg font-semibold text-brand-900"
+          <View
+            className="gap-2"
+            testID="check-result-home-care"
           >
-            When to get help fast
-          </Text>
-          <Text
-            className="text-sm text-brand-700"
+            <Text
+              className="text-lg font-semibold text-brand-900"
+            >
+              Caring for them at home
+            </Text>
+            <Text
+              className="text-sm text-brand-700"
+            >
+              • Offer small amounts of water
+            </Text>
+          </View>
+          <View
+            className="gap-2"
+            testID="check-result-do-not"
           >
-            • Repeated vomiting
-          </Text>
-          <Text
-            className="text-sm text-brand-700"
+            <Text
+              className="text-lg font-semibold text-brand-900"
+            >
+              What not to do
+            </Text>
+            <Text
+              className="text-sm text-brand-700"
+            >
+              • Do not give human medications without veterinary guidance.
+            </Text>
+          </View>
+          <View
+            className="gap-2"
+            testID="check-result-vet-questions"
           >
-            • Lethargy that worsens
-          </Text>
-        </View>
-        <View
-          className="gap-2"
-          testID="check-result-home-care"
-        >
-          <Text
-            className="text-lg font-semibold text-brand-900"
-          >
-            Caring for them at home
-          </Text>
-          <Text
-            className="text-sm text-brand-700"
-          >
-            • Offer small amounts of water
-          </Text>
-        </View>
-        <View
-          className="gap-2"
-          testID="check-result-do-not"
-        >
-          <Text
-            className="text-lg font-semibold text-brand-900"
-          >
-            What not to do
-          </Text>
-          <Text
-            className="text-sm text-brand-700"
-          >
-            • Do not give human medications without veterinary guidance.
-          </Text>
-        </View>
-        <View
-          className="gap-2"
-          testID="check-result-vet-questions"
-        >
-          <Text
-            className="text-lg font-semibold text-brand-900"
-          >
-            Questions to ask your vet
-          </Text>
-          <Text
-            className="text-sm text-brand-700"
-          >
-            • How long have symptoms been present?
-          </Text>
+            <Text
+              className="text-lg font-semibold text-brand-900"
+            >
+              Questions to ask your vet
+            </Text>
+            <Text
+              className="text-sm text-brand-700"
+            >
+              • How long have symptoms been present?
+            </Text>
+          </View>
         </View>
         <View
           accessibilityRole="text"
@@ -983,7 +1029,7 @@ exports[`check result screen snapshots renders a stable snapshot for MONITOR wit
               }
             }
             accessible={true}
-            className="flex-row items-center justify-center gap-2 rounded-lg bg-brand-700 px-6 py-3"
+            className="flex-row items-center justify-center gap-2 rounded-lg border border-brand-700 bg-white px-6 py-3"
             collapsable={false}
             focusable={true}
             onBlur={[Function]}
@@ -999,7 +1045,8 @@ exports[`check result screen snapshots renders a stable snapshot for MONITOR wit
             testID="check-result-share"
           >
             <Text
-              className="text-base font-semibold text-white"
+              className="text-base font-semibold text-brand-700"
+              maxFontSizeMultiplier={1.5}
             >
               Share as text
             </Text>
@@ -1024,9 +1071,17 @@ exports[`check result screen snapshots renders a stable snapshot for MONITOR wit
               }
             }
             accessible={true}
-            className="flex-row items-center justify-center gap-2 rounded-lg bg-brand-700 px-6 py-3"
+            className="px-4 py-3"
             collapsable={false}
             focusable={true}
+            hitSlop={
+              {
+                "bottom": 8,
+                "left": 8,
+                "right": 8,
+                "top": 8,
+              }
+            }
             onBlur={[Function]}
             onClick={[Function]}
             onFocus={[Function]}
@@ -1040,7 +1095,8 @@ exports[`check result screen snapshots renders a stable snapshot for MONITOR wit
             testID="check-result-done"
           >
             <Text
-              className="text-base font-semibold text-white"
+              className="text-base font-semibold text-brand-700"
+              maxFontSizeMultiplier={1.5}
             >
               Done
             </Text>
@@ -1054,7 +1110,7 @@ exports[`check result screen snapshots renders a stable snapshot for MONITOR wit
 
 exports[`check result screen snapshots renders a stable snapshot for REASSURE with the disclaimer present 1`] = `
 <RNCSafeAreaView
-  className="flex-1 bg-white"
+  className="flex-1 bg-brand-50"
   edges={
     {
       "bottom": "additive",
@@ -1071,114 +1127,118 @@ exports[`check result screen snapshots renders a stable snapshot for REASSURE wi
   >
     <View>
       <View
-        className="gap-4 px-6 pb-8 pt-4"
+        className="gap-6 px-4 pb-8 pt-4"
       >
         <View
           testID="check-result-urgency-banner"
         >
           <View
-            className="items-center rounded-lg px-4 py-3 bg-green-600"
+            className="items-center rounded-2xl px-4 py-3 bg-green-600"
             testID="urgency-banner-REASSURE"
           >
             <Text
-              className="text-center text-lg font-semibold text-white"
+              className="text-center text-lg font-bold text-white"
             >
               Likely not urgent
             </Text>
           </View>
         </View>
-        <Text
-          className="text-base text-brand-900"
-          testID="check-result-summary"
-        >
-          General guidance based on the information provided.
-        </Text>
         <View
-          className="gap-2"
-          testID="check-result-possible-causes"
+          className="rounded-2xl bg-white p-4 shadow-md gap-2 gap-4"
         >
           <Text
-            className="text-lg font-semibold text-brand-900"
+            className="text-base text-brand-900"
+            testID="check-result-summary"
           >
-            What this could be
+            General guidance based on the information provided.
           </Text>
-          <View>
+          <View
+            className="gap-2"
+            testID="check-result-possible-causes"
+          >
             <Text
-              className="text-base font-semibold text-brand-900"
+              className="text-lg font-semibold text-brand-900"
             >
-              Mild upset stomach
+              What this could be
+            </Text>
+            <View>
+              <Text
+                className="text-base font-semibold text-brand-900"
+              >
+                Mild upset stomach
+              </Text>
+              <Text
+                className="text-sm text-brand-700"
+              >
+                Reported symptoms are consistent with this.
+              </Text>
+            </View>
+          </View>
+          <View
+            className="gap-2"
+            testID="check-result-red-flags-to-watch"
+          >
+            <Text
+              className="text-lg font-semibold text-brand-900"
+            >
+              When to get help fast
             </Text>
             <Text
               className="text-sm text-brand-700"
             >
-              Reported symptoms are consistent with this.
+              • Repeated vomiting
+            </Text>
+            <Text
+              className="text-sm text-brand-700"
+            >
+              • Lethargy that worsens
             </Text>
           </View>
-        </View>
-        <View
-          className="gap-2"
-          testID="check-result-red-flags-to-watch"
-        >
-          <Text
-            className="text-lg font-semibold text-brand-900"
+          <View
+            className="gap-2"
+            testID="check-result-home-care"
           >
-            When to get help fast
-          </Text>
-          <Text
-            className="text-sm text-brand-700"
+            <Text
+              className="text-lg font-semibold text-brand-900"
+            >
+              Caring for them at home
+            </Text>
+            <Text
+              className="text-sm text-brand-700"
+            >
+              • Offer small amounts of water
+            </Text>
+          </View>
+          <View
+            className="gap-2"
+            testID="check-result-do-not"
           >
-            • Repeated vomiting
-          </Text>
-          <Text
-            className="text-sm text-brand-700"
+            <Text
+              className="text-lg font-semibold text-brand-900"
+            >
+              What not to do
+            </Text>
+            <Text
+              className="text-sm text-brand-700"
+            >
+              • Do not give human medications without veterinary guidance.
+            </Text>
+          </View>
+          <View
+            className="gap-2"
+            testID="check-result-vet-questions"
           >
-            • Lethargy that worsens
-          </Text>
-        </View>
-        <View
-          className="gap-2"
-          testID="check-result-home-care"
-        >
-          <Text
-            className="text-lg font-semibold text-brand-900"
-          >
-            Caring for them at home
-          </Text>
-          <Text
-            className="text-sm text-brand-700"
-          >
-            • Offer small amounts of water
-          </Text>
-        </View>
-        <View
-          className="gap-2"
-          testID="check-result-do-not"
-        >
-          <Text
-            className="text-lg font-semibold text-brand-900"
-          >
-            What not to do
-          </Text>
-          <Text
-            className="text-sm text-brand-700"
-          >
-            • Do not give human medications without veterinary guidance.
-          </Text>
-        </View>
-        <View
-          className="gap-2"
-          testID="check-result-vet-questions"
-        >
-          <Text
-            className="text-lg font-semibold text-brand-900"
-          >
-            Questions to ask your vet
-          </Text>
-          <Text
-            className="text-sm text-brand-700"
-          >
-            • How long have symptoms been present?
-          </Text>
+            <Text
+              className="text-lg font-semibold text-brand-900"
+            >
+              Questions to ask your vet
+            </Text>
+            <Text
+              className="text-sm text-brand-700"
+            >
+              • How long have symptoms been present?
+            </Text>
+          </View>
         </View>
         <View
           accessibilityRole="text"
@@ -1255,7 +1315,7 @@ exports[`check result screen snapshots renders a stable snapshot for REASSURE wi
               }
             }
             accessible={true}
-            className="flex-row items-center justify-center gap-2 rounded-lg bg-brand-700 px-6 py-3"
+            className="flex-row items-center justify-center gap-2 rounded-lg border border-brand-700 bg-white px-6 py-3"
             collapsable={false}
             focusable={true}
             onBlur={[Function]}
@@ -1271,7 +1331,8 @@ exports[`check result screen snapshots renders a stable snapshot for REASSURE wi
             testID="check-result-share"
           >
             <Text
-              className="text-base font-semibold text-white"
+              className="text-base font-semibold text-brand-700"
+              maxFontSizeMultiplier={1.5}
             >
               Share as text
             </Text>
@@ -1296,9 +1357,17 @@ exports[`check result screen snapshots renders a stable snapshot for REASSURE wi
               }
             }
             accessible={true}
-            className="flex-row items-center justify-center gap-2 rounded-lg bg-brand-700 px-6 py-3"
+            className="px-4 py-3"
             collapsable={false}
             focusable={true}
+            hitSlop={
+              {
+                "bottom": 8,
+                "left": 8,
+                "right": 8,
+                "top": 8,
+              }
+            }
             onBlur={[Function]}
             onClick={[Function]}
             onFocus={[Function]}
@@ -1312,7 +1381,8 @@ exports[`check result screen snapshots renders a stable snapshot for REASSURE wi
             testID="check-result-done"
           >
             <Text
-              className="text-base font-semibold text-white"
+              className="text-base font-semibold text-brand-700"
+              maxFontSizeMultiplier={1.5}
             >
               Done
             </Text>
@@ -1326,7 +1396,7 @@ exports[`check result screen snapshots renders a stable snapshot for REASSURE wi
 
 exports[`check result screen snapshots renders a stable snapshot for VET_24H with the disclaimer present 1`] = `
 <RNCSafeAreaView
-  className="flex-1 bg-white"
+  className="flex-1 bg-brand-50"
   edges={
     {
       "bottom": "additive",
@@ -1343,99 +1413,103 @@ exports[`check result screen snapshots renders a stable snapshot for VET_24H wit
   >
     <View>
       <View
-        className="gap-4 px-6 pb-8 pt-4"
+        className="gap-6 px-4 pb-8 pt-4"
       >
         <View
           testID="check-result-urgency-banner"
         >
           <View
-            className="items-center rounded-lg px-4 py-3 bg-orange-500"
+            className="items-center rounded-2xl px-4 py-3 bg-orange-600"
             testID="urgency-banner-VET_24H"
           >
             <Text
-              className="text-center text-lg font-semibold text-white"
+              className="text-center text-lg font-bold text-white"
             >
               See a vet within 24 hours
             </Text>
           </View>
         </View>
-        <Text
-          className="text-base text-brand-900"
-          testID="check-result-summary"
-        >
-          General guidance based on the information provided.
-        </Text>
         <View
-          className="gap-2"
-          testID="check-result-possible-causes"
+          className="rounded-2xl bg-white p-4 shadow-md gap-2 gap-4"
         >
           <Text
-            className="text-lg font-semibold text-brand-900"
+            className="text-base text-brand-900"
+            testID="check-result-summary"
           >
-            What this could be
+            General guidance based on the information provided.
           </Text>
-          <View>
+          <View
+            className="gap-2"
+            testID="check-result-possible-causes"
+          >
             <Text
-              className="text-base font-semibold text-brand-900"
+              className="text-lg font-semibold text-brand-900"
             >
-              Mild upset stomach
+              What this could be
+            </Text>
+            <View>
+              <Text
+                className="text-base font-semibold text-brand-900"
+              >
+                Mild upset stomach
+              </Text>
+              <Text
+                className="text-sm text-brand-700"
+              >
+                Reported symptoms are consistent with this.
+              </Text>
+            </View>
+          </View>
+          <View
+            className="gap-2"
+            testID="check-result-red-flags-to-watch"
+          >
+            <Text
+              className="text-lg font-semibold text-brand-900"
+            >
+              When to get help fast
             </Text>
             <Text
               className="text-sm text-brand-700"
             >
-              Reported symptoms are consistent with this.
+              • Repeated vomiting
+            </Text>
+            <Text
+              className="text-sm text-brand-700"
+            >
+              • Lethargy that worsens
             </Text>
           </View>
-        </View>
-        <View
-          className="gap-2"
-          testID="check-result-red-flags-to-watch"
-        >
-          <Text
-            className="text-lg font-semibold text-brand-900"
+          <View
+            className="gap-2"
+            testID="check-result-do-not"
           >
-            When to get help fast
-          </Text>
-          <Text
-            className="text-sm text-brand-700"
+            <Text
+              className="text-lg font-semibold text-brand-900"
+            >
+              What not to do
+            </Text>
+            <Text
+              className="text-sm text-brand-700"
+            >
+              • Do not give human medications without veterinary guidance.
+            </Text>
+          </View>
+          <View
+            className="gap-2"
+            testID="check-result-vet-questions"
           >
-            • Repeated vomiting
-          </Text>
-          <Text
-            className="text-sm text-brand-700"
-          >
-            • Lethargy that worsens
-          </Text>
-        </View>
-        <View
-          className="gap-2"
-          testID="check-result-do-not"
-        >
-          <Text
-            className="text-lg font-semibold text-brand-900"
-          >
-            What not to do
-          </Text>
-          <Text
-            className="text-sm text-brand-700"
-          >
-            • Do not give human medications without veterinary guidance.
-          </Text>
-        </View>
-        <View
-          className="gap-2"
-          testID="check-result-vet-questions"
-        >
-          <Text
-            className="text-lg font-semibold text-brand-900"
-          >
-            Questions to ask your vet
-          </Text>
-          <Text
-            className="text-sm text-brand-700"
-          >
-            • How long have symptoms been present?
-          </Text>
+            <Text
+              className="text-lg font-semibold text-brand-900"
+            >
+              Questions to ask your vet
+            </Text>
+            <Text
+              className="text-sm text-brand-700"
+            >
+              • How long have symptoms been present?
+            </Text>
+          </View>
         </View>
         <View
           accessibilityRole="text"
@@ -1512,7 +1586,7 @@ exports[`check result screen snapshots renders a stable snapshot for VET_24H wit
               }
             }
             accessible={true}
-            className="flex-row items-center justify-center gap-2 rounded-lg bg-brand-700 px-6 py-3"
+            className="flex-row items-center justify-center gap-2 rounded-lg border border-brand-700 bg-white px-6 py-3"
             collapsable={false}
             focusable={true}
             onBlur={[Function]}
@@ -1528,7 +1602,8 @@ exports[`check result screen snapshots renders a stable snapshot for VET_24H wit
             testID="check-result-share"
           >
             <Text
-              className="text-base font-semibold text-white"
+              className="text-base font-semibold text-brand-700"
+              maxFontSizeMultiplier={1.5}
             >
               Share as text
             </Text>
@@ -1553,9 +1628,17 @@ exports[`check result screen snapshots renders a stable snapshot for VET_24H wit
               }
             }
             accessible={true}
-            className="flex-row items-center justify-center gap-2 rounded-lg bg-brand-700 px-6 py-3"
+            className="px-4 py-3"
             collapsable={false}
             focusable={true}
+            hitSlop={
+              {
+                "bottom": 8,
+                "left": 8,
+                "right": 8,
+                "top": 8,
+              }
+            }
             onBlur={[Function]}
             onClick={[Function]}
             onFocus={[Function]}
@@ -1569,7 +1652,8 @@ exports[`check result screen snapshots renders a stable snapshot for VET_24H wit
             testID="check-result-done"
           >
             <Text
-              className="text-base font-semibold text-white"
+              className="text-base font-semibold text-brand-700"
+              maxFontSizeMultiplier={1.5}
             >
               Done
             </Text>
@@ -1583,7 +1667,7 @@ exports[`check result screen snapshots renders a stable snapshot for VET_24H wit
 
 exports[`check result screen snapshots renders a stable snapshot for VET_SOON with the disclaimer present 1`] = `
 <RNCSafeAreaView
-  className="flex-1 bg-white"
+  className="flex-1 bg-brand-50"
   edges={
     {
       "bottom": "additive",
@@ -1600,114 +1684,118 @@ exports[`check result screen snapshots renders a stable snapshot for VET_SOON wi
   >
     <View>
       <View
-        className="gap-4 px-6 pb-8 pt-4"
+        className="gap-6 px-4 pb-8 pt-4"
       >
         <View
           testID="check-result-urgency-banner"
         >
           <View
-            className="items-center rounded-lg px-4 py-3 bg-amber-400"
+            className="items-center rounded-2xl px-4 py-3 bg-amber-400"
             testID="urgency-banner-VET_SOON"
           >
             <Text
-              className="text-center text-lg font-semibold text-amber-950"
+              className="text-center text-lg font-bold text-amber-950"
             >
               See a vet soon
             </Text>
           </View>
         </View>
-        <Text
-          className="text-base text-brand-900"
-          testID="check-result-summary"
-        >
-          General guidance based on the information provided.
-        </Text>
         <View
-          className="gap-2"
-          testID="check-result-possible-causes"
+          className="rounded-2xl bg-white p-4 shadow-md gap-2 gap-4"
         >
           <Text
-            className="text-lg font-semibold text-brand-900"
+            className="text-base text-brand-900"
+            testID="check-result-summary"
           >
-            What this could be
+            General guidance based on the information provided.
           </Text>
-          <View>
+          <View
+            className="gap-2"
+            testID="check-result-possible-causes"
+          >
             <Text
-              className="text-base font-semibold text-brand-900"
+              className="text-lg font-semibold text-brand-900"
             >
-              Mild upset stomach
+              What this could be
+            </Text>
+            <View>
+              <Text
+                className="text-base font-semibold text-brand-900"
+              >
+                Mild upset stomach
+              </Text>
+              <Text
+                className="text-sm text-brand-700"
+              >
+                Reported symptoms are consistent with this.
+              </Text>
+            </View>
+          </View>
+          <View
+            className="gap-2"
+            testID="check-result-red-flags-to-watch"
+          >
+            <Text
+              className="text-lg font-semibold text-brand-900"
+            >
+              When to get help fast
             </Text>
             <Text
               className="text-sm text-brand-700"
             >
-              Reported symptoms are consistent with this.
+              • Repeated vomiting
+            </Text>
+            <Text
+              className="text-sm text-brand-700"
+            >
+              • Lethargy that worsens
             </Text>
           </View>
-        </View>
-        <View
-          className="gap-2"
-          testID="check-result-red-flags-to-watch"
-        >
-          <Text
-            className="text-lg font-semibold text-brand-900"
+          <View
+            className="gap-2"
+            testID="check-result-home-care"
           >
-            When to get help fast
-          </Text>
-          <Text
-            className="text-sm text-brand-700"
+            <Text
+              className="text-lg font-semibold text-brand-900"
+            >
+              Caring for them at home
+            </Text>
+            <Text
+              className="text-sm text-brand-700"
+            >
+              • Offer small amounts of water
+            </Text>
+          </View>
+          <View
+            className="gap-2"
+            testID="check-result-do-not"
           >
-            • Repeated vomiting
-          </Text>
-          <Text
-            className="text-sm text-brand-700"
+            <Text
+              className="text-lg font-semibold text-brand-900"
+            >
+              What not to do
+            </Text>
+            <Text
+              className="text-sm text-brand-700"
+            >
+              • Do not give human medications without veterinary guidance.
+            </Text>
+          </View>
+          <View
+            className="gap-2"
+            testID="check-result-vet-questions"
           >
-            • Lethargy that worsens
-          </Text>
-        </View>
-        <View
-          className="gap-2"
-          testID="check-result-home-care"
-        >
-          <Text
-            className="text-lg font-semibold text-brand-900"
-          >
-            Caring for them at home
-          </Text>
-          <Text
-            className="text-sm text-brand-700"
-          >
-            • Offer small amounts of water
-          </Text>
-        </View>
-        <View
-          className="gap-2"
-          testID="check-result-do-not"
-        >
-          <Text
-            className="text-lg font-semibold text-brand-900"
-          >
-            What not to do
-          </Text>
-          <Text
-            className="text-sm text-brand-700"
-          >
-            • Do not give human medications without veterinary guidance.
-          </Text>
-        </View>
-        <View
-          className="gap-2"
-          testID="check-result-vet-questions"
-        >
-          <Text
-            className="text-lg font-semibold text-brand-900"
-          >
-            Questions to ask your vet
-          </Text>
-          <Text
-            className="text-sm text-brand-700"
-          >
-            • How long have symptoms been present?
-          </Text>
+            <Text
+              className="text-lg font-semibold text-brand-900"
+            >
+              Questions to ask your vet
+            </Text>
+            <Text
+              className="text-sm text-brand-700"
+            >
+              • How long have symptoms been present?
+            </Text>
+          </View>
         </View>
         <View
           accessibilityRole="text"
@@ -1784,7 +1872,7 @@ exports[`check result screen snapshots renders a stable snapshot for VET_SOON wi
               }
             }
             accessible={true}
-            className="flex-row items-center justify-center gap-2 rounded-lg bg-brand-700 px-6 py-3"
+            className="flex-row items-center justify-center gap-2 rounded-lg border border-brand-700 bg-white px-6 py-3"
             collapsable={false}
             focusable={true}
             onBlur={[Function]}
@@ -1800,7 +1888,8 @@ exports[`check result screen snapshots renders a stable snapshot for VET_SOON wi
             testID="check-result-share"
           >
             <Text
-              className="text-base font-semibold text-white"
+              className="text-base font-semibold text-brand-700"
+              maxFontSizeMultiplier={1.5}
             >
               Share as text
             </Text>
@@ -1825,9 +1914,17 @@ exports[`check result screen snapshots renders a stable snapshot for VET_SOON wi
               }
             }
             accessible={true}
-            className="flex-row items-center justify-center gap-2 rounded-lg bg-brand-700 px-6 py-3"
+            className="px-4 py-3"
             collapsable={false}
             focusable={true}
+            hitSlop={
+              {
+                "bottom": 8,
+                "left": 8,
+                "right": 8,
+                "top": 8,
+              }
+            }
             onBlur={[Function]}
             onClick={[Function]}
             onFocus={[Function]}
@@ -1841,7 +1938,8 @@ exports[`check result screen snapshots renders a stable snapshot for VET_SOON wi
             testID="check-result-done"
           >
             <Text
-              className="text-base font-semibold text-white"
+              className="text-base font-semibold text-brand-700"
+              maxFontSizeMultiplier={1.5}
             >
               Done
             </Text>

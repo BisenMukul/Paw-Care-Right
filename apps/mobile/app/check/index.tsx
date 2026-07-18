@@ -1,13 +1,14 @@
 import { useIsOffline } from "@pawcareright/api-client";
 import type { SymptomCategory } from "@pawcareright/types";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { ActivityIndicator, Pressable, ScrollView, Text, View } from "react-native";
+import { Pressable, RefreshControl, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useChecksList } from "../../src/api/checks-api";
 import { usePaywallOnboardingTrigger } from "../../src/billing/use-paywall-trigger";
 import { CategoryGrid } from "../../src/components/category-grid";
 import { CheckHistoryRow } from "../../src/components/check-history-row";
+import { Skeleton } from "../../src/components/skeleton";
 import { strings } from "../../src/strings";
 
 /**
@@ -29,7 +30,7 @@ export default function CheckEntryScreen() {
   const router = useRouter();
   const { petId } = useLocalSearchParams<{ petId?: string }>();
   const isOffline = useIsOffline();
-  const { data, isLoading, isError } = useChecksList(petId ?? "");
+  const { data, isLoading, isError, refetch, isRefetching } = useChecksList(petId ?? "");
   const recent = (data?.pages[0]?.items ?? []).slice(0, 3);
 
   // T074: the ONLY call site of the onboarding-paywall trigger (a
@@ -51,27 +52,39 @@ export default function CheckEntryScreen() {
   };
 
   return (
-    <SafeAreaView testID="check-entry-screen" className="flex-1 bg-white">
-      <View className="gap-3 px-6 pb-4 pt-2">
+    <SafeAreaView testID="check-entry-screen" className="flex-1 bg-brand-50">
+      <View className="gap-3 px-4 pb-4 pt-2">
         {isOffline ? (
-          <Text testID="check-offline-banner" className="text-center text-sm text-brand-700">
+          <Text
+            testID="check-offline-banner"
+            accessibilityRole="alert"
+            className="text-center text-sm text-brand-700"
+          >
             {strings.check.offlineBanner}
           </Text>
         ) : null}
-        <Text className="text-xl font-semibold text-brand-900">{strings.check.title}</Text>
-        <Text className="text-base text-brand-700">{strings.check.subtitle}</Text>
+        <Text accessibilityRole="header" maxFontSizeMultiplier={1.5} className="text-2xl font-bold text-brand-900">
+          {strings.check.title}
+        </Text>
+        <Text className="text-sm text-brand-700">{strings.check.subtitle}</Text>
       </View>
-      <ScrollView testID="check-entry-scroll" className="flex-1">
-        <View className="gap-6 px-6 pb-8">
+      <ScrollView
+        testID="check-entry-scroll"
+        className="flex-1"
+        refreshControl={
+          <RefreshControl tintColor="#1f6350" refreshing={isRefetching} onRefresh={() => void refetch()} />
+        }
+      >
+        <View className="gap-6 px-4 pb-8">
           <CategoryGrid onSelect={handleSelect} />
           <View className="gap-2">
             <Text className="text-base font-semibold text-brand-900">
               {strings.check.recentTitle}
             </Text>
             {isLoading ? (
-              <ActivityIndicator testID="check-recent-loading" />
+              <Skeleton testID="check-recent-loading" lines={3} />
             ) : isError ? (
-              <Text testID="check-recent-error" className="text-sm text-red-600">
+              <Text testID="check-recent-error" className="text-sm text-red-700">
                 {strings.check.history.error}
               </Text>
             ) : recent.length === 0 ? (

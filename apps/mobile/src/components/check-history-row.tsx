@@ -25,7 +25,7 @@ export function CheckHistoryRow({ item, onPress }: CheckHistoryRowProps) {
       testID={`check-history-row-${item.id}`}
       accessibilityRole="button"
       onPress={() => onPress(item.id)}
-      className="flex-row items-center justify-between gap-3 border-b border-brand-100 px-4 py-3"
+      className="min-h-[56px] flex-row items-center justify-between gap-3 border-b border-brand-100 px-4 py-3"
     >
       <View className="flex-1 gap-1">
         <Text className="text-base font-semibold text-brand-900">{getCategoryLabel(item.category)}</Text>
@@ -36,9 +36,9 @@ export function CheckHistoryRow({ item, onPress }: CheckHistoryRowProps) {
       {chip.kind === "tier" ? (
         <View
           testID={`check-history-chip-${item.id}`}
-          className={`rounded-full px-3 py-1 ${URGENCY_DISPLAY[chip.urgency].containerClass}`}
+          className={`rounded-full px-3 py-1 ${URGENCY_DISPLAY[chip.urgency].chipContainerClass}`}
         >
-          <Text className={`text-xs font-semibold ${URGENCY_DISPLAY[chip.urgency].textClass}`}>
+          <Text className={`text-xs font-semibold ${URGENCY_DISPLAY[chip.urgency].chipTextClass}`}>
             {strings.check.result.tierLabel[chip.urgency]}
           </Text>
         </View>

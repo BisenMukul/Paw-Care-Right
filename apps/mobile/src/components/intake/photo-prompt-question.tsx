@@ -125,7 +125,10 @@ export function PhotoPromptQuestion({ question, answer, onChange, photoUpload }:
   }
 
   const atLimit = slots.length >= question.maxPhotos;
-  const ctaTextClassName = atLimit ? "text-base font-medium text-gray-400" : "text-base font-medium text-brand-700";
+  // Muted-copy rule (design-system.md §1.1): the disabled affordance already
+  // conveys state via the limit-hint copy + `opacity-50` sibling pattern, so
+  // the CTA label itself no longer needs a distinct disabled color.
+  const ctaTextClassName = "text-base font-medium text-brand-700";
 
   if (photoUpload === undefined) {
     return (
@@ -138,7 +141,7 @@ export function PhotoPromptQuestion({ question, answer, onChange, photoUpload }:
             accessibilityState={{ disabled: true }}
             disabled
           >
-            <Text className="text-base font-medium text-gray-400">{strings.intake.photo.takePhoto}</Text>
+            <Text className="text-base font-medium text-brand-700">{strings.intake.photo.takePhoto}</Text>
           </Pressable>
           <Pressable
             testID={`intake-photo-library-${question.id}`}
@@ -146,7 +149,7 @@ export function PhotoPromptQuestion({ question, answer, onChange, photoUpload }:
             accessibilityState={{ disabled: true }}
             disabled
           >
-            <Text className="text-base font-medium text-gray-400">{strings.intake.photo.chooseLibrary}</Text>
+            <Text className="text-base font-medium text-brand-700">{strings.intake.photo.chooseLibrary}</Text>
           </Pressable>
         </View>
         <Text testID={`intake-photo-unavailable-${question.id}`} className="text-sm text-brand-700">

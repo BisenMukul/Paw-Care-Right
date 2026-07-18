@@ -45,8 +45,8 @@ export function SingleQuestion({ question, answer, onChange }: SingleQuestionPro
             onPress={() => onChange({ type: "single", questionId: question.id, value: option.value })}
             className={
               selected
-                ? "rounded-lg border-2 border-brand-700 bg-brand-100 px-4 py-3"
-                : "rounded-lg border border-gray-300 px-4 py-3"
+                ? "min-h-[44px] rounded-lg border-2 border-brand-700 bg-brand-100 px-4 py-3"
+                : "min-h-[44px] rounded-lg border border-brand-200 px-4 py-3"
             }
           >
             <Text className="text-base text-brand-900">{option.label}</Text>
@@ -101,10 +101,10 @@ export function MultiQuestion({ question, answer, onChange }: MultiQuestionProps
             onPress={() => toggle(option.value)}
             className={
               selected
-                ? "rounded-lg border-2 border-brand-700 bg-brand-100 px-4 py-3"
+                ? "min-h-[44px] rounded-lg border-2 border-brand-700 bg-brand-100 px-4 py-3"
                 : disabled
-                  ? "rounded-lg border border-gray-200 px-4 py-3 opacity-50"
-                  : "rounded-lg border border-gray-300 px-4 py-3"
+                  ? "min-h-[44px] rounded-lg border border-brand-100 px-4 py-3 opacity-50"
+                  : "min-h-[44px] rounded-lg border border-brand-200 px-4 py-3"
             }
           >
             <Text className="text-base text-brand-900">{option.label}</Text>
@@ -142,8 +142,8 @@ export function ScaleQuestion({ question, answer, onChange }: ScaleQuestionProps
               onPress={() => onChange({ type: "scale", questionId: question.id, value: n })}
               className={
                 selected
-                  ? "flex-1 items-center rounded-lg border-2 border-brand-700 bg-brand-100 py-3"
-                  : "flex-1 items-center rounded-lg border border-gray-300 py-3"
+                  ? "min-h-[44px] flex-1 items-center rounded-lg border-2 border-brand-700 bg-brand-100 py-3"
+                  : "min-h-[44px] flex-1 items-center rounded-lg border border-brand-200 py-3"
               }
             >
               <Text className="text-base text-brand-900">{n}</Text>
@@ -206,7 +206,7 @@ export function DurationQuestion({ question, answer, onChange }: DurationQuestio
         value={rawText}
         onChangeText={handleChangeText}
         keyboardType="number-pad"
-        className="rounded-lg border border-gray-300 px-4 py-3 text-base text-gray-900"
+        className="rounded-lg border border-brand-200 px-4 py-3 text-base text-brand-900"
       />
       <View className="flex-row gap-2">
         {question.units.map((candidateUnit) => {
@@ -220,8 +220,8 @@ export function DurationQuestion({ question, answer, onChange }: DurationQuestio
               onPress={() => handleSelectUnit(candidateUnit)}
               className={
                 selected
-                  ? "rounded-lg border-2 border-brand-700 bg-brand-100 px-4 py-2"
-                  : "rounded-lg border border-gray-300 px-4 py-2"
+                  ? "min-h-[44px] rounded-lg border-2 border-brand-700 bg-brand-100 px-4 py-2"
+                  : "min-h-[44px] rounded-lg border border-brand-200 px-4 py-2"
               }
             >
               <Text className="text-base text-brand-900">{candidateUnit}</Text>

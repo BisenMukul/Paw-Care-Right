@@ -49,14 +49,14 @@ export default function IntakeScreen() {
 
   if (categoryDef === undefined) {
     return (
-      <SafeAreaView testID="intake-invalid-category" className="flex-1 items-center justify-center bg-white px-6">
+      <SafeAreaView testID="intake-invalid-category" className="flex-1 items-center justify-center bg-brand-50 px-6">
         <Text className="text-center text-base text-brand-900">{strings.intake.invalidCategory}</Text>
       </SafeAreaView>
     );
   }
 
   return (
-    <View className="flex-1 bg-white">
+    <View className="flex-1 bg-brand-50">
       {isOffline ? (
         <Text testID="intake-offline-banner" className="px-6 pt-2 text-center text-sm text-brand-700">
           {strings.intake.offlineBanner}
@@ -66,7 +66,7 @@ export default function IntakeScreen() {
       {submission.state === "submitting" ? (
         <SafeAreaView
           testID="check-submit-submitting"
-          className="absolute inset-0 z-10 items-center justify-center gap-4 bg-white/95 px-6"
+          className="absolute inset-0 z-10 items-center justify-center gap-4 bg-brand-50/95 px-6"
         >
           <ActivityIndicator />
           <Text className="text-center text-base text-brand-900">{strings.check.submit.submitting}</Text>
@@ -76,7 +76,7 @@ export default function IntakeScreen() {
       {submission.state === "offline" ? (
         <SafeAreaView
           testID="check-submit-offline"
-          className="absolute inset-0 z-10 items-center justify-center gap-4 bg-white px-6"
+          className="absolute inset-0 z-10 items-center justify-center gap-4 bg-brand-50 px-6"
         >
           <Text className="text-center text-base text-brand-900">{strings.check.submit.offlineBlocked}</Text>
           <PrimaryButton
@@ -90,7 +90,7 @@ export default function IntakeScreen() {
       {submission.state === "quota" ? (
         <SafeAreaView
           testID="check-submit-quota"
-          className="absolute inset-0 z-10 items-center justify-center gap-4 bg-white px-6"
+          className="absolute inset-0 z-10 items-center justify-center gap-4 bg-brand-50 px-6"
         >
           <Text className="text-center text-lg font-semibold text-brand-900">
             {strings.check.submit.quotaTitle}
@@ -111,7 +111,7 @@ export default function IntakeScreen() {
       {submission.state === "error" ? (
         <SafeAreaView
           testID="check-submit-error"
-          className="absolute inset-0 z-10 items-center justify-center gap-4 bg-white px-6"
+          className="absolute inset-0 z-10 items-center justify-center gap-4 bg-brand-50 px-6"
         >
           <Text className="text-center text-base text-brand-900">{strings.check.submit.error}</Text>
           <PrimaryButton

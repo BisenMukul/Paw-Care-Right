@@ -7,6 +7,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import type { PhotoUploadCapability } from "../../api/intake-photos-api";
 import { strings } from "../../strings";
 import { buildIntakeCandidate, describeAnswer } from "../../checks/intake";
+import { GhostButton } from "../ghost-button";
 import { PrimaryButton } from "../primary-button";
 import { QuestionRenderer } from "./question-renderer";
 
@@ -63,7 +64,7 @@ export function IntakeForm({ categoryDef, onExit, onSubmit, photoUpload }: Intak
   const validation = parseIntake(candidate);
 
   return (
-    <SafeAreaView testID="intake-form" className="flex-1 bg-white">
+    <SafeAreaView testID="intake-form" className="flex-1 bg-brand-50">
       <KeyboardAvoidingView className="flex-1" behavior={Platform.OS === "ios" ? "padding" : undefined}>
         <View className="flex-1 px-6 py-4">
           <Text testID="intake-progress" className="text-center text-sm text-brand-700">
@@ -91,9 +92,10 @@ export function IntakeForm({ categoryDef, onExit, onSubmit, photoUpload }: Intak
                     value={freeText}
                     onChangeText={setFreeText}
                     placeholder={strings.intake.freeText.placeholder}
+                    placeholderTextColor="#2f8f74"
                     multiline
                     maxLength={2000}
-                    className="min-h-[120px] rounded-lg border border-gray-300 px-4 py-3 text-base text-gray-900"
+                    className="min-h-[120px] rounded-lg border border-brand-100 px-4 py-3 text-base text-brand-900"
                   />
                   <Text className="text-sm text-brand-700">{strings.intake.freeText.optional}</Text>
                 </View>
@@ -110,7 +112,7 @@ export function IntakeForm({ categoryDef, onExit, onSubmit, photoUpload }: Intak
                       <View
                         key={question.id}
                         testID={`intake-review-row-${question.id}`}
-                        className="flex-row items-center justify-between gap-2 border-b border-gray-200 pb-2"
+                        className="flex-row items-center justify-between gap-2 border-b border-brand-100 pb-2"
                       >
                         <View className="flex-1 gap-1">
                           <Text className="text-sm font-medium text-brand-900">{question.prompt}</Text>
@@ -133,7 +135,7 @@ export function IntakeForm({ categoryDef, onExit, onSubmit, photoUpload }: Intak
                   {freeText.trim().length > 0 ? (
                     <View
                       testID="intake-review-freetext"
-                      className="flex-row items-center justify-between gap-2 border-b border-gray-200 pb-2"
+                      className="flex-row items-center justify-between gap-2 border-b border-brand-100 pb-2"
                     >
                       <View className="flex-1 gap-1">
                         <Text className="text-sm font-medium text-brand-900">
@@ -163,9 +165,7 @@ export function IntakeForm({ categoryDef, onExit, onSubmit, photoUpload }: Intak
           </ScrollView>
 
           <View className="flex-row items-center justify-between gap-4 pt-4">
-            <Pressable testID="intake-back" onPress={handleBack}>
-              <Text className="text-base font-medium text-brand-700">{strings.intake.back}</Text>
-            </Pressable>
+            <GhostButton testID="intake-back" label={strings.intake.back} onPress={handleBack} />
             {isReviewStep ? (
               <PrimaryButton
                 testID="intake-submit"
