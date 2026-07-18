@@ -1,16 +1,23 @@
 import { useIsOffline } from "@pawcareright/api-client";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, ScrollView, Switch, Text, View } from "react-native";
+import { Pressable, Switch, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useInstantiateTemplate, useTemplateSuggestions } from "../../src/api/care-plan-api";
 import { getDeviceRegionCode } from "../../src/checks/region";
+import { Card } from "../../src/components/card";
+import { EmptyState } from "../../src/components/empty-state";
 import { PrimaryButton } from "../../src/components/primary-button";
+import { ScreenScaffold } from "../../src/components/screen-scaffold";
+import { Skeleton } from "../../src/components/skeleton";
 import { strings } from "../../src/strings";
 
 const DEFAULT_TIMEZONE = Intl.DateTimeFormat().resolvedOptions().timeZone;
 const DAY_MS = 24 * 60 * 60 * 1000;
+
+const STEPPER_HIT_SLOP = { top: 8, bottom: 8, left: 8, right: 8 };
+const STEPPER_CLASS = "min-h-[44px] justify-center rounded-lg border border-brand-100 px-2 py-1";
 
 function todayIso(): string {
   return new Date().toISOString();
@@ -122,8 +129,10 @@ export default function CarePlanWizardScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-white px-6">
-        <ActivityIndicator testID="care-plan-loading" />
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
+        <Card testID="care-plan-loading">
+          <Skeleton lines={3} />
+        </Card>
         <Text className="text-center text-base text-brand-900">{strings.carePlan.loading}</Text>
       </SafeAreaView>
     );
@@ -131,7 +140,7 @@ export default function CarePlanWizardScreen() {
 
   if (isOffline && !suggestions) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-white px-6">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
         <Text testID="care-plan-offline" className="text-center text-base text-brand-900">
           {strings.carePlan.offline}
         </Text>
@@ -142,8 +151,8 @@ export default function CarePlanWizardScreen() {
 
   if (isError) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-white px-6">
-        <Text testID="care-plan-error" className="text-center text-base text-red-600">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
+        <Text testID="care-plan-error" className="text-center text-base text-red-700">
           {strings.carePlan.error}
         </Text>
         <PrimaryButton testID="care-plan-retry" label={strings.carePlan.retry} onPress={() => refetch()} />
@@ -153,124 +162,119 @@ export default function CarePlanWizardScreen() {
 
   if (!suggestions || suggestions.items.length === 0) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-white px-6">
-        <Text testID="care-plan-empty" className="text-center text-base text-brand-900">
-          {strings.carePlan.empty}
-        </Text>
-        <PrimaryButton testID="care-plan-skip" label={strings.carePlan.skip} onPress={goToPetHome} />
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
+        <EmptyState
+          testID="care-plan-empty"
+          icon="clipboard-outline"
+          title={strings.carePlan.empty}
+          ctaLabel={strings.carePlan.skip}
+          onCtaPress={goToPetHome}
+          ctaTestID="care-plan-skip"
+        />
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <ScrollView testID="care-plan-scroll" className="flex-1">
-        <View className="gap-6 px-6 pb-8 pt-4">
-          {isOffline ? (
-            <Text testID="care-plan-offline-banner" className="text-center text-sm text-brand-700">
-              {strings.carePlan.offlineBanner}
-            </Text>
-          ) : null}
-          <Text className="text-xl font-semibold text-brand-900">{strings.carePlan.title}</Text>
-          <Text className="text-sm text-brand-700">{strings.carePlan.subtitle}</Text>
+    <ScreenScaffold title={strings.carePlan.title} subtitle={strings.carePlan.subtitle} scrollTestID="care-plan-scroll">
+      {isOffline ? (
+        <Text testID="care-plan-offline-banner" className="text-center text-sm text-brand-700">
+          {strings.carePlan.offlineBanner}
+        </Text>
+      ) : null}
 
-          <View className="gap-3">
-            {suggestions.items.map((item) => {
-              const row = rows.get(item.templateKey);
-              const startAt = row?.startAt ?? item.defaultStartAt ?? todayIso();
+      <View className="gap-3">
+        {suggestions.items.map((item) => {
+          const row = rows.get(item.templateKey);
+          const startAt = row?.startAt ?? item.defaultStartAt ?? todayIso();
 
-              return (
-                <View
-                  key={item.templateKey}
-                  testID={`care-plan-item-${item.templateKey}`}
-                  className="gap-2 rounded-lg border border-brand-100 px-4 py-3"
+          return (
+            <Card key={item.templateKey} testID={`care-plan-item-${item.templateKey}`} className="gap-2">
+              <View className="flex-row items-center justify-between">
+                <Text className="flex-1 text-base font-semibold text-brand-900">{item.title}</Text>
+                <Switch
+                  testID={`care-plan-toggle-${item.templateKey}`}
+                  value={row?.enabled ?? false}
+                  onValueChange={(enabled) => toggleRow(item.templateKey, enabled)}
+                />
+              </View>
+
+              {item.emphasis ? (
+                <Text
+                  testID={`care-plan-emphasis-${item.templateKey}`}
+                  className="text-xs font-semibold text-brand-700"
                 >
-                  <View className="flex-row items-center justify-between">
-                    <Text className="flex-1 text-base font-semibold text-brand-900">{item.title}</Text>
-                    <Switch
-                      testID={`care-plan-toggle-${item.templateKey}`}
-                      value={row?.enabled ?? false}
-                      onValueChange={(enabled) => toggleRow(item.templateKey, enabled)}
-                    />
-                  </View>
+                  {strings.carePlan.emphasisBadge}
+                </Text>
+              ) : null}
 
-                  {item.emphasis ? (
-                    <Text
-                      testID={`care-plan-emphasis-${item.templateKey}`}
-                      className="text-xs font-semibold text-brand-700"
-                    >
-                      {strings.carePlan.emphasisBadge}
-                    </Text>
-                  ) : null}
+              {item.alreadyExists ? (
+                <Text
+                  testID={`care-plan-already-exists-${item.templateKey}`}
+                  className="text-xs text-brand-700"
+                >
+                  {strings.carePlan.alreadyAddedBadge}
+                </Text>
+              ) : null}
 
-                  {item.alreadyExists ? (
-                    <Text
-                      testID={`care-plan-already-exists-${item.templateKey}`}
-                      className="text-xs text-brand-700"
-                    >
-                      {strings.carePlan.alreadyAddedBadge}
-                    </Text>
-                  ) : null}
+              <Text testID={`care-plan-note-${item.templateKey}`} className="text-sm text-brand-700">
+                {item.note}
+              </Text>
 
-                  <Text testID={`care-plan-note-${item.templateKey}`} className="text-sm text-brand-700">
-                    {item.note}
-                  </Text>
+              <View className="flex-row items-center gap-2">
+                <Pressable
+                  testID={`care-plan-stepper-${item.templateKey}-minus1w`}
+                  onPress={() => shiftRow(item.templateKey, -7)}
+                  hitSlop={STEPPER_HIT_SLOP}
+                  className={STEPPER_CLASS}
+                >
+                  <Text className="text-sm text-brand-900">{strings.carePlan.dateEdit.earlier1w}</Text>
+                </Pressable>
+                <Pressable
+                  testID={`care-plan-stepper-${item.templateKey}-minus1d`}
+                  onPress={() => shiftRow(item.templateKey, -1)}
+                  hitSlop={STEPPER_HIT_SLOP}
+                  className={STEPPER_CLASS}
+                >
+                  <Text className="text-sm text-brand-900">{strings.carePlan.dateEdit.earlier1d}</Text>
+                </Pressable>
+                <Text testID={`care-plan-date-${item.templateKey}`} className="text-sm font-semibold text-brand-900">
+                  {formatDate(startAt)}
+                </Text>
+                <Pressable
+                  testID={`care-plan-stepper-${item.templateKey}-plus1d`}
+                  onPress={() => shiftRow(item.templateKey, 1)}
+                  hitSlop={STEPPER_HIT_SLOP}
+                  className={STEPPER_CLASS}
+                >
+                  <Text className="text-sm text-brand-900">{strings.carePlan.dateEdit.later1d}</Text>
+                </Pressable>
+                <Pressable
+                  testID={`care-plan-stepper-${item.templateKey}-plus1w`}
+                  onPress={() => shiftRow(item.templateKey, 7)}
+                  hitSlop={STEPPER_HIT_SLOP}
+                  className={STEPPER_CLASS}
+                >
+                  <Text className="text-sm text-brand-900">{strings.carePlan.dateEdit.later1w}</Text>
+                </Pressable>
+              </View>
+            </Card>
+          );
+        })}
+      </View>
 
-                  <View className="flex-row items-center gap-2">
-                    <Text
-                      testID={`care-plan-stepper-${item.templateKey}-minus1w`}
-                      onPress={() => shiftRow(item.templateKey, -7)}
-                      className="rounded-lg border border-brand-100 px-2 py-1 text-sm text-brand-900"
-                    >
-                      {strings.carePlan.dateEdit.earlier1w}
-                    </Text>
-                    <Text
-                      testID={`care-plan-stepper-${item.templateKey}-minus1d`}
-                      onPress={() => shiftRow(item.templateKey, -1)}
-                      className="rounded-lg border border-brand-100 px-2 py-1 text-sm text-brand-900"
-                    >
-                      {strings.carePlan.dateEdit.earlier1d}
-                    </Text>
-                    <Text
-                      testID={`care-plan-date-${item.templateKey}`}
-                      className="text-sm font-semibold text-brand-900"
-                    >
-                      {formatDate(startAt)}
-                    </Text>
-                    <Text
-                      testID={`care-plan-stepper-${item.templateKey}-plus1d`}
-                      onPress={() => shiftRow(item.templateKey, 1)}
-                      className="rounded-lg border border-brand-100 px-2 py-1 text-sm text-brand-900"
-                    >
-                      {strings.carePlan.dateEdit.later1d}
-                    </Text>
-                    <Text
-                      testID={`care-plan-stepper-${item.templateKey}-plus1w`}
-                      onPress={() => shiftRow(item.templateKey, 7)}
-                      className="rounded-lg border border-brand-100 px-2 py-1 text-sm text-brand-900"
-                    >
-                      {strings.carePlan.dateEdit.later1w}
-                    </Text>
-                  </View>
-                </View>
-              );
-            })}
-          </View>
-
-          <PrimaryButton
-            testID="care-plan-confirm"
-            label={strings.carePlan.confirm}
-            loading={instantiate.isPending}
-            onPress={() => void handleConfirm()}
-          />
-          {confirmError ? (
-            <Text testID="care-plan-confirm-error" className="text-center text-sm text-red-600">
-              {strings.carePlan.confirmError}
-            </Text>
-          ) : null}
-          <PrimaryButton testID="care-plan-skip" label={strings.carePlan.skip} onPress={goToPetHome} />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+      <PrimaryButton
+        testID="care-plan-confirm"
+        label={strings.carePlan.confirm}
+        loading={instantiate.isPending}
+        onPress={() => void handleConfirm()}
+      />
+      {confirmError ? (
+        <Text testID="care-plan-confirm-error" className="text-center text-sm text-red-700">
+          {strings.carePlan.confirmError}
+        </Text>
+      ) : null}
+      <PrimaryButton testID="care-plan-skip" label={strings.carePlan.skip} onPress={goToPetHome} />
+    </ScreenScaffold>
   );
 }

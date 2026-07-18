@@ -2,7 +2,7 @@
 
 exports[`paywall screen — variant A renders and matches the snapshot 1`] = `
 <RNCSafeAreaView
-  className="flex-1 bg-white"
+  className="flex-1 bg-brand-50"
   edges={
     {
       "bottom": "additive",
@@ -22,10 +22,10 @@ exports[`paywall screen — variant A renders and matches the snapshot 1`] = `
     >
       <View>
         <View
-          className="gap-4 px-6 pb-8 pt-4"
+          className="gap-6 px-4 pb-8 pt-4"
         >
           <Text
-            className="text-2xl font-bold text-brand-900"
+            className="text-3xl font-bold text-brand-900"
             testID="paywall-headline"
           >
             Get more from Paw Care Right +
@@ -59,7 +59,7 @@ exports[`paywall screen — variant A renders and matches the snapshot 1`] = `
                 }
               }
               accessible={true}
-              className="gap-1 rounded-lg border-2 border-brand-700 px-4 py-3"
+              className="gap-1 rounded-2xl border-2 border-brand-700 bg-white p-4 shadow-md"
               collapsable={false}
               focusable={true}
               onBlur={[Function]}
@@ -115,7 +115,7 @@ exports[`paywall screen — variant A renders and matches the snapshot 1`] = `
                 }
               }
               accessible={true}
-              className="gap-1 rounded-lg border border-brand-300 px-4 py-3"
+              className="gap-1 rounded-2xl bg-white p-4 shadow-md"
               collapsable={false}
               focusable={true}
               onBlur={[Function]}
@@ -167,7 +167,7 @@ exports[`paywall screen — variant A renders and matches the snapshot 1`] = `
                 }
               }
               accessible={true}
-              className="gap-1 rounded-lg border border-brand-300 px-4 py-3"
+              className="gap-1 rounded-2xl bg-white p-4 shadow-md"
               collapsable={false}
               focusable={true}
               onBlur={[Function]}
@@ -242,44 +242,58 @@ exports[`paywall screen — variant A renders and matches the snapshot 1`] = `
             </View>
           </View>
           <View
-            accessibilityRole="button"
-            accessibilityState={
-              {
-                "busy": undefined,
-                "checked": undefined,
-                "disabled": false,
-                "expanded": undefined,
-                "selected": undefined,
-              }
-            }
-            accessibilityValue={
-              {
-                "max": undefined,
-                "min": undefined,
-                "now": undefined,
-                "text": undefined,
-              }
-            }
-            accessible={true}
-            className="items-center py-2"
-            collapsable={false}
-            focusable={true}
-            onBlur={[Function]}
-            onClick={[Function]}
-            onFocus={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-            testID="paywall-restore"
+            className="items-center"
           >
-            <Text
-              className="text-sm font-semibold text-brand-700"
+            <View
+              accessibilityRole="button"
+              accessibilityState={
+                {
+                  "busy": undefined,
+                  "checked": undefined,
+                  "disabled": false,
+                  "expanded": undefined,
+                  "selected": undefined,
+                }
+              }
+              accessibilityValue={
+                {
+                  "max": undefined,
+                  "min": undefined,
+                  "now": undefined,
+                  "text": undefined,
+                }
+              }
+              accessible={true}
+              className="px-4 py-3"
+              collapsable={false}
+              focusable={true}
+              hitSlop={
+                {
+                  "bottom": 8,
+                  "left": 8,
+                  "right": 8,
+                  "top": 8,
+                }
+              }
+              onBlur={[Function]}
+              onClick={[Function]}
+              onFocus={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              style={null}
+              testID="paywall-restore"
             >
-              Restore purchases
-            </Text>
+              <Text
+                className="text-base font-semibold text-brand-700"
+                maxFontSizeMultiplier={1.5}
+              >
+                Restore purchases
+              </Text>
+            </View>
           </View>
           <View
             className="flex-row justify-center gap-6"
@@ -364,44 +378,58 @@ exports[`paywall screen — variant A renders and matches the snapshot 1`] = `
             </View>
           </View>
           <View
-            accessibilityRole="button"
-            accessibilityState={
-              {
-                "busy": undefined,
-                "checked": undefined,
-                "disabled": undefined,
-                "expanded": undefined,
-                "selected": undefined,
-              }
-            }
-            accessibilityValue={
-              {
-                "max": undefined,
-                "min": undefined,
-                "now": undefined,
-                "text": undefined,
-              }
-            }
-            accessible={true}
-            className="items-center py-2"
-            collapsable={false}
-            focusable={true}
-            onBlur={[Function]}
-            onClick={[Function]}
-            onFocus={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-            testID="paywall-maybe-later"
+            className="items-center"
           >
-            <Text
-              className="text-sm text-brand-700"
+            <View
+              accessibilityRole="button"
+              accessibilityState={
+                {
+                  "busy": undefined,
+                  "checked": undefined,
+                  "disabled": false,
+                  "expanded": undefined,
+                  "selected": undefined,
+                }
+              }
+              accessibilityValue={
+                {
+                  "max": undefined,
+                  "min": undefined,
+                  "now": undefined,
+                  "text": undefined,
+                }
+              }
+              accessible={true}
+              className="px-4 py-3"
+              collapsable={false}
+              focusable={true}
+              hitSlop={
+                {
+                  "bottom": 8,
+                  "left": 8,
+                  "right": 8,
+                  "top": 8,
+                }
+              }
+              onBlur={[Function]}
+              onClick={[Function]}
+              onFocus={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              style={null}
+              testID="paywall-maybe-later"
             >
-              Maybe later
-            </Text>
+              <Text
+                className="text-base font-semibold text-brand-700"
+                maxFontSizeMultiplier={1.5}
+              >
+                Maybe later
+              </Text>
+            </View>
           </View>
         </View>
       </View>
@@ -412,7 +440,7 @@ exports[`paywall screen — variant A renders and matches the snapshot 1`] = `
 
 exports[`paywall screen — variant B renders and matches the snapshot 1`] = `
 <RNCSafeAreaView
-  className="flex-1 bg-white"
+  className="flex-1 bg-brand-50"
   edges={
     {
       "bottom": "additive",
@@ -432,10 +460,10 @@ exports[`paywall screen — variant B renders and matches the snapshot 1`] = `
     >
       <View>
         <View
-          className="gap-4 px-6 pb-8 pt-4"
+          className="gap-6 px-4 pb-8 pt-4"
         >
           <Text
-            className="text-2xl font-bold text-brand-900"
+            className="text-3xl font-bold text-brand-900"
             testID="paywall-headline"
           >
             Paw Care Right + Plus
@@ -469,7 +497,7 @@ exports[`paywall screen — variant B renders and matches the snapshot 1`] = `
                 }
               }
               accessible={true}
-              className="gap-1 rounded-lg border-2 border-brand-700 px-4 py-3"
+              className="gap-1 rounded-2xl border-2 border-brand-700 bg-white p-4 shadow-md"
               collapsable={false}
               focusable={true}
               onBlur={[Function]}
@@ -525,7 +553,7 @@ exports[`paywall screen — variant B renders and matches the snapshot 1`] = `
                 }
               }
               accessible={true}
-              className="gap-1 rounded-lg border border-brand-300 px-4 py-3"
+              className="gap-1 rounded-2xl bg-white p-4 shadow-md"
               collapsable={false}
               focusable={true}
               onBlur={[Function]}
@@ -577,7 +605,7 @@ exports[`paywall screen — variant B renders and matches the snapshot 1`] = `
                 }
               }
               accessible={true}
-              className="gap-1 rounded-lg border border-brand-300 px-4 py-3"
+              className="gap-1 rounded-2xl bg-white p-4 shadow-md"
               collapsable={false}
               focusable={true}
               onBlur={[Function]}
@@ -652,44 +680,58 @@ exports[`paywall screen — variant B renders and matches the snapshot 1`] = `
             </View>
           </View>
           <View
-            accessibilityRole="button"
-            accessibilityState={
-              {
-                "busy": undefined,
-                "checked": undefined,
-                "disabled": false,
-                "expanded": undefined,
-                "selected": undefined,
-              }
-            }
-            accessibilityValue={
-              {
-                "max": undefined,
-                "min": undefined,
-                "now": undefined,
-                "text": undefined,
-              }
-            }
-            accessible={true}
-            className="items-center py-2"
-            collapsable={false}
-            focusable={true}
-            onBlur={[Function]}
-            onClick={[Function]}
-            onFocus={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-            testID="paywall-restore"
+            className="items-center"
           >
-            <Text
-              className="text-sm font-semibold text-brand-700"
+            <View
+              accessibilityRole="button"
+              accessibilityState={
+                {
+                  "busy": undefined,
+                  "checked": undefined,
+                  "disabled": false,
+                  "expanded": undefined,
+                  "selected": undefined,
+                }
+              }
+              accessibilityValue={
+                {
+                  "max": undefined,
+                  "min": undefined,
+                  "now": undefined,
+                  "text": undefined,
+                }
+              }
+              accessible={true}
+              className="px-4 py-3"
+              collapsable={false}
+              focusable={true}
+              hitSlop={
+                {
+                  "bottom": 8,
+                  "left": 8,
+                  "right": 8,
+                  "top": 8,
+                }
+              }
+              onBlur={[Function]}
+              onClick={[Function]}
+              onFocus={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              style={null}
+              testID="paywall-restore"
             >
-              Restore purchases
-            </Text>
+              <Text
+                className="text-base font-semibold text-brand-700"
+                maxFontSizeMultiplier={1.5}
+              >
+                Restore purchases
+              </Text>
+            </View>
           </View>
           <View
             className="flex-row justify-center gap-6"
@@ -774,44 +816,58 @@ exports[`paywall screen — variant B renders and matches the snapshot 1`] = `
             </View>
           </View>
           <View
-            accessibilityRole="button"
-            accessibilityState={
-              {
-                "busy": undefined,
-                "checked": undefined,
-                "disabled": undefined,
-                "expanded": undefined,
-                "selected": undefined,
-              }
-            }
-            accessibilityValue={
-              {
-                "max": undefined,
-                "min": undefined,
-                "now": undefined,
-                "text": undefined,
-              }
-            }
-            accessible={true}
-            className="items-center py-2"
-            collapsable={false}
-            focusable={true}
-            onBlur={[Function]}
-            onClick={[Function]}
-            onFocus={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-            testID="paywall-maybe-later"
+            className="items-center"
           >
-            <Text
-              className="text-sm text-brand-700"
+            <View
+              accessibilityRole="button"
+              accessibilityState={
+                {
+                  "busy": undefined,
+                  "checked": undefined,
+                  "disabled": false,
+                  "expanded": undefined,
+                  "selected": undefined,
+                }
+              }
+              accessibilityValue={
+                {
+                  "max": undefined,
+                  "min": undefined,
+                  "now": undefined,
+                  "text": undefined,
+                }
+              }
+              accessible={true}
+              className="px-4 py-3"
+              collapsable={false}
+              focusable={true}
+              hitSlop={
+                {
+                  "bottom": 8,
+                  "left": 8,
+                  "right": 8,
+                  "top": 8,
+                }
+              }
+              onBlur={[Function]}
+              onClick={[Function]}
+              onFocus={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              style={null}
+              testID="paywall-maybe-later"
             >
-              Maybe later
-            </Text>
+              <Text
+                className="text-base font-semibold text-brand-700"
+                maxFontSizeMultiplier={1.5}
+              >
+                Maybe later
+              </Text>
+            </View>
           </View>
         </View>
       </View>

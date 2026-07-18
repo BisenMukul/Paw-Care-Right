@@ -2,13 +2,18 @@ import { useIsOffline } from "@pawcareright/api-client";
 import type { AgendaEntry } from "@pawcareright/types";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { ActivityIndicator, ScrollView, Text, View } from "react-native";
+import { RefreshControl, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useAgenda, useCompleteOccurrence, useSnoozeOccurrence } from "../../src/api/agenda-api";
 import { AgendaItem } from "../../src/components/agenda-item";
+import { Card } from "../../src/components/card";
+import { EmptyState } from "../../src/components/empty-state";
+import { GhostButton } from "../../src/components/ghost-button";
 import { PetFilterChips } from "../../src/components/pet-filter-chips";
 import { PrimaryButton } from "../../src/components/primary-button";
+import { ScreenScaffold } from "../../src/components/screen-scaffold";
+import { Skeleton } from "../../src/components/skeleton";
 import { useActivePetStore } from "../../src/pets/active-pet-store";
 import { strings } from "../../src/strings";
 
@@ -57,7 +62,7 @@ export default function CareScreen() {
   const from = startOfTodayIso();
   const to = addDaysIso(from, AGENDA_WINDOW_DAYS);
   const agendaParams = selectedPetId !== null ? { from, to, petId: selectedPetId } : { from, to };
-  const { data, isLoading, isError, refetch } = useAgenda(agendaParams);
+  const { data, isLoading, isError, isRefetching, refetch } = useAgenda(agendaParams);
 
   const completeMutation = useCompleteOccurrence();
   const snoozeMutation = useSnoozeOccurrence();
@@ -87,8 +92,10 @@ export default function CareScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-white px-6">
-        <ActivityIndicator testID="agenda-loading" />
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
+        <Card testID="agenda-loading">
+          <Skeleton lines={3} />
+        </Card>
         <Text className="text-center text-base text-brand-900">{strings.agenda.loading}</Text>
       </SafeAreaView>
     );
@@ -96,7 +103,7 @@ export default function CareScreen() {
 
   if (isOffline && !data) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-white px-6">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
         <Text testID="agenda-offline" className="text-center text-base text-brand-900">
           {strings.agenda.offline}
         </Text>
@@ -107,8 +114,8 @@ export default function CareScreen() {
 
   if (isError) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-white px-6">
-        <Text testID="agenda-error" className="text-center text-base text-red-600">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
+        <Text testID="agenda-error" className="text-center text-base text-red-700">
           {strings.agenda.error}
         </Text>
         <PrimaryButton testID="agenda-retry" label={strings.agenda.retry} onPress={() => refetch()} />
@@ -122,69 +129,68 @@ export default function CareScreen() {
   const upcomingEntries = entries.filter((entry) => !isToday(entry.dueAt, todayKey));
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <ScrollView testID="agenda-scroll" className="flex-1">
-        <View className="gap-6 px-6 pb-8 pt-4">
-          {isOffline ? (
-            <Text testID="agenda-offline-banner" className="text-center text-sm text-brand-700">
-              {strings.agenda.offlineBanner}
-            </Text>
-          ) : null}
-          <Text className="text-xl font-semibold text-brand-900">{strings.agenda.title}</Text>
+    <ScreenScaffold
+      title={strings.agenda.title}
+      scrollTestID="agenda-scroll"
+      refreshControl={<RefreshControl tintColor="#1f6350" refreshing={isRefetching} onRefresh={() => void refetch()} />}
+    >
+      {isOffline ? (
+        <Text
+          testID="agenda-offline-banner"
+          accessibilityRole="alert"
+          className="text-center text-sm text-brand-700"
+        >
+          {strings.agenda.offlineBanner}
+        </Text>
+      ) : null}
 
-          <PetFilterChips value={selectedPetId} onChange={setSelectedPetId} />
+      <PetFilterChips value={selectedPetId} onChange={setSelectedPetId} />
 
-          {entries.length === 0 ? (
-            <Text testID="agenda-empty" className="text-center text-base text-brand-900">
-              {strings.agenda.empty}
-            </Text>
-          ) : (
-            <>
-              <View testID="agenda-section-today" className="gap-3">
-                <Text className="text-base font-semibold text-brand-900">{strings.agenda.today}</Text>
-                {todayEntries.map((entry) => (
-                  <AgendaItem
-                    key={`${entry.reminderId}:${entry.dueAt}`}
-                    entry={entry}
-                    onComplete={() => void handleComplete(entry)}
-                    onSnooze={() => void handleSnooze(entry)}
-                  />
-                ))}
-              </View>
+      {entries.length === 0 ? (
+        <EmptyState testID="agenda-empty" icon="calendar-outline" title={strings.agenda.empty} />
+      ) : (
+        <>
+          <View testID="agenda-section-today" className="gap-3">
+            <Text className="text-base font-semibold text-brand-900">{strings.agenda.today}</Text>
+            {todayEntries.map((entry) => (
+              <AgendaItem
+                key={`${entry.reminderId}:${entry.dueAt}`}
+                entry={entry}
+                onComplete={() => void handleComplete(entry)}
+                onSnooze={() => void handleSnooze(entry)}
+              />
+            ))}
+          </View>
 
-              <View testID="agenda-section-upcoming" className="gap-3">
-                <Text className="text-base font-semibold text-brand-900">{strings.agenda.upcoming}</Text>
-                {upcomingEntries.map((entry) => (
-                  <AgendaItem
-                    key={`${entry.reminderId}:${entry.dueAt}`}
-                    entry={entry}
-                    onComplete={() => void handleComplete(entry)}
-                    onSnooze={() => void handleSnooze(entry)}
-                  />
-                ))}
-              </View>
-            </>
-          )}
+          <View testID="agenda-section-upcoming" className="gap-3">
+            <Text className="text-base font-semibold text-brand-900">{strings.agenda.upcoming}</Text>
+            {upcomingEntries.map((entry) => (
+              <AgendaItem
+                key={`${entry.reminderId}:${entry.dueAt}`}
+                entry={entry}
+                onComplete={() => void handleComplete(entry)}
+                onSnooze={() => void handleSnooze(entry)}
+              />
+            ))}
+          </View>
+        </>
+      )}
 
-          {targetPetId !== null ? (
-            <PrimaryButton
-              testID="agenda-new"
-              label={strings.agenda.newReminder}
-              onPress={() => router.push({ pathname: "/reminders/edit", params: { petId: targetPetId } })}
-            />
-          ) : null}
+      {targetPetId !== null ? (
+        <PrimaryButton
+          testID="agenda-new"
+          label={strings.agenda.newReminder}
+          onPress={() => router.push({ pathname: "/reminders/edit", params: { petId: targetPetId } })}
+        />
+      ) : null}
 
-          {activePetId !== null ? (
-            <Text
-              testID="agenda-care-plan"
-              onPress={() => router.push({ pathname: "/care-plan/[petId]", params: { petId: activePetId } })}
-              className="text-center text-sm font-semibold text-brand-700"
-            >
-              {strings.agenda.carePlanLink}
-            </Text>
-          ) : null}
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+      {activePetId !== null ? (
+        <GhostButton
+          testID="agenda-care-plan"
+          label={strings.agenda.carePlanLink}
+          onPress={() => router.push({ pathname: "/care-plan/[petId]", params: { petId: activePetId } })}
+        />
+      ) : null}
+    </ScreenScaffold>
   );
 }

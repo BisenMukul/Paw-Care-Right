@@ -13,9 +13,11 @@ export default function ComingSoonScreen() {
   return (
     <SafeAreaView
       testID="coming-soon-screen"
-      className="flex-1 items-center justify-center gap-3 bg-white px-6"
+      className="flex-1 items-center justify-center gap-3 bg-brand-50 px-6"
     >
-      <Text className="text-xl font-semibold text-brand-900">{strings.comingSoon.title}</Text>
+      <Text accessibilityRole="header" maxFontSizeMultiplier={1.5} className="text-xl font-semibold text-brand-900">
+        {strings.comingSoon.title}
+      </Text>
       <Text className="text-center text-base text-brand-900">{strings.comingSoon.body}</Text>
     </SafeAreaView>
   );

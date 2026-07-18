@@ -2,7 +2,7 @@ import { useIsOffline } from "@pawcareright/api-client";
 import type { ActivityType } from "@pawcareright/types";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
-import { ActivityIndicator, ScrollView, Text, View } from "react-native";
+import { ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useAddActivity, type AddActivityVars } from "../../src/api/health-logs-api";
@@ -11,6 +11,7 @@ import { ActivityChipGrid } from "../../src/components/activity-chip-grid";
 import { ActivityQuantitySheet, type ActivityQuantitySheetSaveInput } from "../../src/components/activity-quantity-sheet";
 import { ActivityRecentsRow, recentEntryLabel } from "../../src/components/activity-recents-row";
 import { PrimaryButton } from "../../src/components/primary-button";
+import { Skeleton } from "../../src/components/skeleton";
 import { haptics } from "../../src/haptics";
 import {
   useActivityRecents,
@@ -90,16 +91,15 @@ export default function ActivityScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-white px-6">
-        <ActivityIndicator testID="activity-screen-loading" />
-        <Text className="text-center text-base text-brand-900">{strings.activity.loading}</Text>
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
+        <Skeleton lines={4} testID="activity-screen-loading" />
       </SafeAreaView>
     );
   }
 
   if (isOffline && !pet) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-white px-6">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
         <Text testID="activity-screen-offline" className="text-center text-base text-brand-900">
           {strings.activity.offline}
         </Text>
@@ -110,8 +110,8 @@ export default function ActivityScreen() {
 
   if (isError) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-white px-6">
-        <Text testID="activity-screen-error" className="text-center text-base text-red-600">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
+        <Text testID="activity-screen-error" className="text-center text-base text-red-700">
           {strings.activity.error}
         </Text>
         <PrimaryButton testID="activity-screen-retry" label={strings.activity.retry} onPress={() => refetch()} />
@@ -121,7 +121,7 @@ export default function ActivityScreen() {
 
   if (!pet) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-white px-6">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
         <Text testID="activity-screen-empty" className="text-center text-base text-brand-900">
           {strings.activity.empty}
         </Text>
@@ -192,7 +192,7 @@ export default function ActivityScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView className="flex-1 bg-brand-50">
       {isOffline ? (
         <Text testID="activity-screen-offline-banner" className="px-6 pt-2 text-center text-sm text-brand-700">
           {strings.activity.offlineBanner}
@@ -200,7 +200,13 @@ export default function ActivityScreen() {
       ) : null}
       <ScrollView testID="activity-screen-scroll">
         <View className="gap-6 px-6 pb-8 pt-4">
-          <Text className="text-xl font-semibold text-brand-900">{strings.activity.title}</Text>
+          <Text
+            accessibilityRole="header"
+            maxFontSizeMultiplier={1.5}
+            className="text-2xl font-bold text-brand-900"
+          >
+            {strings.activity.title}
+          </Text>
 
           {pendingUndo !== null ? (
             <View

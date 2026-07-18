@@ -1,5 +1,5 @@
 import { RRULE_WEEKDAYS, type RRuleWeekday } from "@pawcareright/types";
-import { Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 
 import type { ScheduleConfig, ScheduleFrequency } from "../reminders/schedule-builder";
 import { strings } from "../strings";
@@ -15,8 +15,9 @@ const MAX_INTERVAL = 30;
 const MIN_MONTH_DAY = 1;
 const MAX_MONTH_DAY = 31;
 
-const SELECTED_CLASS = "mr-2 rounded-lg bg-brand-700 px-3 py-2 text-sm font-semibold text-white";
-const UNSELECTED_CLASS = "mr-2 rounded-lg border border-brand-100 px-3 py-2 text-sm text-brand-900";
+const STEPPER_HIT_SLOP = { top: 8, bottom: 8, left: 8, right: 8 };
+const SELECTED_CLASS = "mr-2 min-h-[44px] justify-center rounded-lg bg-brand-700 px-3 py-2 text-sm font-semibold text-white";
+const UNSELECTED_CLASS = "mr-2 min-h-[44px] justify-center rounded-lg border border-brand-100 px-3 py-2 text-sm text-brand-900";
 
 function clamp(n: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, n));
@@ -28,6 +29,8 @@ function clamp(n: number, min: number, max: number): number {
  * interval stepper (every-N), a WEEKLY-only weekday multi-select, and a
  * MONTHLY-only day-of-month stepper. `buildRRule(config)` is called by the
  * parent form at save time; this component never touches an rrule string.
+ * Token/44pt-only sweep (SWEEP-4 plan Risk R3): this visual system stays
+ * `rounded-lg` -- deliberately NOT converted to the rounded-full `Chip`.
  */
 export function ScheduleBuilder({ value, onChange }: ScheduleBuilderProps) {
   const interval = value.interval ?? 1;
@@ -72,23 +75,25 @@ export function ScheduleBuilder({ value, onChange }: ScheduleBuilderProps) {
 
       <View className="flex-row items-center gap-3">
         <Text className="text-sm text-brand-900">{strings.reminderForm.intervalLabel}</Text>
-        <Text
+        <Pressable
           testID="schedule-interval-decrement"
           onPress={() => setInterval(interval - 1)}
+          hitSlop={STEPPER_HIT_SLOP}
           className={UNSELECTED_CLASS}
         >
-          -
-        </Text>
+          <Text className="text-sm text-brand-900">-</Text>
+        </Pressable>
         <Text testID="schedule-interval" className="text-base font-semibold text-brand-900">
           {interval}
         </Text>
-        <Text
+        <Pressable
           testID="schedule-interval-increment"
           onPress={() => setInterval(interval + 1)}
+          hitSlop={STEPPER_HIT_SLOP}
           className={UNSELECTED_CLASS}
         >
-          +
-        </Text>
+          <Text className="text-sm text-brand-900">+</Text>
+        </Pressable>
       </View>
 
       {value.freq === "WEEKLY" ? (
@@ -109,23 +114,25 @@ export function ScheduleBuilder({ value, onChange }: ScheduleBuilderProps) {
       {value.freq === "MONTHLY" ? (
         <View className="flex-row items-center gap-3">
           <Text className="text-sm text-brand-900">{strings.reminderForm.monthDayLabel}</Text>
-          <Text
+          <Pressable
             testID="schedule-monthday-decrement"
             onPress={() => setMonthDay((value.byMonthDay ?? 1) - 1)}
+            hitSlop={STEPPER_HIT_SLOP}
             className={UNSELECTED_CLASS}
           >
-            -
-          </Text>
+            <Text className="text-sm text-brand-900">-</Text>
+          </Pressable>
           <Text testID="schedule-monthday" className="text-base font-semibold text-brand-900">
             {value.byMonthDay ?? 1}
           </Text>
-          <Text
+          <Pressable
             testID="schedule-monthday-increment"
             onPress={() => setMonthDay((value.byMonthDay ?? 1) + 1)}
+            hitSlop={STEPPER_HIT_SLOP}
             className={UNSELECTED_CLASS}
           >
-            +
-          </Text>
+            <Text className="text-sm text-brand-900">+</Text>
+          </Pressable>
         </View>
       ) : null}
     </View>

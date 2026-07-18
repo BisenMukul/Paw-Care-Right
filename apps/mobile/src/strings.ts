@@ -164,6 +164,7 @@ export const strings = {
     photoViewerClose: "Close photo viewer",
   },
   settings: {
+    title: "Settings",
     body: "Account and household settings will live here.",
     family: "Family",
     notifications: "Notifications",

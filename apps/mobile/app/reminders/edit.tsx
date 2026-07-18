@@ -2,13 +2,18 @@ import { useIsOffline } from "@pawcareright/api-client";
 import { REMINDER_TYPES } from "@pawcareright/types";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, ScrollView, Text, TextInput, View } from "react-native";
+import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useCreateReminder, useReminder, useUpdateReminder } from "../../src/api/reminders-api";
+import { Card } from "../../src/components/card";
+import { Chip } from "../../src/components/chip";
 import { MedicationCourseForm } from "../../src/components/medication-course-form";
 import { PrimaryButton } from "../../src/components/primary-button";
 import { ScheduleBuilder } from "../../src/components/schedule-builder";
+import { ScreenScaffold } from "../../src/components/screen-scaffold";
+import { Skeleton } from "../../src/components/skeleton";
+import { TextField } from "../../src/components/text-field";
 import { buildRRule, parseRRuleToScheduleConfig, type ScheduleConfig } from "../../src/reminders/schedule-builder";
 import { strings } from "../../src/strings";
 
@@ -20,6 +25,9 @@ const TIME_OF_DAY_OPTIONS: string[] = Array.from({ length: 48 }, (_, i) => {
   const minute = i % 2 === 0 ? "00" : "30";
   return `${String(hour).padStart(2, "0")}:${minute}`;
 });
+
+const STEPPER_HIT_SLOP = { top: 8, bottom: 8, left: 8, right: 8 };
+const STEPPER_CLASS = "min-h-[44px] justify-center rounded-lg border border-brand-100 px-2 py-1";
 
 function pad2(n: number): string {
   return String(n).padStart(2, "0");
@@ -128,8 +136,10 @@ export default function ReminderEditScreen() {
 
   if (isEdit && isLoading) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-white px-6">
-        <ActivityIndicator testID="reminder-form-loading" />
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
+        <Card testID="reminder-form-loading">
+          <Skeleton lines={3} />
+        </Card>
         <Text className="text-center text-base text-brand-900">{strings.reminderForm.loading}</Text>
       </SafeAreaView>
     );
@@ -137,7 +147,7 @@ export default function ReminderEditScreen() {
 
   if (isEdit && isOffline && !existing) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-white px-6">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
         <Text testID="reminder-form-offline" className="text-center text-base text-brand-900">
           {strings.reminderForm.error}
         </Text>
@@ -148,8 +158,8 @@ export default function ReminderEditScreen() {
 
   if (isEdit && isError) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-white px-6">
-        <Text testID="reminder-form-error" className="text-center text-base text-red-600">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
+        <Text testID="reminder-form-error" className="text-center text-base text-red-700">
           {strings.reminderForm.error}
         </Text>
         <PrimaryButton testID="reminder-form-retry" label={strings.reminderForm.retry} onPress={() => refetch()} />
@@ -164,125 +174,111 @@ export default function ReminderEditScreen() {
   const showMedicationForm = !isEdit && type === "MEDICATION";
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <ScrollView testID="reminder-form-scroll" className="flex-1">
-        <View className="gap-6 px-6 pb-8 pt-4">
-          <Text className="text-xl font-semibold text-brand-900">
-            {isEdit ? strings.reminderForm.editTitle : strings.reminderForm.createTitle}
-          </Text>
+    <ScreenScaffold
+      title={isEdit ? strings.reminderForm.editTitle : strings.reminderForm.createTitle}
+      scrollTestID="reminder-form-scroll"
+    >
+      <View className="gap-2">
+        <Text className="text-base font-semibold text-brand-900">{strings.reminderForm.typeHeading}</Text>
+        <View className="flex-row flex-wrap gap-2">
+          {REMINDER_TYPES.map((option) => (
+            <Chip
+              key={option}
+              testID={`reminder-type-${option}`}
+              label={option}
+              selected={type === option}
+              onPress={() => setType(option)}
+            />
+          ))}
+        </View>
+      </View>
+
+      {showMedicationForm ? (
+        <MedicationCourseForm petId={petId ?? ""} onSaved={() => router.back()} />
+      ) : (
+        <>
+          <TextField
+            testID="reminder-title-input"
+            label={strings.reminderForm.titleLabel}
+            value={title}
+            onChangeText={setTitle}
+            placeholder={strings.reminderForm.titlePlaceholder}
+          />
 
           <View className="gap-2">
-            <Text className="text-base font-semibold text-brand-900">{strings.reminderForm.typeHeading}</Text>
-            <View className="flex-row flex-wrap">
-              {REMINDER_TYPES.map((option) => (
-                <Text
-                  key={option}
-                  testID={`reminder-type-${option}`}
-                  onPress={() => setType(option)}
-                  className={
-                    type === option
-                      ? "mb-2 mr-2 rounded-lg bg-brand-700 px-3 py-2 text-sm font-semibold text-white"
-                      : "mb-2 mr-2 rounded-lg border border-brand-100 px-3 py-2 text-sm text-brand-900"
-                  }
-                >
-                  {option}
-                </Text>
-              ))}
+            <Text className="text-base font-semibold text-brand-900">{strings.reminderForm.scheduleHeading}</Text>
+            <ScheduleBuilder value={schedule} onChange={setSchedule} />
+          </View>
+
+          <View className="gap-2">
+            <Text className="text-base font-semibold text-brand-900">{strings.reminderForm.startDateLabel}</Text>
+            <View className="flex-row items-center gap-2">
+              <Pressable
+                testID="reminder-startdate-minus1w"
+                onPress={() => setStartDate((d) => shiftDateString(d, -7))}
+                hitSlop={STEPPER_HIT_SLOP}
+                className={STEPPER_CLASS}
+              >
+                <Text className="text-sm text-brand-900">-1w</Text>
+              </Pressable>
+              <Pressable
+                testID="reminder-startdate-minus1d"
+                onPress={() => setStartDate((d) => shiftDateString(d, -1))}
+                hitSlop={STEPPER_HIT_SLOP}
+                className={STEPPER_CLASS}
+              >
+                <Text className="text-sm text-brand-900">-1d</Text>
+              </Pressable>
+              <Text testID="reminder-startdate" className="text-sm font-semibold text-brand-900">
+                {startDate}
+              </Text>
+              <Pressable
+                testID="reminder-startdate-plus1d"
+                onPress={() => setStartDate((d) => shiftDateString(d, 1))}
+                hitSlop={STEPPER_HIT_SLOP}
+                className={STEPPER_CLASS}
+              >
+                <Text className="text-sm text-brand-900">+1d</Text>
+              </Pressable>
+              <Pressable
+                testID="reminder-startdate-plus1w"
+                onPress={() => setStartDate((d) => shiftDateString(d, 7))}
+                hitSlop={STEPPER_HIT_SLOP}
+                className={STEPPER_CLASS}
+              >
+                <Text className="text-sm text-brand-900">+1w</Text>
+              </Pressable>
             </View>
           </View>
 
-          {showMedicationForm ? (
-            <MedicationCourseForm petId={petId ?? ""} onSaved={() => router.back()} />
-          ) : (
-            <>
-              <View className="gap-2">
-                <Text className="text-base font-semibold text-brand-900">{strings.reminderForm.titleLabel}</Text>
-                <TextInput
-                  testID="reminder-title-input"
-                  value={title}
-                  onChangeText={setTitle}
-                  placeholder={strings.reminderForm.titlePlaceholder}
-                  className="rounded-lg border border-brand-100 px-4 py-3 text-base text-brand-900"
+          <View className="gap-2">
+            <Text className="text-base font-semibold text-brand-900">{strings.reminderForm.timeLabel}</Text>
+            <ScrollView horizontal testID="reminder-time-list" contentContainerClassName="gap-2">
+              {TIME_OF_DAY_OPTIONS.map((time) => (
+                <Chip
+                  key={time}
+                  testID={`reminder-time-${time}`}
+                  label={time}
+                  selected={time === timeOfDay}
+                  onPress={() => setTimeOfDay(time)}
                 />
-              </View>
+              ))}
+            </ScrollView>
+          </View>
 
-              <View className="gap-2">
-                <Text className="text-base font-semibold text-brand-900">{strings.reminderForm.scheduleHeading}</Text>
-                <ScheduleBuilder value={schedule} onChange={setSchedule} />
-              </View>
-
-              <View className="gap-2">
-                <Text className="text-base font-semibold text-brand-900">{strings.reminderForm.startDateLabel}</Text>
-                <View className="flex-row items-center gap-2">
-                  <Text
-                    testID="reminder-startdate-minus1w"
-                    onPress={() => setStartDate((d) => shiftDateString(d, -7))}
-                    className="rounded-lg border border-brand-100 px-2 py-1 text-sm text-brand-900"
-                  >
-                    -1w
-                  </Text>
-                  <Text
-                    testID="reminder-startdate-minus1d"
-                    onPress={() => setStartDate((d) => shiftDateString(d, -1))}
-                    className="rounded-lg border border-brand-100 px-2 py-1 text-sm text-brand-900"
-                  >
-                    -1d
-                  </Text>
-                  <Text testID="reminder-startdate" className="text-sm font-semibold text-brand-900">
-                    {startDate}
-                  </Text>
-                  <Text
-                    testID="reminder-startdate-plus1d"
-                    onPress={() => setStartDate((d) => shiftDateString(d, 1))}
-                    className="rounded-lg border border-brand-100 px-2 py-1 text-sm text-brand-900"
-                  >
-                    +1d
-                  </Text>
-                  <Text
-                    testID="reminder-startdate-plus1w"
-                    onPress={() => setStartDate((d) => shiftDateString(d, 7))}
-                    className="rounded-lg border border-brand-100 px-2 py-1 text-sm text-brand-900"
-                  >
-                    +1w
-                  </Text>
-                </View>
-              </View>
-
-              <View className="gap-2">
-                <Text className="text-base font-semibold text-brand-900">{strings.reminderForm.timeLabel}</Text>
-                <ScrollView horizontal testID="reminder-time-list">
-                  {TIME_OF_DAY_OPTIONS.map((time) => (
-                    <Text
-                      key={time}
-                      testID={`reminder-time-${time}`}
-                      onPress={() => setTimeOfDay(time)}
-                      className={
-                        time === timeOfDay
-                          ? "mr-2 rounded-lg bg-brand-700 px-3 py-2 text-sm font-semibold text-white"
-                          : "mr-2 rounded-lg border border-brand-100 px-3 py-2 text-sm text-brand-900"
-                      }
-                    >
-                      {time}
-                    </Text>
-                  ))}
-                </ScrollView>
-              </View>
-
-              <PrimaryButton
-                testID="reminder-save"
-                label={strings.reminderForm.save}
-                loading={isSaving}
-                onPress={() => void handleSave()}
-              />
-              {saveError ? (
-                <Text testID="reminder-save-error" className="text-center text-sm text-red-600">
-                  {strings.reminderForm.saveError}
-                </Text>
-              ) : null}
-            </>
-          )}
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+          <PrimaryButton
+            testID="reminder-save"
+            label={strings.reminderForm.save}
+            loading={isSaving}
+            onPress={() => void handleSave()}
+          />
+          {saveError ? (
+            <Text testID="reminder-save-error" className="text-center text-sm text-red-700">
+              {strings.reminderForm.saveError}
+            </Text>
+          ) : null}
+        </>
+      )}
+    </ScreenScaffold>
   );
 }

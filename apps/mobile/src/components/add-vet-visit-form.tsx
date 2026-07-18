@@ -6,6 +6,7 @@ import { validateVetVisitForm, type VetVisitFormErrors } from "../health-logs/he
 import { strings } from "../strings";
 import { HealthLogPhotoPicker } from "./health-log-photo-picker";
 import { PrimaryButton } from "./primary-button";
+import { TextField } from "./text-field";
 
 export interface AddVetVisitFormProps {
   petId: string;
@@ -47,28 +48,26 @@ export function AddVetVisitForm({ petId, submitting, onSubmit }: AddVetVisitForm
     <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} className="flex-1">
       <ScrollView className="flex-1">
         <View className="gap-4 px-6 pb-8 pt-4">
-          <TextInput
+          <TextField
             testID="add-vet-visit-reason"
+            label={strings.vetVisit.reasonPlaceholder}
             value={reason}
             onChangeText={setReason}
-            placeholder={strings.vetVisit.reasonPlaceholder}
-            className="rounded-lg border border-brand-300 px-4 py-3 text-base text-brand-900"
           />
           {errors.reason !== undefined ? (
-            <Text testID="add-vet-visit-error-reason" className="text-sm text-red-600">
+            <Text testID="add-vet-visit-error-reason" accessibilityRole="alert" className="text-sm text-red-700">
               {FIELD_ERROR_STRINGS.reason[errors.reason]}
             </Text>
           ) : null}
 
-          <TextInput
+          <TextField
             testID="add-vet-visit-clinic"
+            label={strings.vetVisit.clinicPlaceholder}
             value={clinicName}
             onChangeText={setClinicName}
-            placeholder={strings.vetVisit.clinicPlaceholder}
-            className="rounded-lg border border-brand-300 px-4 py-3 text-base text-brand-900"
           />
           {errors.clinicName !== undefined ? (
-            <Text testID="add-vet-visit-error-clinic" className="text-sm text-red-600">
+            <Text testID="add-vet-visit-error-clinic" accessibilityRole="alert" className="text-sm text-red-700">
               {FIELD_ERROR_STRINGS.clinicName[errors.clinicName]}
             </Text>
           ) : null}
@@ -79,10 +78,11 @@ export function AddVetVisitForm({ petId, submitting, onSubmit }: AddVetVisitForm
             onChangeText={setNotes}
             multiline
             placeholder={strings.vetVisit.notesPlaceholder}
-            className="min-h-[100px] rounded-lg border border-brand-300 px-4 py-3 text-base text-brand-900"
+            placeholderTextColor="#2f8f74"
+            className="min-h-[100px] rounded-lg border border-brand-100 px-4 py-3 text-base text-brand-900"
           />
           {errors.notes !== undefined ? (
-            <Text testID="add-vet-visit-error-notes" className="text-sm text-red-600">
+            <Text testID="add-vet-visit-error-notes" accessibilityRole="alert" className="text-sm text-red-700">
               {FIELD_ERROR_STRINGS.notes[errors.notes]}
             </Text>
           ) : null}

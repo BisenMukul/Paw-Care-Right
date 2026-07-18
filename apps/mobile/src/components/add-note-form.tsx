@@ -50,11 +50,12 @@ export function AddNoteForm({ petId, submitting, onSubmit }: AddNoteFormProps) {
             onChangeText={setText}
             multiline
             placeholder={strings.note.inputPlaceholder}
-            className="min-h-[120px] rounded-lg border border-brand-300 px-4 py-3 text-base text-brand-900"
+            placeholderTextColor="#2f8f74"
+            className="min-h-[120px] rounded-lg border border-brand-100 px-4 py-3 text-base text-brand-900"
           />
           <HealthLogPhotoPicker petId={petId} onKeysChange={setPhotoKeys} />
           {error !== null ? (
-            <Text testID="add-note-error" className="text-sm text-red-600">
+            <Text testID="add-note-error" accessibilityRole="alert" className="text-sm text-red-700">
               {ERROR_STRINGS[error]}
             </Text>
           ) : null}

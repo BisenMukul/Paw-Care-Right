@@ -1,13 +1,15 @@
 import { useIsOffline } from "@pawcareright/api-client";
 import { useLocalSearchParams } from "expo-router";
 import { useState } from "react";
-import { ActivityIndicator, Pressable, ScrollView, Text, View } from "react-native";
+import { Pressable, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useAddWeight, useWeightSeries } from "../../src/api/health-logs-api";
 import { usePet } from "../../src/api/pets-api";
 import { AddWeightForm } from "../../src/components/add-weight-form";
 import { PrimaryButton } from "../../src/components/primary-button";
+import { ScreenScaffold } from "../../src/components/screen-scaffold";
+import { Skeleton } from "../../src/components/skeleton";
 import { WeightChart } from "../../src/components/weight-chart";
 import { strings } from "../../src/strings";
 import { resolveBreedBand } from "../../src/weight/breed-weight-band";
@@ -32,16 +34,15 @@ export default function WeightScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-white px-6">
-        <ActivityIndicator testID="weight-screen-loading" />
-        <Text className="text-center text-base text-brand-900">{strings.weight.loading}</Text>
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
+        <Skeleton lines={4} testID="weight-screen-loading" />
       </SafeAreaView>
     );
   }
 
   if (isOffline && !pet) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-white px-6">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
         <Text testID="weight-screen-offline" className="text-center text-base text-brand-900">
           {strings.weight.offline}
         </Text>
@@ -52,8 +53,8 @@ export default function WeightScreen() {
 
   if (isError) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-white px-6">
-        <Text testID="weight-screen-error" className="text-center text-base text-red-600">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
+        <Text testID="weight-screen-error" className="text-center text-base text-red-700">
           {strings.weight.error}
         </Text>
         <PrimaryButton testID="weight-screen-retry" label={strings.weight.retry} onPress={() => refetch()} />
@@ -63,7 +64,7 @@ export default function WeightScreen() {
 
   if (!pet) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-white px-6">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
         <Text testID="weight-screen-empty" className="text-center text-base text-brand-900">
           {strings.weight.empty}
         </Text>
@@ -84,32 +85,29 @@ export default function WeightScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      {isOffline ? (
-        <Text testID="weight-screen-offline-banner" className="px-6 pt-2 text-center text-sm text-brand-700">
-          {strings.weight.offlineBanner}
-        </Text>
-      ) : null}
-      <ScrollView className="flex-1">
-        <View className="gap-4 px-6 py-4">
-          <Text className="text-xl font-semibold text-brand-900">{strings.weight.title}</Text>
-          <Pressable
-            testID="weight-unit-toggle"
-            onPress={toggle}
-            accessibilityRole="button"
-            accessibilityLabel={strings.weight.unitToggleA11y}
-            className="min-h-[44px] justify-center self-start rounded-full bg-brand-100 px-4 py-2"
-          >
-            <Text className="text-base font-medium text-brand-900">{strings.weight.unitLabel[unit]}</Text>
-          </Pressable>
-          <WeightChart points={points} band={band} unit={unit} />
-          <PrimaryButton
-            testID="weight-add-button"
-            label={strings.weight.addWeight}
-            onPress={() => setFormVisible(true)}
-          />
-        </View>
-      </ScrollView>
+    <>
+      <ScreenScaffold title={strings.weight.title}>
+        {isOffline ? (
+          <Text testID="weight-screen-offline-banner" className="text-center text-sm text-brand-700">
+            {strings.weight.offlineBanner}
+          </Text>
+        ) : null}
+        <Pressable
+          testID="weight-unit-toggle"
+          onPress={toggle}
+          accessibilityRole="button"
+          accessibilityLabel={strings.weight.unitToggleA11y}
+          className="min-h-[44px] justify-center self-start rounded-full bg-brand-100 px-4 py-2"
+        >
+          <Text className="text-base font-medium text-brand-900">{strings.weight.unitLabel[unit]}</Text>
+        </Pressable>
+        <WeightChart points={points} band={band} unit={unit} />
+        <PrimaryButton
+          testID="weight-add-button"
+          label={strings.weight.addWeight}
+          onPress={() => setFormVisible(true)}
+        />
+      </ScreenScaffold>
       <AddWeightForm
         visible={formVisible}
         unit={unit}
@@ -117,6 +115,6 @@ export default function WeightScreen() {
         onSubmit={handleSubmit}
         onClose={() => setFormVisible(false)}
       />
-    </SafeAreaView>
+    </>
   );
 }

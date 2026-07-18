@@ -2,11 +2,13 @@ import { useIsOffline } from "@pawcareright/api-client";
 import type { HealthLogKind } from "@pawcareright/types";
 import { useRouter } from "expo-router";
 import { useCallback, useState } from "react";
-import { ActivityIndicator, SectionList, Share, Text, View } from "react-native";
+import { RefreshControl, SectionList, Share, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useHealthTimeline, usePrepareVetSummary, type TimelineItem } from "../../src/api/health-logs-api";
+import { EmptyState } from "../../src/components/empty-state";
 import { PrimaryButton } from "../../src/components/primary-button";
+import { Skeleton } from "../../src/components/skeleton";
 import { TimelineFilterChips } from "../../src/components/timeline-filter-chips";
 import { TimelinePhotoViewer } from "../../src/components/timeline-photo-viewer";
 import { TimelineRow } from "../../src/components/timeline-row";
@@ -28,6 +30,11 @@ interface PhotoViewerState {
  * record (CLAUDE §7 rule 2 -- no interpretive copy anywhere here). The
  * source pet is the active-pet store (no in-tab pet switcher, decision 4):
  * the timeline endpoint is strictly pet-scoped.
+ *
+ * A `SectionList` can't nest inside `ScreenScaffold`'s own `ScrollView`
+ * (SWEEP-4 plan Risk R5), so this screen satisfies the design-system §6
+ * checklist at the page-contract level: solid `bg-brand-50`, canon header,
+ * `RefreshControl`, `Skeleton`/`EmptyState` content-shaped states.
  */
 export default function TimelineScreen() {
   const router = useRouter();
@@ -37,10 +44,8 @@ export default function TimelineScreen() {
   const [photoViewer, setPhotoViewer] = useState<PhotoViewerState | null>(null);
   const isOffline = useIsOffline();
 
-  const { data, isLoading, isError, refetch, hasNextPage, fetchNextPage, isFetchingNextPage } = useHealthTimeline(
-    activePetId ?? "",
-    kind,
-  );
+  const { data, isLoading, isError, refetch, hasNextPage, fetchNextPage, isFetchingNextPage, isRefetching } =
+    useHealthTimeline(activePetId ?? "", kind);
   const prepareVetSummary = usePrepareVetSummary(activePetId ?? "");
 
   // T068: on-demand fetch-then-share -- no throw surfaces to the user, a
@@ -74,7 +79,7 @@ export default function TimelineScreen() {
 
   if (activePetId === null) {
     return (
-      <SafeAreaView testID="timeline-no-pet" className="flex-1 items-center justify-center gap-4 bg-white px-6">
+      <SafeAreaView testID="timeline-no-pet" className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
         <Text className="text-center text-base text-brand-900">{strings.timeline.noPet}</Text>
       </SafeAreaView>
     );
@@ -82,8 +87,8 @@ export default function TimelineScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView testID="timeline-loading" className="flex-1 items-center justify-center gap-4 bg-white px-6">
-        <ActivityIndicator />
+      <SafeAreaView testID="timeline-loading" className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
+        <Skeleton lines={4} testID="timeline-loading-skeleton" />
         <Text className="text-center text-base text-brand-900">{strings.timeline.loading}</Text>
       </SafeAreaView>
     );
@@ -91,7 +96,7 @@ export default function TimelineScreen() {
 
   if (isOffline && !data) {
     return (
-      <SafeAreaView testID="timeline-offline" className="flex-1 items-center justify-center gap-4 bg-white px-6">
+      <SafeAreaView testID="timeline-offline" className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
         <Text className="text-center text-base text-brand-900">{strings.timeline.offline}</Text>
         <PrimaryButton testID="timeline-retry" label={strings.timeline.retry} onPress={() => refetch()} />
       </SafeAreaView>
@@ -100,8 +105,8 @@ export default function TimelineScreen() {
 
   if (isError && !data) {
     return (
-      <SafeAreaView testID="timeline-error" className="flex-1 items-center justify-center gap-4 bg-white px-6">
-        <Text className="text-center text-base text-red-600">{strings.timeline.error}</Text>
+      <SafeAreaView testID="timeline-error" className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
+        <Text className="text-center text-base text-red-700">{strings.timeline.error}</Text>
         <PrimaryButton testID="timeline-retry" label={strings.timeline.retry} onPress={() => refetch()} />
       </SafeAreaView>
     );
@@ -111,18 +116,19 @@ export default function TimelineScreen() {
   const sections: TimelineSection[] = groupTimelineByMonth(items);
 
   return (
-    <SafeAreaView testID="timeline-screen" className="flex-1 bg-white">
+    <SafeAreaView testID="timeline-screen" className="flex-1 bg-brand-50">
       <SectionList
         testID="timeline-list"
         sections={sections}
         keyExtractor={(item) => `${item.kind}:${item.id}`}
+        refreshControl={<RefreshControl tintColor="#1f6350" refreshing={isRefetching} onRefresh={() => void refetch()} />}
         renderItem={({ item }) => (
           <TimelineRow item={item} petId={activePetId} onPressCheck={handlePressCheck} onOpenPhoto={handleOpenPhoto} />
         )}
         renderSectionHeader={({ section }) => (
           <Text
             testID={`timeline-section-${section.title}`}
-            className="bg-white px-4 py-2 text-sm font-semibold text-brand-700"
+            className="bg-brand-50 px-4 py-2 text-sm font-semibold text-brand-700"
           >
             {section.title}
           </Text>
@@ -137,11 +143,21 @@ export default function TimelineScreen() {
         ListHeaderComponent={
           <View className="gap-3 px-4 pt-4">
             {isOffline ? (
-              <Text testID="timeline-offline-banner" className="text-center text-sm text-brand-700">
+              <Text
+                testID="timeline-offline-banner"
+                accessibilityRole="alert"
+                className="text-center text-sm text-brand-700"
+              >
                 {strings.timeline.offlineBanner}
               </Text>
             ) : null}
-            <Text className="text-xl font-semibold text-brand-900">{strings.timeline.title}</Text>
+            <Text
+              accessibilityRole="header"
+              maxFontSizeMultiplier={1.5}
+              className="text-2xl font-bold text-brand-900"
+            >
+              {strings.timeline.title}
+            </Text>
             <PrimaryButton
               testID="timeline-vet-summary"
               label={strings.timeline.vetSummary}
@@ -149,7 +165,7 @@ export default function TimelineScreen() {
               disabled={prepareVetSummary.isPending}
             />
             {vetSummaryError ? (
-              <Text testID="timeline-vet-summary-error" className="text-center text-sm text-red-600">
+              <Text testID="timeline-vet-summary-error" className="text-center text-sm text-red-700">
                 {strings.timeline.vetSummaryError}
               </Text>
             ) : null}
@@ -157,8 +173,8 @@ export default function TimelineScreen() {
           </View>
         }
         ListEmptyComponent={
-          <View testID="timeline-empty" className="items-center px-6 py-8">
-            <Text className="text-center text-base text-brand-900">{strings.timeline.empty}</Text>
+          <View className="px-6 py-8">
+            <EmptyState testID="timeline-empty" icon="time-outline" title={strings.timeline.empty} />
           </View>
         }
         ListFooterComponent={<View className="h-8" />}

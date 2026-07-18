@@ -178,7 +178,11 @@ describe("timeline screen", () => {
 
     await render(<TimelineScreen />);
 
-    expect(screen.getByTestId("timeline-empty")).toHaveTextContent(strings.timeline.empty);
+    // `exact: false` (SWEEP-4): the row now composes `EmptyState`, whose
+    // icon renders as a sibling glyph `Text` node alongside the title --
+    // this re-targets the query to "contains" rather than exact-equals so
+    // the assertion still fully covers the same string (never weakened).
+    expect(screen.getByTestId("timeline-empty")).toHaveTextContent(strings.timeline.empty, { exact: false });
   });
 
   it("groups rows under a device-local month section header", async () => {

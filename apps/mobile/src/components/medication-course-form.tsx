@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ScrollView, Text, TextInput, View } from "react-native";
+import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
 
 import { useCreateMedicationCourse } from "../api/reminders-api";
 import { strings } from "../strings";
@@ -19,6 +19,11 @@ const DEFAULT_DOSE_TIME = "09:00";
 const DEFAULT_COURSE_LENGTH_DAYS = 1;
 
 const DEVICE_TIMEZONE = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+const STEPPER_HIT_SLOP = { top: 8, bottom: 8, left: 8, right: 8 };
+const SELECTED_CHIP_CLASS = "mr-2 min-h-[44px] justify-center rounded-lg bg-brand-700 px-3 py-2 text-sm font-semibold text-white";
+const UNSELECTED_CHIP_CLASS = "mr-2 min-h-[44px] justify-center rounded-lg border border-brand-100 px-3 py-2 text-sm text-brand-900";
+const STEPPER_CLASS = "min-h-[44px] justify-center rounded-lg border border-brand-100 px-2 py-1 text-sm text-brand-900";
 
 function pad2(n: number): string {
   return String(n).padStart(2, "0");
@@ -76,7 +81,8 @@ export interface MedicationCourseFormProps {
  * course-length (days) stepper, and a start-date stepper. No autocomplete,
  * no dose presets, no default dose -- the always-visible static disclaimer
  * is non-dismissible copy sourced from the `MEDICATION_STATIC_COPY` SSOT
- * (via `strings.medForm`).
+ * (via `strings.medForm`). Token-only sweep (SWEEP-4 plan): colors/radius/
+ * 44pt only -- ZERO copy/field/label/placeholder/disclaimer change.
  */
 export function MedicationCourseForm({ petId, onSaved }: MedicationCourseFormProps) {
   const [medName, setMedName] = useState("");
@@ -125,6 +131,7 @@ export function MedicationCourseForm({ petId, onSaved }: MedicationCourseFormPro
           value={medName}
           onChangeText={setMedName}
           placeholder={strings.medForm.namePlaceholder}
+          placeholderTextColor="#2f8f74"
           className="rounded-lg border border-brand-100 px-4 py-3 text-base text-brand-900"
         />
       </View>
@@ -136,6 +143,7 @@ export function MedicationCourseForm({ petId, onSaved }: MedicationCourseFormPro
           value={medDose}
           onChangeText={setMedDose}
           placeholder={strings.medForm.dosePlaceholder}
+          placeholderTextColor="#2f8f74"
           className="rounded-lg border border-brand-100 px-4 py-3 text-base text-brand-900"
         />
       </View>
@@ -149,22 +157,14 @@ export function MedicationCourseForm({ petId, onSaved }: MedicationCourseFormPro
                 key={time}
                 testID={`med-time-${index}-${time}`}
                 onPress={() => setTimeAt(index, time)}
-                className={
-                  time === selected
-                    ? "mr-2 rounded-lg bg-brand-700 px-3 py-2 text-sm font-semibold text-white"
-                    : "mr-2 rounded-lg border border-brand-100 px-3 py-2 text-sm text-brand-900"
-                }
+                className={time === selected ? SELECTED_CHIP_CLASS : UNSELECTED_CHIP_CLASS}
               >
                 {time}
               </Text>
             ))}
           </ScrollView>
         ))}
-        <Text
-          testID="med-add-time"
-          onPress={addTime}
-          className="rounded-lg border border-brand-100 px-3 py-2 text-sm text-brand-900"
-        >
+        <Text testID="med-add-time" onPress={addTime} className={STEPPER_CLASS}>
           {strings.medForm.addTimeLabel}
         </Text>
       </View>
@@ -172,60 +172,66 @@ export function MedicationCourseForm({ petId, onSaved }: MedicationCourseFormPro
       <View className="gap-2">
         <Text className="text-base font-semibold text-brand-900">{strings.medForm.courseLengthLabel}</Text>
         <View className="flex-row items-center gap-3">
-          <Text
+          <Pressable
             testID="med-course-length-minus"
             onPress={() => setCourseLengthDays((n) => clampCourseLength(n - 1))}
-            className="rounded-lg border border-brand-100 px-2 py-1 text-sm text-brand-900"
+            hitSlop={STEPPER_HIT_SLOP}
+            className={STEPPER_CLASS}
           >
-            -
-          </Text>
+            <Text className="text-sm text-brand-900">-</Text>
+          </Pressable>
           <Text testID="med-course-length" className="text-base font-semibold text-brand-900">
             {courseLengthDays}
           </Text>
-          <Text
+          <Pressable
             testID="med-course-length-plus"
             onPress={() => setCourseLengthDays((n) => clampCourseLength(n + 1))}
-            className="rounded-lg border border-brand-100 px-2 py-1 text-sm text-brand-900"
+            hitSlop={STEPPER_HIT_SLOP}
+            className={STEPPER_CLASS}
           >
-            +
-          </Text>
+            <Text className="text-sm text-brand-900">+</Text>
+          </Pressable>
         </View>
       </View>
 
       <View className="gap-2">
         <Text className="text-base font-semibold text-brand-900">{strings.reminderForm.startDateLabel}</Text>
         <View className="flex-row items-center gap-2">
-          <Text
+          <Pressable
             testID="med-startdate-minus1w"
             onPress={() => setStartDate((d) => shiftDateString(d, -7))}
-            className="rounded-lg border border-brand-100 px-2 py-1 text-sm text-brand-900"
+            hitSlop={STEPPER_HIT_SLOP}
+            className={STEPPER_CLASS}
           >
-            -1w
-          </Text>
-          <Text
+            <Text className="text-sm text-brand-900">-1w</Text>
+          </Pressable>
+          <Pressable
             testID="med-startdate-minus1d"
             onPress={() => setStartDate((d) => shiftDateString(d, -1))}
-            className="rounded-lg border border-brand-100 px-2 py-1 text-sm text-brand-900"
+            hitSlop={STEPPER_HIT_SLOP}
+            className={STEPPER_CLASS}
           >
-            -1d
-          </Text>
+            <Text className="text-sm text-brand-900">-1d</Text>
+          </Pressable>
           <Text testID="med-startdate" className="text-sm font-semibold text-brand-900">
             {startDate}
           </Text>
-          <Text
+          <Pressable
             testID="med-startdate-plus1d"
             onPress={() => setStartDate((d) => shiftDateString(d, 1))}
-            className="rounded-lg border border-brand-100 px-2 py-1 text-sm text-brand-900"
+            hitSlop={STEPPER_HIT_SLOP}
+            className={STEPPER_CLASS}
           >
-            +1d
-          </Text>
-          <Text
+            <Text className="text-sm text-brand-900">+1d</Text>
+          </Pressable>
+          <Pressable
             testID="med-startdate-plus1w"
             onPress={() => setStartDate((d) => shiftDateString(d, 7))}
-            className="rounded-lg border border-brand-100 px-2 py-1 text-sm text-brand-900"
+            hitSlop={STEPPER_HIT_SLOP}
+            className={STEPPER_CLASS}
           >
-            +1w
-          </Text>
+            <Text className="text-sm text-brand-900">+1w</Text>
+          </Pressable>
         </View>
       </View>
 
@@ -240,7 +246,7 @@ export function MedicationCourseForm({ petId, onSaved }: MedicationCourseFormPro
         onPress={() => void handleSave()}
       />
       {saveError ? (
-        <Text testID="med-course-save-error" className="text-center text-sm text-red-600">
+        <Text testID="med-course-save-error" className="text-center text-sm text-red-700">
           {strings.reminderForm.saveError}
         </Text>
       ) : null}

@@ -1,13 +1,15 @@
 import { useIsOffline } from "@pawcareright/api-client";
 import type { VetVisitValue } from "@pawcareright/types";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { ActivityIndicator, Text, View } from "react-native";
+import { Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useAddVetVisit } from "../../src/api/health-logs-api";
 import { usePet } from "../../src/api/pets-api";
 import { AddVetVisitForm } from "../../src/components/add-vet-visit-form";
 import { PrimaryButton } from "../../src/components/primary-button";
+import { ScreenScaffold } from "../../src/components/screen-scaffold";
+import { Skeleton } from "../../src/components/skeleton";
 import { strings } from "../../src/strings";
 
 /**
@@ -25,16 +27,15 @@ export default function VetVisitScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-white px-6">
-        <ActivityIndicator testID="vet-visit-screen-loading" />
-        <Text className="text-center text-base text-brand-900">{strings.vetVisit.loading}</Text>
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
+        <Skeleton lines={5} testID="vet-visit-screen-loading" />
       </SafeAreaView>
     );
   }
 
   if (isOffline && !pet) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-white px-6">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
         <Text testID="vet-visit-screen-offline" className="text-center text-base text-brand-900">
           {strings.vetVisit.offline}
         </Text>
@@ -45,8 +46,8 @@ export default function VetVisitScreen() {
 
   if (isError) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-white px-6">
-        <Text testID="vet-visit-screen-error" className="text-center text-base text-red-600">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
+        <Text testID="vet-visit-screen-error" className="text-center text-base text-red-700">
           {strings.vetVisit.error}
         </Text>
         <PrimaryButton testID="vet-visit-screen-retry" label={strings.vetVisit.retry} onPress={() => refetch()} />
@@ -56,7 +57,7 @@ export default function VetVisitScreen() {
 
   if (!pet) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-white px-6">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
         <Text testID="vet-visit-screen-empty" className="text-center text-base text-brand-900">
           {strings.vetVisit.empty}
         </Text>
@@ -74,16 +75,13 @@ export default function VetVisitScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <ScreenScaffold title={strings.vetVisit.title}>
       {isOffline ? (
-        <Text testID="vet-visit-screen-offline-banner" className="px-6 pt-2 text-center text-sm text-brand-700">
+        <Text testID="vet-visit-screen-offline-banner" className="text-center text-sm text-brand-700">
           {strings.vetVisit.offlineBanner}
         </Text>
       ) : null}
-      <View className="px-6 pt-4">
-        <Text className="text-xl font-semibold text-brand-900">{strings.vetVisit.title}</Text>
-      </View>
       <AddVetVisitForm petId={petId} submitting={addVetVisit.isPending} onSubmit={handleSubmit} />
-    </SafeAreaView>
+    </ScreenScaffold>
   );
 }

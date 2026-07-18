@@ -1,11 +1,16 @@
 import { useState } from "react";
-import { ActivityIndicator, ScrollView, Share, Text, View } from "react-native";
+import { RefreshControl, Share, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useEntitlement } from "../src/api/billing-api";
 import { useCreateInvite, useHouseholdMe, useLeaveHousehold } from "../src/api/households-api";
 import { useAuthStore } from "../src/auth/auth-store";
+import { Card } from "../src/components/card";
+import { EmptyState } from "../src/components/empty-state";
+import { ListRow } from "../src/components/list-row";
 import { PrimaryButton } from "../src/components/primary-button";
+import { ScreenScaffold } from "../src/components/screen-scaffold";
+import { Skeleton } from "../src/components/skeleton";
 import { strings } from "../src/strings";
 
 /**
@@ -22,7 +27,7 @@ import { strings } from "../src/strings";
  * drops that access immediately (server-side, `useLeaveHousehold`).
  */
 export default function FamilyScreen() {
-  const { data: household, isLoading, isError, refetch } = useHouseholdMe();
+  const { data: household, isLoading, isError, isRefetching, refetch } = useHouseholdMe();
   const currentUserId = useAuthStore((state) => state.user?.id ?? null);
   const createInvite = useCreateInvite();
   const { data: entitlement } = useEntitlement();
@@ -56,8 +61,10 @@ export default function FamilyScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-white px-6">
-        <ActivityIndicator testID="family-loading" />
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
+        <Card testID="family-loading">
+          <Skeleton lines={3} />
+        </Card>
         <Text className="text-center text-base text-brand-900">{strings.family.loading}</Text>
       </SafeAreaView>
     );
@@ -65,8 +72,8 @@ export default function FamilyScreen() {
 
   if (isError) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-white px-6">
-        <Text testID="family-error" className="text-center text-base text-red-600">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
+        <Text testID="family-error" className="text-center text-base text-red-700">
           {strings.family.error}
         </Text>
         <PrimaryButton testID="family-retry" label={strings.family.retry} onPress={() => refetch()} />
@@ -76,90 +83,89 @@ export default function FamilyScreen() {
 
   if (!household) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-white px-6">
-        <Text testID="family-empty" className="text-center text-base text-brand-900">
-          {strings.family.empty}
-        </Text>
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 px-6">
+        <EmptyState testID="family-empty" icon="home-outline" title={strings.family.empty} />
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <ScrollView testID="family-scroll" className="flex-1">
-        <View className="gap-4 px-6 pb-8 pt-4">
-          <Text className="text-xl font-semibold text-brand-900">{strings.family.title}</Text>
-          <View testID="family-members" className="gap-2">
-            {household.members.map((member) => (
-              <View
-                key={member.userId}
-                testID={`family-member-${member.userId}`}
-                className="flex-row items-center justify-between rounded-lg border border-brand-100 px-4 py-3"
-              >
-                <Text className="text-base text-brand-900">{member.email}</Text>
+    <ScreenScaffold
+      title={strings.family.title}
+      scrollTestID="family-scroll"
+      refreshControl={<RefreshControl tintColor="#1f6350" refreshing={isRefetching} onRefresh={() => void refetch()} />}
+    >
+      <Card>
+        <View testID="family-members" className="gap-1">
+          {household.members.map((member) => (
+            <ListRow
+              key={member.userId}
+              testID={`family-member-${member.userId}`}
+              title={member.email}
+              trailing={
                 <Text
                   testID={`family-member-role-${member.userId}`}
                   className="text-sm font-semibold text-brand-700"
                 >
                   {member.role === "OWNER" ? strings.family.owner : strings.family.member}
                 </Text>
-              </View>
-            ))}
-          </View>
-          {isOwner ? (
-            <View className="gap-2">
+              }
+            />
+          ))}
+        </View>
+      </Card>
+      {isOwner ? (
+        <View className="gap-2">
+          <PrimaryButton
+            testID="family-invite-button"
+            label={strings.family.invite}
+            loading={createInvite.isPending}
+            onPress={() => void handleInvite()}
+          />
+          {inviteError ? (
+            <Text testID="family-invite-error" className="text-center text-sm text-red-700">
+              {strings.family.inviteError}
+            </Text>
+          ) : null}
+        </View>
+      ) : (
+        <View className="gap-2">
+          {showLeaveConfirm ? (
+            <View testID="family-leave-confirm" className="gap-3">
+              <Text className="text-center text-sm text-brand-900">
+                {strings.family.leaveConfirmBody}
+              </Text>
+              {entitlement?.source === "family" ? (
+                <Text testID="family-leave-grace" className="text-center text-sm text-red-700">
+                  {strings.family.leaveGrace}
+                </Text>
+              ) : null}
               <PrimaryButton
-                testID="family-invite-button"
-                label={strings.family.invite}
-                loading={createInvite.isPending}
-                onPress={() => void handleInvite()}
+                testID="family-leave-confirm-button"
+                label={strings.family.leaveConfirm}
+                loading={leaveHousehold.isPending}
+                onPress={() => void handleLeave()}
               />
-              {inviteError ? (
-                <Text testID="family-invite-error" className="text-center text-sm text-red-600">
-                  {strings.family.inviteError}
+              <PrimaryButton
+                testID="family-leave-cancel"
+                label={strings.family.leaveCancel}
+                onPress={() => setShowLeaveConfirm(false)}
+              />
+              {leaveError ? (
+                <Text testID="family-leave-error" className="text-center text-sm text-red-700">
+                  {strings.family.leaveError}
                 </Text>
               ) : null}
             </View>
           ) : (
-            <View className="gap-2">
-              {showLeaveConfirm ? (
-                <View testID="family-leave-confirm" className="gap-3">
-                  <Text className="text-center text-sm text-brand-900">
-                    {strings.family.leaveConfirmBody}
-                  </Text>
-                  {entitlement?.source === "family" ? (
-                    <Text testID="family-leave-grace" className="text-center text-sm text-red-600">
-                      {strings.family.leaveGrace}
-                    </Text>
-                  ) : null}
-                  <PrimaryButton
-                    testID="family-leave-confirm-button"
-                    label={strings.family.leaveConfirm}
-                    loading={leaveHousehold.isPending}
-                    onPress={() => void handleLeave()}
-                  />
-                  <PrimaryButton
-                    testID="family-leave-cancel"
-                    label={strings.family.leaveCancel}
-                    onPress={() => setShowLeaveConfirm(false)}
-                  />
-                  {leaveError ? (
-                    <Text testID="family-leave-error" className="text-center text-sm text-red-600">
-                      {strings.family.leaveError}
-                    </Text>
-                  ) : null}
-                </View>
-              ) : (
-                <PrimaryButton
-                  testID="family-leave-button"
-                  label={strings.family.leave}
-                  onPress={() => setShowLeaveConfirm(true)}
-                />
-              )}
-            </View>
+            <PrimaryButton
+              testID="family-leave-button"
+              label={strings.family.leave}
+              onPress={() => setShowLeaveConfirm(true)}
+            />
           )}
         </View>
-      </ScrollView>
-    </SafeAreaView>
+      )}
+    </ScreenScaffold>
   );
 }

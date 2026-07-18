@@ -1,10 +1,12 @@
 import { useState } from "react";
-import { KeyboardAvoidingView, Modal, Platform, Pressable, Text, TextInput, View } from "react-native";
+import { KeyboardAvoidingView, Modal, Platform, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { strings } from "../strings";
 import { parseDisplayToGrams, type WeightUnit } from "../weight/weight-units";
+import { GhostButton } from "./ghost-button";
 import { PrimaryButton } from "./primary-button";
+import { TextField } from "./text-field";
 
 export interface AddWeightFormProps {
   visible: boolean;
@@ -52,30 +54,29 @@ export function AddWeightForm({ visible, unit, submitting, onSubmit, onClose }: 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={handleClose}>
       <View className="flex-1 justify-end bg-black/40">
-        <SafeAreaView className="bg-white">
+        <SafeAreaView className="rounded-t-2xl bg-white">
           <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined}>
             <View className="gap-4 p-6">
-              <Text className="text-lg font-semibold text-brand-900">{strings.weight.addWeight}</Text>
-              <View className="flex-row items-center gap-2">
-                <TextInput
-                  testID="add-weight-input"
-                  value={input}
-                  onChangeText={setInput}
-                  keyboardType="decimal-pad"
-                  placeholder={strings.weight.inputPlaceholder}
-                  className="flex-1 rounded-lg border border-brand-300 px-4 py-3 text-base text-brand-900"
-                />
-                <Text className="text-base text-brand-700">{strings.weight.unitLabel[unit]}</Text>
+              <View className="flex-row items-end gap-2">
+                <View className="flex-1">
+                  <TextField
+                    testID="add-weight-input"
+                    label={strings.weight.addWeight}
+                    value={input}
+                    onChangeText={setInput}
+                    keyboardType="decimal-pad"
+                    placeholder={strings.weight.inputPlaceholder}
+                  />
+                </View>
+                <Text className="pb-3 text-base text-brand-700">{strings.weight.unitLabel[unit]}</Text>
               </View>
               {error !== null ? (
-                <Text testID="add-weight-error" className="text-sm text-red-600">
+                <Text testID="add-weight-error" accessibilityRole="alert" className="text-sm text-red-700">
                   {ERROR_STRINGS[error]}
                 </Text>
               ) : null}
               <View className="flex-row justify-end gap-4">
-                <Pressable testID="add-weight-cancel" onPress={handleClose} accessibilityRole="button">
-                  <Text className="text-base font-medium text-brand-700">{strings.weight.cancel}</Text>
-                </Pressable>
+                <GhostButton testID="add-weight-cancel" label={strings.weight.cancel} onPress={handleClose} />
                 <PrimaryButton
                   testID="add-weight-save"
                   label={strings.weight.save}

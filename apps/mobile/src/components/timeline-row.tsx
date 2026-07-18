@@ -44,7 +44,7 @@ export const TimelineRow = memo(function TimelineRow({ item, petId, onPressCheck
   const checkId = item.kind === "CHECK_REF" ? extractCheckRefId(item) : null;
 
   const content = (
-    <View className={`flex-row items-start gap-3 rounded-lg px-4 py-3 ${display.colorClass}`}>
+    <View className={`flex-row items-start gap-3 rounded-2xl px-4 py-3 ${display.colorClass}`}>
       <Text className="text-xl">{display.icon}</Text>
       <View className="flex-1 gap-1">
         <Text className="text-base font-semibold text-brand-900">{strings.timeline.kindLabel[item.kind]}</Text>

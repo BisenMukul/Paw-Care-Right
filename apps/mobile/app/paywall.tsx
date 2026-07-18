@@ -11,6 +11,7 @@ import { usePaywallConfig, useOfferings } from "../src/billing/paywall-queries";
 import { usePremiumStore } from "../src/billing/premium-store";
 import type { PaywallPackage } from "../src/billing/paywall-types";
 import { purchasePackage, restorePurchases } from "../src/billing/purchases";
+import { GhostButton } from "../src/components/ghost-button";
 import { PrimaryButton } from "../src/components/primary-button";
 import { getConfig } from "../src/config";
 import { strings } from "../src/strings";
@@ -112,11 +113,11 @@ export default function PaywallScreen() {
   }
 
   return (
-    <SafeAreaView testID="paywall-screen" className="flex-1 bg-white">
+    <SafeAreaView testID="paywall-screen" className="flex-1 bg-brand-50">
       <View className="relative flex-1">
         <ScrollView testID="paywall-scroll" className="flex-1">
-          <View className="gap-4 px-6 pb-8 pt-4">
-            <Text testID="paywall-headline" className="text-2xl font-bold text-brand-900">
+          <View className="gap-6 px-4 pb-8 pt-4">
+            <Text testID="paywall-headline" className="text-3xl font-bold text-brand-900">
               {copy.headline(APP_DISPLAY_NAME)}
             </Text>
             <Text testID="paywall-subcopy" className="text-base text-brand-700">
@@ -124,22 +125,22 @@ export default function PaywallScreen() {
             </Text>
 
             {notice === "pending" ? (
-              <View testID="paywall-pending-notice" className="rounded-lg bg-amber-100 px-4 py-3">
+              <View testID="paywall-pending-notice" className="rounded-2xl bg-amber-100 px-4 py-3">
                 <Text className="text-center text-sm text-amber-950">{strings.paywall.pending}</Text>
               </View>
             ) : null}
             {notice === "error" ? (
-              <View testID="paywall-error-notice" className="rounded-lg bg-red-100 px-4 py-3">
+              <View testID="paywall-error-notice" className="rounded-2xl bg-red-100 px-4 py-3">
                 <Text className="text-center text-sm text-red-800">{strings.paywall.error}</Text>
               </View>
             ) : null}
             {notice === "restoreNone" ? (
-              <View testID="paywall-restore-none" className="rounded-lg bg-amber-100 px-4 py-3">
+              <View testID="paywall-restore-none" className="rounded-2xl bg-amber-100 px-4 py-3">
                 <Text className="text-center text-sm text-amber-950">{strings.paywall.restoreNone}</Text>
               </View>
             ) : null}
             {notice === "success" ? (
-              <View testID="paywall-success" className="rounded-lg bg-green-100 px-4 py-3">
+              <View testID="paywall-success" className="rounded-2xl bg-green-100 px-4 py-3">
                 <Text className="text-center text-sm text-green-900">{strings.paywall.success}</Text>
               </View>
             ) : null}
@@ -149,7 +150,7 @@ export default function PaywallScreen() {
                 <ActivityIndicator />
               </View>
             ) : offering === null || offering === undefined ? (
-              <View testID="paywall-unavailable" className="rounded-lg bg-brand-50 px-4 py-3">
+              <View testID="paywall-unavailable" className="rounded-2xl bg-brand-50 px-4 py-3">
                 <Text className="text-center text-sm text-brand-700">{strings.paywall.unavailable}</Text>
               </View>
             ) : (
@@ -160,7 +161,7 @@ export default function PaywallScreen() {
                     accessibilityRole="button"
                     onPress={() => handlePurchase(annual)}
                     disabled={isBusy}
-                    className="gap-1 rounded-lg border-2 border-brand-700 px-4 py-3"
+                    className="gap-1 rounded-2xl border-2 border-brand-700 bg-white p-4 shadow-md"
                   >
                     <View
                       testID="paywall-plan-annual-highlight"
@@ -183,7 +184,7 @@ export default function PaywallScreen() {
                     accessibilityRole="button"
                     onPress={() => handlePurchase(monthly)}
                     disabled={isBusy}
-                    className="gap-1 rounded-lg border border-brand-300 px-4 py-3"
+                    className="gap-1 rounded-2xl bg-white p-4 shadow-md"
                   >
                     <Text className="text-base font-semibold text-brand-900">
                       {strings.paywall.planNames.monthly}
@@ -203,7 +204,7 @@ export default function PaywallScreen() {
                     accessibilityRole="button"
                     onPress={() => handlePurchase(family)}
                     disabled={isBusy}
-                    className="gap-1 rounded-lg border border-brand-300 px-4 py-3"
+                    className="gap-1 rounded-2xl bg-white p-4 shadow-md"
                   >
                     <Text className="text-base font-semibold text-brand-900">
                       {strings.paywall.planNames.family}
@@ -233,15 +234,14 @@ export default function PaywallScreen() {
               </View>
             )}
 
-            <Pressable
-              testID="paywall-restore"
-              accessibilityRole="button"
-              onPress={handleRestore}
-              disabled={isBusy}
-              className="items-center py-2"
-            >
-              <Text className="text-sm font-semibold text-brand-700">{strings.paywall.restore}</Text>
-            </Pressable>
+            <View className="items-center">
+              <GhostButton
+                testID="paywall-restore"
+                label={strings.paywall.restore}
+                onPress={handleRestore}
+                disabled={isBusy}
+              />
+            </View>
 
             <View className="flex-row justify-center gap-6">
               <Pressable
@@ -260,14 +260,9 @@ export default function PaywallScreen() {
               </Pressable>
             </View>
 
-            <Pressable
-              testID="paywall-maybe-later"
-              accessibilityRole="button"
-              onPress={handleMaybeLater}
-              className="items-center py-2"
-            >
-              <Text className="text-sm text-brand-700">{strings.paywall.maybeLater}</Text>
-            </Pressable>
+            <View className="items-center">
+              <GhostButton testID="paywall-maybe-later" label={strings.paywall.maybeLater} onPress={handleMaybeLater} />
+            </View>
           </View>
         </ScrollView>
 
