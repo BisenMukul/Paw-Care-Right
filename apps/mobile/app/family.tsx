@@ -7,6 +7,7 @@ import { useCreateInvite, useHouseholdMe, useLeaveHousehold } from "../src/api/h
 import { useAuthStore } from "../src/auth/auth-store";
 import { Card } from "../src/components/card";
 import { EmptyState } from "../src/components/empty-state";
+import { GhostButton } from "../src/components/ghost-button";
 import { ListRow } from "../src/components/list-row";
 import { PrimaryButton } from "../src/components/primary-button";
 import { ScreenScaffold } from "../src/components/screen-scaffold";
@@ -146,7 +147,7 @@ export default function FamilyScreen() {
                 loading={leaveHousehold.isPending}
                 onPress={() => void handleLeave()}
               />
-              <PrimaryButton
+              <GhostButton
                 testID="family-leave-cancel"
                 label={strings.family.leaveCancel}
                 onPress={() => setShowLeaveConfirm(false)}

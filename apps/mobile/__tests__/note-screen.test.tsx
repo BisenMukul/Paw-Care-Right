@@ -1,6 +1,6 @@
 import { setOnline } from "@pawcareright/api-client";
 import { petIdSchema, type Pet } from "@pawcareright/types";
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react-native";
+import { act, fireEvent, render, screen } from "@testing-library/react-native";
 
 import NoteScreen from "../app/note/[petId]";
 import { useAddNote } from "../src/api/health-logs-api";
@@ -64,6 +64,7 @@ describe("note screen", () => {
     await act(() => {
       setOnline(true);
     });
+    jest.useRealTimers();
   });
 
   it("loading: shows note-screen-loading", async () => {
@@ -112,7 +113,24 @@ describe("note screen", () => {
     expect(screen.getByTestId("note-screen-offline-banner")).toBeTruthy();
   });
 
-  it("a valid save calls the mutation with the entered text and then router.back()", async () => {
+  // CRAFT-1 plan §7.4: the relocated save button is a descendant of the
+  // scaffold's bottom-pinned footer region.
+  it("the save button is bottom-pinned inside the screen-scaffold footer", async () => {
+    mockedUsePet.mockReturnValue({ data: FIXTURE_PET, isLoading: false, isError: false, refetch: mockRefetch });
+
+    await render(<NoteScreen />);
+
+    const footer = screen.getByTestId("screen-scaffold-footer");
+    const button = screen.getByTestId("add-note-save");
+    expect(footer).toContainElement(button);
+  });
+
+  // CRAFT-1 plan §7.5 Peak-End (R1): the mutation fires and completes
+  // un-delayed; ONLY `router.back()` is deferred by `CONFIRM_MS`, so the
+  // "called exactly once" assertion below is preserved, not weakened --
+  // fake timers must be advanced to observe it.
+  it("a valid save calls the mutation immediately, shows the save confirmation, then defers router.back()", async () => {
+    jest.useFakeTimers();
     mockedUsePet.mockReturnValue({ data: FIXTURE_PET, isLoading: false, isError: false, refetch: mockRefetch });
     mockMutate.mockImplementation((_input, options: { onSuccess?: () => void }) => {
       options.onSuccess?.();
@@ -123,9 +141,15 @@ describe("note screen", () => {
     await fireEvent.changeText(screen.getByTestId("add-note-input"), "Ate a bug");
     await fireEvent.press(screen.getByTestId("add-note-save"));
 
-    await waitFor(() => {
-      expect(mockMutate).toHaveBeenCalledWith({ text: "Ate a bug", photoKeys: [] }, expect.anything());
+    // The mutation itself is un-delayed.
+    expect(mockMutate).toHaveBeenCalledWith({ text: "Ate a bug", photoKeys: [] }, expect.anything());
+    expect(screen.getByTestId("note-saved-confirmation")).toBeTruthy();
+    expect(mockBack).not.toHaveBeenCalled();
+
+    await act(async () => {
+      jest.advanceTimersByTime(1200);
     });
+
     expect(mockBack).toHaveBeenCalledTimes(1);
   });
 

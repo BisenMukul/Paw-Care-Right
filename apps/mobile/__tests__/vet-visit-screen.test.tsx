@@ -68,6 +68,7 @@ describe("vet visit screen", () => {
     await act(() => {
       setOnline(true);
     });
+    jest.useRealTimers();
   });
 
   it("loading: shows vet-visit-screen-loading", async () => {
@@ -116,7 +117,24 @@ describe("vet visit screen", () => {
     expect(screen.getByTestId("vet-visit-screen-offline-banner")).toBeTruthy();
   });
 
-  it("a valid save calls the mutation with the validated value and then router.back()", async () => {
+  // CRAFT-1 plan §7.4: the relocated save button is a descendant of the
+  // scaffold's bottom-pinned footer region.
+  it("the save button is bottom-pinned inside the screen-scaffold footer", async () => {
+    mockedUsePet.mockReturnValue({ data: FIXTURE_PET, isLoading: false, isError: false, refetch: mockRefetch });
+
+    await render(<VetVisitScreen />);
+
+    const footer = screen.getByTestId("screen-scaffold-footer");
+    const button = screen.getByTestId("add-vet-visit-save");
+    expect(footer).toContainElement(button);
+  });
+
+  // CRAFT-1 plan §7.5 Peak-End (R1): the mutation fires and completes
+  // un-delayed; ONLY `router.back()` is deferred by `CONFIRM_MS`, so the
+  // "called exactly once" assertion below is preserved, not weakened --
+  // fake timers must be advanced to observe it.
+  it("a valid save calls the mutation with the validated value immediately, shows the save confirmation, then defers router.back()", async () => {
+    jest.useFakeTimers();
     mockedUsePet.mockReturnValue({ data: FIXTURE_PET, isLoading: false, isError: false, refetch: mockRefetch });
     mockMutate.mockImplementation((_value, options: { onSuccess?: () => void }) => {
       options.onSuccess?.();
@@ -128,12 +146,17 @@ describe("vet visit screen", () => {
     await fireEvent.changeText(screen.getByTestId("add-vet-visit-clinic"), "Maple Vet");
     await fireEvent.press(screen.getByTestId("add-vet-visit-save"));
 
-    await waitFor(() => {
-      expect(mockMutate).toHaveBeenCalledWith(
-        { value: { reason: "Annual checkup", clinicName: "Maple Vet" }, photoKeys: [] },
-        expect.anything(),
-      );
+    expect(mockMutate).toHaveBeenCalledWith(
+      { value: { reason: "Annual checkup", clinicName: "Maple Vet" }, photoKeys: [] },
+      expect.anything(),
+    );
+    expect(screen.getByTestId("vet-visit-saved-confirmation")).toBeTruthy();
+    expect(mockBack).not.toHaveBeenCalled();
+
+    await act(async () => {
+      jest.advanceTimersByTime(1200);
     });
+
     expect(mockBack).toHaveBeenCalledTimes(1);
   });
 

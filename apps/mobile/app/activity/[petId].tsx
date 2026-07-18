@@ -11,6 +11,7 @@ import { ActivityChipGrid } from "../../src/components/activity-chip-grid";
 import { ActivityQuantitySheet, type ActivityQuantitySheetSaveInput } from "../../src/components/activity-quantity-sheet";
 import { ActivityRecentsRow, recentEntryLabel } from "../../src/components/activity-recents-row";
 import { PrimaryButton } from "../../src/components/primary-button";
+import { SaveConfirmation } from "../../src/components/save-confirmation";
 import { Skeleton } from "../../src/components/skeleton";
 import { haptics } from "../../src/haptics";
 import {
@@ -22,6 +23,9 @@ import { strings } from "../../src/strings";
 
 /** Design-system §5.1.3's recents-row undo window; the task's explicit "6s delayed save" (no DELETE /logs endpoint exists -- see report). */
 const UNDO_WINDOW_MS = 6000;
+
+/** Design-system §7.5 Peak-End: how long the sheet-save confirmation banner shows before auto-clearing (this screen doesn't navigate away). Fully independent of `UNDO_WINDOW_MS`/`undoTimerRef` (R4 -- the recents deferred-undo machinery is untouched). */
+const SHEET_CONFIRM_MS = 2500;
 
 /**
  * The tap-first activity logger (design-system §5, founder-directed).
@@ -47,6 +51,12 @@ export default function ActivityScreen() {
   const undoTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pendingEntryRef = useRef<ActivityRecentEntry | null>(null);
   const flushRef = useRef<() => void>(() => undefined);
+
+  // CRAFT-1 §7.5 Peak-End (R4): the sheet-save confirmation uses its OWN
+  // state + timer, entirely separate from the recents deferred-undo
+  // machinery above (`pendingEntryRef`/`undoTimerRef`/`flushPendingUndo`).
+  const [sheetSavedLabel, setSheetSavedLabel] = useState<string | null>(null);
+  const sheetConfirmTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   function commitEntry(entry: ActivityRecentEntry) {
     const vars: AddActivityVars = {
@@ -86,6 +96,14 @@ export default function ActivityScreen() {
   useEffect(() => {
     return () => {
       flushRef.current();
+    };
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (sheetConfirmTimerRef.current !== null) {
+        clearTimeout(sheetConfirmTimerRef.current);
+      }
     };
   }, []);
 
@@ -150,12 +168,22 @@ export default function ActivityScreen() {
     addActivity.mutate(vars, {
       onSuccess: () => {
         haptics.success();
-        addRecent(petId, {
+        const entry: ActivityRecentEntry = {
           activityType,
           ...(input.quantity !== undefined ? { quantity: input.quantity } : {}),
           ...(input.unit !== undefined ? { unit: input.unit } : {}),
-        });
+        };
+        addRecent(petId, entry);
         setSheetType(null);
+
+        setSheetSavedLabel(recentEntryLabel(entry));
+        if (sheetConfirmTimerRef.current !== null) {
+          clearTimeout(sheetConfirmTimerRef.current);
+        }
+        sheetConfirmTimerRef.current = setTimeout(() => {
+          sheetConfirmTimerRef.current = null;
+          setSheetSavedLabel(null);
+        }, SHEET_CONFIRM_MS);
       },
     });
   }
@@ -207,6 +235,14 @@ export default function ActivityScreen() {
           >
             {strings.activity.title}
           </Text>
+
+          {sheetSavedLabel !== null ? (
+            <SaveConfirmation
+              testID="activity-saved-confirmation"
+              message={strings.activity.loggedConfirmation(sheetSavedLabel)}
+              nudge={strings.activity.savedNudge}
+            />
+          ) : null}
 
           {pendingUndo !== null ? (
             <View

@@ -8,6 +8,7 @@ import React from "react";
 import CareScreen from "../app/(tabs)/care";
 import { apiClient } from "../src/api/client";
 import { useActivePetStore } from "../src/pets/active-pet-store";
+import { strings } from "../src/strings";
 
 /**
  * Care agenda screen (T060 plan). Deliberately exercises the REAL
@@ -214,13 +215,13 @@ describe("Care agenda screen", () => {
     expect(screen.getByTestId(rowTestId)).toBeTruthy();
   });
 
-  it("empty: no entries -> shows agenda-empty", async () => {
+  it("empty: no entries -> shows agenda-empty (with its value-preview body)", async () => {
     mockGetRouting(() => Promise.resolve(buildAgenda([])));
 
     await renderScreen();
 
     await waitFor(() => {
-      expect(screen.getByTestId("agenda-empty")).toBeTruthy();
+      expect(screen.getByTestId("agenda-empty")).toHaveTextContent(strings.agenda.emptyBody, { exact: false });
     });
   });
 

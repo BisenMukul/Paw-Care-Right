@@ -8,6 +8,7 @@ import { useInstantiateTemplate, useTemplateSuggestions } from "../../src/api/ca
 import { getDeviceRegionCode } from "../../src/checks/region";
 import { Card } from "../../src/components/card";
 import { EmptyState } from "../../src/components/empty-state";
+import { GhostButton } from "../../src/components/ghost-button";
 import { PrimaryButton } from "../../src/components/primary-button";
 import { ScreenScaffold } from "../../src/components/screen-scaffold";
 import { Skeleton } from "../../src/components/skeleton";
@@ -167,6 +168,7 @@ export default function CarePlanWizardScreen() {
           testID="care-plan-empty"
           icon="clipboard-outline"
           title={strings.carePlan.empty}
+          body={strings.carePlan.emptyBody}
           ctaLabel={strings.carePlan.skip}
           onCtaPress={goToPetHome}
           ctaTestID="care-plan-skip"
@@ -274,7 +276,7 @@ export default function CarePlanWizardScreen() {
           {strings.carePlan.confirmError}
         </Text>
       ) : null}
-      <PrimaryButton testID="care-plan-skip" label={strings.carePlan.skip} onPress={goToPetHome} />
+      <GhostButton testID="care-plan-skip" label={strings.carePlan.skip} onPress={goToPetHome} />
     </ScreenScaffold>
   );
 }

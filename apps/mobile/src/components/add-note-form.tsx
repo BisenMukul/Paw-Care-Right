@@ -1,15 +1,18 @@
-import { useState } from "react";
-import { KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, View } from "react-native";
+import { forwardRef, useImperativeHandle, useState } from "react";
+import { Text, TextInput, View } from "react-native";
 
 import { validateNoteForm, type NoteFormError } from "../health-logs/health-log-forms";
 import { strings } from "../strings";
 import { HealthLogPhotoPicker } from "./health-log-photo-picker";
-import { PrimaryButton } from "./primary-button";
 
 export interface AddNoteFormProps {
   petId: string;
   submitting: boolean;
   onSubmit: (input: { text: string; photoKeys: string[] }) => void;
+}
+
+export interface AddNoteFormHandle {
+  submit: () => void;
 }
 
 const ERROR_STRINGS: Record<NoteFormError, string> = {
@@ -18,14 +21,20 @@ const ERROR_STRINGS: Record<NoteFormError, string> = {
 };
 
 /**
- * The "add note" quick-action form body (T066 plan) — this IS the screen
- * body (no intermediate "add" button, unlike the modal-based
- * `AddWeightForm`), so it owns keyboard-avoidance (§6) but not the
- * safe-area, which the screen already provides. Validates through the
- * shared `noteValueSchema` (`validateNoteForm`) before ever calling
- * `onSubmit`; photos are optional and collected via `HealthLogPhotoPicker`.
+ * The "add note" quick-action form body (T066 plan). CRAFT-1 §7.4: this now
+ * renders ONLY the field group — the save button moved to the screen's
+ * `ScreenScaffold` `footer` (bottom-pinned thumb zone), so this component
+ * exposes a `submit()` imperative handle instead of owning the button or the
+ * keyboard-avoidance/scroll (those now live on the screen). `submitting`
+ * stays part of the prop shape (the footer button reads its own loading
+ * state directly) so callers are unaffected. Validates through the shared
+ * `noteValueSchema` (`validateNoteForm`) before ever calling `onSubmit`;
+ * photos are optional and collected via `HealthLogPhotoPicker`.
  */
-export function AddNoteForm({ petId, submitting, onSubmit }: AddNoteFormProps) {
+export const AddNoteForm = forwardRef<AddNoteFormHandle, AddNoteFormProps>(function AddNoteForm(
+  { petId, onSubmit },
+  ref,
+) {
   const [text, setText] = useState("");
   const [photoKeys, setPhotoKeys] = useState<string[]>([]);
   const [error, setError] = useState<NoteFormError | null>(null);
@@ -40,28 +49,25 @@ export function AddNoteForm({ petId, submitting, onSubmit }: AddNoteFormProps) {
     onSubmit({ text: result.value.text, photoKeys });
   }
 
+  useImperativeHandle(ref, () => ({ submit: handleSave }));
+
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} className="flex-1">
-      <ScrollView className="flex-1">
-        <View className="gap-4 px-6 pb-8 pt-4">
-          <TextInput
-            testID="add-note-input"
-            value={text}
-            onChangeText={setText}
-            multiline
-            placeholder={strings.note.inputPlaceholder}
-            placeholderTextColor="#2f8f74"
-            className="min-h-[120px] rounded-lg border border-brand-100 px-4 py-3 text-base text-brand-900"
-          />
-          <HealthLogPhotoPicker petId={petId} onKeysChange={setPhotoKeys} />
-          {error !== null ? (
-            <Text testID="add-note-error" accessibilityRole="alert" className="text-sm text-red-700">
-              {ERROR_STRINGS[error]}
-            </Text>
-          ) : null}
-          <PrimaryButton testID="add-note-save" label={strings.note.save} onPress={handleSave} loading={submitting} />
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+    <View className="gap-4">
+      <TextInput
+        testID="add-note-input"
+        value={text}
+        onChangeText={setText}
+        multiline
+        placeholder={strings.note.inputPlaceholder}
+        placeholderTextColor="#2f8f74"
+        className="min-h-[120px] rounded-lg border border-brand-100 px-4 py-3 text-base text-brand-900"
+      />
+      <HealthLogPhotoPicker petId={petId} onKeysChange={setPhotoKeys} />
+      {error !== null ? (
+        <Text testID="add-note-error" accessibilityRole="alert" className="text-sm text-red-700">
+          {ERROR_STRINGS[error]}
+        </Text>
+      ) : null}
+    </View>
   );
-}
+});

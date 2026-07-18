@@ -5,6 +5,7 @@ import { act, fireEvent, render, screen, waitFor } from "@testing-library/react-
 
 import CarePlanWizardScreen from "../app/care-plan/[petId]";
 import { useInstantiateTemplate, useTemplateSuggestions } from "../src/api/care-plan-api";
+import { strings } from "../src/strings";
 
 /**
  * Care-plan setup wizard (T059 plan "Tests to write"). `care-plan-api`
@@ -112,12 +113,12 @@ describe("care plan wizard", () => {
     expect(mockRefetch).toHaveBeenCalledTimes(1);
   });
 
-  it("empty: no items -> shows care-plan-empty; Skip navigates to pet home", async () => {
+  it("empty: no items -> shows care-plan-empty (with its value-preview body); Skip navigates to pet home", async () => {
     mockSuggestions({ data: { species: "DOG", lifeStage: "ADULT", group: "DEFAULT", items: [] } });
 
     await render(<CarePlanWizardScreen />);
 
-    expect(screen.getByTestId("care-plan-empty")).toBeTruthy();
+    expect(screen.getByTestId("care-plan-empty")).toHaveTextContent(strings.carePlan.emptyBody, { exact: false });
     await fireEvent.press(screen.getByTestId("care-plan-skip"));
     expect(mockReplace).toHaveBeenCalledWith({
       pathname: "/pets/[id]",
@@ -260,6 +261,18 @@ describe("care plan wizard", () => {
       pathname: "/pets/[id]",
       params: { id: "pet1", localPhoto: "" },
     });
+  });
+
+  // CRAFT-1 plan §7.1 60/30/10 accent demotion (R7): "Not now" is a
+  // tertiary action stacked under the primary "Confirm plan" -- it must not
+  // carry a second primary (`bg-brand-700`) fill.
+  it("the Skip action under the item list is a Ghost (no bg-brand-700 fill)", async () => {
+    mockSuggestions({ data: DOG_PUPPY_IN });
+
+    await render(<CarePlanWizardScreen />);
+
+    expect(screen.getByTestId("care-plan-skip").props.className).not.toContain("bg-brand-700");
+    expect(screen.getByTestId("care-plan-confirm").props.className).toContain("bg-brand-700");
   });
 
   it("a mutation rejection surfaces care-plan-confirm-error without crashing", async () => {

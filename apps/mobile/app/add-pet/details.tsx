@@ -91,7 +91,7 @@ export default function DetailsScreen() {
       />
 
       <View className="gap-2">
-        <Text className="text-sm font-medium text-brand-900">
+        <Text className="text-sm font-semibold text-brand-900">
           {strings.addPet.details.sexLabel}
         </Text>
         <View className="flex-row gap-2">
@@ -115,7 +115,7 @@ export default function DetailsScreen() {
       </View>
 
       <View className="flex-row items-center justify-between">
-        <Text className="text-sm font-medium text-brand-900">
+        <Text className="text-sm font-semibold text-brand-900">
           {strings.addPet.details.neuteredLabel}
         </Text>
         <Switch

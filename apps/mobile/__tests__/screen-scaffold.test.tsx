@@ -64,4 +64,29 @@ describe("ScreenScaffold", () => {
 
     expect(screen.getByTestId("my-scroll")).toBeTruthy();
   });
+
+  // Design-system.md §7.4 thumb zone (CRAFT-1 plan): an optional footer slot
+  // renders below the scroll; omitting it renders exactly as before (no
+  // `screen-scaffold-footer`) — mutation-proof #2 target: removing the
+  // wiring must fail this "renders below" assertion.
+  it("renders the footer below the scroll when supplied", async () => {
+    await render(
+      <ScreenScaffold scrollTestID="my-scroll" footer={<Text testID="my-footer-button">Save</Text>}>
+        <Text>content</Text>
+      </ScreenScaffold>,
+    );
+
+    expect(screen.getByTestId("screen-scaffold-footer")).toBeTruthy();
+    expect(screen.getByTestId("my-footer-button")).toBeTruthy();
+  });
+
+  it("omits the footer region entirely when footer is not supplied", async () => {
+    await render(
+      <ScreenScaffold scrollTestID="my-scroll">
+        <Text>content</Text>
+      </ScreenScaffold>,
+    );
+
+    expect(screen.queryByTestId("screen-scaffold-footer")).toBeNull();
+  });
 });

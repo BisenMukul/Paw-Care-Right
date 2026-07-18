@@ -148,6 +148,31 @@ describe("activity screen", () => {
     ]);
   });
 
+  // CRAFT-1 plan §7.5 Peak-End (R4): the sheet-save confirmation uses its OWN
+  // state/timer, independent of the recents deferred-undo machinery below.
+  it("a sheet Save shows activity-saved-confirmation, which then auto-clears", async () => {
+    jest.useFakeTimers();
+    mockMutate.mockImplementation((_vars, options: { onSuccess?: () => void }) => {
+      options.onSuccess?.();
+    });
+    mockedUsePet.mockReturnValue({ data: FIXTURE_PET, isLoading: false, isError: false, refetch: mockRefetch });
+
+    await render(<ActivityScreen />);
+
+    await fireEvent.press(screen.getByTestId("activity-chip-WALK"));
+    await fireEvent.press(screen.getByTestId("activity-sheet-save"));
+
+    expect(screen.getByTestId("activity-saved-confirmation")).toHaveTextContent("Logged: Walked · 20 min", {
+      exact: false,
+    });
+
+    await act(async () => {
+      jest.advanceTimersByTime(2500);
+    });
+
+    expect(screen.queryByTestId("activity-saved-confirmation")).toBeNull();
+  });
+
   it("a recent chip pre-fills the sheet's smart default for that type", async () => {
     useActivityRecentsStore.setState({ byPet: { pet1: [{ activityType: "FOOD", quantity: 3, unit: "meals" }] } });
     mockedUsePet.mockReturnValue({ data: FIXTURE_PET, isLoading: false, isError: false, refetch: mockRefetch });

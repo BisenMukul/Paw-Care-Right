@@ -57,17 +57,17 @@ export function PetHeaderCard({ pet, localPhoto }: PetHeaderCardProps) {
         </Text>
         <View className="flex-row flex-wrap items-center gap-2">
           <View testID="pet-home-species" className="rounded-full bg-brand-50 px-3 py-1">
-            <Text className="text-xs font-medium text-brand-700">{speciesLabel}</Text>
+            <Text className="text-xs font-semibold text-brand-700">{speciesLabel}</Text>
           </View>
           {pet.breedSlug ? (
             <View className="rounded-full bg-brand-50 px-3 py-1">
-              <Text testID="pet-home-breed" className="text-xs font-medium text-brand-700">
+              <Text testID="pet-home-breed" className="text-xs font-semibold text-brand-700">
                 {pet.breedSlug}
               </Text>
             </View>
           ) : null}
           <View className="rounded-full bg-brand-50 px-3 py-1">
-            <Text testID="pet-home-age" className="text-xs font-medium text-brand-700">
+            <Text testID="pet-home-age" className="text-xs font-semibold text-brand-700">
               {ageLabel}
             </Text>
           </View>

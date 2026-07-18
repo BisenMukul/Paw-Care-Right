@@ -67,6 +67,7 @@ describe("weight screen", () => {
     await act(() => {
       setOnline(true);
     });
+    jest.useRealTimers();
   });
 
   it("loading: shows weight-screen-loading", async () => {
@@ -128,6 +129,43 @@ describe("weight screen", () => {
     await fireEvent.press(screen.getByTestId("add-weight-save"));
 
     expect(mockMutate).toHaveBeenCalledWith({ grams: 25000 }, expect.anything());
+  });
+
+  // CRAFT-1 plan §7.4: the relocated "Add weight" button is a descendant of
+  // the scaffold's bottom-pinned footer region.
+  it("the add-weight button is bottom-pinned inside the screen-scaffold footer", async () => {
+    mockedUsePet.mockReturnValue({ data: FIXTURE_PET, isLoading: false, isError: false, refetch: mockRefetch });
+
+    await render(<WeightScreen />);
+
+    const footer = screen.getByTestId("screen-scaffold-footer");
+    const button = screen.getByTestId("weight-add-button");
+    expect(footer).toContainElement(button);
+  });
+
+  // CRAFT-1 plan §7.5 Peak-End: this screen never navigates away -- a
+  // successful add shows the confirmation banner, which then auto-clears
+  // (no `router.back()` involved on this screen).
+  it("a successful add shows weight-saved-confirmation, which then auto-clears", async () => {
+    jest.useFakeTimers();
+    mockedUsePet.mockReturnValue({ data: FIXTURE_PET, isLoading: false, isError: false, refetch: mockRefetch });
+    mockMutate.mockImplementation((_vars, options: { onSuccess?: () => void }) => {
+      options.onSuccess?.();
+    });
+
+    await render(<WeightScreen />);
+
+    await fireEvent.press(screen.getByTestId("weight-add-button"));
+    await fireEvent.changeText(screen.getByTestId("add-weight-input"), "25");
+    await fireEvent.press(screen.getByTestId("add-weight-save"));
+
+    expect(screen.getByTestId("weight-saved-confirmation")).toBeTruthy();
+
+    await act(async () => {
+      jest.advanceTimersByTime(2500);
+    });
+
+    expect(screen.queryByTestId("weight-saved-confirmation")).toBeNull();
   });
 
   it("unit toggle meets the 44pt touch-target floor (design-system.md §4.1)", async () => {

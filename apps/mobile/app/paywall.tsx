@@ -165,7 +165,7 @@ export default function PaywallScreen() {
                   >
                     <View
                       testID="paywall-plan-annual-highlight"
-                      className="self-start rounded bg-brand-700 px-2 py-1"
+                      className="self-start rounded-full bg-brand-700 px-2 py-1"
                     >
                       <Text className="text-xs font-semibold text-white">{strings.paywall.annualBadge}</Text>
                     </View>
@@ -217,20 +217,6 @@ export default function PaywallScreen() {
                     </Text>
                   </Pressable>
                 ) : null}
-
-                {monthly ? (
-                  <PrimaryButton
-                    testID="paywall-trial-cta"
-                    label={
-                      monthly.introPriceString !== undefined
-                        ? strings.paywall.trialCtaWithPrice(monthly.introPriceString)
-                        : strings.paywall.subscribeCta(monthly.priceString)
-                    }
-                    loading={busyPackageId === monthly.id}
-                    disabled={isBusy}
-                    onPress={() => handlePurchase(monthly)}
-                  />
-                ) : null}
               </View>
             )}
 
@@ -265,6 +251,22 @@ export default function PaywallScreen() {
             </View>
           </View>
         </ScrollView>
+
+        {monthly ? (
+          <View className="border-t border-brand-100 bg-brand-50 px-4 pb-6 pt-3">
+            <PrimaryButton
+              testID="paywall-trial-cta"
+              label={
+                monthly.introPriceString !== undefined
+                  ? strings.paywall.trialCtaWithPrice(monthly.introPriceString)
+                  : strings.paywall.subscribeCta(monthly.priceString)
+              }
+              loading={busyPackageId === monthly.id}
+              disabled={isBusy}
+              onPress={() => handlePurchase(monthly)}
+            />
+          </View>
+        ) : null}
 
         {isBusy ? (
           <View

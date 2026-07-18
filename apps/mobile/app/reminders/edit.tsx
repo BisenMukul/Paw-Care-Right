@@ -177,6 +177,25 @@ export default function ReminderEditScreen() {
     <ScreenScaffold
       title={isEdit ? strings.reminderForm.editTitle : strings.reminderForm.createTitle}
       scrollTestID="reminder-form-scroll"
+      {...(!showMedicationForm
+        ? {
+            footer: (
+              <>
+                <PrimaryButton
+                  testID="reminder-save"
+                  label={strings.reminderForm.save}
+                  loading={isSaving}
+                  onPress={() => void handleSave()}
+                />
+                {saveError ? (
+                  <Text testID="reminder-save-error" className="text-center text-sm text-red-700">
+                    {strings.reminderForm.saveError}
+                  </Text>
+                ) : null}
+              </>
+            ),
+          }
+        : {})}
     >
       <View className="gap-2">
         <Text className="text-base font-semibold text-brand-900">{strings.reminderForm.typeHeading}</Text>
@@ -265,18 +284,6 @@ export default function ReminderEditScreen() {
               ))}
             </ScrollView>
           </View>
-
-          <PrimaryButton
-            testID="reminder-save"
-            label={strings.reminderForm.save}
-            loading={isSaving}
-            onPress={() => void handleSave()}
-          />
-          {saveError ? (
-            <Text testID="reminder-save-error" className="text-center text-sm text-red-700">
-              {strings.reminderForm.saveError}
-            </Text>
-          ) : null}
         </>
       )}
     </ScreenScaffold>

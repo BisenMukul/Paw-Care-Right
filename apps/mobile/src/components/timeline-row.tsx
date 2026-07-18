@@ -51,6 +51,13 @@ export const TimelineRow = memo(function TimelineRow({ item, petId, onPressCheck
         <Text className="text-sm text-brand-700" accessibilityLabel={strings.timeline.dateA11y(date)}>
           {date}
         </Text>
+        {/* design-system.md §7.3 calls for `tabular-nums` here (this summary
+            renders the WEIGHT kind's numeric grams value, e.g. "25000 g") --
+            deferred: nativewind@4.2.6/react-native-css-interop@0.2.6 drop
+            `font-variant-numeric` (absent from `validProperties`), so the
+            class is a silent no-op on-device. Revisit once css-interop maps
+            it, or route a real `fontVariant` utility through
+            `packages/config` (follow-up task, not a per-screen fix). */}
         {summary !== null ? <Text className="text-sm text-brand-900">{summary}</Text> : null}
       </View>
     </View>

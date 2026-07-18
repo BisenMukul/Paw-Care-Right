@@ -174,7 +174,12 @@ export default function TimelineScreen() {
         }
         ListEmptyComponent={
           <View className="px-6 py-8">
-            <EmptyState testID="timeline-empty" icon="time-outline" title={strings.timeline.empty} />
+            <EmptyState
+              testID="timeline-empty"
+              icon="time-outline"
+              title={strings.timeline.empty}
+              body={strings.timeline.emptyBody}
+            />
           </View>
         }
         ListFooterComponent={<View className="h-8" />}

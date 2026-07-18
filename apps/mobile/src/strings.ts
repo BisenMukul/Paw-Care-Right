@@ -151,6 +151,7 @@ export const strings = {
     offline: "You're offline. Reconnect to load the timeline.",
     offlineBanner: "You're offline — showing your last saved timeline.",
     empty: "No timeline entries yet.",
+    emptyBody: "Once you log weight, notes, or visits, they'll appear here as a running history.",
     noPet: "Add a pet to see their timeline.",
     filterAll: "All",
     kindLabel: TIMELINE_KIND_LABELS,
@@ -319,6 +320,8 @@ export const strings = {
     errorRange: "Enter a weight within a realistic range.",
     typicalRange: (breed: string) => `Typical adult range for ${breed}`,
     unitLabel: { kg: "kg", lb: "lb" },
+    savedConfirmation: "Weight saved.",
+    savedNudge: "It's on the chart.",
   },
   // T066 quick-log actions: plain record-keeping copy only -- no
   // "diagnosis"/interpretive language, no medication/dose fields or copy
@@ -335,6 +338,8 @@ export const strings = {
     save: "Save",
     errorEmpty: "Enter a note.",
     errorTooLong: "That note is too long.",
+    savedConfirmation: "Note saved.",
+    savedNudge: "It's on the timeline.",
   },
   vetVisit: {
     title: "Vet visit",
@@ -350,6 +355,8 @@ export const strings = {
     save: "Save",
     errorReasonEmpty: "Enter a reason.",
     errorTooLong: "That entry is too long.",
+    savedConfirmation: "Visit saved.",
+    savedNudge: "It's on the timeline.",
   },
   // Founder-directed tap-first activity log (design-system §5): "click-click
   // buttons, less writing" -- plain record-keeping copy only, no
@@ -380,6 +387,7 @@ export const strings = {
     loggedConfirmation: (label: string) => `Logged: ${label}`,
     undo: "Undo",
     undoneConfirmation: "Undone",
+    savedNudge: "It's on the timeline.",
   },
   healthLogPhoto: {
     rationale: "Add photos to this entry. Optional.",
@@ -593,6 +601,7 @@ export const strings = {
     confirm: "Confirm plan",
     skip: "Not now",
     confirmError: "We couldn't save your care plan. Please try again.",
+    emptyBody: "When suggestions are ready, you'll be able to add them to your reminders here.",
   },
   intake: {
     stepOf: (step: number, total: number) => `Step ${step} of ${total}`,
@@ -635,6 +644,7 @@ export const strings = {
     today: "Today",
     upcoming: "Upcoming",
     empty: "No care reminders in this window yet.",
+    emptyBody: "Reminders you add will show up here so nothing slips by.",
     loading: "Loading…",
     error: "We couldn't load your care agenda.",
     retry: "Retry",

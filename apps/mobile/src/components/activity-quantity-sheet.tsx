@@ -249,7 +249,7 @@ export function ActivityQuantitySheet({
 
               <View className="flex-row justify-end gap-4">
                 <Pressable testID="activity-sheet-cancel" onPress={handleClose} accessibilityRole="button">
-                  <Text className="text-base font-medium text-brand-700">{strings.activity.cancel}</Text>
+                  <Text className="text-base font-semibold text-brand-700">{strings.activity.cancel}</Text>
                 </Pressable>
                 <PrimaryButton
                   testID="activity-sheet-save"

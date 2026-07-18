@@ -183,6 +183,8 @@ describe("timeline screen", () => {
     // this re-targets the query to "contains" rather than exact-equals so
     // the assertion still fully covers the same string (never weakened).
     expect(screen.getByTestId("timeline-empty")).toHaveTextContent(strings.timeline.empty, { exact: false });
+    // CRAFT-1 plan §7.6 empty-state value preview.
+    expect(screen.getByTestId("timeline-empty")).toHaveTextContent(strings.timeline.emptyBody, { exact: false });
   });
 
   it("groups rows under a device-local month section header", async () => {

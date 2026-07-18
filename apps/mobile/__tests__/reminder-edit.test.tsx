@@ -156,6 +156,25 @@ describe("reminder create/edit screen", () => {
     expect(mockBack).not.toHaveBeenCalled();
   });
 
+  // CRAFT-1 plan §7.4: the generic form's save button is bottom-pinned via
+  // `ScreenScaffold`'s footer; the medication-course form keeps its own save
+  // (no footer at all, med mode).
+  it("the generic form's save button is bottom-pinned inside the screen-scaffold footer", async () => {
+    await render(<ReminderEditScreen />);
+
+    const footer = screen.getByTestId("screen-scaffold-footer");
+    const button = screen.getByTestId("reminder-save");
+    expect(footer).toContainElement(button);
+  });
+
+  it("create mode: selecting MEDICATION hides the screen-scaffold footer entirely (MedicationCourseForm owns its own save)", async () => {
+    await render(<ReminderEditScreen />);
+
+    await fireEvent.press(screen.getByTestId("reminder-type-MEDICATION"));
+
+    expect(screen.queryByTestId("screen-scaffold-footer")).toBeNull();
+  });
+
   it("renders no medication name/dose field on the GENERIC reminder form (safety statement) -- the legacy reminder-* testIDs/placeholder never appear", async () => {
     await render(<ReminderEditScreen />);
 

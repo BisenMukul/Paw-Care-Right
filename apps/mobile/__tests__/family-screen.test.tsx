@@ -218,6 +218,17 @@ describe("family screen", () => {
       expect(screen.getByTestId("family-leave-button")).toBeTruthy();
     });
 
+    // CRAFT-1 plan §7.1 60/30/10 accent demotion: "Cancel" is a tertiary
+    // action stacked under the destructive-primary "Leave" -- it must not
+    // carry a second primary (`bg-brand-700`) fill.
+    it("Cancel is a Ghost (no bg-brand-700 fill); the Leave confirm button stays primary", async () => {
+      await render(<FamilyScreen />);
+      await fireEvent.press(screen.getByTestId("family-leave-button"));
+
+      expect(screen.getByTestId("family-leave-cancel").props.className).not.toContain("bg-brand-700");
+      expect(screen.getByTestId("family-leave-confirm-button").props.className).toContain("bg-brand-700");
+    });
+
     it("confirm calls useLeaveHousehold().mutateAsync once", async () => {
       mockLeaveMutateAsync.mockResolvedValue({ householdId: "new-household", name: "My Household" });
 

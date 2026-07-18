@@ -74,7 +74,7 @@ exports[`paywall screen — variant A renders and matches the snapshot 1`] = `
               testID="paywall-plan-annual"
             >
               <View
-                className="self-start rounded bg-brand-700 px-2 py-1"
+                className="self-start rounded-full bg-brand-700 px-2 py-1"
                 testID="paywall-plan-annual-highlight"
               >
                 <Text
@@ -197,47 +197,6 @@ exports[`paywall screen — variant A renders and matches the snapshot 1`] = `
                 testID="paywall-family-explainer"
               >
                 Share one subscription across everyone who cares for your pets.
-              </Text>
-            </View>
-            <View
-              accessibilityRole="button"
-              accessibilityState={
-                {
-                  "busy": undefined,
-                  "checked": undefined,
-                  "disabled": false,
-                  "expanded": undefined,
-                  "selected": undefined,
-                }
-              }
-              accessibilityValue={
-                {
-                  "max": undefined,
-                  "min": undefined,
-                  "now": undefined,
-                  "text": undefined,
-                }
-              }
-              accessible={true}
-              className="flex-row items-center justify-center gap-2 rounded-lg bg-brand-700 px-6 py-3"
-              collapsable={false}
-              focusable={true}
-              onBlur={[Function]}
-              onClick={[Function]}
-              onFocus={[Function]}
-              onResponderGrant={[Function]}
-              onResponderMove={[Function]}
-              onResponderRelease={[Function]}
-              onResponderTerminate={[Function]}
-              onResponderTerminationRequest={[Function]}
-              onStartShouldSetResponder={[Function]}
-              style={null}
-              testID="paywall-trial-cta"
-            >
-              <Text
-                className="text-base font-semibold text-white"
-              >
-                Start your 7-day free trial — then Free for 7 days
               </Text>
             </View>
           </View>
@@ -434,6 +393,51 @@ exports[`paywall screen — variant A renders and matches the snapshot 1`] = `
         </View>
       </View>
     </RCTScrollView>
+    <View
+      className="border-t border-brand-100 bg-brand-50 px-4 pb-6 pt-3"
+    >
+      <View
+        accessibilityRole="button"
+        accessibilityState={
+          {
+            "busy": undefined,
+            "checked": undefined,
+            "disabled": false,
+            "expanded": undefined,
+            "selected": undefined,
+          }
+        }
+        accessibilityValue={
+          {
+            "max": undefined,
+            "min": undefined,
+            "now": undefined,
+            "text": undefined,
+          }
+        }
+        accessible={true}
+        className="flex-row items-center justify-center gap-2 rounded-lg bg-brand-700 px-6 py-3"
+        collapsable={false}
+        focusable={true}
+        onBlur={[Function]}
+        onClick={[Function]}
+        onFocus={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={null}
+        testID="paywall-trial-cta"
+      >
+        <Text
+          className="text-base font-semibold text-white"
+        >
+          Start your 7-day free trial — then Free for 7 days
+        </Text>
+      </View>
+    </View>
   </View>
 </RNCSafeAreaView>
 `;
@@ -512,7 +516,7 @@ exports[`paywall screen — variant B renders and matches the snapshot 1`] = `
               testID="paywall-plan-annual"
             >
               <View
-                className="self-start rounded bg-brand-700 px-2 py-1"
+                className="self-start rounded-full bg-brand-700 px-2 py-1"
                 testID="paywall-plan-annual-highlight"
               >
                 <Text
@@ -635,47 +639,6 @@ exports[`paywall screen — variant B renders and matches the snapshot 1`] = `
                 testID="paywall-family-explainer"
               >
                 Share one subscription across everyone who cares for your pets.
-              </Text>
-            </View>
-            <View
-              accessibilityRole="button"
-              accessibilityState={
-                {
-                  "busy": undefined,
-                  "checked": undefined,
-                  "disabled": false,
-                  "expanded": undefined,
-                  "selected": undefined,
-                }
-              }
-              accessibilityValue={
-                {
-                  "max": undefined,
-                  "min": undefined,
-                  "now": undefined,
-                  "text": undefined,
-                }
-              }
-              accessible={true}
-              className="flex-row items-center justify-center gap-2 rounded-lg bg-brand-700 px-6 py-3"
-              collapsable={false}
-              focusable={true}
-              onBlur={[Function]}
-              onClick={[Function]}
-              onFocus={[Function]}
-              onResponderGrant={[Function]}
-              onResponderMove={[Function]}
-              onResponderRelease={[Function]}
-              onResponderTerminate={[Function]}
-              onResponderTerminationRequest={[Function]}
-              onStartShouldSetResponder={[Function]}
-              style={null}
-              testID="paywall-trial-cta"
-            >
-              <Text
-                className="text-base font-semibold text-white"
-              >
-                Start your 7-day free trial — then Free for 7 days
               </Text>
             </View>
           </View>
@@ -872,6 +835,51 @@ exports[`paywall screen — variant B renders and matches the snapshot 1`] = `
         </View>
       </View>
     </RCTScrollView>
+    <View
+      className="border-t border-brand-100 bg-brand-50 px-4 pb-6 pt-3"
+    >
+      <View
+        accessibilityRole="button"
+        accessibilityState={
+          {
+            "busy": undefined,
+            "checked": undefined,
+            "disabled": false,
+            "expanded": undefined,
+            "selected": undefined,
+          }
+        }
+        accessibilityValue={
+          {
+            "max": undefined,
+            "min": undefined,
+            "now": undefined,
+            "text": undefined,
+          }
+        }
+        accessible={true}
+        className="flex-row items-center justify-center gap-2 rounded-lg bg-brand-700 px-6 py-3"
+        collapsable={false}
+        focusable={true}
+        onBlur={[Function]}
+        onClick={[Function]}
+        onFocus={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={null}
+        testID="paywall-trial-cta"
+      >
+        <Text
+          className="text-base font-semibold text-white"
+        >
+          Start your 7-day free trial — then Free for 7 days
+        </Text>
+      </View>
+    </View>
   </View>
 </RNCSafeAreaView>
 `;

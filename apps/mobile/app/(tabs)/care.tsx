@@ -147,7 +147,12 @@ export default function CareScreen() {
       <PetFilterChips value={selectedPetId} onChange={setSelectedPetId} />
 
       {entries.length === 0 ? (
-        <EmptyState testID="agenda-empty" icon="calendar-outline" title={strings.agenda.empty} />
+        <EmptyState
+          testID="agenda-empty"
+          icon="calendar-outline"
+          title={strings.agenda.empty}
+          body={strings.agenda.emptyBody}
+        />
       ) : (
         <>
           <View testID="agenda-section-today" className="gap-3">
