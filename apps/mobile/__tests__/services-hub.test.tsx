@@ -6,9 +6,13 @@ import { useEntitlement } from "../src/api/billing-api";
 import { strings } from "../src/strings";
 
 /**
- * PAWSAATHI-4 plan (scope 1 "Tests -- new"): the Services hub is a static,
- * non-interactive, honest "coming soon" list -- no booking/adopt/shop flow,
- * no "Notify me"/waitlist capture (decision 2, HONESTY RULE), no price/date.
+ * PAWSAATHI-4 plan (scope 1 "Tests -- new") + PREVIEW-1 plan (step 7): the
+ * Services hub is now the gateway into the tap-through, PREVIEW-labeled
+ * service flows -- every card is pressable (D1-D3). Insurance is the one
+ * card that stays a plain "Coming soon" state (its own route only shows a
+ * static coming-soon screen); the other four now show a "Preview" badge.
+ * Still no "Notify me"/waitlist capture anywhere on this screen (HONESTY
+ * RULE, unchanged from PAWSAATHI-4).
  */
 const mockPush = jest.fn();
 
@@ -63,6 +67,7 @@ function findByTestId(node: JsonNode | JsonNode[] | string | null | undefined, t
 }
 
 const SERVICE_KEYS = ["vet", "salon", "store", "adoption", "insurance"] as const;
+const PREVIEW_KEYS = ["vet", "salon", "store", "adoption"] as const;
 
 describe("services hub: cards render", () => {
   it("all 5 service cards render with their titles", async () => {
@@ -76,38 +81,69 @@ describe("services hub: cards render", () => {
   });
 });
 
-describe("services hub: coming-soon states, no capture (decision 2)", () => {
-  it("every card shows a coming-soon badge; no notify/waitlist/on-the-list text; no card is a button", async () => {
-    const { toJSON } = await render(<ServicesScreen />);
+describe("services hub: upgraded hub (PREVIEW-1) -- badges, pressable cards, no capture", () => {
+  it("vet/salon/store/adoption show the Preview badge; insurance keeps Coming soon; every card is a button", async () => {
+    await render(<ServicesScreen />);
 
-    for (const key of SERVICE_KEYS) {
+    for (const key of PREVIEW_KEYS) {
       const badge = screen.getByTestId(`services-badge-${key}`);
-      expect(badge).toHaveTextContent(strings.services.comingSoon);
+      expect(badge).toHaveTextContent(strings.services.preview);
 
       const card = screen.getByTestId(`services-card-${key}`);
-      expect(card.props.accessibilityRole).not.toBe("button");
-      expect(card.props.onPress).toBeUndefined();
+      expect(card.props.accessibilityRole).toBe("button");
     }
+
+    const insuranceBadge = screen.getByTestId("services-badge-insurance");
+    expect(insuranceBadge).toHaveTextContent(strings.services.comingSoon);
+    const insuranceCard = screen.getByTestId("services-card-insurance");
+    expect(insuranceCard.props.accessibilityRole).toBe("button");
+  });
+
+  it("renders the PreviewBanner, and no notify/waitlist/on-the-list text anywhere", async () => {
+    const { toJSON } = await render(<ServicesScreen />);
+
+    expect(screen.getByTestId("services-preview-banner")).toBeTruthy();
 
     const rendered = JSON.stringify(toJSON());
     expect(rendered).not.toMatch(/notify me/i);
     expect(rendered).not.toMatch(/waitlist/i);
     expect(rendered).not.toMatch(/on the list/i);
   });
+
+  it("vet and salon cards both route to /services/book (D2); store/adoption/insurance route to their own screen", async () => {
+    await render(<ServicesScreen />);
+
+    await fireEvent.press(screen.getByTestId("services-card-vet"));
+    expect(mockPush).toHaveBeenCalledWith("/services/book");
+
+    await fireEvent.press(screen.getByTestId("services-card-salon"));
+    expect(mockPush).toHaveBeenCalledWith("/services/book");
+
+    await fireEvent.press(screen.getByTestId("services-card-store"));
+    expect(mockPush).toHaveBeenCalledWith("/services/store");
+
+    await fireEvent.press(screen.getByTestId("services-card-adoption"));
+    expect(mockPush).toHaveBeenCalledWith("/services/adopt");
+
+    await fireEvent.press(screen.getByTestId("services-card-insurance"));
+    expect(mockPush).toHaveBeenCalledWith("/services/insurance");
+  });
 });
 
 describe("services hub: a11y", () => {
-  it("screen title is a header, each card is accessible with a 'coming soon' label", async () => {
+  it("screen title is a header; preview cards are labeled 'preview', insurance is labeled 'coming soon'", async () => {
     await render(<ServicesScreen />);
 
     const title = screen.getByText(strings.services.title);
     expect(title.props.accessibilityRole).toBe("header");
 
-    for (const key of SERVICE_KEYS) {
+    for (const key of PREVIEW_KEYS) {
       const card = screen.getByTestId(`services-card-${key}`);
-      expect(card.props.accessible).toBe(true);
-      expect(card.props.accessibilityLabel).toMatch(/coming soon/i);
+      expect(card.props.accessibilityLabel).toMatch(/preview/i);
     }
+
+    const insuranceCard = screen.getByTestId("services-card-insurance");
+    expect(insuranceCard.props.accessibilityLabel).toMatch(/coming soon/i);
   });
 });
 

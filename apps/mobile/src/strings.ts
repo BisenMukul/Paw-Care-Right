@@ -709,14 +709,18 @@ export const strings = {
     error: "We couldn't load this reminder.",
     retry: "Retry",
   },
-  // Services hub (PAWSAATHI-4 plan, decisions 1-3): a static, informational
-  // "coming soon" list only -- no booking/adopt/shop flow, no "notify me"/
-  // waitlist capture (there is no backend to honor a signup), no price or
-  // launch-date copy anywhere below (HONESTY RULE + CLAUDE §7).
+  // Services hub (PAWSAATHI-4 plan, decisions 1-3; upgraded by PREVIEW-1):
+  // `items`/`comingSoon`/`cardA11y`/`note` stay the informational base copy
+  // (insurance keeps this exact "coming soon" framing). `preview`/
+  // `cardA11yPreview` are PREVIEW-1's additions for the four cards that now
+  // route into a tap-through, PREVIEW-labeled flow (`servicesPreview` below)
+  // -- still no "notify me"/waitlist capture, no price or launch-date copy
+  // anywhere below (HONESTY RULE + CLAUDE §7).
   services: {
     title: "Services",
     subtitle: "Extra ways to care for your pet",
     comingSoon: "Coming soon",
+    preview: "Preview",
     note: "These features aren't available yet.",
     items: {
       vet: { title: "Vet consultation", description: "Book a vet by video, at a clinic, or at home." },
@@ -726,6 +730,99 @@ export const strings = {
       insurance: { title: "Pet insurance", description: "Health cover for accidents and illness." },
     },
     cardA11y: (title: string) => `${title}, coming soon`,
+    cardA11yPreview: (title: string) => `${title}, preview`,
+  },
+  // PREVIEW-1 plan: the tap-through, PREVIEW-labeled service flows (vet
+  // booking, salon, store, adoption, insurance) reached from the services
+  // hub above. Every string below is enumerated VERBATIM in the plan
+  // (tone-scan surface) -- static local-fixture copy only, no numeric
+  // prices/currency, no "notify"/waitlist capture, and the honesty-critical
+  // vocabulary boundary: "book/booking" (feature nouns) are fine, but the
+  // shared terminal (`end`) never uses a success lexeme (confirmed/booked/
+  // purchased/approved) -- it always frames itself as a preview, never a
+  // real transaction (CLAUDE §7 + this plan's HONESTY ARCHITECTURE).
+  servicesPreview: {
+    banner: {
+      label: "Preview",
+      text: "A sneak peek of what's coming. Nothing here is a real booking, order, or application.",
+      a11y: "Preview mode. Nothing on this screen is a real service.",
+    },
+    book: {
+      title: "Book a service",
+      subtitle: "See how booking will work",
+      vetTitle: "Vet consultation",
+      vetDesc: "Video call, clinic visit, or home visit.",
+      salonTitle: "Pet salon",
+      salonDesc: "Grooming, bath, and spa.",
+      emergencyNote: "In a real emergency, this preview can't reach a vet. Use Symptom Check for urgent help.",
+      emergencyCta: "Open Symptom Check",
+    },
+    vets: {
+      title: "Vet consultation",
+      subtitle: "Sample vets — preview only",
+      perConsult: "per consult",
+      sampleTag: "Sample",
+      book: "Preview booking",
+      ratingA11y: (n: number) => `Rated ${n} out of 5`,
+    },
+    salons: {
+      title: "Pet salon",
+      subtitle: "Sample salons — preview only",
+      sampleTag: "Sample",
+    },
+    slots: {
+      title: "Pick a slot",
+      selectDay: "Select day",
+      availableTimes: "Sample times",
+      cta: "Preview this booking",
+      sampleTag: "Sample",
+      summaryA11y: "Sample service, preview only",
+    },
+    store: {
+      title: "Pet store",
+      subtitle: "Sample products — preview only",
+      sampleTag: "Sample",
+      addA11y: (name: string) => `Preview ${name}`,
+    },
+    adopt: {
+      title: "Adopt",
+      subtitle: "Sample listings — preview only",
+      speciesAll: "All",
+      speciesDog: "Dogs",
+      speciesCat: "Cats",
+      empty: "No sample pets match these filters.",
+      vaccinated: "Vaccinated",
+      listedBy: "Listed by",
+      aboutTitle: (name: string) => `About ${name}`,
+      apply: (name: string) => `Preview adoption for ${name}`,
+    },
+    insurance: {
+      title: "Pet insurance",
+      heroTitle: "Cover the unexpected",
+      heroBody: "Accident and illness cover, cashless vet visits, and wellness add-ons.",
+      comingSoon: "Coming soon",
+      benefit1: "Cashless visits at partner clinics",
+      benefit2: "Covers accidents, surgery, and illness",
+      benefit3: "Flexible wellness add-ons",
+      note: "This isn't available yet. There's nothing to sign up for.",
+    },
+    end: {
+      title: "This is a preview",
+      body: (service: string) => `${service} isn't available yet — this was just a preview. Nothing here is real.`,
+      adoptAsk: "When adoption launches, you'll be asked for:",
+      adoptFields: [
+        "Your name and contact",
+        "Where you live and your home type",
+        "Other pets in your home",
+        "Your experience caring for pets",
+      ],
+      done: "Back to services",
+      browseMore: "Back to adoption",
+      serviceVet: "Vet booking",
+      serviceSalon: "Salon booking",
+      serviceStore: "The pet store",
+      serviceAdopt: "Adoption",
+    },
   },
   // T061 medication tracker: every value below comes from the
   // `MEDICATION_STATIC_COPY` SSOT (`@pawcareright/types`) -- CLAUDE §7 rule
