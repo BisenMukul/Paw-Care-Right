@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Switch, Text, View } from "react-native";
 
 import { useConsentStore } from "../../src/analytics/consent-store";
+import { useAuthStore } from "../../src/auth/auth-store";
 import { useEntitlement } from "../../src/api/billing-api";
 import { openManageSubscription } from "../../src/billing/manage-subscription";
 import { usePremiumStore } from "../../src/billing/premium-store";
@@ -25,6 +26,23 @@ export default function SettingsScreen() {
 
   const [restoreBusy, setRestoreBusy] = useState(false);
   const [notice, setNotice] = useState<RestoreNotice>("none");
+  const [signOutBusy, setSignOutBusy] = useState(false);
+
+  /**
+   * Founder report: no logout existed in the UI. Delegates to the auth
+   * store's signOut (server-side refresh-token revocation + SecureStore
+   * clear); the root auth gate observes `signedOut` and redirects to
+   * welcome — no navigation call needed here. Busy-guarded so a slow
+   * network can't double-fire.
+   */
+  async function handleSignOut() {
+    setSignOutBusy(true);
+    try {
+      await useAuthStore.getState().signOut();
+    } finally {
+      setSignOutBusy(false);
+    }
+  }
 
   async function handleRestore() {
     setNotice("none");
@@ -128,6 +146,18 @@ export default function SettingsScreen() {
           <Text className="text-center text-sm text-red-800">{strings.settings.restoreError}</Text>
         </View>
       ) : null}
+
+      <Card>
+        <ListRow
+          testID="settings-sign-out"
+          title={strings.settings.signOut}
+          subtitle={strings.settings.signOutHint}
+          leadingIcon="log-out-outline"
+          showChevron={false}
+          disabled={signOutBusy}
+          onPress={() => void handleSignOut()}
+        />
+      </Card>
     </ScreenScaffold>
   );
 }

@@ -1080,3 +1080,10 @@
 - **Gates:** mobile **1050 → 1074 (141 suites)**, typecheck/lint/build 0. design-system.md gains §7.9 (responsive contract).
 - **THE FOUNDER'S MOCKUP-FIDELITY DIRECTIVE IS COMPLETE (FIDELITY-1 + SEEDER-1 + PREVIEW-1 + RESPONSIVE-1 on top of the 4-batch PawSaathi redesign):** the claude.ai/design mockup is implemented screen-for-screen in both themes, honest where backends don't exist (Care Score from real data, Preview-labeled services, no fabricated aggregates), seeded for end-to-end flow testing, responsive from 320dp phones to tablets. Session cumulative: mobile 596 → 1074 tests, api 860 → 893.
 - Commit: feat(mobile): RESPONSIVE-1 — layout buckets, tablet columns, wide grids; fidelity arc complete.
+
+## [2026-07-19] HOTFIX 8 · Seed migration preflight + missing sign-out (founder reports)
+- **Seed 22P02 on founder's machine:** their local DB hadn't run migrations (HealthLogKind missing ACTIVITY). Immediate fix: run `pnpm --filter api prisma:migrate:dev` then re-seed. Hardening shipped: the seed now probes the newest schema element it depends on and exits with those exact commands instead of a Prisma stack trace (commit bdb722e).
+- **Missing logout (founder report):** the auth store's full signOut (server-side refresh-token revocation + SecureStore clear) existed since T00x but NO UI ever exposed it. Added a "Sign out" ListRow card at the bottom of Settings (testID `settings-sign-out`, log-out icon, §7-neutral hint copy, busy-guarded against double-fire); the root auth gate observes signedOut and redirects to welcome — zero navigation code needed. New regression suite pins render + delegation + busy-guard. All billing-checklist testIDs untouched.
+- **Infra note:** api suite mass-failures during verification were redis+minio flaps (restarted per journal recovery); full suite green after: api 83/893.
+- **Gates:** mobile **1074 → 1075 (142 suites)**, api 893, typecheck/lint 0.
+- Commit: feat(mobile): settings sign-out row — expose the existing signOut flow.

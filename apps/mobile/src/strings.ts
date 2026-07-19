@@ -197,6 +197,8 @@ export const strings = {
     },
     analyticsLabel: "Share anonymous usage data",
     analyticsHint: "Helps us improve the app. Never includes your pet's symptoms, photos, or health details.",
+    signOut: "Sign out",
+    signOutHint: "You can sign back in with your email any time.",
   },
   auth: {
     welcome: {
