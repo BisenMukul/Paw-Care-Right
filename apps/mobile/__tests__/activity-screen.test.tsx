@@ -3,7 +3,7 @@ import { petIdSchema, type Pet } from "@pawcareright/types";
 import { act, fireEvent, render, screen } from "@testing-library/react-native";
 
 import ActivityScreen from "../app/activity/[petId]";
-import { useAddActivity } from "../src/api/health-logs-api";
+import { useAddActivity, useHealthTimeline } from "../src/api/health-logs-api";
 import { usePet } from "../src/api/pets-api";
 import { useActivityRecentsStore } from "../src/health-logs/activity-recents-store";
 import { strings } from "../src/strings";
@@ -30,10 +30,12 @@ jest.mock("../src/api/pets-api", () => ({
 
 jest.mock("../src/api/health-logs-api", () => ({
   useAddActivity: jest.fn(),
+  useHealthTimeline: jest.fn(),
 }));
 
 const mockedUsePet = usePet as unknown as jest.Mock;
 const mockedUseAddActivity = useAddActivity as unknown as jest.Mock;
+const mockedUseHealthTimeline = useHealthTimeline as unknown as jest.Mock;
 
 const mockRefetch = jest.fn();
 const mockMutate = jest.fn();
@@ -59,6 +61,10 @@ describe("activity screen", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockedUseAddActivity.mockReturnValue({ mutate: mockMutate, isPending: false });
+    mockedUseHealthTimeline.mockReturnValue({
+      data: { pages: [{ items: [], nextCursor: null }] },
+      isLoading: false,
+    });
     useActivityRecentsStore.setState({ byPet: {} });
   });
 
@@ -113,6 +119,17 @@ describe("activity screen", () => {
     await render(<ActivityScreen />);
 
     expect(screen.getByTestId("activity-screen-offline-banner")).toBeTruthy();
+  });
+
+  // FIDELITY-1: the Today intake strip renders at the top of the logger,
+  // never blocking the ≤2-tap chip flow below it.
+  it("renders the activity-today-strip above the recents row / chip grid", async () => {
+    mockedUsePet.mockReturnValue({ data: FIXTURE_PET, isLoading: false, isError: false, refetch: mockRefetch });
+
+    await render(<ActivityScreen />);
+
+    expect(screen.getByTestId("activity-today-strip")).toBeTruthy();
+    expect(screen.getByTestId("activity-chip-WALK")).toBeTruthy();
   });
 
   it("save in <=2 taps: tap a chip (tap 1) then tap Save (tap 2) with zero further input", async () => {

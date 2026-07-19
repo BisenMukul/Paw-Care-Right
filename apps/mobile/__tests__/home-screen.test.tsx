@@ -110,6 +110,12 @@ describe("Home screen", () => {
       expect(screen.queryByTestId("home-add-pet-cta")).toBeNull();
       expect(screen.queryByTestId("home-empty-state")).toBeNull();
 
+      // FIDELITY-1: the Care Score card renders for an active pet (the
+      // `/v1/agenda` mock above already answers its per-pet agenda query).
+      await waitFor(() => {
+        expect(screen.getByTestId("home-care-score-card")).toBeTruthy();
+      });
+
       for (const testID of [
         "home-quick-action-check",
         "home-quick-action-weight",

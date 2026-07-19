@@ -2,6 +2,7 @@ import { useRouter } from "expo-router";
 import { View } from "react-native";
 
 import { Card } from "../../src/components/card";
+import { CareScoreCard } from "../../src/components/home/care-score-card";
 import { EmptyHomeState } from "../../src/components/home/empty-home-state";
 import { HomeHeader } from "../../src/components/home/home-header";
 import { PetHeroCard } from "../../src/components/home/pet-hero-card";
@@ -62,6 +63,7 @@ export default function HomeScreen() {
             pet={pet}
             onPress={() => router.push({ pathname: "/pets/[id]", params: { id: pet.id } })}
           />
+          <CareScoreCard pet={pet} />
         </>
       ) : isLoading ? (
         <Card testID="home-hero-skeleton">

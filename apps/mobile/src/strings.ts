@@ -130,6 +130,19 @@ export const strings = {
     welcomeTitle: "Let's get started",
     welcomeBody: "Peace of mind between vet visits — your pet's care, all in one place.",
   },
+  // Care Score card (FIDELITY-1 plan): a routine-completeness RECORD, never
+  // a health/wellbeing verdict -- the §7 vocabulary test
+  // (`fidelity1-strings-tone.test.ts`) scans every string below (CLAUDE §7).
+  careScore: {
+    label: "Care score",
+    explainer: (petName: string) => `How complete ${petName}'s care routine is`,
+    bucketOnTrack: "Records up to date",
+    bucketSomeToLog: "A few things to log",
+    bucketCatchUp: "A few things to catch up on",
+    bucketInsufficient: "Start logging to build a record",
+    scorePlaceholder: "—",
+    a11yRing: (petName: string) => `Care score for ${petName}`,
+  },
   switcher: {
     heading: "Your pets",
     switchA11y: "Switch active pet",
@@ -389,6 +402,16 @@ export const strings = {
     undo: "Undo",
     undoneConfirmation: "Undone",
     savedNudge: "It's on the timeline.",
+    // Today intake strip (FIDELITY-1 plan): a plain log summary, no total/
+    // goal/kcal (plan R5) -- the §7 vocabulary test scans every string below.
+    today: {
+      title: "Today",
+      meals: (n: number) => `${n} ${n === 1 ? "meal" : "meals"}`,
+      water: (n: number) => `${n} water`,
+      walks: (n: number) => `${n} ${n === 1 ? "walk" : "walks"}`,
+      potty: (n: number) => `${n} potty`,
+      empty: "Nothing logged yet today.",
+    },
   },
   healthLogPhoto: {
     rationale: "Add photos to this entry. Optional.",

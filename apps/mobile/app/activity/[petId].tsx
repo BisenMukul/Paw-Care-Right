@@ -13,6 +13,7 @@ import { ActivityRecentsRow, recentEntryLabel } from "../../src/components/activ
 import { PrimaryButton } from "../../src/components/primary-button";
 import { SaveConfirmation } from "../../src/components/save-confirmation";
 import { Skeleton } from "../../src/components/skeleton";
+import { TodayActivityStrip } from "../../src/components/today-activity-strip";
 import { haptics } from "../../src/haptics";
 import {
   useActivityRecents,
@@ -231,6 +232,8 @@ export default function ActivityScreen() {
       ) : null}
       <ScrollView testID="activity-screen-scroll">
         <View className="gap-6 px-6 pb-8 pt-4">
+          <TodayActivityStrip petId={petId} />
+
           <Text
             accessibilityRole="header"
             maxFontSizeMultiplier={1.5}
