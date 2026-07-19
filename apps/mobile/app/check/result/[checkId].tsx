@@ -15,6 +15,7 @@ import { PrimaryButton } from "../../../src/components/primary-button";
 import { SecondaryButton } from "../../../src/components/secondary-button";
 import { Skeleton } from "../../../src/components/skeleton";
 import { VetDisclaimer } from "../../../src/components/vet-disclaimer";
+import { useLayoutBucket } from "../../../src/hooks/use-layout-bucket";
 import { strings } from "../../../src/strings";
 
 /**
@@ -31,6 +32,9 @@ export default function CheckResultScreen() {
   const router = useRouter();
   const { checkId } = useLocalSearchParams<{ checkId?: string }>();
   const { data, isError, refetch } = useCheck(checkId ?? "");
+  const bucket = useLayoutBucket();
+  const contentClassName =
+    bucket === "wide" ? "gap-6 px-4 pb-8 pt-4 w-full max-w-2xl self-center" : "gap-6 px-4 pb-8 pt-4";
 
   if (isError && !data) {
     return (
@@ -82,7 +86,7 @@ export default function CheckResultScreen() {
   return (
     <SafeAreaView testID="check-result-screen" className="flex-1 bg-brand-50 dark:bg-surface-page-dark">
       <ScrollView testID="check-result-scroll" className="flex-1">
-        <View className="gap-6 px-4 pb-8 pt-4">
+        <View className={contentClassName}>
           {data.redFlag !== undefined ? (
             <View testID="check-result-emergency-notice" className="gap-2 rounded-2xl bg-red-600 px-4 py-3">
               <Text className="text-center text-lg font-semibold text-white">

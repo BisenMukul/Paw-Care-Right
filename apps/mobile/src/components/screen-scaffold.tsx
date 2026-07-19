@@ -2,6 +2,7 @@ import type { ReactElement, ReactNode } from "react";
 import { KeyboardAvoidingView, Platform, ScrollView, Text, View, type RefreshControlProps } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { useLayoutBucket } from "../hooks/use-layout-bucket";
 import { AnimatedGradientBackground } from "./home/animated-gradient-background";
 
 export interface ScreenScaffoldProps {
@@ -25,6 +26,11 @@ export interface ScreenScaffoldProps {
 }
 
 const DEFAULT_CONTENT_CLASS = "gap-6 px-4 pb-8";
+// RESPONSIVE-1 plan D6: on `wide` (>=768dp), center a Tailwind-scale reading
+// column instead of stretching content edge-to-edge on tablets. Additive
+// only -- the `regular`/`compact` string stays exactly `DEFAULT_CONTENT_CLASS`
+// (or the caller's `contentClassName`), byte-identical to before this task.
+const WIDE_SCAFFOLD_EXTRA = "w-full max-w-3xl self-center";
 
 /**
  * The one wrapper every tab/stack screen composes (design-system.md §2.1):
@@ -44,11 +50,16 @@ export function ScreenScaffold({
   contentClassName,
   footer,
 }: ScreenScaffoldProps) {
+  const bucket = useLayoutBucket();
+  const isWide = bucket === "wide";
+  const baseContentClass = contentClassName ?? DEFAULT_CONTENT_CLASS;
+  const resolvedContentClass = isWide ? `${baseContentClass} ${WIDE_SCAFFOLD_EXTRA}` : baseContentClass;
+
   const scroll = (
     <ScrollView
       testID={scrollTestID}
       {...(footer !== undefined ? { className: "flex-1" } : {})}
-      contentContainerClassName={contentClassName ?? DEFAULT_CONTENT_CLASS}
+      contentContainerClassName={resolvedContentClass}
       {...(refreshControl ? { refreshControl } : {})}
     >
       {title ? (
@@ -85,7 +96,11 @@ export function ScreenScaffold({
         {scroll}
         <View
           testID="screen-scaffold-footer"
-          className="border-t border-brand-100 dark:border-hairline-dark bg-brand-50 dark:bg-surface-page-dark px-4 pb-6 pt-3"
+          className={
+            isWide
+              ? `border-t border-brand-100 dark:border-hairline-dark bg-brand-50 dark:bg-surface-page-dark px-4 pb-6 pt-3 ${WIDE_SCAFFOLD_EXTRA}`
+              : "border-t border-brand-100 dark:border-hairline-dark bg-brand-50 dark:bg-surface-page-dark px-4 pb-6 pt-3"
+          }
         >
           {footer}
         </View>

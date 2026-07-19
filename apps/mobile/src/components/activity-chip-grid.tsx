@@ -3,6 +3,7 @@ import type { ActivityType } from "@pawcareright/types";
 import { Pressable, Text, useColorScheme, View } from "react-native";
 
 import { ACTIVITY_TYPE_CONFIG, ACTIVITY_TYPES_ORDER } from "../health-logs/activity-config";
+import { useLayoutBucket } from "../hooks/use-layout-bucket";
 import { strings } from "../strings";
 
 export interface ActivityChipGridProps {
@@ -19,7 +20,9 @@ export interface ActivityChipGridProps {
  */
 export function ActivityChipGrid({ onSelect }: ActivityChipGridProps) {
   const scheme = useColorScheme();
+  const bucket = useLayoutBucket();
   const iconColor = scheme === "dark" ? "#2EA57C" : "#1f6350";
+  const tileBasisClass = bucket === "wide" ? "min-w-[18%] flex-1 basis-[18%]" : "min-w-[28%] flex-1 basis-[28%]";
 
   return (
     <View testID="activity-chip-grid" className="flex-row flex-wrap gap-3">
@@ -34,7 +37,7 @@ export function ActivityChipGrid({ onSelect }: ActivityChipGridProps) {
             accessibilityRole="button"
             accessibilityLabel={strings.activity.typeChipA11y(label)}
             style={({ pressed }) => (pressed ? { opacity: 0.85 } : null)}
-            className="min-w-[28%] flex-1 basis-[28%] items-center gap-2 rounded-2xl bg-white dark:bg-surface-card-dark shadow-md px-3 py-5"
+            className={`${tileBasisClass} items-center gap-2 rounded-2xl bg-white dark:bg-surface-card-dark shadow-md px-3 py-5`}
           >
             <Ionicons name={config.icon} size={26} color={iconColor} />
             <Text className="text-center text-sm font-semibold text-brand-900 dark:text-ink-dark font-body-semibold">

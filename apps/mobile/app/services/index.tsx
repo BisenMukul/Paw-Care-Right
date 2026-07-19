@@ -6,6 +6,7 @@ import { Text, useColorScheme, View } from "react-native";
 import { Card } from "../../src/components/card";
 import { ScreenScaffold } from "../../src/components/screen-scaffold";
 import { PreviewBanner } from "../../src/components/services/preview-banner";
+import { useLayoutBucket } from "../../src/hooks/use-layout-bucket";
 import { strings } from "../../src/strings";
 
 type IconName = ComponentProps<typeof Ionicons>["name"];
@@ -44,13 +45,15 @@ const SERVICE_ROUTES: Record<(typeof SERVICE_KEYS)[number], string> = {
 export default function ServicesScreen() {
   const router = useRouter();
   const scheme = useColorScheme();
+  const bucket = useLayoutBucket();
+  const isWide = bucket === "wide";
   const iconColor = scheme === "dark" ? "#2EA57C" : "#1f6350";
 
   return (
     <View testID="services-screen" className="flex-1">
       <ScreenScaffold title={strings.services.title} subtitle={strings.services.subtitle}>
         <PreviewBanner />
-        <View className="gap-3">
+        <View className={isWide ? "flex-row flex-wrap gap-3" : "gap-3"}>
           {SERVICE_KEYS.map((key) => {
             const item = strings.services.items[key];
             const isInsurance = key === "insurance";
@@ -59,6 +62,7 @@ export default function ServicesScreen() {
                 key={key}
                 testID={`services-card-${key}`}
                 onPress={() => router.push(SERVICE_ROUTES[key])}
+                {...(isWide ? { className: "basis-[48%] grow" } : {})}
                 accessibilityLabel={
                   isInsurance ? strings.services.cardA11y(item.title) : strings.services.cardA11yPreview(item.title)
                 }

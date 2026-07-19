@@ -362,3 +362,11 @@ Warm approachable surfaces over clinical ones (our brand-50 warmth is the base �
 - [ ] No flow dead-ends; waiting/error copy calm and specific
 - [ ] Empty-state body previews value
 - [ ] No §7.7 anti-patterns
+
+### 7.9 Responsive layout — phone/tablet buckets (RESPONSIVE-1)
+
+Mechanism is `apps/mobile/src/hooks/use-layout-bucket.ts`'s `useLayoutBucket()` (a `useWindowDimensions`-based hook), **not** NativeWind `sm:/md:/lg:` breakpoints — under this workspace's jest (NativeWind 4.2.6 + the `.css` stub), `className` stays an un-resolved literal prop, so a `md:` prefix would be inert and unverifiable in tests. A layout branch keyed on the hook instead swaps in a different, observable `className` string.
+
+Thresholds: `compact` width < 360, `regular` 360–767, `wide` >= 768 (the classic phone<->tablet line — iPad portrait ≈768–834, landscape >=1024; large phones in landscape >=768 also qualify). This boundary is chosen so **jest's default window width (750, from `@react-native/jest-preset`'s `DeviceInfo` mock) resolves to `regular`** — every responsive change is additive-conditional (only the `wide` branch adds classes/structure; the `regular`/`compact` string is byte-identical to before this task), so every existing snapshot renders through the unchanged path and stays frozen with no re-record. A guard test (`layout-bucket.test.tsx`) pins this 750→`regular` invariant so a future threshold change can't silently churn a frozen snapshot.
+
+Column-width rule: reading/content columns cap on the Tailwind `max-w-*` scale, never an arbitrary `[NNpx]` (keeps §7.2's law intact) — `max-w-3xl` (768) for the general `ScreenScaffold` column, `max-w-2xl` (672) for the two text-heavy reading screens (check-result, paywall), per §7.3's "~600px line-length" rule, each centered with `self-center`. Grids (category, quick-actions, activity-chip, services) widen their column count only on `wide` (more tiles per row), keeping every touch-target, testID, and motion/dark token unchanged in both branches.

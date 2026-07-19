@@ -14,6 +14,7 @@ import { purchasePackage, restorePurchases } from "../src/billing/purchases";
 import { GhostButton } from "../src/components/ghost-button";
 import { PrimaryButton } from "../src/components/primary-button";
 import { getConfig } from "../src/config";
+import { useLayoutBucket } from "../src/hooks/use-layout-bucket";
 import { strings } from "../src/strings";
 
 type Notice = "none" | "pending" | "error" | "restoreNone" | "success";
@@ -53,6 +54,12 @@ export default function PaywallScreen() {
   const { data: offering, isLoading: offeringLoading } = useOfferings();
   const setFromCustomerInfo = usePremiumStore((state) => state.setFromCustomerInfo);
   const setStatus = usePremiumStore((state) => state.setStatus);
+  const bucket = useLayoutBucket();
+  const isWide = bucket === "wide";
+  const contentClassName = isWide ? "gap-6 px-4 pb-8 pt-4 w-full max-w-2xl self-center" : "gap-6 px-4 pb-8 pt-4";
+  const ctaFooterClassName = isWide
+    ? "border-t border-brand-100 dark:border-hairline-dark bg-brand-50 dark:bg-surface-page-dark px-4 pb-6 pt-3 w-full max-w-2xl self-center"
+    : "border-t border-brand-100 dark:border-hairline-dark bg-brand-50 dark:bg-surface-page-dark px-4 pb-6 pt-3";
 
   const [busyPackageId, setBusyPackageId] = useState<string | null>(null);
   const [restoreBusy, setRestoreBusy] = useState(false);
@@ -116,7 +123,7 @@ export default function PaywallScreen() {
     <SafeAreaView testID="paywall-screen" className="flex-1 bg-brand-50 dark:bg-surface-page-dark">
       <View className="relative flex-1">
         <ScrollView testID="paywall-scroll" className="flex-1">
-          <View className="gap-6 px-4 pb-8 pt-4">
+          <View className={contentClassName}>
             <Text testID="paywall-headline" className="text-3xl font-bold text-brand-900 dark:text-ink-dark font-display">
               {copy.headline(APP_DISPLAY_NAME)}
             </Text>
@@ -253,7 +260,7 @@ export default function PaywallScreen() {
         </ScrollView>
 
         {monthly ? (
-          <View className="border-t border-brand-100 dark:border-hairline-dark bg-brand-50 dark:bg-surface-page-dark px-4 pb-6 pt-3">
+          <View className={ctaFooterClassName}>
             <PrimaryButton
               testID="paywall-trial-cta"
               label={

@@ -2,6 +2,7 @@ import { INTAKE_CATEGORIES, type CategoryDef, type SymptomCategory } from "@pawc
 import { Pressable, Text, View } from "react-native";
 
 import { getCategoryIcon } from "../checks/category-icons";
+import { useLayoutBucket } from "../hooks/use-layout-bucket";
 
 export interface CategoryGridProps {
   categories?: readonly CategoryDef[];
@@ -16,6 +17,9 @@ export interface CategoryGridProps {
  * schema to prove this data-drivenness (mutation-resistance).
  */
 export function CategoryGrid({ categories = INTAKE_CATEGORIES, onSelect }: CategoryGridProps) {
+  const bucket = useLayoutBucket();
+  const tileWidthClass = bucket === "wide" ? "w-[18%]" : "w-[30%]";
+
   return (
     <View testID="check-category-grid" className="flex-row flex-wrap gap-3">
       {categories.map((category) => (
@@ -24,7 +28,7 @@ export function CategoryGrid({ categories = INTAKE_CATEGORIES, onSelect }: Categ
           testID={`check-category-${category.id}`}
           onPress={() => onSelect(category.id)}
           accessibilityRole="button"
-          className="min-h-[44px] w-[30%] items-center gap-2 rounded-2xl bg-white dark:bg-surface-card-dark px-4 py-5 shadow-md"
+          className={`min-h-[44px] ${tileWidthClass} items-center gap-2 rounded-2xl bg-white dark:bg-surface-card-dark px-4 py-5 shadow-md`}
         >
           <Text className="text-2xl">{getCategoryIcon(category.id)}</Text>
           <Text className="text-center text-sm font-semibold text-brand-900 dark:text-ink-dark font-body-semibold">

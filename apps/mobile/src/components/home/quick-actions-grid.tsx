@@ -3,6 +3,7 @@ import type { ComponentProps } from "react";
 import { Pressable, Text, useColorScheme, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
+import { useLayoutBucket } from "../../hooks/use-layout-bucket";
 import { useReducedMotion } from "../../hooks/use-reduced-motion";
 import { strings } from "../../strings";
 
@@ -42,7 +43,9 @@ export function QuickActionsGrid({
 }: QuickActionsGridProps) {
   const reduced = useReducedMotion();
   const scheme = useColorScheme();
+  const bucket = useLayoutBucket();
   const iconColor = scheme === "dark" ? "#2EA57C" : "#1f6350";
+  const tileBasisClass = bucket === "wide" ? "min-w-[22%] flex-1 basis-[22%]" : "min-w-[45%] flex-1 basis-[45%]";
   const tiles: Tile[] = [
     {
       testID: "home-quick-action-check",
@@ -75,7 +78,7 @@ export function QuickActionsGrid({
       {tiles.map((tile, index) => (
         <Animated.View
           key={tile.testID}
-          className="min-w-[45%] flex-1 basis-[45%]"
+          className={tileBasisClass}
           {...(reduced ? {} : { entering: FadeInDown.delay(index * 80).duration(320) })}
         >
           <Pressable
