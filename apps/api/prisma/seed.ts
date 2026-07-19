@@ -20,7 +20,28 @@ const prisma = new PrismaClient();
  * produces identical row counts and NEVER touches the dev fixture above or
  * any other non-demo row (`prisma/seed/persist.ts`'s `wipeDemo`).
  */
+/**
+ * Preflight: a stale local database (pending migrations) surfaces here as a
+ * cryptic Prisma enum/column error mid-seed (founder report: `HealthLogKind`
+ * missing `ACTIVITY` → 22P02). Probe the newest schema element this seed
+ * depends on and exit with an actionable message instead.
+ */
+export async function assertMigrationsCurrent(prisma: PrismaClient): Promise<void> {
+  const rows = await prisma.$queryRaw<Array<{ value: string }>>`
+    SELECT unnest(enum_range(NULL::"HealthLogKind"))::text AS value
+  `;
+  if (!rows.some((row) => row.value === "ACTIVITY")) {
+    throw new Error(
+      'Your database is behind the code (enum "HealthLogKind" is missing ACTIVITY). ' +
+        "Run migrations first, then re-seed:\n" +
+        "  pnpm --filter api prisma:migrate:dev\n" +
+        "  pnpm --filter api prisma:seed",
+    );
+  }
+}
+
 export async function runSeed(prisma: PrismaClient): Promise<void> {
+  await assertMigrationsCurrent(prisma);
   await wipeDemo(prisma);
   await persistDemo(prisma, buildDemo(new Date()));
 }
