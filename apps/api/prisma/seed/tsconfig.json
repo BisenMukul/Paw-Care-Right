@@ -1,0 +1,11 @@
+{
+  "//": "SEEDER-1 checker fix: `tsx` resolves bare `@pawcareright/*` specifiers via THIS project's tsconfig 'paths' at RUNTIME (not just for `tsc`'s type-checker), and apps/api/tsconfig.json's paths for @pawcareright/data and @pawcareright/types deliberately point at their built .d.ts declaration files (correct for tsc, which only reads them for type information). tsx has no such distinction: it loads whatever 'paths' maps to and executes it, so a `.d.ts` target yields either an empty module (require) or a hard SyntaxError (import()) at runtime — see loop/reviews/SEEDER-1.review.md. This dedicated tsconfig (extended-into via `tsx --tsconfig prisma/seed/tsconfig.json`, see apps/api/package.json's `prisma.seed`) overrides ONLY those two entries to point at the actual RUNTIME-loadable CJS build output (dist/index.cjs, matching this CommonJS-default project and proven to load with a single, consistent zod instance end-to-end) instead of the .d.ts file. `tsx --tsconfig` applies this ONE config for the whole process (not tsx's normal per-file nearest-tsconfig walk), so it also fixes resolution for @pawcareright/data's own internal `require('@pawcareright/types')` call. Requires `packages/data`/`packages/types` to be built first (dist/index.cjs must exist) -- already guaranteed by turbo's `^build` dependency for `pnpm build`/`pnpm test`/`pnpm typecheck`; a bare fresh checkout must run `pnpm build` (or `pnpm --filter data --filter types build`) before `pnpm --filter api prisma:seed`.",
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@pawcareright/types": ["../../../../packages/types/dist/index.cjs"],
+      "@pawcareright/data": ["../../../../packages/data/dist/index.cjs"]
+    }
+  }
+}
