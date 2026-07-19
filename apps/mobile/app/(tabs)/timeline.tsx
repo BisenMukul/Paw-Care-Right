@@ -33,7 +33,7 @@ interface PhotoViewerState {
  *
  * A `SectionList` can't nest inside `ScreenScaffold`'s own `ScrollView`
  * (SWEEP-4 plan Risk R5), so this screen satisfies the design-system §6
- * checklist at the page-contract level: solid `bg-brand-50`, canon header,
+ * checklist at the page-contract level: solid `bg-surface-page` (cream, FIDELITY-2 plan), canon header,
  * `RefreshControl`, `Skeleton`/`EmptyState` content-shaped states.
  */
 export default function TimelineScreen() {
@@ -81,7 +81,7 @@ export default function TimelineScreen() {
     return (
       <SafeAreaView
         testID="timeline-no-pet"
-        className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6"
+        className="flex-1 items-center justify-center gap-4 bg-surface-page dark:bg-surface-page-dark px-6"
       >
         <Text className="text-center text-base text-brand-900 dark:text-ink-dark">{strings.timeline.noPet}</Text>
       </SafeAreaView>
@@ -92,7 +92,7 @@ export default function TimelineScreen() {
     return (
       <SafeAreaView
         testID="timeline-loading"
-        className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6"
+        className="flex-1 items-center justify-center gap-4 bg-surface-page dark:bg-surface-page-dark px-6"
       >
         <Skeleton lines={4} testID="timeline-loading-skeleton" />
         <Text className="text-center text-base text-brand-900 dark:text-ink-dark">{strings.timeline.loading}</Text>
@@ -104,7 +104,7 @@ export default function TimelineScreen() {
     return (
       <SafeAreaView
         testID="timeline-offline"
-        className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6"
+        className="flex-1 items-center justify-center gap-4 bg-surface-page dark:bg-surface-page-dark px-6"
       >
         <Text className="text-center text-base text-brand-900 dark:text-ink-dark">{strings.timeline.offline}</Text>
         <PrimaryButton testID="timeline-retry" label={strings.timeline.retry} onPress={() => refetch()} />
@@ -116,7 +116,7 @@ export default function TimelineScreen() {
     return (
       <SafeAreaView
         testID="timeline-error"
-        className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6"
+        className="flex-1 items-center justify-center gap-4 bg-surface-page dark:bg-surface-page-dark px-6"
       >
         <Text className="text-center text-base text-red-700 dark:text-red-400">{strings.timeline.error}</Text>
         <PrimaryButton testID="timeline-retry" label={strings.timeline.retry} onPress={() => refetch()} />
@@ -128,7 +128,7 @@ export default function TimelineScreen() {
   const sections: TimelineSection[] = groupTimelineByMonth(items);
 
   return (
-    <SafeAreaView testID="timeline-screen" className="flex-1 bg-brand-50 dark:bg-surface-page-dark">
+    <SafeAreaView testID="timeline-screen" className="flex-1 bg-surface-page dark:bg-surface-page-dark">
       <SectionList
         testID="timeline-list"
         sections={sections}
@@ -140,7 +140,7 @@ export default function TimelineScreen() {
         renderSectionHeader={({ section }) => (
           <Text
             testID={`timeline-section-${section.title}`}
-            className="bg-brand-50 dark:bg-surface-page-dark px-4 py-2 text-sm font-semibold text-brand-700 dark:text-ink-muted-dark font-body-semibold"
+            className="bg-surface-page dark:bg-surface-page-dark px-4 py-2 text-sm font-semibold text-brand-700 dark:text-ink-muted-dark font-body-semibold"
           >
             {section.title}
           </Text>

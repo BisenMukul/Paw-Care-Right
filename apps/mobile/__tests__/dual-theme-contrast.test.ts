@@ -30,6 +30,11 @@ const HEX = {
   // the dark theme's `surface.raised-dark` token, but this pairing is a
   // LIGHT-theme decorative-chip choice, unrelated to dark mode).
   darkInkOnCoral: "#143026",
+  // FIDELITY-2 plan: cream light-page ground-truth correction (additive
+  // `surface.page` token) + the care-hub deep-green hero.
+  pageCream: "#F4EFE6",
+  accentDarkHero: "#1E6B54",
+  accentBrightMockup: "#2EA57C",
   // Dark (new semantic tokens, tailwind-preset.mjs)
   inkDark: "#E7E0D3",
   inkMutedDark: "#9AA8A1",
@@ -79,6 +84,23 @@ describe("dual-theme-contrast: LIGHT theme pairs clear their AA floor", () => {
     ["dark ink on accent-warm coral chip", HEX.darkInkOnCoral, HEX.accentWarm, NORMAL_TEXT_FLOOR],
   ])("%s is >= its floor", (_name, fg, bg, floor) => {
     expect(contrastRatio(fg, bg)).toBeGreaterThanOrEqual(floor);
+  });
+});
+
+// FIDELITY-2 plan: cream-page ground-truth correction + care-hub deep-green
+// hero. CHECKPOINT A per the plan's ordered steps -- this math must be
+// green BEFORE any screen migrates to `bg-surface-page`/the hero surface.
+describe("dual-theme-contrast: FIDELITY-2 cream-page + hero pairs", () => {
+  it.each([
+    ["ink-900 on cream page (#F4EFE6)", HEX.ink900, HEX.pageCream, NORMAL_TEXT_FLOOR],
+    ["ink-muted (brand-700) on cream page (#F4EFE6)", HEX.brand700, HEX.pageCream, NORMAL_TEXT_FLOOR],
+    ["white on the care-hub hero fill (#1E6B54, R4's AA-mandated darker green)", HEX.white, HEX.accentDarkHero, NORMAL_TEXT_FLOOR],
+  ])("%s is >= its floor", (_name, fg, bg, floor) => {
+    expect(contrastRatio(fg, bg)).toBeGreaterThanOrEqual(floor);
+  });
+
+  it("mutation-proof: white on the mockup's literal hero fill (#2EA57C) FAILS AA -- this is WHY R4 uses the darker #1E6B54 instead", () => {
+    expect(contrastRatio(HEX.white, HEX.accentBrightMockup)).toBeLessThan(NORMAL_TEXT_FLOOR);
   });
 });
 
@@ -132,6 +154,8 @@ describe("dual-theme-contrast: HEX map stays literally in sync with tailwind-pre
     ["accentBright", HEX.accentBright],
     ["brand700 (light)", HEX.brand700],
     ["page50 (light)", HEX.page50],
+    ["pageCream (FIDELITY-2 surface.page)", HEX.pageCream],
+    ["accentDarkHero (FIDELITY-2 care-hub hero fill)", HEX.accentDarkHero],
   ])("%s (%s) is present verbatim in tailwind-preset.mjs", (_name, hex) => {
     expect(presetSource).toContain(hex);
   });

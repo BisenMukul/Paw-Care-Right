@@ -264,4 +264,19 @@ describe("emergency interstitial — ZERO-DIFF (no dark: anywhere, plan decision
       expect(className).not.toContain("dark:");
     }
   });
+
+  // FIDELITY-2 plan R8: the cream page-root migration cannot reach this
+  // screen -- it owns its own `bg-red-700` SafeAreaView, independent of
+  // `ScreenScaffold`/`bg-brand-50`. Pins the root stays `bg-red-700`
+  // (never `bg-surface-page`).
+  it("FIDELITY-2 R8: root SafeAreaView stays bg-red-700, unreached by the cream page sweep", async () => {
+    mockUseCheck.mockReturnValue({ data: checkWith("gdv-suspected", true) });
+
+    await render(<EmergencyInterstitialScreen />);
+
+    const root = screen.getByTestId("emergency-interstitial");
+    expect(root.props.className).toContain("bg-red-700");
+    expect(root.props.className).not.toContain("bg-surface-page");
+    expect(root.props.className).not.toContain("bg-brand-50");
+  });
 });

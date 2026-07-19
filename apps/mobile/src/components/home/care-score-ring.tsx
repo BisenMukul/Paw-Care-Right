@@ -6,6 +6,13 @@ import { strings } from "../../strings";
 export interface CareScoreRingProps {
   value: number | null;
   testID?: string;
+  /**
+   * FIDELITY-2 plan §D: renders WHITE progress/track/number for hosting on
+   * the deep-green care-hub hero (`bg-accent-dark`, white text verified
+   * 6.39:1 AA in `dual-theme-contrast.test.ts`). Default `false` = this
+   * component's existing (unhosted) behavior, byte-unchanged.
+   */
+  onDark?: boolean;
 }
 
 const SIZE = 82;
@@ -29,13 +36,15 @@ function clampScore(value: number): number {
  * `#22392F` dark (decorative, exempt from the essential-info floor -- the
  * number conveys the value). `value === null` renders the track only, no
  * progress arc, and the honest `scorePlaceholder` glyph centred (plan R4 --
- * never a fake 0/100).
+ * never a fake 0/100). FIDELITY-2 plan §D adds the `onDark` white variant
+ * for the deep-green care-hub hero -- `onDark` false (default) is this
+ * component's byte-unchanged original behavior.
  */
-export function CareScoreRing({ value, testID }: CareScoreRingProps) {
+export function CareScoreRing({ value, testID, onDark = false }: CareScoreRingProps) {
   const scheme = useColorScheme();
   const isDark = scheme === "dark";
-  const progressColor = isDark ? "#2EA57C" : "#1f6350";
-  const trackColor = isDark ? "#22392F" : "#E7E0D3";
+  const progressColor = onDark ? "#ffffff" : isDark ? "#2EA57C" : "#1f6350";
+  const trackColor = onDark ? "rgba(255,255,255,0.3)" : isDark ? "#22392F" : "#E7E0D3";
   const clamped = value !== null ? clampScore(value) : null;
   const offset = clamped !== null ? CIRCUMFERENCE * (1 - clamped / 100) : CIRCUMFERENCE;
 
@@ -75,7 +84,11 @@ export function CareScoreRing({ value, testID }: CareScoreRingProps) {
         <Text
           {...(testID ? { testID: `${testID}-value` } : {})}
           maxFontSizeMultiplier={1.5}
-          className="font-display text-2xl font-bold text-brand-900 dark:text-ink-dark"
+          className={
+            onDark
+              ? "font-display text-2xl font-bold text-white"
+              : "font-display text-2xl font-bold text-brand-900 dark:text-ink-dark"
+          }
         >
           {clamped !== null ? String(Math.round(clamped)) : strings.careScore.scorePlaceholder}
         </Text>

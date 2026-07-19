@@ -19,7 +19,7 @@ import { strings } from "../src/strings";
 
 /**
  * SWEEP-4 plan — cross-screen design-system.md §6 coverage for every
- * remaining screen this batch swept: page-contract (solid `bg-brand-50`,
+ * remaining screen this batch swept: page-contract (solid `bg-surface-page`,
  * no gradient), header canon, four-data-states/PTR, canon EmptyState,
  * button hierarchy, and 44pt touch targets. Mirrors SWEEP-2's `auth-
  * onboarding-a11y.test.tsx` / SWEEP-3's `check-flow-a11y.test.tsx` idiom
@@ -253,10 +253,10 @@ describe("sweep4-a11y", () => {
   });
 
   describe("care tab (agenda)", () => {
-    it("is bg-brand-50 (no gradient), header is role=header, PTR is wired, empty is a canon EmptyState", async () => {
+    it("is bg-surface-page (no gradient), header is role=header, PTR is wired, empty is a canon EmptyState", async () => {
       const { toJSON } = await render(<CareScreen />);
 
-      expect(findClassName(toJSON(), (c) => c.includes("bg-brand-50"))).toBe(true);
+      expect(findClassName(toJSON(), (c) => c.includes("bg-surface-page"))).toBe(true);
       expect(screen.queryByTestId("home-gradient-background")).toBeNull();
 
       const title = screen.getByText(strings.agenda.title);
@@ -317,12 +317,12 @@ describe("sweep4-a11y", () => {
   });
 
   describe("timeline tab", () => {
-    it("is bg-brand-50, header is role=header capped at 1.5x, PTR wired on the list, empty is EmptyState", async () => {
+    it("is bg-surface-page, header is role=header capped at 1.5x, PTR wired on the list, empty is EmptyState", async () => {
       useActivePetStore.getState().setActivePet(FIXTURE_PET.id);
 
       const { toJSON } = await render(<TimelineScreen />);
 
-      expect(findClassName(toJSON(), (c) => c.includes("bg-brand-50"))).toBe(true);
+      expect(findClassName(toJSON(), (c) => c.includes("bg-surface-page"))).toBe(true);
 
       const title = screen.getByText(strings.timeline.title);
       expect(title.props.accessibilityRole).toBe("header");
@@ -348,10 +348,10 @@ describe("sweep4-a11y", () => {
   });
 
   describe("settings tab", () => {
-    it("is bg-brand-50, title is role=header, nav rows are Pressable ListRows", async () => {
+    it("is bg-surface-page, title is role=header, nav rows are Pressable ListRows", async () => {
       const { toJSON } = await render(<SettingsScreen />);
 
-      expect(findClassName(toJSON(), (c) => c.includes("bg-brand-50"))).toBe(true);
+      expect(findClassName(toJSON(), (c) => c.includes("bg-surface-page"))).toBe(true);
 
       const title = screen.getByText(strings.settings.title);
       expect(title.props.accessibilityRole).toBe("header");
@@ -364,12 +364,12 @@ describe("sweep4-a11y", () => {
   });
 
   describe("family screen", () => {
-    it("is bg-brand-50, title is role=header, PTR wired, empty is EmptyState", async () => {
+    it("is bg-surface-page, title is role=header, PTR wired, empty is EmptyState", async () => {
       mockUseHouseholdMe.mockReturnValue({ data: undefined, isLoading: false, isError: false, isRefetching: false, refetch: jest.fn() });
 
       const { toJSON } = await render(<FamilyScreen />);
 
-      expect(findClassName(toJSON(), (c) => c.includes("bg-brand-50"))).toBe(true);
+      expect(findClassName(toJSON(), (c) => c.includes("bg-surface-page"))).toBe(true);
       const empty = screen.getByTestId("family-empty");
       expect(empty).toHaveTextContent(strings.family.empty, { exact: false });
     });
@@ -377,7 +377,7 @@ describe("sweep4-a11y", () => {
     it("loaded: title is a header and PTR is wired on the scroll", async () => {
       const { toJSON } = await render(<FamilyScreen />);
 
-      expect(findClassName(toJSON(), (c) => c.includes("bg-brand-50"))).toBe(true);
+      expect(findClassName(toJSON(), (c) => c.includes("bg-surface-page"))).toBe(true);
       const title = screen.getByText(strings.family.title);
       expect(title.props.accessibilityRole).toBe("header");
 
@@ -451,12 +451,12 @@ describe("sweep4-a11y", () => {
   });
 
   describe("weight screen", () => {
-    it("is bg-brand-50 and title is a header", async () => {
+    it("is bg-surface-page and title is a header", async () => {
       mockParams = { petId: "pet1" };
 
       const { toJSON } = await render(<WeightScreen />);
 
-      expect(findClassName(toJSON(), (c) => c.includes("bg-brand-50"))).toBe(true);
+      expect(findClassName(toJSON(), (c) => c.includes("bg-surface-page"))).toBe(true);
       const title = screen.getByText(strings.weight.title);
       expect(title.props.accessibilityRole).toBe("header");
     });
@@ -475,12 +475,12 @@ describe("sweep4-a11y", () => {
   });
 
   describe("note screen", () => {
-    it("is bg-brand-50, title is a header, and the form's error is accessibilityRole=alert", async () => {
+    it("is bg-surface-page, title is a header, and the form's error is accessibilityRole=alert", async () => {
       mockParams = { petId: "pet1" };
 
       const { toJSON } = await render(<NoteScreen />);
 
-      expect(findClassName(toJSON(), (c) => c.includes("bg-brand-50"))).toBe(true);
+      expect(findClassName(toJSON(), (c) => c.includes("bg-surface-page"))).toBe(true);
       const title = screen.getByText(strings.note.title);
       expect(title.props.accessibilityRole).toBe("header");
 
@@ -492,12 +492,12 @@ describe("sweep4-a11y", () => {
   });
 
   describe("activity screen", () => {
-    it("is bg-brand-50 and title is a header, role capped at 1.5x", async () => {
+    it("is bg-surface-page and title is a header, role capped at 1.5x", async () => {
       mockParams = { petId: "pet1" };
 
       const { toJSON } = await render(<ActivityScreen />);
 
-      expect(findClassName(toJSON(), (c) => c.includes("bg-brand-50"))).toBe(true);
+      expect(findClassName(toJSON(), (c) => c.includes("bg-surface-page"))).toBe(true);
       const title = screen.getByText(strings.activity.title);
       expect(title.props.accessibilityRole).toBe("header");
       expect(title.props.maxFontSizeMultiplier).toBe(1.5);
@@ -505,12 +505,12 @@ describe("sweep4-a11y", () => {
   });
 
   describe("vet-visit screen", () => {
-    it("is bg-brand-50, title is a header, and the reason error is accessibilityRole=alert", async () => {
+    it("is bg-surface-page, title is a header, and the reason error is accessibilityRole=alert", async () => {
       mockParams = { petId: "pet1" };
 
       const { toJSON } = await render(<VetVisitScreen />);
 
-      expect(findClassName(toJSON(), (c) => c.includes("bg-brand-50"))).toBe(true);
+      expect(findClassName(toJSON(), (c) => c.includes("bg-surface-page"))).toBe(true);
       const title = screen.getByText(strings.vetVisit.title);
       expect(title.props.accessibilityRole).toBe("header");
 
@@ -522,14 +522,14 @@ describe("sweep4-a11y", () => {
   });
 
   describe("settings/notifications screen", () => {
-    it("is bg-brand-50, title is a header, and the offline banner is accessibilityRole=alert", async () => {
+    it("is bg-surface-page, title is a header, and the offline banner is accessibilityRole=alert", async () => {
       await act(async () => {
         setOnline(false);
       });
 
       const { toJSON } = await render(<NotificationPrefsScreen />);
 
-      expect(findClassName(toJSON(), (c) => c.includes("bg-brand-50"))).toBe(true);
+      expect(findClassName(toJSON(), (c) => c.includes("bg-surface-page"))).toBe(true);
       const title = screen.getByText(strings.notifications.title);
       expect(title.props.accessibilityRole).toBe("header");
 
@@ -538,10 +538,10 @@ describe("sweep4-a11y", () => {
   });
 
   describe("coming-soon screen", () => {
-    it("is bg-brand-50 and title is a header", async () => {
+    it("is bg-surface-page and title is a header", async () => {
       const { toJSON } = await render(<ComingSoonScreen />);
 
-      expect(findClassName(toJSON(), (c) => c.includes("bg-brand-50"))).toBe(true);
+      expect(findClassName(toJSON(), (c) => c.includes("bg-surface-page"))).toBe(true);
       const title = screen.getByText(strings.comingSoon.title);
       expect(title.props.accessibilityRole).toBe("header");
       expect(title.props.maxFontSizeMultiplier).toBe(1.5);

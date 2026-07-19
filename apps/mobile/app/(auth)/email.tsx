@@ -55,7 +55,7 @@ export default function EmailScreen() {
       behavior={Platform.OS === "ios" ? "padding" : undefined}
       className="flex-1"
     >
-      <SafeAreaView className="flex-1 justify-center gap-6 bg-brand-50 dark:bg-surface-page-dark px-6">
+      <SafeAreaView className="flex-1 justify-center gap-6 bg-surface-page dark:bg-surface-page-dark px-6">
         <View className="gap-1">
           <Text
             accessibilityRole="header"

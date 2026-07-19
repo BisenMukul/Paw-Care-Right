@@ -31,7 +31,7 @@ export function WizardScaffold({
   children,
 }: WizardScaffoldProps) {
   return (
-    <SafeAreaView className="flex-1 bg-brand-50 dark:bg-surface-page-dark">
+    <SafeAreaView className="flex-1 bg-surface-page dark:bg-surface-page-dark">
       <KeyboardAvoidingView
         className="flex-1"
         behavior={Platform.OS === "ios" ? "padding" : undefined}

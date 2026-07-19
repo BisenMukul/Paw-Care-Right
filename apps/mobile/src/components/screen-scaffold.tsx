@@ -8,7 +8,7 @@ import { AnimatedGradientBackground } from "./home/animated-gradient-background"
 export interface ScreenScaffoldProps {
   title?: string;
   subtitle?: string;
-  /** The home-tab-only animated gradient signature (design-system.md §2.1) — every other screen stays the calm solid `bg-brand-50`. */
+  /** The home-tab-only animated gradient signature (design-system.md §2.1) — every other screen stays the calm solid `bg-surface-page` (cream, FIDELITY-2 plan). */
   gradient?: boolean;
   children: ReactNode;
   refreshControl?: ReactElement<RefreshControlProps>;
@@ -34,7 +34,7 @@ const WIDE_SCAFFOLD_EXTRA = "w-full max-w-3xl self-center";
 
 /**
  * The one wrapper every tab/stack screen composes (design-system.md §2.1):
- * safe-area top, `bg-brand-50` page tint, a scrollable content region on
+ * safe-area top, `bg-surface-page` cream page tint (FIDELITY-2 plan), a scrollable content region on
  * the shared spacing scale, and an optional screen title/subtitle. `title`
  * stays optional so screens that render their own bespoke header (e.g. the
  * home tab's `HomeHeader`) can render it as the first scroll child
@@ -82,7 +82,7 @@ export function ScreenScaffold({
 
   if (footer === undefined) {
     return (
-      <SafeAreaView edges={["top"]} className="flex-1 bg-brand-50 dark:bg-surface-page-dark">
+      <SafeAreaView edges={["top"]} className="flex-1 bg-surface-page dark:bg-surface-page-dark">
         {gradient ? <AnimatedGradientBackground /> : null}
         {scroll}
       </SafeAreaView>
@@ -90,7 +90,7 @@ export function ScreenScaffold({
   }
 
   return (
-    <SafeAreaView edges={["top"]} className="flex-1 bg-brand-50 dark:bg-surface-page-dark">
+    <SafeAreaView edges={["top"]} className="flex-1 bg-surface-page dark:bg-surface-page-dark">
       {gradient ? <AnimatedGradientBackground /> : null}
       <KeyboardAvoidingView className="flex-1" behavior={Platform.OS === "ios" ? "padding" : undefined}>
         {scroll}
@@ -98,8 +98,8 @@ export function ScreenScaffold({
           testID="screen-scaffold-footer"
           className={
             isWide
-              ? `border-t border-brand-100 dark:border-hairline-dark bg-brand-50 dark:bg-surface-page-dark px-4 pb-6 pt-3 ${WIDE_SCAFFOLD_EXTRA}`
-              : "border-t border-brand-100 dark:border-hairline-dark bg-brand-50 dark:bg-surface-page-dark px-4 pb-6 pt-3"
+              ? `border-t border-brand-100 dark:border-hairline-dark bg-surface-page dark:bg-surface-page-dark px-4 pb-6 pt-3 ${WIDE_SCAFFOLD_EXTRA}`
+              : "border-t border-brand-100 dark:border-hairline-dark bg-surface-page dark:bg-surface-page-dark px-4 pb-6 pt-3"
           }
         >
           {footer}

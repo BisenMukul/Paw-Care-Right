@@ -37,7 +37,7 @@ export default function CheckWaitingScreen() {
   return (
     <SafeAreaView
       testID="check-waiting-screen"
-      className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6"
+      className="flex-1 items-center justify-center gap-4 bg-surface-page dark:bg-surface-page-dark px-6"
     >
       <ActivityIndicator testID="check-waiting-spinner" color={spinnerColor} />
       <Text

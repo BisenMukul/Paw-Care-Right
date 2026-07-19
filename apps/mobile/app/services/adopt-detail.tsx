@@ -26,7 +26,7 @@ export default function ServicesAdoptDetailScreen() {
     return (
       <View
         testID="services-adopt-detail-screen"
-        className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6"
+        className="flex-1 items-center justify-center gap-4 bg-surface-page dark:bg-surface-page-dark px-6"
       >
         <Text className="text-center text-base text-brand-900 dark:text-ink-dark font-body">
           {strings.petHome.empty}

@@ -20,7 +20,10 @@ jest.mock("../src/components/home/native-gradient", () => ({
 
 const mockAvailability = isNativeGradientAvailable as jest.Mock;
 
-const LIGHT_BASE_COLORS = ["#f2f8f6", "#ffffff", "#dcece6"];
+// FIDELITY-2 plan: cream ground-truth correction (necessary consequential
+// update -- this fixture must track `animated-gradient-background.tsx`'s
+// `BASE_COLORS`, which the plan requires swapping from mint to cream).
+const LIGHT_BASE_COLORS = ["#F4EFE6", "#ffffff", "#EAE3D6"];
 const DARK_BASE_COLORS = ["#0c140f", "#0b1712", "#143026"];
 
 describe("AnimatedGradientBackground: useColorScheme drives the LinearGradient colors prop", () => {
@@ -72,7 +75,7 @@ describe("AnimatedGradientBackground: useColorScheme drives the LinearGradient c
 
     const fallback = screen.getByTestId("home-gradient-fallback");
     expect(fallback.props.style).toEqual(
-      expect.arrayContaining([expect.objectContaining({ backgroundColor: "#f2f8f6" })]),
+      expect.arrayContaining([expect.objectContaining({ backgroundColor: "#F4EFE6" })]),
     );
   });
 });

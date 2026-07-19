@@ -42,7 +42,7 @@ export default function JoinScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 items-center justify-center gap-6 bg-brand-50 dark:bg-surface-page-dark px-6">
+    <SafeAreaView className="flex-1 items-center justify-center gap-6 bg-surface-page dark:bg-surface-page-dark px-6">
       <Text
         testID="join-title"
         accessibilityRole="header"

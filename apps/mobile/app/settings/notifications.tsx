@@ -79,7 +79,7 @@ export default function NotificationPrefsScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-surface-page dark:bg-surface-page-dark px-6">
         <Card testID="notifications-loading">
           <Skeleton lines={4} />
         </Card>
@@ -90,7 +90,7 @@ export default function NotificationPrefsScreen() {
 
   if (isOffline && !prefs) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-surface-page dark:bg-surface-page-dark px-6">
         <Text testID="notifications-offline" className="text-center text-base text-brand-900 dark:text-ink-dark font-body">
           {strings.notifications.offline}
         </Text>
@@ -101,7 +101,7 @@ export default function NotificationPrefsScreen() {
 
   if (isError) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-surface-page dark:bg-surface-page-dark px-6">
         <Text testID="notifications-error" className="text-center text-base text-red-700 dark:text-red-400">
           {strings.notifications.error}
         </Text>
@@ -112,7 +112,7 @@ export default function NotificationPrefsScreen() {
 
   if (!prefs) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-surface-page dark:bg-surface-page-dark px-6">
         <Text testID="notifications-empty" className="text-center text-base text-brand-900 dark:text-ink-dark font-body">
           {strings.notifications.empty}
         </Text>

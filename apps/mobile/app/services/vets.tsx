@@ -49,11 +49,11 @@ export default function ServicesVetsScreen() {
             <Animated.View key={vet.id} {...(reduced ? {} : { entering: FadeInDown.delay(i * 80).duration(320) })}>
               <Card testID={`services-vet-card-${vet.id}`}>
                 <View className="flex-row gap-3">
-                  <View className="h-12 w-12 items-center justify-center rounded-full bg-brand-100 dark:bg-surface-raised-dark">
-                    <Text
-                      maxFontSizeMultiplier={1.5}
-                      className="text-base font-bold text-brand-900 dark:text-ink-dark font-display"
-                    >
+                  <View
+                    testID={`services-vet-avatar-${vet.id}`}
+                    className="h-12 w-12 items-center justify-center rounded-2xl bg-accent-dark"
+                  >
+                    <Text maxFontSizeMultiplier={1.5} className="text-base font-bold text-white font-display">
                       {vet.initial}
                     </Text>
                   </View>

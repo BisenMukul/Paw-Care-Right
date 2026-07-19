@@ -142,6 +142,9 @@ export const strings = {
     bucketInsufficient: "Start logging to build a record",
     scorePlaceholder: "—",
     a11yRing: (petName: string) => `Care score for ${petName}`,
+    // FIDELITY-2 plan §D: the deep-green hero's CTA -- record-only,
+    // imperative, no health claim (routes to the existing /check entry).
+    runCheckCta: "Run a check",
   },
   switcher: {
     heading: "Your pets",

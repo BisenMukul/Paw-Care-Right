@@ -130,7 +130,7 @@ export default function CarePlanWizardScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-surface-page dark:bg-surface-page-dark px-6">
         <Card testID="care-plan-loading">
           <Skeleton lines={3} />
         </Card>
@@ -141,7 +141,7 @@ export default function CarePlanWizardScreen() {
 
   if (isOffline && !suggestions) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-surface-page dark:bg-surface-page-dark px-6">
         <Text testID="care-plan-offline" className="text-center text-base text-brand-900 dark:text-ink-dark">
           {strings.carePlan.offline}
         </Text>
@@ -152,7 +152,7 @@ export default function CarePlanWizardScreen() {
 
   if (isError) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-surface-page dark:bg-surface-page-dark px-6">
         <Text testID="care-plan-error" className="text-center text-base text-red-700 dark:text-red-400">
           {strings.carePlan.error}
         </Text>
@@ -163,7 +163,7 @@ export default function CarePlanWizardScreen() {
 
   if (!suggestions || suggestions.items.length === 0) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-surface-page dark:bg-surface-page-dark px-6">
         <EmptyState
           testID="care-plan-empty"
           icon="clipboard-outline"

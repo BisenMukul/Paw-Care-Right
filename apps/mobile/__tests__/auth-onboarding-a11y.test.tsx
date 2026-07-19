@@ -16,7 +16,7 @@ import { useAddPetStore } from "../src/pets/add-pet-store";
 
 /**
  * SWEEP-2 plan — cross-screen design-system.md §6 coverage for the auth +
- * onboarding surface: page-contract (solid `bg-brand-50`, no gradient),
+ * onboarding surface: page-contract (solid `bg-surface-page`, no gradient),
  * header canon, token pairs (no `gray-`, error nodes `text-red-700` +
  * `alert` role), button hierarchy (one `PrimaryButton` region, social/
  * skip/back/resend as Secondary/Ghost), and 44pt touch targets on the
@@ -86,10 +86,10 @@ describe("auth + onboarding a11y/design-system sweep", () => {
   });
 
   describe("welcome screen", () => {
-    it("page is a solid bg-brand-50 (no gradient), AppTitle is a header, and button hierarchy is one primary + secondary social", async () => {
+    it("page is a solid bg-surface-page (no gradient), AppTitle is a header, and button hierarchy is one primary + secondary social", async () => {
       const { toJSON } = await render(<WelcomeScreen />);
 
-      expect(findClassName(toJSON(), (c) => c.includes("bg-brand-50"))).toBe(true);
+      expect(findClassName(toJSON(), (c) => c.includes("bg-surface-page"))).toBe(true);
       expect(screen.queryByTestId("welcome-hero")).not.toBeNull();
 
       const title = screen.getByTestId("app-title");
@@ -106,14 +106,14 @@ describe("auth + onboarding a11y/design-system sweep", () => {
   });
 
   describe("email screen", () => {
-    it("is bg-brand-50, has no gray- classes, and shows an alert-role red-700 error on invalid submit", async () => {
+    it("is bg-surface-page, has no gray- classes, and shows an alert-role red-700 error on invalid submit", async () => {
       mockedUseAuthStore.mockImplementation(
         (selector: (state: { requestOtp: unknown }) => unknown) =>
           selector({ requestOtp: jest.fn() }),
       );
 
       const { toJSON } = await render(<EmailScreen />);
-      expect(findClassName(toJSON(), (c) => c.includes("bg-brand-50"))).toBe(true);
+      expect(findClassName(toJSON(), (c) => c.includes("bg-surface-page"))).toBe(true);
       expect(findClassName(toJSON(), (c) => c.includes("gray-"))).toBe(false);
 
       await fireEvent.changeText(screen.getByTestId("email-input"), "not-an-email");
@@ -134,7 +134,7 @@ describe("auth + onboarding a11y/design-system sweep", () => {
       mockParams = { email: "a@b.com" };
 
       const { toJSON } = await render(<OtpScreen />);
-      expect(findClassName(toJSON(), (c) => c.includes("bg-brand-50"))).toBe(true);
+      expect(findClassName(toJSON(), (c) => c.includes("bg-surface-page"))).toBe(true);
       expect(findClassName(toJSON(), (c) => c.includes("gray-"))).toBe(false);
 
       const prompt = screen.getByText(/Enter the 6-digit code/);
@@ -149,9 +149,9 @@ describe("auth + onboarding a11y/design-system sweep", () => {
   });
 
   describe("done screen (auth)", () => {
-    it("is bg-brand-50 with a header-role title", async () => {
+    it("is bg-surface-page with a header-role title", async () => {
       const { toJSON } = await render(<DoneScreen />);
-      expect(findClassName(toJSON(), (c) => c.includes("bg-brand-50"))).toBe(true);
+      expect(findClassName(toJSON(), (c) => c.includes("bg-surface-page"))).toBe(true);
 
       const title = screen.getByText("You're all set");
       expect(title.props.accessibilityRole).toBe("header");
@@ -254,7 +254,7 @@ describe("auth + onboarding a11y/design-system sweep", () => {
   });
 
   describe("join screen", () => {
-    it("title is a header on a bg-brand-50 page and the error is alert-role red-700", async () => {
+    it("title is a header on a bg-surface-page page and the error is alert-role red-700", async () => {
       mockedUseAcceptInvite.mockReturnValue({
         mutateAsync: jest.fn().mockRejectedValue(new Error("nope")),
         isPending: false,
@@ -262,7 +262,7 @@ describe("auth + onboarding a11y/design-system sweep", () => {
       mockParams = { code: "ABCD2345" };
 
       const { toJSON } = await render(<JoinScreen />);
-      expect(findClassName(toJSON(), (c) => c.includes("bg-brand-50"))).toBe(true);
+      expect(findClassName(toJSON(), (c) => c.includes("bg-surface-page"))).toBe(true);
 
       const title = screen.getByTestId("join-title");
       expect(title.props.accessibilityRole).toBe("header");

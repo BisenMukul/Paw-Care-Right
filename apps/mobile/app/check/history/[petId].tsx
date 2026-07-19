@@ -42,7 +42,7 @@ export default function CheckHistoryScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView testID="check-history-loading" className="flex-1 gap-4 bg-brand-50 dark:bg-surface-page-dark px-4 pt-4">
+      <SafeAreaView testID="check-history-loading" className="flex-1 gap-4 bg-surface-page dark:bg-surface-page-dark px-4 pt-4">
         <Skeleton lines={4} />
       </SafeAreaView>
     );
@@ -52,7 +52,7 @@ export default function CheckHistoryScreen() {
     return (
       <SafeAreaView
         testID="check-history-error"
-        className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6"
+        className="flex-1 items-center justify-center gap-4 bg-surface-page dark:bg-surface-page-dark px-6"
       >
         <Text className="text-center text-base text-red-700 dark:text-red-400">{strings.check.history.error}</Text>
         <PrimaryButton testID="check-history-retry" label={strings.check.history.retry} onPress={() => refetch()} />
@@ -61,7 +61,7 @@ export default function CheckHistoryScreen() {
   }
 
   return (
-    <SafeAreaView testID="check-history-screen" className="flex-1 bg-brand-50 dark:bg-surface-page-dark">
+    <SafeAreaView testID="check-history-screen" className="flex-1 bg-surface-page dark:bg-surface-page-dark">
       <View className="gap-3 px-4 pb-2 pt-2">
         {isOffline ? (
           <Text

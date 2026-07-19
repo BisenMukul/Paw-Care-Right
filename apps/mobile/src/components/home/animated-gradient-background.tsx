@@ -12,10 +12,13 @@ import Animated, {
 import { useReducedMotion } from "../../hooks/use-reduced-motion";
 import { isNativeGradientAvailable } from "./native-gradient";
 
-// Soft brand tones (tailwind-preset.mjs `brand` scale + a warm cream) --
-// kept light so the dark `text-brand-900` copy drawn on top stays readable.
-const BASE_COLORS = ["#f2f8f6", "#ffffff", "#dcece6"] as const;
-const OVERLAY_COLORS = ["#fdf8ef", "#f2f8f6", "#eef7f1"] as const;
+// FIDELITY-2 plan: cream ground-truth correction -- the mockup's light
+// in-phone surface is warm cream (`surface.page` `#F4EFE6`), not mint. Kept
+// light so the dark `text-brand-900` copy drawn on top stays readable (the
+// darkest of these stops, `#F1EBDD`, is well above the verified `#F4EFE6`
+// contrast pairs in `dual-theme-contrast.test.ts`).
+const BASE_COLORS = ["#F4EFE6", "#ffffff", "#EAE3D6"] as const;
+const OVERLAY_COLORS = ["#fdf8ef", "#F4EFE6", "#F1EBDD"] as const;
 
 // Dark-theme stops (PAWSAATHI-1 plan Decision 5 / Risk R5): the exact same
 // `surface.page-dark`/`surface.raised-dark`/`surface.card-dark` tokens the

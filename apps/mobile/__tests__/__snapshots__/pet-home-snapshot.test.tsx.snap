@@ -124,9 +124,9 @@ exports[`pet home screen snapshots loaded 1`] = `
     <View
       colors={
         [
-          "#f2f8f6",
+          "#F4EFE6",
           "#ffffff",
-          "#dcece6",
+          "#EAE3D6",
         ]
       }
       end={
@@ -172,8 +172,8 @@ exports[`pet home screen snapshots loaded 1`] = `
         colors={
           [
             "#fdf8ef",
-            "#f2f8f6",
-            "#eef7f1",
+            "#F4EFE6",
+            "#F1EBDD",
           ]
         }
         end={

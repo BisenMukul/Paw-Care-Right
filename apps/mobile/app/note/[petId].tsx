@@ -50,7 +50,7 @@ export default function NoteScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-surface-page dark:bg-surface-page-dark px-6">
         <Skeleton lines={4} testID="note-screen-loading" />
       </SafeAreaView>
     );
@@ -58,7 +58,7 @@ export default function NoteScreen() {
 
   if (isOffline && !pet) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-surface-page dark:bg-surface-page-dark px-6">
         <Text testID="note-screen-offline" className="text-center text-base text-brand-900 dark:text-ink-dark font-body">
           {strings.note.offline}
         </Text>
@@ -69,7 +69,7 @@ export default function NoteScreen() {
 
   if (isError) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-surface-page dark:bg-surface-page-dark px-6">
         <Text testID="note-screen-error" className="text-center text-base text-red-700 dark:text-red-400">
           {strings.note.error}
         </Text>
@@ -80,7 +80,7 @@ export default function NoteScreen() {
 
   if (!pet) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-surface-page dark:bg-surface-page-dark px-6">
         <Text testID="note-screen-empty" className="text-center text-base text-brand-900 dark:text-ink-dark font-body">
           {strings.note.empty}
         </Text>

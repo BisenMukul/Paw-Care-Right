@@ -16,7 +16,7 @@ export default function WelcomeScreen() {
   const reduced = useReducedMotion();
 
   return (
-    <SafeAreaView className="flex-1 bg-brand-50 dark:bg-surface-page-dark">
+    <SafeAreaView className="flex-1 bg-surface-page dark:bg-surface-page-dark">
       <AnimatedGradientBackground />
       <Animated.View
         testID="welcome-hero"

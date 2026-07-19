@@ -6,10 +6,12 @@ import { Text } from "react-native";
 
 import type { TimelineItem } from "../src/api/health-logs-api";
 import { AgendaItem } from "../src/components/agenda-item";
+import { ActivityChipGrid } from "../src/components/activity-chip-grid";
 import { AddNoteForm } from "../src/components/add-note-form";
 import { AppTitle } from "../src/components/app-title";
 import { Card } from "../src/components/card";
 import { CategoryGrid } from "../src/components/category-grid";
+import { CareScoreCard } from "../src/components/home/care-score-card";
 import { CheckHistoryRow } from "../src/components/check-history-row";
 import { getCategoryLabel } from "../src/checks/check-history";
 import { Chip } from "../src/components/chip";
@@ -455,6 +457,42 @@ describe("dual-theme-tokens: PAWSAATHI-4 remaining screens/components", () => {
     await render(<AddNoteForm petId="pet-1" submitting={false} onSubmit={jest.fn()} />);
 
     expect(screen.getByTestId("add-note-input").props.className).toContain("dark:bg-surface-card-dark");
+  });
+});
+
+describe("dual-theme-tokens: FIDELITY-2 cream page + colorful tiles + care-hub hero", () => {
+  it("ScreenScaffold: page root carries bg-surface-page + dark:bg-surface-page-dark", async () => {
+    const { toJSON } = await render(
+      <ScreenScaffold title="Care">
+        <Text>child</Text>
+      </ScreenScaffold>,
+    );
+    const className = (toJSON() as unknown as { props: { className: string } }).props.className;
+    expect(className).toContain("bg-surface-page");
+    expect(className).toContain("dark:bg-surface-page-dark");
+  });
+
+  it("CategoryGrid: tile fill carries a decorative accent/category token, white icon", async () => {
+    await render(<CategoryGrid onSelect={jest.fn()} />);
+
+    const tile = screen.getByTestId("check-category-vomiting-tile");
+    expect(tile.props.className).toContain("bg-accent-bright");
+  });
+
+  it("ActivityChipGrid: tile fill carries a decorative accent/category token, white icon", async () => {
+    await render(<ActivityChipGrid onSelect={jest.fn()} />);
+
+    const tile = screen.getByTestId("activity-chip-FOOD-tile");
+    expect(tile.props.className).toContain("bg-accent-bright");
+  });
+
+  it("CareScoreCard: care-hub hero surface carries bg-accent-dark (same green both themes)", async () => {
+    mockUseAgenda.mockReturnValue({ data: { entries: [] }, isLoading: false, isError: false });
+
+    await render(<CareScoreCard pet={FIXTURE_PET} />);
+
+    expect(screen.getByTestId("home-care-score-card").props.className).toContain("bg-accent-dark");
+    expect(screen.getByTestId("home-care-score-cta")).toHaveTextContent(strings.careScore.runCheckCta);
   });
 });
 

@@ -110,7 +110,7 @@ export default function ActivityScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-surface-page dark:bg-surface-page-dark px-6">
         <Skeleton lines={4} testID="activity-screen-loading" />
       </SafeAreaView>
     );
@@ -118,7 +118,7 @@ export default function ActivityScreen() {
 
   if (isOffline && !pet) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-surface-page dark:bg-surface-page-dark px-6">
         <Text testID="activity-screen-offline" className="text-center text-base text-brand-900 dark:text-ink-dark">
           {strings.activity.offline}
         </Text>
@@ -129,7 +129,7 @@ export default function ActivityScreen() {
 
   if (isError) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-surface-page dark:bg-surface-page-dark px-6">
         <Text testID="activity-screen-error" className="text-center text-base text-red-700 dark:text-red-400">
           {strings.activity.error}
         </Text>
@@ -140,7 +140,7 @@ export default function ActivityScreen() {
 
   if (!pet) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-surface-page dark:bg-surface-page-dark px-6">
         <Text testID="activity-screen-empty" className="text-center text-base text-brand-900 dark:text-ink-dark">
           {strings.activity.empty}
         </Text>
@@ -221,7 +221,7 @@ export default function ActivityScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-brand-50 dark:bg-surface-page-dark">
+    <SafeAreaView className="flex-1 bg-surface-page dark:bg-surface-page-dark">
       {isOffline ? (
         <Text
           testID="activity-screen-offline-banner"

@@ -61,4 +61,36 @@ describe("CareScoreRing — geometry + colors + honest null state", () => {
 
     expect(screen.getByTestId("ring-value")).toHaveTextContent("72");
   });
+
+  // FIDELITY-2 plan §D: the `onDark` variant for hosting on the deep-green
+  // care-hub hero -- white progress/track/number in BOTH color schemes
+  // (the hero surface itself, `bg-accent-dark`, is scheme-independent).
+  describe("onDark variant (FIDELITY-2 plan §D)", () => {
+    it("light scheme, onDark: progress stroke and value text are white", async () => {
+      jest.spyOn(ReactNative, "useColorScheme").mockReturnValue("light");
+
+      await render(<CareScoreRing value={70} testID="ring" onDark />);
+
+      expect(screen.getByTestId("ring-progress").props.stroke).toBe("#ffffff");
+      expect(screen.getByTestId("ring-value").props.className).toContain("text-white");
+      expect(screen.getByTestId("ring-value").props.className).not.toContain("text-brand-900");
+    });
+
+    it("dark scheme, onDark: progress stroke is still white (not accent-bright)", async () => {
+      jest.spyOn(ReactNative, "useColorScheme").mockReturnValue("dark");
+
+      await render(<CareScoreRing value={70} testID="ring" onDark />);
+
+      expect(screen.getByTestId("ring-progress").props.stroke).toBe("#ffffff");
+    });
+
+    it("onDark omitted (default): behavior is byte-unchanged from the pre-FIDELITY-2 path", async () => {
+      jest.spyOn(ReactNative, "useColorScheme").mockReturnValue("light");
+
+      await render(<CareScoreRing value={70} testID="ring" />);
+
+      expect(screen.getByTestId("ring-progress").props.stroke).toBe("#1f6350");
+      expect(screen.getByTestId("ring-value").props.className).toContain("text-brand-900");
+    });
+  });
 });

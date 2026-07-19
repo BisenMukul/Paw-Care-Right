@@ -13,7 +13,7 @@ export default function ComingSoonScreen() {
   return (
     <SafeAreaView
       testID="coming-soon-screen"
-      className="flex-1 items-center justify-center gap-3 bg-brand-50 dark:bg-surface-page-dark px-6"
+      className="flex-1 items-center justify-center gap-3 bg-surface-page dark:bg-surface-page-dark px-6"
     >
       <Text
         accessibilityRole="header"

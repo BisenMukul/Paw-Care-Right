@@ -124,4 +124,22 @@ describe("check result screen snapshots", () => {
     expect(disclaimerText.props.className).not.toContain("dark:");
     expect(disclaimerText.props.children).toBe(strings.check.result.disclaimer(APP_DISPLAY_NAME));
   });
+
+  // FIDELITY-2 plan R6/R7: the cream page-root migration must not reach
+  // `vet-disclaimer.tsx` -- it is SAFETY-FROZEN and keeps `bg-brand-50`
+  // byte-identical (denylisted from the page-vs-tint sweep). Pins the
+  // subtree byte-identity the re-recorded snapshots rely on.
+  it("FIDELITY-2: vet-disclaimer subtree stays bg-brand-50 (zero-diff, denylisted from the cream page sweep)", async () => {
+    mockUseCheck.mockReturnValue({
+      data: { id: "c1", status: "DONE", category: "vomiting", createdAt: "2024-01-01T00:00:00.000Z", result: fixtureFor("MONITOR") },
+      isError: false,
+      refetch: jest.fn(),
+    });
+
+    await render(<CheckResultScreen />);
+
+    const disclaimer = screen.getByTestId("vet-disclaimer");
+    expect(disclaimer.props.className).toContain("bg-brand-50");
+    expect(disclaimer.props.className).not.toContain("bg-surface-page");
+  });
 });

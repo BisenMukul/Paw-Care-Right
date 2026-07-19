@@ -2,7 +2,7 @@
 
 exports[`paywall screen — variant A renders and matches the snapshot 1`] = `
 <RNCSafeAreaView
-  className="flex-1 bg-brand-50 dark:bg-surface-page-dark"
+  className="flex-1 bg-surface-page dark:bg-surface-page-dark"
   edges={
     {
       "bottom": "additive",
@@ -394,7 +394,7 @@ exports[`paywall screen — variant A renders and matches the snapshot 1`] = `
       </View>
     </RCTScrollView>
     <View
-      className="border-t border-brand-100 dark:border-hairline-dark bg-brand-50 dark:bg-surface-page-dark px-4 pb-6 pt-3"
+      className="border-t border-brand-100 dark:border-hairline-dark bg-surface-page dark:bg-surface-page-dark px-4 pb-6 pt-3"
     >
       <View
         accessibilityRole="button"
@@ -444,7 +444,7 @@ exports[`paywall screen — variant A renders and matches the snapshot 1`] = `
 
 exports[`paywall screen — variant B renders and matches the snapshot 1`] = `
 <RNCSafeAreaView
-  className="flex-1 bg-brand-50 dark:bg-surface-page-dark"
+  className="flex-1 bg-surface-page dark:bg-surface-page-dark"
   edges={
     {
       "bottom": "additive",
@@ -836,7 +836,7 @@ exports[`paywall screen — variant B renders and matches the snapshot 1`] = `
       </View>
     </RCTScrollView>
     <View
-      className="border-t border-brand-100 dark:border-hairline-dark bg-brand-50 dark:bg-surface-page-dark px-4 pb-6 pt-3"
+      className="border-t border-brand-100 dark:border-hairline-dark bg-surface-page dark:bg-surface-page-dark px-4 pb-6 pt-3"
     >
       <View
         accessibilityRole="button"

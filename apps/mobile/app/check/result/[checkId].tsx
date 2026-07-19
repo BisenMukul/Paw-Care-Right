@@ -40,7 +40,7 @@ export default function CheckResultScreen() {
     return (
       <SafeAreaView
         testID="check-result-error"
-        className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6"
+        className="flex-1 items-center justify-center gap-4 bg-surface-page dark:bg-surface-page-dark px-6"
       >
         <Text className="text-center text-base text-red-700 dark:text-red-400">{strings.check.result.error}</Text>
         <Text className="text-center text-sm text-brand-700 dark:text-ink-muted-dark">{strings.check.result.errorHint}</Text>
@@ -55,7 +55,7 @@ export default function CheckResultScreen() {
 
   if (!data || !isTerminalCheckStatus(data.status)) {
     return (
-      <SafeAreaView testID="check-result-loading" className="flex-1 gap-4 bg-brand-50 dark:bg-surface-page-dark px-4 pt-4">
+      <SafeAreaView testID="check-result-loading" className="flex-1 gap-4 bg-surface-page dark:bg-surface-page-dark px-4 pt-4">
         <Skeleton lines={5} />
       </SafeAreaView>
     );
@@ -84,7 +84,7 @@ export default function CheckResultScreen() {
   }
 
   return (
-    <SafeAreaView testID="check-result-screen" className="flex-1 bg-brand-50 dark:bg-surface-page-dark">
+    <SafeAreaView testID="check-result-screen" className="flex-1 bg-surface-page dark:bg-surface-page-dark">
       <ScrollView testID="check-result-scroll" className="flex-1">
         <View className={contentClassName}>
           {data.redFlag !== undefined ? (

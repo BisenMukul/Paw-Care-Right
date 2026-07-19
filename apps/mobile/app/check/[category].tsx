@@ -51,14 +51,14 @@ export default function IntakeScreen() {
 
   if (categoryDef === undefined) {
     return (
-      <SafeAreaView testID="intake-invalid-category" className="flex-1 items-center justify-center bg-brand-50 dark:bg-surface-page-dark px-6">
+      <SafeAreaView testID="intake-invalid-category" className="flex-1 items-center justify-center bg-surface-page dark:bg-surface-page-dark px-6">
         <Text className="text-center text-base text-brand-900 dark:text-ink-dark">{strings.intake.invalidCategory}</Text>
       </SafeAreaView>
     );
   }
 
   return (
-    <View className="flex-1 bg-brand-50 dark:bg-surface-page-dark">
+    <View className="flex-1 bg-surface-page dark:bg-surface-page-dark">
       {isOffline ? (
         <Text testID="intake-offline-banner" className="px-6 pt-2 text-center text-sm text-brand-700 dark:text-ink-muted-dark">
           {strings.intake.offlineBanner}
@@ -68,7 +68,7 @@ export default function IntakeScreen() {
       {submission.state === "submitting" ? (
         <SafeAreaView
           testID="check-submit-submitting"
-          className="absolute inset-0 z-10 items-center justify-center gap-4 bg-brand-50/95 dark:bg-surface-page-dark/95 px-6"
+          className="absolute inset-0 z-10 items-center justify-center gap-4 bg-surface-page/95 dark:bg-surface-page-dark/95 px-6"
         >
           <ActivityIndicator color={spinnerColor} />
           <Text className="text-center text-base text-brand-900 dark:text-ink-dark">{strings.check.submit.submitting}</Text>
@@ -78,7 +78,7 @@ export default function IntakeScreen() {
       {submission.state === "offline" ? (
         <SafeAreaView
           testID="check-submit-offline"
-          className="absolute inset-0 z-10 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6"
+          className="absolute inset-0 z-10 items-center justify-center gap-4 bg-surface-page dark:bg-surface-page-dark px-6"
         >
           <Text className="text-center text-base text-brand-900 dark:text-ink-dark">{strings.check.submit.offlineBlocked}</Text>
           <PrimaryButton
@@ -92,7 +92,7 @@ export default function IntakeScreen() {
       {submission.state === "quota" ? (
         <SafeAreaView
           testID="check-submit-quota"
-          className="absolute inset-0 z-10 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6"
+          className="absolute inset-0 z-10 items-center justify-center gap-4 bg-surface-page dark:bg-surface-page-dark px-6"
         >
           <Text className="text-center text-lg font-semibold text-brand-900 dark:text-ink-dark font-body-semibold">
             {strings.check.submit.quotaTitle}
@@ -113,7 +113,7 @@ export default function IntakeScreen() {
       {submission.state === "error" ? (
         <SafeAreaView
           testID="check-submit-error"
-          className="absolute inset-0 z-10 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6"
+          className="absolute inset-0 z-10 items-center justify-center gap-4 bg-surface-page dark:bg-surface-page-dark px-6"
         >
           <Text className="text-center text-base text-brand-900 dark:text-ink-dark">{strings.check.submit.error}</Text>
           <PrimaryButton

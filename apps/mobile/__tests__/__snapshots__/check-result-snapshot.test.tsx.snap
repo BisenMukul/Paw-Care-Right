@@ -2,7 +2,7 @@
 
 exports[`check result screen snapshots renders a distinct FALLBACK snapshot with the fallback notice and disclaimer 1`] = `
 <RNCSafeAreaView
-  className="flex-1 bg-brand-50 dark:bg-surface-page-dark"
+  className="flex-1 bg-surface-page dark:bg-surface-page-dark"
   edges={
     {
       "bottom": "additive",
@@ -226,7 +226,7 @@ exports[`check result screen snapshots renders a distinct FALLBACK snapshot with
 
 exports[`check result screen snapshots renders a distinct snapshot with the emergency notice above all AI content when redFlag is present 1`] = `
 <RNCSafeAreaView
-  className="flex-1 bg-brand-50 dark:bg-surface-page-dark"
+  className="flex-1 bg-surface-page dark:bg-surface-page-dark"
   edges={
     {
       "bottom": "additive",
@@ -553,7 +553,7 @@ exports[`check result screen snapshots renders a distinct snapshot with the emer
 
 exports[`check result screen snapshots renders a stable snapshot for EMERGENCY_NOW with the disclaimer present 1`] = `
 <RNCSafeAreaView
-  className="flex-1 bg-brand-50 dark:bg-surface-page-dark"
+  className="flex-1 bg-surface-page dark:bg-surface-page-dark"
   edges={
     {
       "bottom": "additive",
@@ -824,7 +824,7 @@ exports[`check result screen snapshots renders a stable snapshot for EMERGENCY_N
 
 exports[`check result screen snapshots renders a stable snapshot for MONITOR with the disclaimer present 1`] = `
 <RNCSafeAreaView
-  className="flex-1 bg-brand-50 dark:bg-surface-page-dark"
+  className="flex-1 bg-surface-page dark:bg-surface-page-dark"
   edges={
     {
       "bottom": "additive",
@@ -1110,7 +1110,7 @@ exports[`check result screen snapshots renders a stable snapshot for MONITOR wit
 
 exports[`check result screen snapshots renders a stable snapshot for REASSURE with the disclaimer present 1`] = `
 <RNCSafeAreaView
-  className="flex-1 bg-brand-50 dark:bg-surface-page-dark"
+  className="flex-1 bg-surface-page dark:bg-surface-page-dark"
   edges={
     {
       "bottom": "additive",
@@ -1396,7 +1396,7 @@ exports[`check result screen snapshots renders a stable snapshot for REASSURE wi
 
 exports[`check result screen snapshots renders a stable snapshot for VET_24H with the disclaimer present 1`] = `
 <RNCSafeAreaView
-  className="flex-1 bg-brand-50 dark:bg-surface-page-dark"
+  className="flex-1 bg-surface-page dark:bg-surface-page-dark"
   edges={
     {
       "bottom": "additive",
@@ -1667,7 +1667,7 @@ exports[`check result screen snapshots renders a stable snapshot for VET_24H wit
 
 exports[`check result screen snapshots renders a stable snapshot for VET_SOON with the disclaimer present 1`] = `
 <RNCSafeAreaView
-  className="flex-1 bg-brand-50 dark:bg-surface-page-dark"
+  className="flex-1 bg-surface-page dark:bg-surface-page-dark"
   edges={
     {
       "bottom": "additive",

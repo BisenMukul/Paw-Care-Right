@@ -92,7 +92,7 @@ export default function CareScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-surface-page dark:bg-surface-page-dark px-6">
         <Card testID="agenda-loading">
           <Skeleton lines={3} />
         </Card>
@@ -103,7 +103,7 @@ export default function CareScreen() {
 
   if (isOffline && !data) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-surface-page dark:bg-surface-page-dark px-6">
         <Text testID="agenda-offline" className="text-center text-base text-brand-900 dark:text-ink-dark">
           {strings.agenda.offline}
         </Text>
@@ -114,7 +114,7 @@ export default function CareScreen() {
 
   if (isError) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-surface-page dark:bg-surface-page-dark px-6">
         <Text testID="agenda-error" className="text-center text-base text-red-700 dark:text-red-400">
           {strings.agenda.error}
         </Text>

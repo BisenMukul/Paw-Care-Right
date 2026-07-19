@@ -131,41 +131,41 @@ const MONITOR_ITEM: CheckResponse = {
   result: fixtureFor("MONITOR"),
 } as unknown as CheckResponse;
 
-describe("check-flow-a11y: page contract (bg-brand-50, no home gradient)", () => {
+describe("check-flow-a11y: page contract (bg-surface-page, no home gradient)", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockParams = { petId: "pet1" };
     mockUseChecksList.mockReturnValue(EMPTY_LIST_PAGE);
   });
 
-  it("check entry screen is bg-brand-50 with no gradient", async () => {
+  it("check entry screen is bg-surface-page with no gradient", async () => {
     const { toJSON } = await render(<CheckEntryScreen />);
 
-    expect(findClassName(toJSON(), (c) => c.includes("bg-brand-50"))).toBe(true);
+    expect(findClassName(toJSON(), (c) => c.includes("bg-surface-page"))).toBe(true);
     expect(screen.queryByTestId("home-gradient-background")).toBeNull();
     expect(screen.queryByTestId("home-gradient-fallback")).toBeNull();
   });
 
-  it("check history screen is bg-brand-50 with no gradient", async () => {
+  it("check history screen is bg-surface-page with no gradient", async () => {
     mockUseChecksList.mockReturnValue({ ...EMPTY_LIST_PAGE, ...{ data: { pages: [{ items: [MONITOR_ITEM], nextCursor: null }] } } });
 
     const { toJSON } = await render(<CheckHistoryScreen />);
 
-    expect(findClassName(toJSON(), (c) => c.includes("bg-brand-50"))).toBe(true);
+    expect(findClassName(toJSON(), (c) => c.includes("bg-surface-page"))).toBe(true);
     expect(screen.queryByTestId("home-gradient-background")).toBeNull();
   });
 
-  it("check waiting screen is bg-brand-50 with no gradient", async () => {
+  it("check waiting screen is bg-surface-page with no gradient", async () => {
     mockParams = { checkId: "c1", petId: "pet1" };
     mockUseCheck.mockReturnValue({ data: { id: "c1", status: "RUNNING", category: "vomiting", createdAt: "2024-01-01T00:00:00.000Z" } });
 
     const { toJSON } = await render(<CheckWaitingScreen />);
 
-    expect(findClassName(toJSON(), (c) => c.includes("bg-brand-50"))).toBe(true);
+    expect(findClassName(toJSON(), (c) => c.includes("bg-surface-page"))).toBe(true);
     expect(screen.queryByTestId("home-gradient-background")).toBeNull();
   });
 
-  it("check result screen (content state) is bg-brand-50 with no gradient", async () => {
+  it("check result screen (content state) is bg-surface-page with no gradient", async () => {
     mockParams = { checkId: "c1" };
     mockUseCheck.mockReturnValue({
       data: { id: "c1", status: "DONE", category: "vomiting", createdAt: "2024-01-01T00:00:00.000Z", result: fixtureFor("MONITOR") },
@@ -175,7 +175,7 @@ describe("check-flow-a11y: page contract (bg-brand-50, no home gradient)", () =>
 
     const { toJSON } = await render(<CheckResultScreen />);
 
-    expect(findClassName(toJSON(), (c) => c.includes("bg-brand-50"))).toBe(true);
+    expect(findClassName(toJSON(), (c) => c.includes("bg-surface-page"))).toBe(true);
     expect(screen.queryByTestId("home-gradient-background")).toBeNull();
   });
 });
@@ -259,7 +259,7 @@ describe("check-flow-a11y: four data states (skeleton not spinner; pull-to-refre
     expect(scroll.props.refreshControl).toBeTruthy();
   });
 
-  it("history screen: error state error text is red-700 on the bg-brand-50 page", async () => {
+  it("history screen: error state error text is red-700 on the bg-surface-page page", async () => {
     mockUseChecksList.mockReturnValue({ ...EMPTY_LIST_PAGE, data: undefined, isError: true });
 
     await render(<CheckHistoryScreen />);
@@ -279,7 +279,7 @@ describe("check-flow-a11y: four data states (skeleton not spinner; pull-to-refre
     expect(findClassName(toJSON(), (c) => c.includes("bg-brand-100"))).toBe(true);
   });
 
-  it("result screen: error state text is red-700 on the bg-brand-50 page", async () => {
+  it("result screen: error state text is red-700 on the bg-surface-page page", async () => {
     mockParams = { checkId: "c1" };
     mockUseCheck.mockReturnValue({ data: undefined, isError: true, refetch: jest.fn() });
 

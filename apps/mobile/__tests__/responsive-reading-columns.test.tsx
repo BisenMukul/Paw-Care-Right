@@ -150,7 +150,7 @@ describe("paywall: wide vs regular reading column", () => {
     const ctaButton = screen.getByTestId("paywall-trial-cta");
     const ctaFooter = ctaButton.parent;
     expect(ctaFooter?.props.className).toBe(
-      "border-t border-brand-100 dark:border-hairline-dark bg-brand-50 dark:bg-surface-page-dark px-4 pb-6 pt-3",
+      "border-t border-brand-100 dark:border-hairline-dark bg-surface-page dark:bg-surface-page-dark px-4 pb-6 pt-3",
     );
   });
 });

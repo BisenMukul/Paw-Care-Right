@@ -52,7 +52,7 @@ export default function CheckEntryScreen() {
   };
 
   return (
-    <SafeAreaView testID="check-entry-screen" className="flex-1 bg-brand-50 dark:bg-surface-page-dark">
+    <SafeAreaView testID="check-entry-screen" className="flex-1 bg-surface-page dark:bg-surface-page-dark">
       <View className="gap-3 px-4 pb-4 pt-2">
         {isOffline ? (
           <Text

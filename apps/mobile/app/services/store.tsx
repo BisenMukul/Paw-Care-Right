@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { Pressable, Text, useColorScheme, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
 import { Card } from "../../src/components/card";
@@ -18,8 +18,6 @@ import { strings } from "../../src/strings";
 export default function ServicesStoreScreen() {
   const router = useRouter();
   const reduced = useReducedMotion();
-  const scheme = useColorScheme();
-  const iconColor = scheme === "dark" ? "#2EA57C" : "#1f6350";
 
   return (
     <View testID="services-store-screen" className="flex-1">
@@ -34,8 +32,11 @@ export default function ServicesStoreScreen() {
               {...(reduced ? {} : { entering: FadeInDown.delay(i * 80).duration(320) })}
             >
               <Card testID={`services-store-card-${product.id}`}>
-                <View className="h-11 w-11 items-center justify-center rounded-full bg-brand-100 dark:bg-surface-raised-dark">
-                  <Ionicons name={product.icon} size={20} color={iconColor} />
+                <View
+                  testID={`services-store-tile-${product.id}`}
+                  className="h-11 w-11 items-center justify-center rounded-2xl bg-category-amber"
+                >
+                  <Ionicons name={product.icon} size={20} color="#ffffff" />
                 </View>
                 <View className="self-start rounded-full bg-brand-100 dark:bg-surface-card-dark px-2 py-0.5">
                   <Text

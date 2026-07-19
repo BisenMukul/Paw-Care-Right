@@ -80,7 +80,7 @@ export function IntakeForm({ categoryDef, onExit, onSubmit, photoUpload }: Intak
   const descriptors = getDescriptors(categoryDef.id);
 
   return (
-    <SafeAreaView testID="intake-form" className="flex-1 bg-brand-50 dark:bg-surface-page-dark">
+    <SafeAreaView testID="intake-form" className="flex-1 bg-surface-page dark:bg-surface-page-dark">
       <KeyboardAvoidingView className="flex-1" behavior={Platform.OS === "ios" ? "padding" : undefined}>
         <View className="flex-1 px-6 py-4">
           <View testID="intake-progress" className="gap-2">

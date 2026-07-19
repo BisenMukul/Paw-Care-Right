@@ -30,6 +30,15 @@ export default {
           "page-dark": "#0c140f",
           "card-dark": "#16241F",
           "raised-dark": "#143026",
+          // FIDELITY-2 plan: additive LIGHT semantic surface tokens (cream
+          // ground-truth correction). `brand.*` above is untouched -- these
+          // are new tokens, not edits, so apps/web and the design-system
+          // §1.1 brand-contrast table stay byte-frozen. `page` is the only
+          // one wired to mobile page roots this batch; `card`/`raised` are
+          // added for dark-parity symmetry (not yet consumed).
+          page: "#F4EFE6",
+          card: "#FFFFFF",
+          raised: "#E7E0D3",
         },
         ink: {
           dark: "#E7E0D3",

@@ -62,7 +62,7 @@ export default function FamilyScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-surface-page dark:bg-surface-page-dark px-6">
         <Card testID="family-loading">
           <Skeleton lines={3} />
         </Card>
@@ -73,7 +73,7 @@ export default function FamilyScreen() {
 
   if (isError) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-surface-page dark:bg-surface-page-dark px-6">
         <Text testID="family-error" className="text-center text-base text-red-700 dark:text-red-400">
           {strings.family.error}
         </Text>
@@ -84,7 +84,7 @@ export default function FamilyScreen() {
 
   if (!household) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-surface-page dark:bg-surface-page-dark px-6">
         <EmptyState testID="family-empty" icon="home-outline" title={strings.family.empty} />
       </SafeAreaView>
     );

@@ -53,7 +53,7 @@ export default function WeightScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-surface-page dark:bg-surface-page-dark px-6">
         <Skeleton lines={4} testID="weight-screen-loading" />
       </SafeAreaView>
     );
@@ -61,7 +61,7 @@ export default function WeightScreen() {
 
   if (isOffline && !pet) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-surface-page dark:bg-surface-page-dark px-6">
         <Text testID="weight-screen-offline" className="text-center text-base text-brand-900 dark:text-ink-dark font-body">
           {strings.weight.offline}
         </Text>
@@ -72,7 +72,7 @@ export default function WeightScreen() {
 
   if (isError) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-surface-page dark:bg-surface-page-dark px-6">
         <Text testID="weight-screen-error" className="text-center text-base text-red-700 dark:text-red-400">
           {strings.weight.error}
         </Text>
@@ -83,7 +83,7 @@ export default function WeightScreen() {
 
   if (!pet) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-surface-page dark:bg-surface-page-dark px-6">
         <Text testID="weight-screen-empty" className="text-center text-base text-brand-900 dark:text-ink-dark font-body">
           {strings.weight.empty}
         </Text>

@@ -86,7 +86,7 @@ describe("ScreenScaffold: wide vs regular layout bucket", () => {
 
     const footer = screen.getByTestId("screen-scaffold-footer");
     expect(footer.props.className).toBe(
-      "border-t border-brand-100 dark:border-hairline-dark bg-brand-50 dark:bg-surface-page-dark px-4 pb-6 pt-3",
+      "border-t border-brand-100 dark:border-hairline-dark bg-surface-page dark:bg-surface-page-dark px-4 pb-6 pt-3",
     );
   });
 

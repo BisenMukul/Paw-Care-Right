@@ -89,4 +89,34 @@ describe("ScreenScaffold", () => {
 
     expect(screen.queryByTestId("screen-scaffold-footer")).toBeNull();
   });
+
+  // FIDELITY-2 plan (R2 page-vs-tint guard): the page root migrates to the
+  // cream `surface.page` token; the paired `dark:bg-surface-page-dark` stays
+  // byte-identical. This pins the mechanical sweep's rule at its single
+  // source (every screen composes ScreenScaffold for its page root).
+  it("FIDELITY-2: page root renders bg-surface-page (light) with dark:bg-surface-page-dark intact", async () => {
+    const { toJSON } = await render(
+      <ScreenScaffold title="Care">
+        <Text>content</Text>
+      </ScreenScaffold>,
+    );
+
+    const root = toJSON();
+    const className = (root as unknown as { props: { className: string } }).props.className;
+    expect(className).toContain("bg-surface-page");
+    expect(className).not.toContain("bg-brand-50");
+    expect(className).toContain("dark:bg-surface-page-dark");
+  });
+
+  it("FIDELITY-2: the footer region also carries bg-surface-page (page-following chrome, not a tint)", async () => {
+    await render(
+      <ScreenScaffold footer={<Text>Save</Text>}>
+        <Text>content</Text>
+      </ScreenScaffold>,
+    );
+
+    const footer = screen.getByTestId("screen-scaffold-footer");
+    expect(footer.props.className).toContain("bg-surface-page");
+    expect(footer.props.className).toContain("dark:bg-surface-page-dark");
+  });
 });

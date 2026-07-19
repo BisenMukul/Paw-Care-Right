@@ -136,7 +136,7 @@ export default function ReminderEditScreen() {
 
   if (isEdit && isLoading) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-surface-page dark:bg-surface-page-dark px-6">
         <Card testID="reminder-form-loading">
           <Skeleton lines={3} />
         </Card>
@@ -147,7 +147,7 @@ export default function ReminderEditScreen() {
 
   if (isEdit && isOffline && !existing) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-surface-page dark:bg-surface-page-dark px-6">
         <Text testID="reminder-form-offline" className="text-center text-base text-brand-900 dark:text-ink-dark">
           {strings.reminderForm.error}
         </Text>
@@ -158,7 +158,7 @@ export default function ReminderEditScreen() {
 
   if (isEdit && isError) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-brand-50 dark:bg-surface-page-dark px-6">
+      <SafeAreaView className="flex-1 items-center justify-center gap-4 bg-surface-page dark:bg-surface-page-dark px-6">
         <Text testID="reminder-form-error" className="text-center text-base text-red-700 dark:text-red-400">
           {strings.reminderForm.error}
         </Text>

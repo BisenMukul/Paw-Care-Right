@@ -17,6 +17,8 @@ const CARE_SCORE_STRINGS: string[] = [
   strings.careScore.bucketInsufficient,
   strings.careScore.scorePlaceholder,
   strings.careScore.a11yRing("Rex"),
+  // FIDELITY-2 plan §D: the deep-green hero's CTA -- same §7 scan applies.
+  strings.careScore.runCheckCta,
 ];
 
 const TODAY_INTAKE_STRINGS: string[] = [
@@ -43,7 +45,7 @@ const FORBIDDEN_VOCABULARY_PATTERN =
 
 describe("FIDELITY-1 §7 Care Score + intake vocabulary scan", () => {
   it("enumerates all careScore.* and activity.today.* strings (non-vacuous: the arrays are not empty)", () => {
-    expect(CARE_SCORE_STRINGS.length).toBe(8);
+    expect(CARE_SCORE_STRINGS.length).toBe(9);
     expect(TODAY_INTAKE_STRINGS.length).toBe(14);
   });
 

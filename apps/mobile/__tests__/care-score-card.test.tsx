@@ -1,5 +1,5 @@
 import { petIdSchema, type AgendaResponse, type Pet } from "@pawcareright/types";
-import { render, screen } from "@testing-library/react-native";
+import { fireEvent, render, screen } from "@testing-library/react-native";
 import * as ReactNative from "react-native";
 
 import { CareScoreCard } from "../src/components/home/care-score-card";
@@ -13,6 +13,11 @@ import { strings } from "../src/strings";
  */
 jest.mock("../src/api/agenda-api", () => ({
   useAgenda: jest.fn(),
+}));
+
+const mockPush = jest.fn();
+jest.mock("expo-router", () => ({
+  useRouter: () => ({ push: mockPush }),
 }));
 
 const mockedUseAgenda = useAgenda as unknown as jest.Mock;
@@ -65,6 +70,30 @@ describe("CareScoreCard", () => {
     expect(screen.getByTestId("home-care-score-card")).toBeTruthy();
     expect(screen.getByTestId("home-care-score-ring")).toBeTruthy();
     expect(screen.getByTestId("home-care-score-bucket")).toHaveTextContent(strings.careScore.bucketOnTrack);
+  });
+
+  // FIDELITY-2 plan §D: the care-hub deep-green hero (R4's AA-mandated
+  // `bg-accent-dark` solid fill), white ring variant, and the "Run a check"
+  // CTA (the one navigation sliver in an otherwise presentational batch).
+  it("FIDELITY-2: hero surface is bg-accent-dark, ring renders the white onDark variant, and the CTA routes to /check with this pet's id", async () => {
+    mockedUseAgenda.mockReturnValue({
+      data: buildAgenda([]),
+      isLoading: false,
+      isError: false,
+    });
+
+    await render(<CareScoreCard pet={PET} />);
+
+    const card = screen.getByTestId("home-care-score-card");
+    expect(card.props.className).toContain("bg-accent-dark");
+    expect(card.props.className).not.toContain("dark:bg-surface-card-dark");
+
+    expect(screen.getByTestId("home-care-score-ring-track").props.stroke).toBe("rgba(255,255,255,0.3)");
+
+    const cta = screen.getByTestId("home-care-score-cta");
+    expect(cta).toHaveTextContent(strings.careScore.runCheckCta);
+    await fireEvent.press(cta);
+    expect(mockPush).toHaveBeenCalledWith({ pathname: "/check", params: { petId: PET.id } });
   });
 
   it("loading: shows a benign placeholder without throwing", async () => {

@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { Text, useColorScheme, View } from "react-native";
+import { Text, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
 import { Card } from "../../src/components/card";
@@ -17,8 +17,6 @@ import { strings } from "../../src/strings";
 export default function ServicesSalonsScreen() {
   const router = useRouter();
   const reduced = useReducedMotion();
-  const scheme = useColorScheme();
-  const iconColor = scheme === "dark" ? "#2EA57C" : "#1f6350";
 
   return (
     <View testID="services-salons-screen" className="flex-1">
@@ -34,8 +32,11 @@ export default function ServicesSalonsScreen() {
                 accessibilityLabel={salon.name}
               >
                 <View className="flex-row items-center gap-3">
-                  <View className="h-11 w-11 items-center justify-center rounded-full bg-brand-100 dark:bg-surface-raised-dark">
-                    <Ionicons name={salon.icon} size={20} color={iconColor} />
+                  <View
+                    testID={`services-salon-tile-${salon.id}`}
+                    className="h-11 w-11 items-center justify-center rounded-2xl bg-accent-warm"
+                  >
+                    <Ionicons name={salon.icon} size={20} color="#ffffff" />
                   </View>
                   <View className="flex-1 gap-1">
                     <Text className="text-base font-semibold text-brand-900 dark:text-ink-dark font-body-semibold">

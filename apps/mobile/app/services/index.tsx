@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import type { ComponentProps } from "react";
-import { Text, useColorScheme, View } from "react-native";
+import { Text, View } from "react-native";
 
 import { Card } from "../../src/components/card";
 import { ScreenScaffold } from "../../src/components/screen-scaffold";
@@ -19,6 +19,18 @@ const SERVICE_ICONS: Record<(typeof SERVICE_KEYS)[number], IconName> = {
   store: "bag-handle-outline",
   adoption: "heart-outline",
   insurance: "shield-checkmark-outline",
+};
+
+// Colorful rounded-square leading-icon tiles (FIDELITY-2 plan §C), matching
+// the mockup's `svc`/`shopTiles` color assignments (design-system.md §1.1a
+// tokens): vet=green, salon=coral, store=amber, adoption=lilac,
+// insurance=sky.
+const SERVICE_TILE_COLOR: Record<(typeof SERVICE_KEYS)[number], string> = {
+  vet: "bg-accent-dark",
+  salon: "bg-accent-warm",
+  store: "bg-category-amber",
+  adoption: "bg-category-lilac",
+  insurance: "bg-category-sky",
 };
 
 const SERVICE_ROUTES: Record<(typeof SERVICE_KEYS)[number], string> = {
@@ -44,10 +56,8 @@ const SERVICE_ROUTES: Record<(typeof SERVICE_KEYS)[number], string> = {
  */
 export default function ServicesScreen() {
   const router = useRouter();
-  const scheme = useColorScheme();
   const bucket = useLayoutBucket();
   const isWide = bucket === "wide";
-  const iconColor = scheme === "dark" ? "#2EA57C" : "#1f6350";
 
   return (
     <View testID="services-screen" className="flex-1">
@@ -68,8 +78,11 @@ export default function ServicesScreen() {
                 }
               >
                 <View className="flex-row items-center gap-3">
-                  <View className="h-10 w-10 items-center justify-center rounded-full bg-brand-100 dark:bg-surface-raised-dark">
-                    <Ionicons name={SERVICE_ICONS[key]} size={20} color={iconColor} />
+                  <View
+                    testID={`services-tile-${key}`}
+                    className={`h-10 w-10 items-center justify-center rounded-2xl ${SERVICE_TILE_COLOR[key]}`}
+                  >
+                    <Ionicons name={SERVICE_ICONS[key]} size={20} color="#ffffff" />
                   </View>
                   <View className="flex-1 gap-1">
                     <Text className="text-base font-semibold text-brand-900 dark:text-ink-dark font-body-semibold">

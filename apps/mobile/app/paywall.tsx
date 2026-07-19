@@ -58,8 +58,8 @@ export default function PaywallScreen() {
   const isWide = bucket === "wide";
   const contentClassName = isWide ? "gap-6 px-4 pb-8 pt-4 w-full max-w-2xl self-center" : "gap-6 px-4 pb-8 pt-4";
   const ctaFooterClassName = isWide
-    ? "border-t border-brand-100 dark:border-hairline-dark bg-brand-50 dark:bg-surface-page-dark px-4 pb-6 pt-3 w-full max-w-2xl self-center"
-    : "border-t border-brand-100 dark:border-hairline-dark bg-brand-50 dark:bg-surface-page-dark px-4 pb-6 pt-3";
+    ? "border-t border-brand-100 dark:border-hairline-dark bg-surface-page dark:bg-surface-page-dark px-4 pb-6 pt-3 w-full max-w-2xl self-center"
+    : "border-t border-brand-100 dark:border-hairline-dark bg-surface-page dark:bg-surface-page-dark px-4 pb-6 pt-3";
 
   const [busyPackageId, setBusyPackageId] = useState<string | null>(null);
   const [restoreBusy, setRestoreBusy] = useState(false);
@@ -120,7 +120,7 @@ export default function PaywallScreen() {
   }
 
   return (
-    <SafeAreaView testID="paywall-screen" className="flex-1 bg-brand-50 dark:bg-surface-page-dark">
+    <SafeAreaView testID="paywall-screen" className="flex-1 bg-surface-page dark:bg-surface-page-dark">
       <View className="relative flex-1">
         <ScrollView testID="paywall-scroll" className="flex-1">
           <View className={contentClassName}>

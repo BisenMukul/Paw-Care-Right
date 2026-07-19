@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { Text, useColorScheme, View } from "react-native";
+import { Text, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
 import { Card } from "../../src/components/card";
@@ -29,8 +29,6 @@ const SPECIES_MAP: Record<Exclude<SpeciesFilter, "all">, PreviewAdoptSpecies> = 
 export default function ServicesAdoptScreen() {
   const router = useRouter();
   const reduced = useReducedMotion();
-  const scheme = useColorScheme();
-  const iconColor = scheme === "dark" ? "#2EA57C" : "#1f6350";
   const [species, setSpecies] = useState<SpeciesFilter>("all");
 
   const filtered =
@@ -77,8 +75,11 @@ export default function ServicesAdoptScreen() {
                   onPress={() => router.push({ pathname: "/services/adopt-detail", params: { petId: pet.id } })}
                   accessibilityLabel={pet.name}
                 >
-                  <View className="h-24 w-full items-center justify-center rounded-xl bg-brand-100 dark:bg-surface-raised-dark">
-                    <Ionicons name="image-outline" size={28} color={iconColor} />
+                  <View
+                    testID={`services-adopt-tile-${pet.id}`}
+                    className="h-24 w-full items-center justify-center rounded-2xl bg-category-lilac"
+                  >
+                    <Ionicons name="image-outline" size={28} color="#ffffff" />
                   </View>
                   <Text className="text-base font-semibold text-brand-900 dark:text-ink-dark font-body-semibold">
                     {pet.name}
