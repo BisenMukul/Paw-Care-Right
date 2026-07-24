@@ -2,7 +2,7 @@
   "project": "Paw Care Right +",
   "version": 6,
   "status": "running",
-  "currentPhase": "P7",
+  "currentPhase": "P8",
   "phases": {
     "P0": {
       "tasks": [
@@ -506,8 +506,8 @@
       "attempts": 1
     },
     "T081": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 1
     },
     "T082": {
       "status": "pending",
@@ -749,9 +749,9 @@
     "surveillance-layer-corrections-v2: Write grants, fail-closed protected-paths (no python), current-task file contract, P0/no-HEAD tolerance, subshell fail-open fixes"
   ],
   "current-task": {
-    "id": "T081",
+    "id": "T082",
     "phase": 8,
-    "attempts": 1,
+    "attempts": 0,
     "state": "planning"
   }
 }

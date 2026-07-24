@@ -233,3 +233,20 @@ export async function createSubscription(
 }
 
 export * from "./health-logs";
+
+/**
+ * T081 chat factory: seeds a `ChatThread` row directly (bypassing the
+ * premium feature-lock so quota/gating e2e cases can seed a thread under a
+ * FREE app instance when needed). `ChatThread` cascades from both `Pet`
+ * (-> Household -> owner) and `User` -- `cleanupUsers`'s existing
+ * `household.deleteMany` cascade already removes any row seeded here, no
+ * cleanup-ordering change needed.
+ */
+export async function createChatThread(
+  prisma: PrismaClient,
+  args: { petId: string; createdById: string },
+): Promise<{ id: string; petId: string; createdById: string }> {
+  return prisma.chatThread.create({
+    data: { petId: args.petId, createdById: args.createdById },
+  });
+}

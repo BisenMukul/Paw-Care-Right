@@ -8,6 +8,7 @@ export * from "./intake";
 export * from "./food-safety";
 export * from "./check-status";
 export * from "./check";
+export * from "./chat";
 export * from "./rrule";
 export * from "./reminder";
 export * from "./notification-prefs";

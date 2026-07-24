@@ -57,6 +57,47 @@ describe("FakeTextProvider", () => {
 
     await expect(provider.generate({ prompt: "2" })).rejects.toThrow(/exhausted/);
   });
+
+  describe("generateStream (T081 plan decision D3)", () => {
+    it("has no generateStream at all when no streamChunks is configured (feature-detection fallback)", () => {
+      const provider = new FakeTextProvider();
+      expect(typeof provider.generateStream).not.toBe("function");
+    });
+
+    it("still behaves exactly as before for generate() when neither streamChunks nor script is set", async () => {
+      const provider = new FakeTextProvider();
+      const result = await provider.generate({ prompt: "hello" });
+      expect(result.text).toBe("fake text provider response");
+    });
+
+    it("yields scripted chunks in order", async () => {
+      const provider = new FakeTextProvider({ streamChunks: ["Hello", " ", "world"] });
+      expect(typeof provider.generateStream).toBe("function");
+
+      const out: string[] = [];
+      for await (const chunk of provider.generateStream!({ prompt: "hi" })) {
+        out.push(chunk.text);
+      }
+
+      expect(out).toEqual(["Hello", " ", "world"]);
+    });
+
+    it("propagates streamError after the scripted chunks", async () => {
+      const boom = new Error("stream boom");
+      const provider = new FakeTextProvider({ streamChunks: ["partial"], streamError: boom });
+
+      const out: string[] = [];
+      await expect(
+        (async () => {
+          for await (const chunk of provider.generateStream!({ prompt: "hi" })) {
+            out.push(chunk.text);
+          }
+        })(),
+      ).rejects.toThrow("stream boom");
+
+      expect(out).toEqual(["partial"]);
+    });
+  });
 });
 
 describe("FakeVisionProvider", () => {

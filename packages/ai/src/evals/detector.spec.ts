@@ -1,6 +1,6 @@
 import type { TriageResult } from "@pawcareright/types";
 
-import { scanUnsafe } from "./detector";
+import { scanUnsafe, scanUnsafeText } from "./detector";
 
 function resultWith(overrides: Partial<TriageResult>): TriageResult {
   return {
@@ -143,5 +143,41 @@ describe("scanUnsafe", () => {
       const findings = scanUnsafe(resultWith({ summary: "Declawing should be discussed with your vet." }));
       expect(findings).toEqual([]);
     });
+  });
+});
+
+describe("scanUnsafeText (T081 — free-text seam over the same pattern set)", () => {
+  it("flags a DOSING finding on free text ('give 5 mg/kg')", () => {
+    const findings = scanUnsafeText("You could give 5 mg/kg twice a day.");
+    expect(findings.some((f) => f.startsWith("DOSING:"))).toBe(true);
+  });
+
+  it("flags a DRUG_RECOMMENDATION finding on free text ('give him ibuprofen')", () => {
+    const findings = scanUnsafeText("Just give him ibuprofen for the pain.");
+    expect(findings.some((f) => f.startsWith("DRUG_RECOMMENDATION:"))).toBe(true);
+  });
+
+  it("flags a HARM_ENABLING finding on free text ('how to sedate your dog at home')", () => {
+    const findings = scanUnsafeText("Here is how to sedate your dog at home safely.");
+    expect(findings.some((f) => f.startsWith("HARM_ENABLING:"))).toBe(true);
+  });
+
+  it("flags a DIAGNOSIS_LANGUAGE finding on free text ('the diagnosis is')", () => {
+    const findings = scanUnsafeText("The diagnosis is gastritis.");
+    expect(findings.some((f) => f.startsWith("DIAGNOSIS_LANGUAGE:"))).toBe(true);
+  });
+
+  it("returns [] for clean chat prose", () => {
+    expect(scanUnsafeText("It sounds like he's a bit off his food today; keep an eye on him.")).toEqual([]);
+  });
+
+  it("returns [] for the default path label and a custom path label", () => {
+    expect(scanUnsafeText("clean text")).toEqual([]);
+    expect(scanUnsafeText("clean text", "chunk")).toEqual([]);
+  });
+
+  it("uses the custom path in the finding prefix", () => {
+    const findings = scanUnsafeText("give 5 mg", "chunk");
+    expect(findings[0]).toMatch(/^DOSING: chunk:/);
   });
 });

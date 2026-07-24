@@ -6,6 +6,7 @@ import { AuthModule } from "./auth/auth.module";
 import { JwtAuthGuard } from "./auth/jwt-auth.guard";
 import { BillingModule } from "./billing/billing.module";
 import { BreedsModule } from "./breeds/breeds.module";
+import { ChatModule } from "./chat/chat.module";
 import { ChecksModule } from "./checks/checks.module";
 import { HouseholdScopeGuard } from "./common/household-scope.guard";
 import { RolesGuard } from "./common/roles.guard";
@@ -44,6 +45,7 @@ import { WorkersModule } from "./workers/workers.module";
     ChecksModule,
     RemindersModule,
     HealthLogsModule,
+    ChatModule,
     NotificationPrefsModule,
     RemoteConfigModule,
     WorkersModule,

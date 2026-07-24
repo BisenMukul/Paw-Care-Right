@@ -53,6 +53,16 @@ enum SubscriptionEntitlement {
   PREMIUM
 }
 
+enum ChatMessageRole {
+  USER
+  ASSISTANT
+}
+
+enum ChatMessageStatus {
+  OK
+  SAFE_FALLBACK
+}
+
 model User {
   id        String   @id @default(uuid())
   email     String   @unique
@@ -72,6 +82,7 @@ model User {
   createdChecks   SymptomCheck[]
   notificationPrefs UserNotificationPrefs?
   subscription    Subscription?
+  chatThreads     ChatThread[]
 }
 
 model Household {
@@ -167,6 +178,7 @@ model Pet {
   checks            SymptomCheck[]
   reminders         Reminder[]
   healthLogs        HealthLog[]
+  chatThreads       ChatThread[]
 
   @@index([householdId, deletedAt])
 }
@@ -342,4 +354,42 @@ model Subscription {
 model ProcessedWebhookEvent {
   eventId     String   @id
   processedAt DateTime @default(now())
+}
+
+// ChatThread/ChatMessage (T081 -- F7 "Ask Paw Care Right +"). A thread is a
+// per-pet conversation; messages carry role, delivered content, and safety/
+// cost metadata. `content` on an ASSISTANT row is exactly what was released
+// to the client (never a flagged/undelivered span) -- `status` records
+// whether the answer was the model's own text (`OK`) or the fail-upward
+// fallback (`SAFE_FALLBACK`). `nudgeCategory` is set only on the assistant
+// row when the deterministic pre-AI nudge detector fired on the paired user
+// message. No message content is ever logged (see ChatService).
+model ChatThread {
+  id          String        @id @default(uuid())
+  petId       String
+  createdById String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  pet         Pet           @relation(fields: [petId], references: [id], onDelete: Cascade)
+  createdBy   User          @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  messages    ChatMessage[]
+
+  @@index([petId, createdAt(sort: Desc)])
+  @@index([createdById])
+}
+
+model ChatMessage {
+  id            String            @id @default(uuid())
+  threadId      String
+  role          ChatMessageRole
+  content       String
+  status        ChatMessageStatus @default(OK)
+  nudgeCategory String?
+  promptVersion String?
+  modelId       String?
+  costMicroUsd  Int               @default(0)
+  createdAt     DateTime          @default(now())
+  thread        ChatThread        @relation(fields: [threadId], references: [id], onDelete: Cascade)
+
+  @@index([threadId, createdAt])
 }

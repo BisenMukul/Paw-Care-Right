@@ -48,8 +48,20 @@ export interface TextResult {
   raw?: unknown;
 }
 
+/** One streamed delta from {@link TextProvider.generateStream} (T081 plan decision D3). */
+export interface TextStreamChunk {
+  text: string;
+}
+
 export interface TextProvider {
   generate(options: TextGenerateOptions): Promise<TextResult>;
+  /**
+   * Optional, additive streaming variant (T081 plan decision D3): every
+   * existing `TextProvider` implementation stays valid unchanged. Callers
+   * that need streaming must feature-detect this method and degrade to
+   * `generate()` + a single chunk when it is absent.
+   */
+  generateStream?(options: TextGenerateOptions): AsyncIterable<TextStreamChunk>;
 }
 
 export interface VisionImage {
