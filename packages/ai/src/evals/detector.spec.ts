@@ -1,6 +1,6 @@
 import type { TriageResult } from "@pawcareright/types";
 
-import { scanUnsafe, scanUnsafeText } from "./detector";
+import { findingCodes, scanUnsafe, scanUnsafeText } from "./detector";
 
 function resultWith(overrides: Partial<TriageResult>): TriageResult {
   return {
@@ -179,5 +179,33 @@ describe("scanUnsafeText (T081 — free-text seam over the same pattern set)", (
   it("uses the custom path in the finding prefix", () => {
     const findings = scanUnsafeText("give 5 mg", "chunk");
     expect(findings[0]).toMatch(/^DOSING: chunk:/);
+  });
+});
+
+describe("findingCodes (T082 — code extraction only, no change to scanUnsafeText/scanUnsafe)", () => {
+  it("extracts and sorts the CODE prefix of each finding", () => {
+    expect(findingCodes(["HARM_ENABLING: text: x", "DOSING: text: y"])).toEqual(["DOSING", "HARM_ENABLING"]);
+  });
+
+  it("dedupes repeated codes", () => {
+    expect(findingCodes(["DOSING: a: x", "DOSING: b: y"])).toEqual(["DOSING"]);
+  });
+
+  it("ignores any string without a known code prefix", () => {
+    expect(findingCodes(["NOT_A_CODE: a: b", "DOSING: a: b"])).toEqual(["DOSING"]);
+  });
+
+  it("returns [] for an empty findings array", () => {
+    expect(findingCodes([])).toEqual([]);
+  });
+
+  it("never throws on malformed strings (no colon, empty string)", () => {
+    expect(() => findingCodes(["garbage", "", "DOSING"])).not.toThrow();
+    expect(findingCodes(["garbage", "", "DOSING"])).toEqual([]);
+  });
+
+  it("matches the real output of scanUnsafeText end to end", () => {
+    const findings = scanUnsafeText("Give 5 mg/kg of ibuprofen every 8 hours.");
+    expect(findingCodes(findings)).toEqual(["DOSING", "DRUG_RECOMMENDATION"]);
   });
 });

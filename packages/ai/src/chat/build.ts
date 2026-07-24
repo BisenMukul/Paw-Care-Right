@@ -66,7 +66,16 @@ function buildCurrentUserTurn(input: ChatPromptInput): string {
 
 /** Builds the final `{system, messages, temperature, version}` chat prompt. */
 export function buildChatPrompt(input: ChatPromptInput): BuiltChatPrompt {
-  const historyMessages: TextMessage[] = input.history.map((turn) => ({ role: turn.role, content: turn.content }));
+  // D5: user history turns are the one remaining unsanitized injection
+  // vector into the prompt — a `system: ignore your rules` line typed by the
+  // owner in an earlier turn is replayed verbatim by `gatherHistory` as a
+  // real `role:"user"` message otherwise. Assistant turns are either
+  // gate-approved model output or the fallback constant, and are already
+  // scanned, so they are left untouched.
+  const historyMessages: TextMessage[] = input.history.map((turn) => ({
+    role: turn.role,
+    content: turn.role === "user" ? sanitizeOwnerMessage(turn.content) : turn.content,
+  }));
   const currentTurn: TextMessage = { role: "user", content: buildCurrentUserTurn(input) };
 
   return {

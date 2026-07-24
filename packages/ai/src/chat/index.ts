@@ -5,3 +5,4 @@ export * from "./nudge";
 export * from "./digest";
 export * from "./system-prompt";
 export * from "./build";
+export * from "./output-gate";

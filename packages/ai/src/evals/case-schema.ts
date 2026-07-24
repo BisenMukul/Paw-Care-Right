@@ -30,7 +30,7 @@ export const evalCaseInputSchema = z.strictObject({
 });
 export type EvalCaseInput = z.infer<typeof evalCaseInputSchema>;
 
-const kebabIdSchema = z.string().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, "id must be kebab-case");
+export const kebabIdSchema = z.string().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, "id must be kebab-case");
 
 const goldenBaseSchema = z.strictObject({
   id: kebabIdSchema,

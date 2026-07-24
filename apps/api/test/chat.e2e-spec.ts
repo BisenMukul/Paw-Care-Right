@@ -1,7 +1,13 @@
 import type { INestApplication } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { Test } from "@nestjs/testing";
-import { FakeTextProvider, type TextGenerateOptions, type TextProvider, type TextStreamChunk } from "@pawcareright/ai";
+import {
+  FakeTextProvider,
+  SAFE_FALLBACK_CHAT_MESSAGE,
+  type TextGenerateOptions,
+  type TextProvider,
+  type TextStreamChunk,
+} from "@pawcareright/ai";
 import { errorResponseSchema } from "@pawcareright/types";
 import { PrismaClient } from "@prisma/client";
 
@@ -344,6 +350,32 @@ describe("Chat API (e2e)", () => {
       const assistantRow = await prisma.chatMessage.findFirst({ where: { threadId, role: "ASSISTANT" } });
       expect(assistantRow?.status).toBe("SAFE_FALLBACK");
       expect(assistantRow?.content).not.toMatch(/mg\/kg|ibuprofen/i);
+    });
+
+    it("a boundary-straddling unsafe span ends in the safe fallback (T082 F3 regression)", async () => {
+      const filler = "x".repeat(150);
+      premiumProvider.setScript({
+        streamChunks: [`${filler} you could give 5 m`, "g/kg of ibuprofen every 8 hours. "],
+      });
+      const ctx = await owner(premiumApp);
+      const { threadId } = await seedPetAndThread(premiumApp, ctx);
+
+      const res = await ctx.authedAgent("post", `/v1/chat/threads/${threadId}/messages`).send({
+        content: "What should I give my dog for pain?",
+      });
+
+      const frames = parseSseFrames(res.text as string);
+      const chunkFrames = frames.filter((f) => f.event === "chunk");
+      const deliveredText = chunkFrames.map((f) => f.data["text"] as string).join("");
+
+      expect(deliveredText).not.toMatch(/mg\/kg|ibuprofen/i);
+
+      const doneFrame = frames[frames.length - 1]!;
+      expect(doneFrame.data["status"]).toBe("SAFE_FALLBACK");
+
+      const assistantRow = await prisma.chatMessage.findFirst({ where: { threadId, role: "ASSISTANT" } });
+      expect(assistantRow?.status).toBe("SAFE_FALLBACK");
+      expect(assistantRow?.content).toBe(SAFE_FALLBACK_CHAT_MESSAGE);
     });
   });
 });

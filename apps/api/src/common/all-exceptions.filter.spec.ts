@@ -55,4 +55,25 @@ describe("AllExceptionsFilter", () => {
       },
     });
   });
+
+  it("does not write a JSON envelope once headers are sent (T082 F1)", () => {
+    const filter = new AllExceptionsFilter();
+    const json = jest.fn();
+    const status = jest.fn().mockReturnValue({ json });
+    const end = jest.fn();
+    const request: Partial<RequestWithId> = { requestId: "req-789" };
+
+    const host = {
+      switchToHttp: () => ({
+        getResponse: () => ({ status, json, headersSent: true, writableEnded: false, end }),
+        getRequest: () => request,
+      }),
+    } as unknown as ArgumentsHost;
+
+    filter.catch(new Error("post-header persistence failure"), host);
+
+    expect(status).not.toHaveBeenCalled();
+    expect(json).not.toHaveBeenCalled();
+    expect(end).toHaveBeenCalledTimes(1);
+  });
 });

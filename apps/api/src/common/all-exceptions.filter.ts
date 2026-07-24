@@ -40,6 +40,18 @@ export class AllExceptionsFilter implements ExceptionFilter {
       exception instanceof Error ? exception.stack : undefined,
     );
 
+    if (response.headersSent) {
+      // T082 F1: a post-header failure (e.g. SSE persistence throwing after
+      // `sse.writeHead`) must never attempt a second `response.status(...)`
+      // write — that raises ERR_HTTP_HEADERS_SENT and destroys the socket
+      // with no terminal frame. The error is still logged above; the
+      // response is just closed cleanly instead.
+      if (!response.writableEnded) {
+        response.end();
+      }
+      return;
+    }
+
     response.status(status).json({
       error: {
         code,

@@ -4,9 +4,10 @@ import { HttpException, HttpStatus, Inject, Injectable, Logger, NotFoundExceptio
 import {
   buildChatPrompt,
   detectSymptomNudge,
-  scanUnsafeText,
+  runGatedStream,
   SAFE_FALLBACK_CHAT_MESSAGE,
   type ChatPetContext,
+  type ChatSafetyIncident,
   type ChatTurn,
   type TextGenerateOptions,
   type TextProvider,
@@ -21,7 +22,7 @@ import { PrismaService } from "../prisma/prisma.service";
 import { ENTITLEMENT_RESOLVER, type EntitlementResolver } from "../quota/entitlement";
 import { CostLogService } from "../quota/cost-log.service";
 import { QuotaService } from "../quota/quota.service";
-import { CHAT_DIGEST_WINDOW_DAYS, CHAT_HISTORY_TURNS, CHAT_RELEASE_BOUNDARY_CHARS, CHAT_STREAM_TIMEOUT_MS } from "./chat.constants";
+import { CHAT_DIGEST_WINDOW_DAYS, CHAT_HISTORY_TURNS, CHAT_STREAM_TIMEOUT_MS } from "./chat.constants";
 import { CHAT_TEXT_MODEL_ID, CHAT_TEXT_PROVIDER } from "./chat.tokens";
 import type { CreateThreadDto } from "./dto/create-thread.dto";
 import type { SendMessageDto } from "./dto/send-message.dto";
@@ -36,25 +37,32 @@ export interface ChatThreadResponse {
   createdAt: string;
 }
 
-function endsAtBoundary(text: string): boolean {
-  return text.endsWith("\n") || text.endsWith(". ") || text.endsWith("! ") || text.endsWith("? ");
-}
-
-function shouldRelease(pending: string): boolean {
-  return pending.length > 0 && (endsAtBoundary(pending) || pending.length > CHAT_RELEASE_BOUNDARY_CHARS);
+interface FinalizeStreamOptions {
+  assistantMessageId: string;
+  threadId: string;
+  userId: string;
+  aborted: boolean;
+  status: ChatMessageStatus;
+  content: string;
+  nudgeCategory: SymptomCategory | undefined;
+  promptVersion: string;
+  quotaResult: { used: number; limit: number | null; remaining: number | null };
+  sse: SseWriter;
 }
 
 /**
  * `POST /chat/threads` + `POST /chat/threads/:id/messages` business logic
- * (T081 — F7 "Ask Paw Care Right +"). The message-send flow's step order is
- * PRODUCT_SPEC §5-critical (plan "Endpoint specs"): 404 thread -> 402
- * feature-lock -> 402 quota -> persist USER row -> deterministic pre-AI
- * nudge -> build prompt -> write SSE headers -> stream with a release-
- * gated `scanUnsafeText` boundary scan -> persist ASSISTANT row -> `done`.
- * Every failure mode (detector finding, provider error/timeout, empty
- * completion) converges on the SAME fail-upward `SAFE_FALLBACK` path — no
- * silent retry, no bare `error` event. Nest `Logger` only; never logs
- * message content.
+ * (T081 — F7 "Ask Paw Care Right +"; T082 hardens the output gate). The
+ * message-send flow's step order is PRODUCT_SPEC §5-critical (plan
+ * "Endpoint specs"): 404 thread -> 402 feature-lock -> 402 quota -> persist
+ * USER row -> deterministic pre-AI nudge -> build prompt -> write SSE
+ * headers -> stream through the SHARED, overlap-scanned
+ * `@pawcareright/ai` output gate (`runGatedStream`) -> persist ASSISTANT
+ * row -> `done`. Every failure mode (detector finding, provider
+ * error/timeout, empty completion, client disconnect) converges on the SAME
+ * fail-upward `SAFE_FALLBACK` path — no silent retry, no bare `error` event.
+ * Nest `Logger` only; never logs message content — a `chat_safety_incident`
+ * carries finding CODES only (T082 D3).
  */
 @Injectable()
 export class ChatService {
@@ -169,7 +177,8 @@ export class ChatService {
     };
     sse.onClose(onClose);
 
-    // 9/10. Release-gated streaming — every finding/error/timeout/empty
+    // 9/10. Release-gated streaming through the SHARED `@pawcareright/ai`
+    // output gate (T082 D1/F3 fix) — every finding/error/timeout/empty
     // completion converges on the same SAFE_FALLBACK path.
     const options: TextGenerateOptions = {
       system: built.system,
@@ -180,8 +189,6 @@ export class ChatService {
 
     let seq = 0;
     let delivered = "";
-    let pending = "";
-    let status: ChatMessageStatus = "OK";
 
     const emitChunk = (text: string): void => {
       delivered += text;
@@ -189,63 +196,87 @@ export class ChatService {
       seq += 1;
     };
 
-    try {
-      for await (const delta of this.streamDeltas(options)) {
-        if (aborted) {
-          break;
-        }
-        pending += delta.text;
-
-        if (shouldRelease(pending)) {
-          const findings = scanUnsafeText(pending);
-          if (findings.length > 0) {
-            status = "SAFE_FALLBACK";
-            pending = "";
-            break;
-          }
-          emitChunk(pending);
-          pending = "";
-        }
-      }
-
-      if (status === "OK" && !aborted && pending.length > 0) {
-        const findings = scanUnsafeText(pending);
-        if (findings.length > 0) {
-          status = "SAFE_FALLBACK";
-        } else {
-          emitChunk(pending);
-        }
-        pending = "";
-      }
-
-      if (status === "OK" && !aborted && delivered.length === 0) {
-        // Stream ended with zero released text — fail upward, never silently guess.
-        status = "SAFE_FALLBACK";
-      }
-    } catch (error) {
-      this.logger.warn({
-        event: "chat_stream_error",
-        threadId,
-        message: error instanceof Error ? error.message : String(error),
-      });
-      status = "SAFE_FALLBACK";
+    const result = await runGatedStream(this.streamDeltas(options), { emit: emitChunk, shouldAbort: () => aborted });
+    if (result.incident) {
+      this.logSafetyIncident(threadId, result.incident, result.providerErrorMessage);
     }
+    const status = result.status;
 
-    if (aborted) {
-      // 12. Client disconnected — never write to a closed socket, but still
-      // persist whatever was actually delivered before the disconnect.
-      await this.persistAssistantMessage(assistantMessageId, threadId, delivered, status, nudge?.category, built.version);
-      await this.logCost(userId, status);
-      return;
-    }
-
-    if (status === "SAFE_FALLBACK") {
+    if (!aborted && status === "SAFE_FALLBACK") {
       emitChunk(SAFE_FALLBACK_CHAT_MESSAGE);
     }
 
-    // 11. Persist the ASSISTANT message, log cost, emit `done`, end the stream.
-    await this.persistAssistantMessage(assistantMessageId, threadId, delivered, status, nudge?.category, built.version);
-    await this.logCost(userId, status);
+    // 11/12. Persist the ASSISTANT message + log cost (never throws out of
+    // this method, F1 fix), then emit `done` + end the stream — unless the
+    // client already disconnected, in which case nothing more may be
+    // written to the closed socket.
+    await this.finalizeStream({
+      assistantMessageId,
+      threadId,
+      userId,
+      aborted,
+      status,
+      // D4: a SAFE_FALLBACK row persists ONLY the fallback sentence, never a
+      // partially-released flagged prefix — so history replay (T083) and
+      // `gatherHistory` prompt context can never redeliver/re-prompt it.
+      content: status === "SAFE_FALLBACK" ? SAFE_FALLBACK_CHAT_MESSAGE : delivered,
+      nudgeCategory: nudge?.category,
+      promptVersion: built.version,
+      quotaResult,
+      sse,
+    });
+  }
+
+  /**
+   * Content-free-by-construction incident log (T082 D3/Safety statement 5):
+   * the gate hands this call site finding CODES only, never excerpts, never
+   * the owner message, never model text — a careless log call physically
+   * cannot leak message content. Not a DB row (D3): a structured `Logger`
+   * record is enough for the operational need (alerting on the rate of
+   * fallbacks) without a schema/migration/retention story nobody asked for.
+   */
+  private logSafetyIncident(threadId: string, incident: ChatSafetyIncident, providerErrorMessage?: string): void {
+    this.logger.warn({
+      event: "chat_safety_incident",
+      threadId,
+      reason: incident.reason,
+      codes: incident.codes,
+      phase: incident.phase,
+      charsScanned: incident.charsScanned,
+      releasedChars: incident.releasedChars,
+      releasedBeforeFlag: incident.releasedBeforeFlag,
+      status: "SAFE_FALLBACK",
+      ...(providerErrorMessage !== undefined ? { error: providerErrorMessage } : {}),
+    });
+  }
+
+  /**
+   * Persists the ASSISTANT row + logs cost, wrapped so a post-header
+   * infrastructure failure (DB down, cost-log I/O) can NEVER throw out of
+   * `streamMessage` (T082 F1 — closes the T081 review finding): the `done`
+   * frame is still emitted with the computed status even if persistence
+   * failed. A client disconnect (`aborted`) still persists whatever was
+   * actually delivered, but never writes to the closed socket.
+   */
+  private async finalizeStream(options: FinalizeStreamOptions): Promise<void> {
+    const { assistantMessageId, threadId, userId, aborted, status, content, nudgeCategory, promptVersion, quotaResult, sse } =
+      options;
+
+    try {
+      await this.persistAssistantMessage(assistantMessageId, threadId, content, status, nudgeCategory, promptVersion);
+      await this.logCost(userId, status);
+    } catch (error) {
+      this.logger.error({
+        event: "chat_persist_failed",
+        threadId,
+        message: error instanceof Error ? error.message : String(error),
+      });
+    }
+
+    if (aborted) {
+      // Client disconnected — never write to a closed socket.
+      return;
+    }
 
     sse.send("done", {
       assistantMessageId,

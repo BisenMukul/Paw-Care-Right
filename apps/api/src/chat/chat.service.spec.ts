@@ -1,5 +1,6 @@
-import { HttpException, NotFoundException } from "@nestjs/common";
-import { FakeTextProvider } from "@pawcareright/ai";
+import { HttpException, Logger, NotFoundException } from "@nestjs/common";
+import { FakeTextProvider, SAFE_FALLBACK_CHAT_MESSAGE, scanUnsafeText } from "@pawcareright/ai";
+import type { TextGenerateOptions, TextStreamChunk } from "@pawcareright/ai";
 import type { Response } from "express";
 
 import type { PetResponse } from "../pets/pets.service";
@@ -270,5 +271,200 @@ describe("ChatService.streamMessage", () => {
     expect(chunkTexts.join("")).not.toMatch(/mg\/kg|ibuprofen/i);
     expect((doneFrame.data as { status: string }).status).toBe("SAFE_FALLBACK");
     expect(chunkTexts.join("")).not.toContain("This part should never be consumed");
+  });
+
+  /** T082 F3 — the unsafe span straddles the forced 160-char release boundary. */
+  function straddleChunks(): [string, string] {
+    const filler = "x".repeat(150);
+    return [`${filler} you could give 5 m`, "g/kg of ibuprofen every 8 hours. "];
+  }
+
+  it("F1: a post-header persistence failure still emits done and never rejects", async () => {
+    const provider = new FakeTextProvider({ streamChunks: ["All good, keep an eye on him. "] });
+    const { service, prisma } = buildService({ provider });
+    const { res, write } = fakeResponse();
+    const errorSpy = jest.spyOn(Logger.prototype, "error").mockImplementation(() => undefined);
+
+    prisma.chatMessage.create.mockImplementation((args: { data: { id?: string; role: string } }) => {
+      if (args.data.role === "ASSISTANT") {
+        return Promise.reject(new Error("db connection lost"));
+      }
+      return Promise.resolve({ id: args.data.id ?? "user-msg-1", ...args.data });
+    });
+
+    await expect(
+      service.streamMessage(HOUSEHOLD_ID, USER_ID, THREAD_ID, dto("hello"), new SseWriter(res)),
+    ).resolves.toBeUndefined();
+
+    const frames = parseFrames(write);
+    const lastFrame = frames[frames.length - 1]!;
+    expect(lastFrame.event).toBe("done");
+    expect((lastFrame.data as { status: string }).status).toBe("OK");
+
+    expect(errorSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        event: "chat_persist_failed",
+        threadId: THREAD_ID,
+        message: "db connection lost",
+      }),
+    );
+
+    errorSpy.mockRestore();
+  });
+
+  it("F2: an empty completion converges on SAFE_FALLBACK", async () => {
+    const provider = new FakeTextProvider({ streamChunks: [] });
+    const { service, prisma } = buildService({ provider });
+    const { res, write } = fakeResponse();
+
+    await service.streamMessage(HOUSEHOLD_ID, USER_ID, THREAD_ID, dto("hello"), new SseWriter(res));
+
+    const frames = parseFrames(write);
+    expect(frames.map((f) => f.event)).toEqual(["start", "chunk", "done"]);
+    expect((frames[1]!.data as { text: string }).text).toBe(SAFE_FALLBACK_CHAT_MESSAGE);
+    expect((frames[2]!.data as { status: string }).status).toBe("SAFE_FALLBACK");
+
+    const assistantCall = prisma.chatMessage.create.mock.calls.find(
+      ([args]: [{ data: { role: string } }]) => args.data.role === "ASSISTANT",
+    ) as [{ data: { content: string } }] | undefined;
+    expect(assistantCall?.[0].data.content).toBe(SAFE_FALLBACK_CHAT_MESSAGE);
+  });
+
+  it("F2: a client disconnect aborts the stream and persists what was delivered", async () => {
+    let closeCallback: (() => void) | undefined;
+    const write = jest.fn();
+    const res = {
+      writeHead: jest.fn(),
+      write,
+      end: jest.fn(),
+      on: jest.fn((event: string, cb: () => void) => {
+        if (event === "close") closeCallback = cb;
+      }),
+    } as unknown as Response;
+
+    class DisconnectingProvider extends FakeTextProvider {
+      constructor(onFirstDelta: () => void) {
+        super({ streamChunks: ["Hello. ", "and more that must never be consumed."] });
+        const original = this.generateStream!.bind(this);
+        this.generateStream = async function* (options: TextGenerateOptions): AsyncGenerator<TextStreamChunk> {
+          let first = true;
+          for await (const chunk of original(options)) {
+            yield chunk;
+            if (first) {
+              first = false;
+              onFirstDelta();
+            }
+          }
+        };
+      }
+    }
+
+    const provider = new DisconnectingProvider(() => closeCallback?.());
+    const { service, prisma } = buildService({ provider });
+
+    await service.streamMessage(HOUSEHOLD_ID, USER_ID, THREAD_ID, dto("hello"), new SseWriter(res));
+
+    const frames = parseFrames(write);
+    expect(frames.map((f) => f.event)).toEqual(["start", "chunk"]);
+    expect((frames[1]!.data as { text: string }).text).toBe("Hello. ");
+    expect(res.end).not.toHaveBeenCalled();
+
+    const assistantCall = prisma.chatMessage.create.mock.calls.find(
+      ([args]: [{ data: { role: string } }]) => args.data.role === "ASSISTANT",
+    ) as [{ data: { content: string } }] | undefined;
+    expect(assistantCall?.[0].data.content).toBe("Hello. ");
+  });
+
+  it("a straddling unsafe span aborts with SAFE_FALLBACK after partial release, logging one content-free chat_safety_incident", async () => {
+    const [chunk1, chunk2] = straddleChunks();
+    const provider = new FakeTextProvider({ streamChunks: [chunk1, chunk2] });
+    const { service } = buildService({ provider });
+    const { res, write } = fakeResponse();
+    const warnSpy = jest.spyOn(Logger.prototype, "warn").mockImplementation(() => undefined);
+
+    await service.streamMessage(
+      HOUSEHOLD_ID,
+      USER_ID,
+      THREAD_ID,
+      dto("What should I give my dog for pain?"),
+      new SseWriter(res),
+    );
+
+    const frames = parseFrames(write);
+    const chunkTexts = frames.filter((f) => f.event === "chunk").map((f) => (f.data as { text: string }).text);
+    const doneFrame = frames[frames.length - 1]!;
+
+    expect((doneFrame.data as { status: string }).status).toBe("SAFE_FALLBACK");
+    expect(scanUnsafeText(chunkTexts.join(""))).toEqual([]);
+
+    const incidentCall = warnSpy.mock.calls.find(
+      ([payload]) => (payload as { event?: string }).event === "chat_safety_incident",
+    );
+    expect(incidentCall).toBeDefined();
+    const payload = incidentCall?.[0] as {
+      event: string;
+      threadId: string;
+      reason: string;
+      codes: string[];
+      releasedBeforeFlag: boolean;
+    };
+    expect(payload.threadId).toBe(THREAD_ID);
+    expect(payload.reason).toBe("detector_finding");
+    expect(payload.codes).toContain("DOSING");
+    expect(payload.releasedBeforeFlag).toBe(true);
+
+    const serialized = JSON.stringify(payload);
+    expect(serialized).not.toContain("ibuprofen");
+    expect(serialized).not.toContain("mg/kg");
+    expect(serialized).not.toContain("What should I give my dog for pain?");
+
+    warnSpy.mockRestore();
+  });
+
+  it("a provider error logs an incident with reason provider_error and no codes", async () => {
+    const provider = new FakeTextProvider({
+      streamChunks: ["Sure, "],
+      streamError: new Error("connection reset"),
+    });
+    const { service } = buildService({ provider });
+    const { res, write } = fakeResponse();
+    const warnSpy = jest.spyOn(Logger.prototype, "warn").mockImplementation(() => undefined);
+
+    await service.streamMessage(HOUSEHOLD_ID, USER_ID, THREAD_ID, dto("What's going on?"), new SseWriter(res));
+
+    const frames = parseFrames(write);
+    const doneFrame = frames[frames.length - 1]!;
+    expect((doneFrame.data as { status: string }).status).toBe("SAFE_FALLBACK");
+
+    const incidentCall = warnSpy.mock.calls.find(
+      ([payload]) => (payload as { event?: string }).event === "chat_safety_incident",
+    );
+    expect(incidentCall).toBeDefined();
+    const payload = incidentCall?.[0] as { reason: string; codes: string[]; error?: string };
+    expect(payload.reason).toBe("provider_error");
+    expect(payload.codes).toEqual([]);
+    expect(payload.error).toBe("connection reset");
+
+    warnSpy.mockRestore();
+  });
+
+  it("D4: a SAFE_FALLBACK answer persists only the fallback sentence, never the released prefix", async () => {
+    const [chunk1, chunk2] = straddleChunks();
+    const provider = new FakeTextProvider({ streamChunks: [chunk1, chunk2] });
+    const { service, prisma } = buildService({ provider });
+    const { res } = fakeResponse();
+
+    await service.streamMessage(
+      HOUSEHOLD_ID,
+      USER_ID,
+      THREAD_ID,
+      dto("What should I give my dog for pain?"),
+      new SseWriter(res),
+    );
+
+    const assistantCall = prisma.chatMessage.create.mock.calls.find(
+      ([args]: [{ data: { role: string } }]) => args.data.role === "ASSISTANT",
+    ) as [{ data: { content: string } }] | undefined;
+    expect(assistantCall?.[0].data.content).toBe(SAFE_FALLBACK_CHAT_MESSAGE);
   });
 });

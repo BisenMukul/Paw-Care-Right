@@ -179,3 +179,27 @@ export function scanUnsafe(result: TriageResult): string[] {
 
   return findings;
 }
+
+const KNOWN_CODES: readonly Code[] = ["DOSING", "DRUG_RECOMMENDATION", "HARM_ENABLING", "DIAGNOSIS_LANGUAGE"];
+
+/**
+ * Extracts the `<CODE>:` prefix of each `scanUnsafeText`/`scanUnsafe` finding
+ * (T082 plan "detector code helper" — code extraction only, no change to the
+ * scan patterns). Deduped, sorted ascending, ignores any string without a
+ * known code prefix. Pure, never throws.
+ */
+export function findingCodes(findings: readonly string[]): string[] {
+  const codes = new Set<string>();
+
+  for (const entry of findings) {
+    const separatorIndex = entry.indexOf(":");
+    if (separatorIndex === -1) continue;
+
+    const candidate = entry.slice(0, separatorIndex);
+    if ((KNOWN_CODES as readonly string[]).includes(candidate)) {
+      codes.add(candidate);
+    }
+  }
+
+  return Array.from(codes).sort();
+}
