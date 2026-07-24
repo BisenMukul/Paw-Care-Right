@@ -6,6 +6,7 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 import { Card } from "../../src/components/card";
 import { ScreenScaffold } from "../../src/components/screen-scaffold";
 import { PreviewBanner } from "../../src/components/services/preview-banner";
+import { useNavBack } from "../../src/hooks/use-nav-back";
 import { useReducedMotion } from "../../src/hooks/use-reduced-motion";
 import { PREVIEW_STORE_PRODUCTS } from "../../src/services/preview-fixtures";
 import { strings } from "../../src/strings";
@@ -18,10 +19,15 @@ import { strings } from "../../src/strings";
 export default function ServicesStoreScreen() {
   const router = useRouter();
   const reduced = useReducedMotion();
+  const onBack = useNavBack("/services");
 
   return (
     <View testID="services-store-screen" className="flex-1">
-      <ScreenScaffold title={strings.servicesPreview.store.title} subtitle={strings.servicesPreview.store.subtitle}>
+      <ScreenScaffold
+        title={strings.servicesPreview.store.title}
+        subtitle={strings.servicesPreview.store.subtitle}
+        onBack={onBack}
+      >
         <PreviewBanner />
 
         <View className="flex-row flex-wrap gap-3">

@@ -7,6 +7,7 @@ import { Chip } from "../../src/components/chip";
 import { PrimaryButton } from "../../src/components/primary-button";
 import { ScreenScaffold } from "../../src/components/screen-scaffold";
 import { PreviewBanner } from "../../src/components/services/preview-banner";
+import { useNavBack } from "../../src/hooks/use-nav-back";
 import { PREVIEW_SALONS, PREVIEW_SLOT_DAYS, PREVIEW_SLOT_TIMES, PREVIEW_VETS } from "../../src/services/preview-fixtures";
 import { strings } from "../../src/strings";
 
@@ -37,6 +38,7 @@ export default function ServicesSlotsScreen() {
   const { kind, id } = useLocalSearchParams<{ kind?: string; id?: string }>();
   const [dayIndex, setDayIndex] = useState(0);
   const [timeIndex, setTimeIndex] = useState(0);
+  const onBack = useNavBack("/services");
 
   const resolvedKind: SlotKind = kind === "salon" ? "salon" : "vet";
   const summary = resolveSummary(resolvedKind, id);
@@ -45,6 +47,7 @@ export default function ServicesSlotsScreen() {
     <View testID="services-slots-screen" className="flex-1">
       <ScreenScaffold
         title={strings.servicesPreview.slots.title}
+        onBack={onBack}
         footer={
           <PrimaryButton
             testID="services-slots-confirm"

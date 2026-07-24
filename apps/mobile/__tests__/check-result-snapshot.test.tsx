@@ -8,8 +8,11 @@ import { strings } from "../src/strings";
 // T048 plan AC1 "Snapshot per tier" + "disclaimer presence asserted in every
 // snapshot": one stable snapshot per URGENCY_TIERS entry, plus AC2's
 // FALLBACK (distinct snapshot) and defensive-guard cases (D3, D5).
+// FOUNDER-UX-3 plan: `back`/`canGoBack` added to the router mock -- every
+// snapshot now renders the canon `AppHeader` (back-only, no title -- zero
+// new §5 copy), whose `onBack` resolves through `useNavBack`.
 jest.mock("expo-router", () => ({
-  useRouter: () => ({ replace: jest.fn(), push: jest.fn() }),
+  useRouter: () => ({ replace: jest.fn(), push: jest.fn(), back: jest.fn(), canGoBack: () => true }),
   useLocalSearchParams: () => ({ checkId: "c1" }),
 }));
 

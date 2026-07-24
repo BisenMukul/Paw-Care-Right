@@ -12,6 +12,7 @@ import { SaveConfirmation } from "../../src/components/save-confirmation";
 import { ScreenScaffold } from "../../src/components/screen-scaffold";
 import { Skeleton } from "../../src/components/skeleton";
 import { WeightChart } from "../../src/components/weight-chart";
+import { useNavBack } from "../../src/hooks/use-nav-back";
 import { strings } from "../../src/strings";
 import { resolveBreedBand } from "../../src/weight/breed-weight-band";
 import { useWeightUnit } from "../../src/weight/weight-unit-store";
@@ -39,6 +40,7 @@ export default function WeightScreen() {
   const { unit, toggle } = useWeightUnit();
   const addWeight = useAddWeight(petId);
   const isOffline = useIsOffline();
+  const onBack = useNavBack("/(tabs)");
   const [formVisible, setFormVisible] = useState(false);
   const [saved, setSaved] = useState(false);
   const clearTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -114,6 +116,7 @@ export default function WeightScreen() {
     <>
       <ScreenScaffold
         title={strings.weight.title}
+        onBack={onBack}
         footer={
           <PrimaryButton
             testID="weight-add-button"

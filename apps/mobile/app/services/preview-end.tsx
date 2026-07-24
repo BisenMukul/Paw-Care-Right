@@ -6,6 +6,7 @@ import { Card } from "../../src/components/card";
 import { ScreenScaffold } from "../../src/components/screen-scaffold";
 import { PreviewBanner } from "../../src/components/services/preview-banner";
 import { SecondaryButton } from "../../src/components/secondary-button";
+import { useNavBack } from "../../src/hooks/use-nav-back";
 import { strings } from "../../src/strings";
 
 type ServiceKey = "vet" | "salon" | "store" | "adopt";
@@ -39,10 +40,12 @@ export default function ServicesPreviewEndScreen() {
   const resolvedService: ServiceKey = isServiceKey(service) ? service : "vet";
   const serviceLabel = SERVICE_LABELS[resolvedService];
   const isAdopt = resolvedService === "adopt";
+  const onBack = useNavBack("/services");
 
   return (
     <View testID="services-preview-end-screen" className="flex-1">
       <ScreenScaffold
+        onBack={onBack}
         footer={
           <SecondaryButton
             testID="services-preview-end-cta"

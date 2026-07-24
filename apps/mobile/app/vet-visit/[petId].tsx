@@ -12,6 +12,7 @@ import { PrimaryButton } from "../../src/components/primary-button";
 import { SaveConfirmation } from "../../src/components/save-confirmation";
 import { ScreenScaffold } from "../../src/components/screen-scaffold";
 import { Skeleton } from "../../src/components/skeleton";
+import { useNavBack } from "../../src/hooks/use-nav-back";
 import { strings } from "../../src/strings";
 
 /** Design-system §7.5 Peak-End: how long the confirmation banner shows before the existing `router.back()` fires (only navigation is deferred — the mutation itself is un-delayed). */
@@ -35,6 +36,7 @@ export default function VetVisitScreen() {
   const addVetVisit = useAddVetVisit(petId);
   const isOffline = useIsOffline();
   const router = useRouter();
+  const onBack = useNavBack("/(tabs)");
   const formRef = useRef<AddVetVisitFormHandle>(null);
   const backTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [saved, setSaved] = useState(false);
@@ -105,6 +107,7 @@ export default function VetVisitScreen() {
   return (
     <ScreenScaffold
       title={strings.vetVisit.title}
+      onBack={onBack}
       footer={
         <PrimaryButton
           testID="add-vet-visit-save"

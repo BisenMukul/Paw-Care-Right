@@ -9,6 +9,7 @@ import { useCheck } from "../../../src/api/checks-api";
 import { buildSharePayload } from "../../../src/checks/share-payload";
 import { URGENCY_DISPLAY } from "../../../src/checks/urgency-display";
 import { buildVetSearchUrl } from "../../../src/checks/vet-search";
+import { AppHeader } from "../../../src/components/app-header";
 import { Card } from "../../../src/components/card";
 import { GhostButton } from "../../../src/components/ghost-button";
 import { PrimaryButton } from "../../../src/components/primary-button";
@@ -16,6 +17,7 @@ import { SecondaryButton } from "../../../src/components/secondary-button";
 import { Skeleton } from "../../../src/components/skeleton";
 import { VetDisclaimer } from "../../../src/components/vet-disclaimer";
 import { useLayoutBucket } from "../../../src/hooks/use-layout-bucket";
+import { useNavBack } from "../../../src/hooks/use-nav-back";
 import { strings } from "../../../src/strings";
 
 /**
@@ -30,6 +32,7 @@ import { strings } from "../../../src/strings";
  */
 export default function CheckResultScreen() {
   const router = useRouter();
+  const onBack = useNavBack("/(tabs)/timeline");
   const { checkId } = useLocalSearchParams<{ checkId?: string }>();
   const { data, isError, refetch } = useCheck(checkId ?? "");
   const bucket = useLayoutBucket();
@@ -85,6 +88,7 @@ export default function CheckResultScreen() {
 
   return (
     <SafeAreaView testID="check-result-screen" className="flex-1 bg-surface-page dark:bg-surface-page-dark">
+      <AppHeader onBack={onBack} />
       <ScrollView testID="check-result-scroll" className="flex-1">
         <View className={contentClassName}>
           {data.redFlag !== undefined ? (

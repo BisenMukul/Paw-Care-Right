@@ -446,6 +446,16 @@ describe("timeline screen", () => {
 
     shareSpy.mockRestore();
   });
+
+  // FOUNDER-UX-3 plan AC4: tab roots keep their large in-content title and
+  // never render the canon `AppHeader` (no back affordance on a root tab).
+  it("[AC4] renders no app-header (tab root unchanged)", async () => {
+    mockUseHealthTimeline.mockReturnValue({ ...BASE_MOCK, ...page([]) });
+
+    await render(<TimelineScreen />);
+
+    expect(screen.queryByTestId("app-header")).toBeNull();
+  });
 });
 
 // T067 "BINDING contract": `healthTimelineKeys.list(petId, kind)` is built

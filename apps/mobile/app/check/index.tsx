@@ -6,9 +6,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useChecksList } from "../../src/api/checks-api";
 import { usePaywallOnboardingTrigger } from "../../src/billing/use-paywall-trigger";
+import { AppHeader } from "../../src/components/app-header";
 import { CategoryGrid } from "../../src/components/category-grid";
 import { CheckHistoryRow } from "../../src/components/check-history-row";
 import { Skeleton } from "../../src/components/skeleton";
+import { useNavBack } from "../../src/hooks/use-nav-back";
 import { strings } from "../../src/strings";
 
 /**
@@ -28,6 +30,7 @@ import { strings } from "../../src/strings";
  */
 export default function CheckEntryScreen() {
   const router = useRouter();
+  const onBack = useNavBack("/(tabs)");
   const { petId } = useLocalSearchParams<{ petId?: string }>();
   const isOffline = useIsOffline();
   const { data, isLoading, isError, refetch, isRefetching } = useChecksList(petId ?? "");
@@ -53,6 +56,7 @@ export default function CheckEntryScreen() {
 
   return (
     <SafeAreaView testID="check-entry-screen" className="flex-1 bg-surface-page dark:bg-surface-page-dark">
+      <AppHeader title={strings.check.title} onBack={onBack} />
       <View className="gap-3 px-4 pb-4 pt-2">
         {isOffline ? (
           <Text
@@ -63,9 +67,6 @@ export default function CheckEntryScreen() {
             {strings.check.offlineBanner}
           </Text>
         ) : null}
-        <Text accessibilityRole="header" maxFontSizeMultiplier={1.5} className="text-2xl font-bold text-brand-900 dark:text-ink-dark font-display">
-          {strings.check.title}
-        </Text>
         <Text className="text-sm text-brand-700 dark:text-ink-muted-dark font-body">{strings.check.subtitle}</Text>
       </View>
       <ScrollView

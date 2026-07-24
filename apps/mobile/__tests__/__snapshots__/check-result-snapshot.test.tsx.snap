@@ -13,6 +13,77 @@ exports[`check result screen snapshots renders a distinct FALLBACK snapshot with
   }
   testID="check-result-screen"
 >
+  <View
+    className="flex-row items-center px-2 py-2"
+    testID="app-header"
+  >
+    <View
+      accessibilityLabel="Back"
+      accessibilityRole="button"
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": undefined,
+          "expanded": undefined,
+          "selected": undefined,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      className="h-11 w-11 items-center justify-center rounded-full"
+      collapsable={false}
+      focusable={true}
+      hitSlop={
+        {
+          "bottom": 8,
+          "left": 8,
+          "right": 8,
+          "top": 8,
+        }
+      }
+      onBlur={[Function]}
+      onClick={[Function]}
+      onFocus={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={null}
+      testID="app-header-back"
+    >
+      <Text
+        allowFontScaling={false}
+        selectable={false}
+        style={
+          [
+            {
+              "color": "#1f6350",
+              "fontSize": 24,
+            },
+            undefined,
+            {
+              "fontFamily": "ionicons",
+              "fontStyle": "normal",
+              "fontWeight": "normal",
+            },
+            {},
+          ]
+        }
+      >
+        
+      </Text>
+    </View>
+  </View>
   <RCTScrollView
     className="flex-1"
     testID="check-result-scroll"
@@ -237,6 +308,77 @@ exports[`check result screen snapshots renders a distinct snapshot with the emer
   }
   testID="check-result-screen"
 >
+  <View
+    className="flex-row items-center px-2 py-2"
+    testID="app-header"
+  >
+    <View
+      accessibilityLabel="Back"
+      accessibilityRole="button"
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": undefined,
+          "expanded": undefined,
+          "selected": undefined,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      className="h-11 w-11 items-center justify-center rounded-full"
+      collapsable={false}
+      focusable={true}
+      hitSlop={
+        {
+          "bottom": 8,
+          "left": 8,
+          "right": 8,
+          "top": 8,
+        }
+      }
+      onBlur={[Function]}
+      onClick={[Function]}
+      onFocus={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={null}
+      testID="app-header-back"
+    >
+      <Text
+        allowFontScaling={false}
+        selectable={false}
+        style={
+          [
+            {
+              "color": "#1f6350",
+              "fontSize": 24,
+            },
+            undefined,
+            {
+              "fontFamily": "ionicons",
+              "fontStyle": "normal",
+              "fontWeight": "normal",
+            },
+            {},
+          ]
+        }
+      >
+        
+      </Text>
+    </View>
+  </View>
   <RCTScrollView
     className="flex-1"
     testID="check-result-scroll"
@@ -564,6 +706,77 @@ exports[`check result screen snapshots renders a stable snapshot for EMERGENCY_N
   }
   testID="check-result-screen"
 >
+  <View
+    className="flex-row items-center px-2 py-2"
+    testID="app-header"
+  >
+    <View
+      accessibilityLabel="Back"
+      accessibilityRole="button"
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": undefined,
+          "expanded": undefined,
+          "selected": undefined,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      className="h-11 w-11 items-center justify-center rounded-full"
+      collapsable={false}
+      focusable={true}
+      hitSlop={
+        {
+          "bottom": 8,
+          "left": 8,
+          "right": 8,
+          "top": 8,
+        }
+      }
+      onBlur={[Function]}
+      onClick={[Function]}
+      onFocus={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={null}
+      testID="app-header-back"
+    >
+      <Text
+        allowFontScaling={false}
+        selectable={false}
+        style={
+          [
+            {
+              "color": "#1f6350",
+              "fontSize": 24,
+            },
+            undefined,
+            {
+              "fontFamily": "ionicons",
+              "fontStyle": "normal",
+              "fontWeight": "normal",
+            },
+            {},
+          ]
+        }
+      >
+        
+      </Text>
+    </View>
+  </View>
   <RCTScrollView
     className="flex-1"
     testID="check-result-scroll"
@@ -835,6 +1048,77 @@ exports[`check result screen snapshots renders a stable snapshot for MONITOR wit
   }
   testID="check-result-screen"
 >
+  <View
+    className="flex-row items-center px-2 py-2"
+    testID="app-header"
+  >
+    <View
+      accessibilityLabel="Back"
+      accessibilityRole="button"
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": undefined,
+          "expanded": undefined,
+          "selected": undefined,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      className="h-11 w-11 items-center justify-center rounded-full"
+      collapsable={false}
+      focusable={true}
+      hitSlop={
+        {
+          "bottom": 8,
+          "left": 8,
+          "right": 8,
+          "top": 8,
+        }
+      }
+      onBlur={[Function]}
+      onClick={[Function]}
+      onFocus={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={null}
+      testID="app-header-back"
+    >
+      <Text
+        allowFontScaling={false}
+        selectable={false}
+        style={
+          [
+            {
+              "color": "#1f6350",
+              "fontSize": 24,
+            },
+            undefined,
+            {
+              "fontFamily": "ionicons",
+              "fontStyle": "normal",
+              "fontWeight": "normal",
+            },
+            {},
+          ]
+        }
+      >
+        
+      </Text>
+    </View>
+  </View>
   <RCTScrollView
     className="flex-1"
     testID="check-result-scroll"
@@ -1121,6 +1405,77 @@ exports[`check result screen snapshots renders a stable snapshot for REASSURE wi
   }
   testID="check-result-screen"
 >
+  <View
+    className="flex-row items-center px-2 py-2"
+    testID="app-header"
+  >
+    <View
+      accessibilityLabel="Back"
+      accessibilityRole="button"
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": undefined,
+          "expanded": undefined,
+          "selected": undefined,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      className="h-11 w-11 items-center justify-center rounded-full"
+      collapsable={false}
+      focusable={true}
+      hitSlop={
+        {
+          "bottom": 8,
+          "left": 8,
+          "right": 8,
+          "top": 8,
+        }
+      }
+      onBlur={[Function]}
+      onClick={[Function]}
+      onFocus={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={null}
+      testID="app-header-back"
+    >
+      <Text
+        allowFontScaling={false}
+        selectable={false}
+        style={
+          [
+            {
+              "color": "#1f6350",
+              "fontSize": 24,
+            },
+            undefined,
+            {
+              "fontFamily": "ionicons",
+              "fontStyle": "normal",
+              "fontWeight": "normal",
+            },
+            {},
+          ]
+        }
+      >
+        
+      </Text>
+    </View>
+  </View>
   <RCTScrollView
     className="flex-1"
     testID="check-result-scroll"
@@ -1407,6 +1762,77 @@ exports[`check result screen snapshots renders a stable snapshot for VET_24H wit
   }
   testID="check-result-screen"
 >
+  <View
+    className="flex-row items-center px-2 py-2"
+    testID="app-header"
+  >
+    <View
+      accessibilityLabel="Back"
+      accessibilityRole="button"
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": undefined,
+          "expanded": undefined,
+          "selected": undefined,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      className="h-11 w-11 items-center justify-center rounded-full"
+      collapsable={false}
+      focusable={true}
+      hitSlop={
+        {
+          "bottom": 8,
+          "left": 8,
+          "right": 8,
+          "top": 8,
+        }
+      }
+      onBlur={[Function]}
+      onClick={[Function]}
+      onFocus={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={null}
+      testID="app-header-back"
+    >
+      <Text
+        allowFontScaling={false}
+        selectable={false}
+        style={
+          [
+            {
+              "color": "#1f6350",
+              "fontSize": 24,
+            },
+            undefined,
+            {
+              "fontFamily": "ionicons",
+              "fontStyle": "normal",
+              "fontWeight": "normal",
+            },
+            {},
+          ]
+        }
+      >
+        
+      </Text>
+    </View>
+  </View>
   <RCTScrollView
     className="flex-1"
     testID="check-result-scroll"
@@ -1678,6 +2104,77 @@ exports[`check result screen snapshots renders a stable snapshot for VET_SOON wi
   }
   testID="check-result-screen"
 >
+  <View
+    className="flex-row items-center px-2 py-2"
+    testID="app-header"
+  >
+    <View
+      accessibilityLabel="Back"
+      accessibilityRole="button"
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": undefined,
+          "expanded": undefined,
+          "selected": undefined,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      className="h-11 w-11 items-center justify-center rounded-full"
+      collapsable={false}
+      focusable={true}
+      hitSlop={
+        {
+          "bottom": 8,
+          "left": 8,
+          "right": 8,
+          "top": 8,
+        }
+      }
+      onBlur={[Function]}
+      onClick={[Function]}
+      onFocus={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={null}
+      testID="app-header-back"
+    >
+      <Text
+        allowFontScaling={false}
+        selectable={false}
+        style={
+          [
+            {
+              "color": "#1f6350",
+              "fontSize": 24,
+            },
+            undefined,
+            {
+              "fontFamily": "ionicons",
+              "fontStyle": "normal",
+              "fontWeight": "normal",
+            },
+            {},
+          ]
+        }
+      >
+        
+      </Text>
+    </View>
+  </View>
   <RCTScrollView
     className="flex-1"
     testID="check-result-scroll"

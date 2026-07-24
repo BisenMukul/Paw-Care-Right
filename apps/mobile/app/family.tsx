@@ -12,6 +12,7 @@ import { ListRow } from "../src/components/list-row";
 import { PrimaryButton } from "../src/components/primary-button";
 import { ScreenScaffold } from "../src/components/screen-scaffold";
 import { Skeleton } from "../src/components/skeleton";
+import { useNavBack } from "../src/hooks/use-nav-back";
 import { strings } from "../src/strings";
 
 /**
@@ -28,6 +29,7 @@ import { strings } from "../src/strings";
  * drops that access immediately (server-side, `useLeaveHousehold`).
  */
 export default function FamilyScreen() {
+  const onBack = useNavBack("/(tabs)");
   const { data: household, isLoading, isError, isRefetching, refetch } = useHouseholdMe();
   const currentUserId = useAuthStore((state) => state.user?.id ?? null);
   const createInvite = useCreateInvite();
@@ -95,6 +97,7 @@ export default function FamilyScreen() {
       title={strings.family.title}
       scrollTestID="family-scroll"
       refreshControl={<RefreshControl tintColor="#1f6350" refreshing={isRefetching} onRefresh={() => void refetch()} />}
+      onBack={onBack}
     >
       <Card>
         <View testID="family-members" className="gap-1">

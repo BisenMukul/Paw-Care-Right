@@ -108,6 +108,12 @@ export const strings = {
     timeline: "Timeline",
     settings: "Settings",
   },
+  // FOUNDER-UX-3 plan: the one shared back-control accessibility label used
+  // by every `AppHeader` instance across pushed screens (CLAUDE §6 -- no
+  // component hardcodes this copy).
+  nav: {
+    back: "Back",
+  },
   // Home tab (founder UI overhaul): greeting/quick-actions/today-preview/
   // empty-state copy only -- labels and record-keeping nouns, no
   // "diagnosis"/dosing language anywhere below (CLAUDE §7).

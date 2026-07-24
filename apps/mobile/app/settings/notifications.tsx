@@ -11,6 +11,7 @@ import { ListRow } from "../../src/components/list-row";
 import { PrimaryButton } from "../../src/components/primary-button";
 import { ScreenScaffold } from "../../src/components/screen-scaffold";
 import { Skeleton } from "../../src/components/skeleton";
+import { useNavBack } from "../../src/hooks/use-nav-back";
 import { strings } from "../../src/strings";
 
 /** Fixed 30-minute option list (T058 plan decision 5) -- no new dependency. */
@@ -30,6 +31,7 @@ const DEFAULT_TIMEZONE = Intl.DateTimeFormat().resolvedOptions().timeZone;
  * statement).
  */
 export default function NotificationPrefsScreen() {
+  const onBack = useNavBack("/(tabs)/settings");
   const { data: prefs, isLoading, isError, refetch } = useNotificationPrefs();
   const isOffline = useIsOffline();
   const updatePrefs = useUpdateNotificationPrefs();
@@ -121,7 +123,7 @@ export default function NotificationPrefsScreen() {
   }
 
   return (
-    <ScreenScaffold title={strings.notifications.title} scrollTestID="notifications-scroll">
+    <ScreenScaffold title={strings.notifications.title} scrollTestID="notifications-scroll" onBack={onBack}>
       {isOffline ? (
         <Text
           testID="notifications-offline-banner"

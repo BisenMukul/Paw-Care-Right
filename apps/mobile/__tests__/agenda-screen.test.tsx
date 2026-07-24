@@ -430,4 +430,17 @@ describe("Care agenda screen", () => {
       expect(screen.queryByTestId("agenda-care-plan")).toBeNull();
     });
   });
+
+  // FOUNDER-UX-3 plan AC4: tab roots keep their large in-content title and
+  // never render the canon `AppHeader` (no back affordance on a root tab).
+  it("[AC4] renders no app-header (care tab root unchanged)", async () => {
+    mockGetRouting(() => Promise.resolve(buildAgenda([])), []);
+
+    await renderScreen();
+
+    await waitFor(() => {
+      expect(screen.getByTestId("agenda-empty")).toBeTruthy();
+    });
+    expect(screen.queryByTestId("app-header")).toBeNull();
+  });
 });

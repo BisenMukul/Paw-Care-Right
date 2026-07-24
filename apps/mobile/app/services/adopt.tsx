@@ -9,6 +9,7 @@ import { Chip } from "../../src/components/chip";
 import { EmptyState } from "../../src/components/empty-state";
 import { ScreenScaffold } from "../../src/components/screen-scaffold";
 import { PreviewBanner } from "../../src/components/services/preview-banner";
+import { useNavBack } from "../../src/hooks/use-nav-back";
 import { useReducedMotion } from "../../src/hooks/use-reduced-motion";
 import { PREVIEW_ADOPT_PETS, type PreviewAdoptSpecies } from "../../src/services/preview-fixtures";
 import { strings } from "../../src/strings";
@@ -29,6 +30,7 @@ const SPECIES_MAP: Record<Exclude<SpeciesFilter, "all">, PreviewAdoptSpecies> = 
 export default function ServicesAdoptScreen() {
   const router = useRouter();
   const reduced = useReducedMotion();
+  const onBack = useNavBack("/services");
   const [species, setSpecies] = useState<SpeciesFilter>("all");
 
   const filtered =
@@ -36,7 +38,11 @@ export default function ServicesAdoptScreen() {
 
   return (
     <View testID="services-adopt-screen" className="flex-1">
-      <ScreenScaffold title={strings.servicesPreview.adopt.title} subtitle={strings.servicesPreview.adopt.subtitle}>
+      <ScreenScaffold
+        title={strings.servicesPreview.adopt.title}
+        subtitle={strings.servicesPreview.adopt.subtitle}
+        onBack={onBack}
+      >
         <PreviewBanner />
 
         <View className="flex-row gap-2">

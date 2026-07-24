@@ -12,8 +12,11 @@ import { strings } from "../src/strings";
 // is mocked since the screen now calls it for the recent-checks section.
 const mockPush = jest.fn();
 
+// FOUNDER-UX-3 plan: `back`/`canGoBack` added -- the screen now composes
+// the canon `AppHeader` (title + back), whose `onBack` resolves through
+// `useNavBack`.
 jest.mock("expo-router", () => ({
-  useRouter: () => ({ push: mockPush }),
+  useRouter: () => ({ push: mockPush, back: jest.fn(), replace: jest.fn(), canGoBack: () => true }),
   useLocalSearchParams: () => ({ petId: "pet1" }),
 }));
 
@@ -123,5 +126,13 @@ describe("check entry screen", () => {
     await render(<CheckEntryScreen />);
 
     expect(screen.getByTestId("check-recent-error")).toHaveTextContent(strings.check.history.error);
+  });
+
+  // FOUNDER-UX-3 plan AC3: the canon header carries the screen's title.
+  it("[AC3] renders app-header with the screen title", async () => {
+    await render(<CheckEntryScreen />);
+
+    expect(screen.getByTestId("app-header")).toBeTruthy();
+    expect(screen.getByTestId("app-header-title")).toHaveTextContent(strings.check.title);
   });
 });

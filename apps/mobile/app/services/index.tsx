@@ -7,6 +7,7 @@ import { Card } from "../../src/components/card";
 import { ScreenScaffold } from "../../src/components/screen-scaffold";
 import { PreviewBanner } from "../../src/components/services/preview-banner";
 import { useLayoutBucket } from "../../src/hooks/use-layout-bucket";
+import { useNavBack } from "../../src/hooks/use-nav-back";
 import { strings } from "../../src/strings";
 
 type IconName = ComponentProps<typeof Ionicons>["name"];
@@ -58,10 +59,11 @@ export default function ServicesScreen() {
   const router = useRouter();
   const bucket = useLayoutBucket();
   const isWide = bucket === "wide";
+  const onBack = useNavBack("/(tabs)/settings");
 
   return (
     <View testID="services-screen" className="flex-1">
-      <ScreenScaffold title={strings.services.title} subtitle={strings.services.subtitle}>
+      <ScreenScaffold title={strings.services.title} subtitle={strings.services.subtitle} onBack={onBack}>
         <PreviewBanner />
         <View className={isWide ? "flex-row flex-wrap gap-3" : "gap-3"}>
           {SERVICE_KEYS.map((key) => {

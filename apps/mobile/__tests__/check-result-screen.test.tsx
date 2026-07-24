@@ -11,9 +11,14 @@ import { strings } from "../src/strings";
 // T048 plan "Behavior / DoD (check-result-screen.test.tsx)".
 const mockReplace = jest.fn();
 const mockPush = jest.fn();
+const mockBack = jest.fn();
+const mockCanGoBack = jest.fn(() => true);
 
+// FOUNDER-UX-3 plan: `back`/`canGoBack` added -- the content render now
+// composes the canon `AppHeader` (back-only, no title), whose `onBack`
+// resolves through `useNavBack`.
 jest.mock("expo-router", () => ({
-  useRouter: () => ({ replace: mockReplace, push: mockPush }),
+  useRouter: () => ({ replace: mockReplace, push: mockPush, back: mockBack, canGoBack: mockCanGoBack }),
   useLocalSearchParams: () => ({ checkId: "c1" }),
 }));
 
@@ -76,10 +81,26 @@ describe("check result screen behavior", () => {
 
     await render(<CheckResultScreen />);
 
+    // FOUNDER-UX-3 plan AC6: the new back-only header (§5 surface) never
+    // reorders or buries the emergency notice -- it stays first inside the
+    // content region, unchanged.
+    expect(screen.getByTestId("app-header")).toBeTruthy();
     expect(screen.getByTestId("check-result-emergency-notice")).toBeTruthy();
     await fireEvent.press(screen.getByTestId("check-result-emergency-cta"));
 
     expect(mockPush).toHaveBeenCalledWith({ pathname: "/check/emergency/[checkId]", params: { checkId: "c1" } });
+  });
+
+  // FOUNDER-UX-3 plan AC3/AC6: the content render carries the canon
+  // back-only header (no title -- zero new §5 copy).
+  it("[AC3] content render: renders app-header and app-header-back, no app-header-title", async () => {
+    mockUseCheck.mockReturnValue({ data: checkWithResult("MONITOR"), isError: false, refetch: jest.fn() });
+
+    await render(<CheckResultScreen />);
+
+    expect(screen.getByTestId("app-header")).toBeTruthy();
+    expect(screen.getByTestId("app-header-back")).toBeTruthy();
+    expect(screen.queryByTestId("app-header-title")).toBeNull();
   });
 
   it("shows the error state and retry calls refetch", async () => {

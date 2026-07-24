@@ -4,11 +4,13 @@ import { RefreshControl, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useChecksList } from "../../../src/api/checks-api";
+import { AppHeader } from "../../../src/components/app-header";
 import { CheckHistoryRow } from "../../../src/components/check-history-row";
 import { EmptyState } from "../../../src/components/empty-state";
 import { PrimaryButton } from "../../../src/components/primary-button";
 import { SecondaryButton } from "../../../src/components/secondary-button";
 import { Skeleton } from "../../../src/components/skeleton";
+import { useNavBack } from "../../../src/hooks/use-nav-back";
 import { strings } from "../../../src/strings";
 
 /**
@@ -21,6 +23,7 @@ import { strings } from "../../../src/strings";
  */
 export default function CheckHistoryScreen() {
   const router = useRouter();
+  const onBack = useNavBack("/(tabs)");
   const { petId } = useLocalSearchParams<{ petId?: string }>();
   const {
     data,
@@ -62,6 +65,7 @@ export default function CheckHistoryScreen() {
 
   return (
     <SafeAreaView testID="check-history-screen" className="flex-1 bg-surface-page dark:bg-surface-page-dark">
+      <AppHeader title={strings.check.history.title} onBack={onBack} />
       <View className="gap-3 px-4 pb-2 pt-2">
         {isOffline ? (
           <Text
@@ -72,9 +76,6 @@ export default function CheckHistoryScreen() {
             {strings.check.history.offlineBanner}
           </Text>
         ) : null}
-        <Text accessibilityRole="header" maxFontSizeMultiplier={1.5} className="text-2xl font-bold text-brand-900 dark:text-ink-dark font-display">
-          {strings.check.history.title}
-        </Text>
       </View>
       {items.length === 0 ? (
         <View testID="check-history-empty" className="flex-1 justify-center px-4">

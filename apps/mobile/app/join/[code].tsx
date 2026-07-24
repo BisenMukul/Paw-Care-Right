@@ -1,11 +1,13 @@
 import { isApiError } from "@pawcareright/api-client";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
-import { Text } from "react-native";
+import { Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useAcceptInvite } from "../../src/api/households-api";
+import { AppHeader } from "../../src/components/app-header";
 import { PrimaryButton } from "../../src/components/primary-button";
+import { useNavBack } from "../../src/hooks/use-nav-back";
 import { strings } from "../../src/strings";
 
 /**
@@ -19,6 +21,7 @@ import { strings } from "../../src/strings";
  */
 export default function JoinScreen() {
   const router = useRouter();
+  const onBack = useNavBack("/(tabs)");
   const { code } = useLocalSearchParams<{ code: string }>();
   const acceptInvite = useAcceptInvite();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -42,27 +45,30 @@ export default function JoinScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 items-center justify-center gap-6 bg-surface-page dark:bg-surface-page-dark px-6">
-      <Text
-        testID="join-title"
-        accessibilityRole="header"
-        maxFontSizeMultiplier={1.5}
-        className="text-center text-2xl font-bold text-brand-900 dark:text-ink-dark font-display"
-      >
-        {strings.join.title}
-      </Text>
-      <Text className="text-center text-base text-brand-900 dark:text-ink-dark font-body">{strings.join.body}</Text>
-      {errorMessage !== null ? (
-        <Text testID="join-error" accessibilityRole="alert" className="text-center text-sm text-red-700 dark:text-red-400">
-          {errorMessage}
+    <SafeAreaView className="flex-1 bg-surface-page dark:bg-surface-page-dark">
+      <AppHeader onBack={onBack} />
+      <View className="flex-1 items-center justify-center gap-6 px-6">
+        <Text
+          testID="join-title"
+          accessibilityRole="header"
+          maxFontSizeMultiplier={1.5}
+          className="text-center text-2xl font-bold text-brand-900 dark:text-ink-dark font-display"
+        >
+          {strings.join.title}
         </Text>
-      ) : null}
-      <PrimaryButton
-        testID="join-accept"
-        label={strings.join.accept}
-        loading={acceptInvite.isPending}
-        onPress={() => void handleAccept()}
-      />
+        <Text className="text-center text-base text-brand-900 dark:text-ink-dark font-body">{strings.join.body}</Text>
+        {errorMessage !== null ? (
+          <Text testID="join-error" accessibilityRole="alert" className="text-center text-sm text-red-700 dark:text-red-400">
+            {errorMessage}
+          </Text>
+        ) : null}
+        <PrimaryButton
+          testID="join-accept"
+          label={strings.join.accept}
+          loading={acceptInvite.isPending}
+          onPress={() => void handleAccept()}
+        />
+      </View>
     </SafeAreaView>
   );
 }

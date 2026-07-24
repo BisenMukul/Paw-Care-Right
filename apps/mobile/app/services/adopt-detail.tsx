@@ -1,11 +1,12 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { Pressable, Text, useColorScheme, View } from "react-native";
+import { Text, useColorScheme, View } from "react-native";
 
 import { Card } from "../../src/components/card";
 import { PrimaryButton } from "../../src/components/primary-button";
 import { ScreenScaffold } from "../../src/components/screen-scaffold";
 import { PreviewBanner } from "../../src/components/services/preview-banner";
+import { useNavBack } from "../../src/hooks/use-nav-back";
 import { PREVIEW_ADOPT_ABOUT_BLURB, PREVIEW_ADOPT_PETS } from "../../src/services/preview-fixtures";
 import { strings } from "../../src/strings";
 
@@ -20,6 +21,7 @@ export default function ServicesAdoptDetailScreen() {
   const { petId } = useLocalSearchParams<{ petId?: string }>();
   const scheme = useColorScheme();
   const iconColor = scheme === "dark" ? "#2EA57C" : "#1f6350";
+  const onBack = useNavBack("/services/adopt");
   const pet = PREVIEW_ADOPT_PETS.find((p) => p.id === petId);
 
   if (!pet) {
@@ -38,6 +40,7 @@ export default function ServicesAdoptDetailScreen() {
   return (
     <View testID="services-adopt-detail-screen" className="flex-1">
       <ScreenScaffold
+        onBack={onBack}
         footer={
           <PrimaryButton
             testID="services-adopt-apply"
@@ -51,17 +54,6 @@ export default function ServicesAdoptDetailScreen() {
         <View className="gap-3">
           <View className="relative h-56 w-full items-center justify-center rounded-2xl bg-brand-100 dark:bg-surface-raised-dark">
             <Ionicons name="image-outline" size={40} color={iconColor} />
-            <Pressable
-              testID="services-adopt-detail-back"
-              onPress={() => router.push("/services/adopt")}
-              accessibilityRole="button"
-              accessibilityLabel={strings.addPet.common.back}
-              hitSlop={{ top: 4, bottom: 4, left: 4, right: 4 }}
-              style={({ pressed }) => (pressed ? { opacity: 0.85 } : null)}
-              className="absolute left-3 top-3 h-10 w-10 items-center justify-center rounded-full bg-white dark:bg-surface-card-dark"
-            >
-              <Ionicons name="arrow-back-outline" size={20} color={iconColor} />
-            </Pressable>
           </View>
 
           <View className="gap-1">

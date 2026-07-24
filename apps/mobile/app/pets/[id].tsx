@@ -6,10 +6,12 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { usePet } from "../../src/api/pets-api";
+import { AppHeader } from "../../src/components/app-header";
 import { AnimatedGradientBackground } from "../../src/components/home/animated-gradient-background";
 import { PetHeaderCard } from "../../src/components/pet-header-card";
 import { PrimaryButton } from "../../src/components/primary-button";
 import { QuickActions } from "../../src/components/quick-actions";
+import { useNavBack } from "../../src/hooks/use-nav-back";
 import { useReducedMotion } from "../../src/hooks/use-reduced-motion";
 import { CTA_HEIGHT } from "../../src/pets/pet-home-layout";
 import { strings } from "../../src/strings";
@@ -32,6 +34,7 @@ import { strings } from "../../src/strings";
  */
 export default function PetHomeScreen() {
   const router = useRouter();
+  const onBack = useNavBack("/(tabs)");
   const { id, localPhoto } = useLocalSearchParams<{ id: string; localPhoto?: string }>();
   const { data: pet, isLoading, isError, error, isFetching, refetch } = usePet(id);
   const isOffline = useIsOffline();
@@ -100,6 +103,7 @@ export default function PetHomeScreen() {
     <View className="flex-1">
       <AnimatedGradientBackground />
       <SafeAreaView className="flex-1">
+        <AppHeader onBack={onBack} />
         <View testID="pet-home-header-region" className="gap-3 px-6 pb-4 pt-2">
           {isOffline ? (
             <Text testID="pet-home-offline-banner" className="text-center text-sm text-brand-700 dark:text-ink-muted-dark font-body">

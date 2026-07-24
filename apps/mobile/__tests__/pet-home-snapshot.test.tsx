@@ -9,8 +9,11 @@ import { usePet } from "../src/api/pets-api";
 // plan R7) and the photo is a fixed local URI.
 const FIXED_MS = new Date("2024-06-15T00:00:00.000Z").getTime();
 
+// FOUNDER-UX-3 plan: `back`/`canGoBack` added to the router mock -- the
+// loaded snapshot now renders the canon `AppHeader` (back-only), whose
+// `onBack` resolves through `useNavBack`.
 jest.mock("expo-router", () => ({
-  useRouter: () => ({ push: jest.fn() }),
+  useRouter: () => ({ push: jest.fn(), back: jest.fn(), canGoBack: () => true }),
   useLocalSearchParams: () => ({ id: "pet1", localPhoto: "file:///snap.jpg" }),
 }));
 
