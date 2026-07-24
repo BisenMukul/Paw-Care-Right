@@ -15,6 +15,14 @@ export interface QuickActionsGridProps {
   onLogWeight: () => void;
   onLogActivity: () => void;
   onVetVisit: () => void;
+  /**
+   * T083: optional so every EXISTING call site (this component's own
+   * `dual-theme-tokens.test.tsx`/`reduced-motion-gating.test.tsx`/
+   * `responsive-grids.test.tsx` fixtures) keeps compiling and rendering
+   * byte-identically without a 5th tile. Only `(tabs)/index.tsx` supplies
+   * it, which is the only place the new tile appears.
+   */
+  onAskChat?: () => void;
 }
 
 interface Tile {
@@ -40,6 +48,7 @@ export function QuickActionsGrid({
   onLogWeight,
   onLogActivity,
   onVetVisit,
+  onAskChat,
 }: QuickActionsGridProps) {
   const reduced = useReducedMotion();
   const scheme = useColorScheme();
@@ -72,6 +81,18 @@ export function QuickActionsGrid({
       onPress: onVetVisit,
     },
   ];
+
+  // T083: additive 5th tile into the chat screen (D9) -- omitted entirely
+  // (not just hidden) when the caller doesn't supply `onAskChat`, so every
+  // pre-existing call site renders byte-identically to before this task.
+  if (onAskChat) {
+    tiles.push({
+      testID: "home-quick-action-chat",
+      icon: "chatbubble-ellipses-outline",
+      label: strings.home.quickActions.askChat,
+      onPress: onAskChat,
+    });
+  }
 
   return (
     <View testID="home-quick-actions" className="flex-row flex-wrap gap-3">

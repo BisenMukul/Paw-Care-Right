@@ -5,6 +5,10 @@ export { ApiError, isApiError, normalizeError, normalizeNetworkError } from "./e
 export type { ApiErrorArgs } from "./errors";
 export { createApiClient } from "./client";
 export type { ApiClient, ApiClientConfig } from "./client";
+export { createSseFrameParser } from "./sse";
+export type { SseFrame, SseFrameParser } from "./sse";
+export { streamSseRequest } from "./stream";
+export type { SseTransport, SseTransportRequest, SseTransportResponse, StreamSseOptions } from "./stream";
 export { MAX_QUERY_RETRIES, shouldRetry } from "./retry";
 export { createQueryClient } from "./query-client";
 export type { CreateQueryClientOptions } from "./query-client";

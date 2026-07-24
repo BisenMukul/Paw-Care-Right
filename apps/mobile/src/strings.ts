@@ -125,6 +125,8 @@ export const strings = {
     quickActionsTitle: "Quick actions",
     quickActions: {
       symptomCheck: "Symptom check",
+      // T083: the home tab's 5th quick-action tile into the chat screen.
+      askChat: "Ask a question",
     },
     todayTitle: "Today",
     todayEmpty: "Nothing due today.",
@@ -851,5 +853,56 @@ export const strings = {
     courseLengthLabel: MEDICATION_COURSE_LENGTH_LABEL,
     disclaimer: MEDICATION_DISCLAIMER,
     save: MEDICATION_SAVE_LABEL,
+  },
+  // T083 mobile chat UI ("Ask Paw Care Right +", F7): every string below is
+  // scanned by `chat-strings-tone.test.ts` (mirrors `craft2-strings-tone.test.ts`)
+  // for diagnosis/dosing/outcome-claim/streak-pressure language (CLAUDE §7).
+  // The disclaimer itself is NOT duplicated here -- the screen renders the
+  // existing shared `<VetDisclaimer/>` verbatim (CLAUDE §7 rule 3).
+  chat: {
+    title: (appName: string) => `Ask ${appName}`,
+    subtitle: "Ask about symptoms, food safety, or everyday care.",
+    error: "We couldn't load your pet to start this chat.",
+    retry: "Retry",
+    noPet: "Add a pet to start chatting.",
+    offlineBanner: "You're offline — reconnect to send a message.",
+    empty: {
+      title: "What's on your mind?",
+      body: "Ask about symptoms, food safety, or everyday care. This isn't a substitute for a vet visit.",
+    },
+    quickPromptsHeading: "Try asking",
+    quickPrompts: {
+      symptom: "My pet seems off today — what should I watch for?",
+      food: "Is this food safe for my pet?",
+      routine: "How do I build a good daily routine?",
+    },
+    composer: {
+      placeholder: "Type your question…",
+      sendA11y: "Send message",
+    },
+    typingA11y: "Thinking…",
+    nudge: {
+      title: "This sounds worth a closer look",
+      cta: "Start a symptom check",
+    },
+    dropped: {
+      title: "We lost the connection before finishing that answer.",
+      retry: "Retry",
+    },
+    // FINDING-4: distinct, neutral copy for a non-transport `error` state
+    // (e.g. an HTTP 500) -- the dropped copy above claims a connection was
+    // lost, which is false for a server error.
+    errorNotice: "That answer didn't finish. You can try again.",
+    // Mirrors CLAUDE §7 rule 5's exact fallback phrasing -- a real server
+    // safety decision, never a retry-silently-and-guess.
+    safeFallback: "We can't assess this reliably from what you've shared — please contact a vet.",
+    blocked: {
+      quotaTitle: "You've reached this month's chat limit",
+      quotaBody: "You can still reach a vet anytime. Your limit resets next month.",
+      upgradeTitle: (appName: string) => `${appName} chat is a premium feature`,
+      upgradeBody: "Upgrade to reach your pet's care assistant any time you have a question.",
+      upgradeCta: "See plans",
+    },
+    activePetA11y: (name: string) => `Chatting about ${name}`,
   },
 } as const;

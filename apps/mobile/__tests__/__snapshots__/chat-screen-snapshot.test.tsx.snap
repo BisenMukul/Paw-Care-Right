@@ -1,0 +1,278 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`chat screen snapshot chat screen with a completed answer 1`] = `
+<RNCSafeAreaView
+  className="flex-1 bg-surface-page dark:bg-surface-page-dark"
+  edges={
+    {
+      "bottom": "off",
+      "left": "off",
+      "right": "off",
+      "top": "additive",
+    }
+  }
+  testID="chat-screen"
+>
+  <View
+    className="flex-row items-center px-2 py-2"
+    testID="app-header"
+  >
+    <View
+      accessibilityLabel="Back"
+      accessibilityRole="button"
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": undefined,
+          "expanded": undefined,
+          "selected": undefined,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      className="h-11 w-11 items-center justify-center rounded-full"
+      collapsable={false}
+      focusable={true}
+      hitSlop={
+        {
+          "bottom": 8,
+          "left": 8,
+          "right": 8,
+          "top": 8,
+        }
+      }
+      onBlur={[Function]}
+      onClick={[Function]}
+      onFocus={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={null}
+      testID="app-header-back"
+    >
+      <Text
+        allowFontScaling={false}
+        selectable={false}
+        style={
+          [
+            {
+              "color": "#1f6350",
+              "fontSize": 24,
+            },
+            undefined,
+            {
+              "fontFamily": "ionicons",
+              "fontStyle": "normal",
+              "fontWeight": "normal",
+            },
+            {},
+          ]
+        }
+      >
+        
+      </Text>
+    </View>
+    <Text
+      accessibilityRole="header"
+      className="flex-1 text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold"
+      maxFontSizeMultiplier={1.5}
+      testID="app-header-title"
+    >
+      Ask Paw Care Right +
+    </Text>
+  </View>
+  <View
+    className="flex-1"
+    onLayout={[Function]}
+    style={
+      {
+        "paddingBottom": 0,
+      }
+    }
+  >
+    <RCTScrollView
+      className="flex-1"
+      contentContainerClassName="gap-3 px-4 pb-4 pt-2"
+      onScroll={[Function]}
+      scrollEventThrottle={16}
+      testID="chat-transcript"
+    >
+      <View>
+        <View
+          accessibilityLabel="Chatting about Rex"
+          className="flex-row items-center gap-2 self-start rounded-full bg-brand-50 dark:bg-surface-raised-dark px-3 py-1.5"
+          testID="chat-active-pet-badge"
+        >
+          <Text
+            allowFontScaling={false}
+            selectable={false}
+            style={
+              [
+                {
+                  "color": "#1f6350",
+                  "fontSize": 16,
+                },
+                undefined,
+                {
+                  "fontFamily": "ionicons",
+                  "fontStyle": "normal",
+                  "fontWeight": "normal",
+                },
+                {},
+              ]
+            }
+          >
+            
+          </Text>
+          <Text
+            className="text-sm font-semibold text-brand-900 dark:text-ink-dark font-body-semibold"
+          >
+            Rex
+          </Text>
+          <Text
+            className="text-xs text-brand-700 dark:text-ink-muted-dark font-body"
+          >
+            Dog
+          </Text>
+        </View>
+        <Text
+          className="text-sm text-brand-700 dark:text-ink-muted-dark font-body"
+          testID="chat-subtitle"
+        >
+          Ask about symptoms, food safety, or everyday care.
+        </Text>
+        <View
+          className="gap-2"
+          testID="chat-message-uuid-1"
+        >
+          <View
+            className="max-w-[80%] self-end rounded-2xl bg-brand-700 dark:bg-accent-dark px-4 py-3"
+            testID="chat-bubble-uuid-1"
+          >
+            <Text
+              className="text-base text-white font-body"
+            >
+              Is this normal?
+            </Text>
+          </View>
+        </View>
+        <View
+          className="gap-2"
+          testID="chat-message-uuid-2"
+        >
+          <View
+            className="max-w-[80%] self-start rounded-2xl bg-brand-50 dark:bg-surface-raised-dark px-4 py-3"
+            testID="chat-bubble-uuid-2"
+          >
+            <Text
+              className="text-base text-brand-900 dark:text-ink-dark font-body"
+            >
+              Here is some general guidance.
+            </Text>
+          </View>
+        </View>
+      </View>
+    </RCTScrollView>
+    <View
+      className="gap-3 border-t border-brand-100 dark:border-hairline-dark bg-surface-page dark:bg-surface-page-dark px-4 pb-6 pt-3"
+    >
+      <View
+        className="flex-row items-end gap-2"
+      >
+        <TextInput
+          accessibilityLabel="Type your question…"
+          className="max-h-32 flex-1 rounded-lg border border-brand-100 dark:border-hairline-dark bg-white dark:bg-surface-card-dark px-4 py-3 text-base text-brand-900 dark:text-ink-dark font-body"
+          editable={true}
+          maxLength={2001}
+          multiline={true}
+          onChangeText={[Function]}
+          placeholder="Type your question…"
+          placeholderTextColor="#2f8f74"
+          testID="chat-composer-input"
+          value=""
+        />
+        <View
+          accessibilityLabel="Send message"
+          accessibilityRole="button"
+          accessibilityState={
+            {
+              "busy": undefined,
+              "checked": undefined,
+              "disabled": true,
+              "expanded": undefined,
+              "selected": undefined,
+            }
+          }
+          accessibilityValue={
+            {
+              "max": undefined,
+              "min": undefined,
+              "now": undefined,
+              "text": undefined,
+            }
+          }
+          accessible={true}
+          className="h-11 w-11 items-center justify-center rounded-full bg-brand-300 dark:bg-surface-raised-dark"
+          collapsable={false}
+          focusable={true}
+          onBlur={[Function]}
+          onClick={[Function]}
+          onFocus={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          style={null}
+          testID="chat-composer-send"
+        >
+          <Text
+            allowFontScaling={false}
+            selectable={false}
+            style={
+              [
+                {
+                  "color": "#ffffff",
+                  "fontSize": 20,
+                },
+                undefined,
+                {
+                  "fontFamily": "ionicons",
+                  "fontStyle": "normal",
+                  "fontWeight": "normal",
+                },
+                {},
+              ]
+            }
+          >
+            
+          </Text>
+        </View>
+      </View>
+      <View
+        accessibilityRole="text"
+        className="rounded-lg bg-brand-50 px-4 py-3"
+        testID="vet-disclaimer"
+      >
+        <Text
+          className="text-center text-sm text-brand-900"
+        >
+          Paw Care Right + offers general pet-care guidance, not veterinary care or treatment. Always consult a licensed veterinarian.
+        </Text>
+      </View>
+    </View>
+  </View>
+</RNCSafeAreaView>
+`;
