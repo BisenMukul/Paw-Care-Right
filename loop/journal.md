@@ -1096,3 +1096,11 @@
 - **Verified clean:** 3 snapshot re-records exactly on their delta lists (check-result disclaimer subtree byte-identical); both mutation-proofs re-run by checker (cream hex break; "Health looks great" plant) with sha1 restores (one git-checkout misstep self-caught + reconstructed, sha-verified); cream AA pairs 10.95/6.20; emergency + disclaimer zero-diff; 6 mechanical test renames assertion-preserving; dark theme coherent; 11 tints correctly preserved.
 - **Gates (post-fix):** mobile **1075 → 1100 (143 suites)**, config 27, typecheck/lint/build 0.
 - Commit: feat(mobile,config): FIDELITY-2 exact parity — cream light theme, colorful tiles, deep-green hero.
+
+## [2026-07-19] FOUNDER-UX-2 · Intake stepper UX — single-select auto-advance + thumb-zone footer (founder-directed)
+- **Founder ask:** the stepper after "What's going on?" category tap "needs better user experience". Planned (`loop/plans/FOUNDER-UX-2.plan.md`) → executed → checked (`loop/reviews/FOUNDER-UX-2.review.md` → **VERDICT: PASS**; both mutation-proofs re-run by checker with sha1-verified backup restores).
+- **Shipped (2 files only — intake-form.tsx + its test; question-renderer byte-frozen):** single-select answers AUTO-ADVANCE after a 300ms beat (reduced-motion → instant) — the answer records via the identical handleAnswerChange BEFORE any advance, deselect never advances, multi/scale/duration/quick-picks/review keep explicit Next; timer cleared on unmount/Back/manual-nav/review-edit (checker: structurally impossible to double-advance — one live timer + functional updater); scroll-to-top on step change; footer gains the hairline thumb-zone bar treatment (testID intake-footer); segmented progress + step label retained.
+- **Data integrity (§5-adjacent):** payload/validation/required-gating byte-identical; FOUNDER-UX-1 contracts + ≤2-tap quick-picks survive (checker-run); zero copy changes; both themes.
+- **Tests:** 2 sanctioned re-targets (fake-timer advance replaces the redundant Next press — strengthened, not weakened) + 8 new AC tests (AA1-AA6, FT1-FT2). Mutation-proofs: advance-without-recording → 10 fails; Back-cleanup removal → exactly the AA2 cancellation test fails.
+- **Gates:** mobile **1100 → 1108 (143 suites)**, typecheck/lint/build 0.
+- Commit: feat(mobile): FOUNDER-UX-2 intake stepper — auto-advance singles, anchored footer.
