@@ -1,7 +1,7 @@
 {
   "project": "Paw Care Right +",
   "version": 6,
-  "status": "paused-checkpoint-C2",
+  "status": "running",
   "currentPhase": "P7",
   "phases": {
     "P0": {
@@ -716,8 +716,9 @@
     },
     "C2": {
       "afterMilestone": "M7",
-      "approved": false,
-      "gate": "Store products configured, billing sandbox checklist run, pricing approved"
+      "approved": true,
+      "gate": "Store products configured, billing sandbox checklist run, pricing approved",
+      "approvedVia": "founder chat instruction, 2026-07-24 (\"resume the loop\"); store-console + device billing-sandbox items remain standing founder to-dos"
     },
     "C3": {
       "afterMilestone": "M10",
@@ -746,5 +747,11 @@
   },
   "bundleFixes": [
     "surveillance-layer-corrections-v2: Write grants, fail-closed protected-paths (no python), current-task file contract, P0/no-HEAD tolerance, subshell fail-open fixes"
-  ]
+  ],
+  "current-task": {
+    "id": "T081",
+    "phase": 8,
+    "attempts": 1,
+    "state": "planning"
+  }
 }

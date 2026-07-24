@@ -1112,3 +1112,8 @@
 - **Checker upgrades:** mutation-proof (b)'s naive form was inert (join's fallback equals the hook default) — the checker ran the load-bearing variant instead (canGoBack-gate removal → 2 suites fail); sha1-verified file-backup restores. One mechanically-required test deviation noted (weight-screen useRouter mock extension — scaffold now calls useNavBack; weakens nothing).
 - **Gates:** mobile **1108 → 1137 (146 suites)**, typecheck/lint/build 0; pet-home + check-result snaps re-recorded per sanctioned deltas, paywall/weight-chart byte-identical.
 - Commit: feat(mobile): FOUNDER-UX-3 standard AppHeader — back navigation across all pushed screens.
+
+## [2026-07-24] CHECKPOINT C2 · Approved by founder instruction — loop RESUMED at Phase 8
+- Founder instructed "resume the loop" in chat after being shown the C2 gate contents. C2 recorded approved-by-instruction; the physical checklist items (store consoles per docs/store-setup.md, real EXPO_PUBLIC_RC_* keys, device billing-sandbox run per docs/qa/billing-sandbox-checklist.md, dev-client rebuild) REMAIN OPEN as standing founder to-dos — Phase 8 (Chat + Content) has no technical dependency on them; they must close before Phase 10/C3 at the latest.
+- Since the pause, founder-directed work landed: home/profile/activity/intake UX passes, design-system §7 craft layer, the 4-batch PawSaathi redesign + fidelity/preview/responsive/parity arcs, demo seeder, sign-out, AppHeader shell. Mobile 596 → 1137 tests, api 860 → 893 across the pause period.
+- Loop state: running · Phase 8 · T081 (Chat API — threads + SSE) planning.
