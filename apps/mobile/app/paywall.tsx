@@ -124,7 +124,12 @@ export default function PaywallScreen() {
       <View className="relative flex-1">
         <ScrollView testID="paywall-scroll" className="flex-1">
           <View className={contentClassName}>
-            <Text testID="paywall-headline" className="text-3xl font-bold text-brand-900 dark:text-ink-dark font-display">
+            <Text
+              testID="paywall-headline"
+              accessibilityRole="header"
+              maxFontSizeMultiplier={1.5}
+              className="text-3xl font-bold text-brand-900 dark:text-ink-dark font-display"
+            >
               {copy.headline(APP_DISPLAY_NAME)}
             </Text>
             <Text testID="paywall-subcopy" className="text-base text-brand-700 dark:text-ink-muted-dark font-body">
@@ -137,7 +142,7 @@ export default function PaywallScreen() {
               </View>
             ) : null}
             {notice === "error" ? (
-              <View testID="paywall-error-notice" className="rounded-2xl bg-red-100 px-4 py-3">
+              <View testID="paywall-error-notice" accessibilityRole="alert" className="rounded-2xl bg-red-100 px-4 py-3">
                 <Text className="text-center text-sm text-red-800">{strings.paywall.error}</Text>
               </View>
             ) : null}

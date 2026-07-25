@@ -243,6 +243,8 @@ export function IntakeForm({ categoryDef, onExit, onSubmit, photoUpload }: Intak
                         </View>
                         <Pressable
                           testID={`intake-review-edit-${question.id}`}
+                          accessibilityRole="button"
+                          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                           onPress={() =>
                             goToStep(questions.findIndex((candidateQuestion) => candidateQuestion.id === question.id))
                           }
@@ -266,6 +268,8 @@ export function IntakeForm({ categoryDef, onExit, onSubmit, photoUpload }: Intak
                       </View>
                       <Pressable
                         testID="intake-review-edit-freetext"
+                        accessibilityRole="button"
+                        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                         onPress={() => goToStep(freeTextStepIndex)}
                       >
                         <Text className="text-sm font-semibold text-brand-700 dark:text-accent-bright font-body-semibold">

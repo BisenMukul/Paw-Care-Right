@@ -127,7 +127,10 @@ export default function CheckResultScreen() {
 
             {result.possibleCauses.length ? (
               <View testID="check-result-possible-causes" className="gap-2">
-                <Text className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold">
+                <Text
+                  accessibilityRole="header"
+                  className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold"
+                >
                   {strings.check.result.sections.possibleCauses}
                 </Text>
                 {result.possibleCauses.map((cause) => (
@@ -141,7 +144,10 @@ export default function CheckResultScreen() {
 
             {result.redFlagsToWatch.length ? (
               <View testID="check-result-red-flags-to-watch" className="gap-2">
-                <Text className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold">
+                <Text
+                  accessibilityRole="header"
+                  className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold"
+                >
                   {strings.check.result.sections.redFlagsToWatch}
                 </Text>
                 {result.redFlagsToWatch.map((item) => (
@@ -154,7 +160,10 @@ export default function CheckResultScreen() {
 
             {result.homeCare.length ? (
               <View testID="check-result-home-care" className="gap-2">
-                <Text className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold">
+                <Text
+                  accessibilityRole="header"
+                  className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold"
+                >
                   {strings.check.result.sections.homeCare}
                 </Text>
                 {result.homeCare.map((item) => (
@@ -167,7 +176,12 @@ export default function CheckResultScreen() {
 
             {result.doNot.length ? (
               <View testID="check-result-do-not" className="gap-2">
-                <Text className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold">{strings.check.result.sections.doNot}</Text>
+                <Text
+                  accessibilityRole="header"
+                  className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold"
+                >
+                  {strings.check.result.sections.doNot}
+                </Text>
                 {result.doNot.map((item) => (
                   <Text key={item} className="text-sm text-brand-700 dark:text-ink-muted-dark font-body">
                     {`• ${item}`}
@@ -178,7 +192,10 @@ export default function CheckResultScreen() {
 
             {result.vetQuestions.length ? (
               <View testID="check-result-vet-questions" className="gap-2">
-                <Text className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold">
+                <Text
+                  accessibilityRole="header"
+                  className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold"
+                >
                   {strings.check.result.sections.vetQuestions}
                 </Text>
                 {result.vetQuestions.map((item) => (

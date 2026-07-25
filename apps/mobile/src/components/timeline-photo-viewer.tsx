@@ -34,6 +34,7 @@ export function TimelinePhotoViewer({ visible, petId, photoKeys, initialIndex, o
           accessibilityRole="button"
           accessibilityLabel={strings.timeline.photoViewerClose}
           onPress={onClose}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           className="absolute right-4 top-12 z-10"
         >
           <Text className="text-lg font-semibold text-white">{"✕"}</Text>

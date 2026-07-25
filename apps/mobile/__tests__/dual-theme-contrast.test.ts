@@ -160,3 +160,48 @@ describe("dual-theme-contrast: HEX map stays literally in sync with tailwind-pre
     expect(presetSource).toContain(hex);
   });
 });
+
+// T093 plan D6: contrast audit = inventory first, then extend this file
+// with only the un-audited remainder. Two pairs are mandatory (plan D6):
+// VetDisclaimer in BOTH OS themes, and the Emergency interstitial's
+// white-on-red pairs (theme-invariant, PAWSAATHI-3 decision 1). Both are
+// Tailwind FRAMEWORK-default reds (`red-700`/`red-800`/`red-900`), not
+// custom `tailwind-preset.mjs` tokens, so they are deliberately NOT added
+// to the preset-sync `it.each` above (that check exists only for this
+// repo's own custom color tokens).
+describe("T093 contrast audit: pairs not previously asserted", () => {
+  const EMERGENCY_HEX = {
+    white: "#ffffff",
+    red700: "#b91c1c", // bg-red-700 (the interstitial's SafeAreaView root)
+    red800: "#991b1b", // bg-red-800 (the hotline info box)
+    red900: "#7f1d1d", // bg-red-900 (the go-now badge) -- same value as HEX.red900 in urgency-contrast.test.ts's map
+  } as const;
+
+  // VetDisclaimer's own pair (ink900-on-page50) is already asserted by the
+  // "LIGHT theme pairs" describe above ("ink-900 on page-50"); this case
+  // exists to record the "both" "theme" verdict by name (Interfaces
+  // section's naming contract) rather than duplicate the math.
+  it("VetDisclaimer's brand-900-on-brand-50 pair clears AA in BOTH the light and dark OS theme schemes (opaque container, no dark: token)", () => {
+    // `vet-disclaimer.tsx` carries no `dark:` class and its container
+    // (`bg-brand-50`) is fully opaque, so the rendered pair is
+    // byte-identical whether `Appearance` reports "light" or "dark" -- the
+    // surrounding page's `dark:bg-surface-page-dark` cannot bleed through
+    // an opaque sibling. One measurement therefore answers both OS schemes.
+    const ratio = contrastRatio(HEX.ink900, HEX.page50);
+    expect(ratio).toBeGreaterThanOrEqual(NORMAL_TEXT_FLOOR); // clears AA (and, per the pre-existing case above, AAA too)
+  });
+
+  it("emergency interstitial's white-on-red pairs are theme-invariant and clear AA", () => {
+    // `check/emergency/[checkId].tsx` carries no `dark:` class anywhere
+    // (PAWSAATHI-3 decision 1 -- the safety takeover is intentionally
+    // theme-invariant), so these three pairs are the same in light and
+    // dark mode by construction; asserted once each.
+    expect(contrastRatio(EMERGENCY_HEX.white, EMERGENCY_HEX.red700)).toBeGreaterThanOrEqual(NORMAL_TEXT_FLOOR);
+    expect(contrastRatio(EMERGENCY_HEX.white, EMERGENCY_HEX.red800)).toBeGreaterThanOrEqual(NORMAL_TEXT_FLOOR);
+    expect(contrastRatio(EMERGENCY_HEX.white, EMERGENCY_HEX.red900)).toBeGreaterThanOrEqual(NORMAL_TEXT_FLOOR);
+  });
+
+  it("mutation-proof: white on a too-light red (e.g. #fca5a5, red-300) FAILS the AA floor -- the floor is not decorative", () => {
+    expect(contrastRatio(EMERGENCY_HEX.white, "#fca5a5")).toBeLessThan(NORMAL_TEXT_FLOOR);
+  });
+});

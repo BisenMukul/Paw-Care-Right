@@ -130,6 +130,7 @@ exports[`check result screen snapshots renders a distinct FALLBACK snapshot with
             testID="check-result-do-not"
           >
             <Text
+              accessibilityRole="header"
               className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold"
             >
               What not to do
@@ -471,6 +472,7 @@ exports[`check result screen snapshots renders a distinct snapshot with the emer
             testID="check-result-possible-causes"
           >
             <Text
+              accessibilityRole="header"
               className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold"
             >
               What this could be
@@ -493,6 +495,7 @@ exports[`check result screen snapshots renders a distinct snapshot with the emer
             testID="check-result-red-flags-to-watch"
           >
             <Text
+              accessibilityRole="header"
               className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold"
             >
               When to get help fast
@@ -513,6 +516,7 @@ exports[`check result screen snapshots renders a distinct snapshot with the emer
             testID="check-result-do-not"
           >
             <Text
+              accessibilityRole="header"
               className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold"
             >
               What not to do
@@ -528,6 +532,7 @@ exports[`check result screen snapshots renders a distinct snapshot with the emer
             testID="check-result-vet-questions"
           >
             <Text
+              accessibilityRole="header"
               className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold"
             >
               Questions to ask your vet
@@ -813,6 +818,7 @@ exports[`check result screen snapshots renders a stable snapshot for EMERGENCY_N
             testID="check-result-possible-causes"
           >
             <Text
+              accessibilityRole="header"
               className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold"
             >
               What this could be
@@ -835,6 +841,7 @@ exports[`check result screen snapshots renders a stable snapshot for EMERGENCY_N
             testID="check-result-red-flags-to-watch"
           >
             <Text
+              accessibilityRole="header"
               className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold"
             >
               When to get help fast
@@ -855,6 +862,7 @@ exports[`check result screen snapshots renders a stable snapshot for EMERGENCY_N
             testID="check-result-do-not"
           >
             <Text
+              accessibilityRole="header"
               className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold"
             >
               What not to do
@@ -870,6 +878,7 @@ exports[`check result screen snapshots renders a stable snapshot for EMERGENCY_N
             testID="check-result-vet-questions"
           >
             <Text
+              accessibilityRole="header"
               className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold"
             >
               Questions to ask your vet
@@ -1155,6 +1164,7 @@ exports[`check result screen snapshots renders a stable snapshot for MONITOR wit
             testID="check-result-possible-causes"
           >
             <Text
+              accessibilityRole="header"
               className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold"
             >
               What this could be
@@ -1177,6 +1187,7 @@ exports[`check result screen snapshots renders a stable snapshot for MONITOR wit
             testID="check-result-red-flags-to-watch"
           >
             <Text
+              accessibilityRole="header"
               className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold"
             >
               When to get help fast
@@ -1197,6 +1208,7 @@ exports[`check result screen snapshots renders a stable snapshot for MONITOR wit
             testID="check-result-home-care"
           >
             <Text
+              accessibilityRole="header"
               className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold"
             >
               Caring for them at home
@@ -1212,6 +1224,7 @@ exports[`check result screen snapshots renders a stable snapshot for MONITOR wit
             testID="check-result-do-not"
           >
             <Text
+              accessibilityRole="header"
               className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold"
             >
               What not to do
@@ -1227,6 +1240,7 @@ exports[`check result screen snapshots renders a stable snapshot for MONITOR wit
             testID="check-result-vet-questions"
           >
             <Text
+              accessibilityRole="header"
               className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold"
             >
               Questions to ask your vet
@@ -1512,6 +1526,7 @@ exports[`check result screen snapshots renders a stable snapshot for REASSURE wi
             testID="check-result-possible-causes"
           >
             <Text
+              accessibilityRole="header"
               className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold"
             >
               What this could be
@@ -1534,6 +1549,7 @@ exports[`check result screen snapshots renders a stable snapshot for REASSURE wi
             testID="check-result-red-flags-to-watch"
           >
             <Text
+              accessibilityRole="header"
               className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold"
             >
               When to get help fast
@@ -1554,6 +1570,7 @@ exports[`check result screen snapshots renders a stable snapshot for REASSURE wi
             testID="check-result-home-care"
           >
             <Text
+              accessibilityRole="header"
               className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold"
             >
               Caring for them at home
@@ -1569,6 +1586,7 @@ exports[`check result screen snapshots renders a stable snapshot for REASSURE wi
             testID="check-result-do-not"
           >
             <Text
+              accessibilityRole="header"
               className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold"
             >
               What not to do
@@ -1584,6 +1602,7 @@ exports[`check result screen snapshots renders a stable snapshot for REASSURE wi
             testID="check-result-vet-questions"
           >
             <Text
+              accessibilityRole="header"
               className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold"
             >
               Questions to ask your vet
@@ -1869,6 +1888,7 @@ exports[`check result screen snapshots renders a stable snapshot for VET_24H wit
             testID="check-result-possible-causes"
           >
             <Text
+              accessibilityRole="header"
               className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold"
             >
               What this could be
@@ -1891,6 +1911,7 @@ exports[`check result screen snapshots renders a stable snapshot for VET_24H wit
             testID="check-result-red-flags-to-watch"
           >
             <Text
+              accessibilityRole="header"
               className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold"
             >
               When to get help fast
@@ -1911,6 +1932,7 @@ exports[`check result screen snapshots renders a stable snapshot for VET_24H wit
             testID="check-result-do-not"
           >
             <Text
+              accessibilityRole="header"
               className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold"
             >
               What not to do
@@ -1926,6 +1948,7 @@ exports[`check result screen snapshots renders a stable snapshot for VET_24H wit
             testID="check-result-vet-questions"
           >
             <Text
+              accessibilityRole="header"
               className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold"
             >
               Questions to ask your vet
@@ -2211,6 +2234,7 @@ exports[`check result screen snapshots renders a stable snapshot for VET_SOON wi
             testID="check-result-possible-causes"
           >
             <Text
+              accessibilityRole="header"
               className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold"
             >
               What this could be
@@ -2233,6 +2257,7 @@ exports[`check result screen snapshots renders a stable snapshot for VET_SOON wi
             testID="check-result-red-flags-to-watch"
           >
             <Text
+              accessibilityRole="header"
               className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold"
             >
               When to get help fast
@@ -2253,6 +2278,7 @@ exports[`check result screen snapshots renders a stable snapshot for VET_SOON wi
             testID="check-result-home-care"
           >
             <Text
+              accessibilityRole="header"
               className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold"
             >
               Caring for them at home
@@ -2268,6 +2294,7 @@ exports[`check result screen snapshots renders a stable snapshot for VET_SOON wi
             testID="check-result-do-not"
           >
             <Text
+              accessibilityRole="header"
               className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold"
             >
               What not to do
@@ -2283,6 +2310,7 @@ exports[`check result screen snapshots renders a stable snapshot for VET_SOON wi
             testID="check-result-vet-questions"
           >
             <Text
+              accessibilityRole="header"
               className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold"
             >
               Questions to ask your vet

@@ -25,7 +25,9 @@ exports[`paywall screen — variant A renders and matches the snapshot 1`] = `
           className="gap-6 px-4 pb-8 pt-4"
         >
           <Text
+            accessibilityRole="header"
             className="text-3xl font-bold text-brand-900 dark:text-ink-dark font-display"
+            maxFontSizeMultiplier={1.5}
             testID="paywall-headline"
           >
             Get more from Paw Care Right +
@@ -467,7 +469,9 @@ exports[`paywall screen — variant B renders and matches the snapshot 1`] = `
           className="gap-6 px-4 pb-8 pt-4"
         >
           <Text
+            accessibilityRole="header"
             className="text-3xl font-bold text-brand-900 dark:text-ink-dark font-display"
+            maxFontSizeMultiplier={1.5}
             testID="paywall-headline"
           >
             Paw Care Right + Plus

@@ -62,6 +62,7 @@ export default function ServicesPreviewEndScreen() {
           </View>
           <Text
             testID="services-preview-end-title"
+            accessibilityRole="header"
             className="text-center text-2xl font-bold text-brand-900 dark:text-ink-dark font-display"
           >
             {strings.servicesPreview.end.title}

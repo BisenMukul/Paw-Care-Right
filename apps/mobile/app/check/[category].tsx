@@ -60,7 +60,11 @@ export default function IntakeScreen() {
   return (
     <View className="flex-1 bg-surface-page dark:bg-surface-page-dark">
       {isOffline ? (
-        <Text testID="intake-offline-banner" className="px-6 pt-2 text-center text-sm text-brand-700 dark:text-ink-muted-dark">
+        <Text
+          testID="intake-offline-banner"
+          accessibilityRole="alert"
+          className="px-6 pt-2 text-center text-sm text-brand-700 dark:text-ink-muted-dark"
+        >
           {strings.intake.offlineBanner}
         </Text>
       ) : null}

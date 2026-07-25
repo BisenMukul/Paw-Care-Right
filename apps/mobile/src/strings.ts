@@ -758,6 +758,13 @@ export const strings = {
     loading: "Loading…",
     error: "We couldn't load this reminder.",
     retry: "Retry",
+    // T093 a11y sweep: icon-only stepper labels (design-system §4 rule 2 —
+    // every icon-only control needs an accessibilityLabel). Navigational
+    // only, never a dosing/diagnostic word (CLAUDE §7 rule 2).
+    intervalDecreaseA11y: "Decrease interval",
+    intervalIncreaseA11y: "Increase interval",
+    monthDayDecreaseA11y: "Decrease day of month",
+    monthDayIncreaseA11y: "Increase day of month",
   },
   // Services hub (PAWSAATHI-4 plan, decisions 1-3; upgraded by PREVIEW-1):
   // `items`/`comingSoon`/`cardA11y`/`note` stay the informational base copy
