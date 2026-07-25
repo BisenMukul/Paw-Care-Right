@@ -16,6 +16,7 @@ import { DevicesModule } from "./devices/devices.module";
 import { HealthModule } from "./health/health.module";
 import { HealthLogsModule } from "./health-logs/health-logs.module";
 import { HouseholdsModule } from "./households/households.module";
+import { MeModule } from "./me/me.module";
 import { NotificationPrefsModule } from "./notifications/notification-prefs.module";
 import { PetsModule } from "./pets/pets.module";
 import { PhotosModule } from "./photos/photos.module";
@@ -47,6 +48,7 @@ import { WorkersModule } from "./workers/workers.module";
     HealthLogsModule,
     ChatModule,
     NotificationPrefsModule,
+    MeModule,
     RemoteConfigModule,
     WorkersModule,
     ThrottlerModule.forRoot([{ name: "default", ...THROTTLE_DEFAULT }]),

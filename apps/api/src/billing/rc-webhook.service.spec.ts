@@ -40,9 +40,9 @@ function buildTx(overrides: Partial<TxMock> = {}): TxMock {
   } as TxMock;
 }
 
-function buildAnalytics(overrides: { capture?: jest.Mock } = {}) {
-  const capture = overrides.capture ?? jest.fn();
-  return { analytics: { capture } as unknown as AnalyticsService, capture };
+function buildAnalytics(overrides: { captureForUser?: jest.Mock } = {}) {
+  const captureForUser = overrides.captureForUser ?? jest.fn().mockResolvedValue(undefined);
+  return { analytics: { captureForUser } as unknown as AnalyticsService, capture: captureForUser };
 }
 
 function buildService(

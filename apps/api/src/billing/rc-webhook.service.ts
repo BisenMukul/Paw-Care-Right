@@ -100,7 +100,7 @@ export class RcWebhookService {
     });
 
     if (trialStart !== null) {
-      this.analytics.capture(trialStart.distinctId, "trial_start", {
+      await this.analytics.captureForUser(trialStart.distinctId, "trial_start", {
         householdId: trialStart.householdId,
         plan: trialStart.plan,
       });

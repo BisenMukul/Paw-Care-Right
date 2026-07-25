@@ -15,6 +15,12 @@ jest.mock("../src/api/billing-api", () => ({
   useEntitlement: jest.fn(),
 }));
 
+// T091: see settings-restore.test.tsx's identical mock for why this is needed.
+jest.mock("../src/api/privacy-api", () => ({
+  usePrivacySettings: jest.fn(() => ({ data: undefined })),
+  useUpdatePrivacySettings: jest.fn(() => ({ mutateAsync: jest.fn() })),
+}));
+
 const mockedUseEntitlement = useEntitlement as unknown as jest.Mock;
 
 describe("settings screen — premium entry", () => {

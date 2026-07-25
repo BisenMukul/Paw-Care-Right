@@ -80,6 +80,16 @@ jest.mock("../src/api/billing-api", () => ({
   useEntitlement: () => mockUseEntitlement(),
 }));
 
+// T091: SettingsScreen now also reads/writes privacy settings via real
+// TanStack Query hooks -- mocked (same pattern as billing-api above) so
+// this file's direct `render(<SettingsScreen />)` (no QueryClientProvider
+// in the tree) doesn't need one; this suite doesn't exercise the privacy
+// toggle at all.
+jest.mock("../src/api/privacy-api", () => ({
+  usePrivacySettings: jest.fn(() => ({ data: undefined })),
+  useUpdatePrivacySettings: jest.fn(() => ({ mutateAsync: jest.fn() })),
+}));
+
 jest.mock("../src/billing/purchases", () => ({
   restorePurchases: jest.fn().mockResolvedValue({ status: "error" }),
 }));

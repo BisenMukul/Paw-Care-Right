@@ -2,6 +2,8 @@
 // The product display name is never hardcoded here — it is injected at
 // render time from the shared `APP_DISPLAY_NAME` constant, threaded through
 // as an `appName` parameter wherever copy needs to name the product.
+import { ACCOUNT_DELETION_GRACE_DAYS } from "@pawcareright/types";
+
 import { LEGAL_REVIEW_MARKER } from "./legal/legal-document";
 
 // --- T086: pinned legal placeholder tokens & contact addresses -------------
@@ -190,7 +192,7 @@ export const strings = {
         heading: "How long we keep information",
         paragraphs: [
           () =>
-            `We keep your account and pet data for as long as your account is active, so your health timeline and reminders stay useful over time. If you close your account, or ask us to delete your data, we delete or anonymise it within a reasonable period, except where we must retain limited records to meet legal, security or billing obligations. To request deletion, contact us at ${PRIVACY_CONTACT_EMAIL}; a self-serve in-app deletion option is planned but is not yet available.`,
+            `We keep your account and pet data for as long as your account is active, so your health timeline and reminders stay useful over time. You can delete your account yourself at any time in Settings — doing so schedules erasure of your account, your pets, your symptom checks, your health timeline, your reminders and your chat history after a ${ACCOUNT_DELETION_GRACE_DAYS}-day grace window, and signing back in during that window cancels the deletion. If you are the only person in your household, the whole household is erased with it; if you share it, the household and its shared data stay with the other members. Beyond that, we retain limited records only where we must, to meet legal, security or billing obligations. You can also reach us at ${PRIVACY_CONTACT_EMAIL} to ask us to delete your data, including situations our in-app flow does not cover, such as a shared household you own.`,
         ],
       },
       householdSharing: {
@@ -204,7 +206,7 @@ export const strings = {
         heading: "Your choices",
         paragraphs: [
           (appName: string) =>
-            `You can review and update most of your account and pet information directly in ${appName}. You can also ask us to access, correct, export or delete your information, or to limit certain uses, by contacting us using the details in the "Contact us" section below.`,
+            `You can review and update most of your account and pet information directly in ${appName}. In Settings, you can also turn off analytics sharing, request a full export of your data, and delete your account (see "How long we keep information" above for exactly what that does and the grace window). For anything else — including access, correction, or limiting certain uses — contact us using the details in the "Contact us" section below.`,
         ],
       },
       gdpr: {

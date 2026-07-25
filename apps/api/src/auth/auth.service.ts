@@ -1,4 +1,4 @@
-import { Inject, Injectable, InternalServerErrorException, UnauthorizedException } from "@nestjs/common";
+import { Inject, Injectable, InternalServerErrorException, Logger, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import type { Prisma } from "@prisma/client";
 
@@ -50,6 +50,8 @@ type PrismaTx = Prisma.TransactionClient | PrismaService;
  */
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private readonly otpService: OtpService,
     private readonly refreshTokenService: RefreshTokenService,
@@ -81,9 +83,15 @@ export class AuthService {
    * Signs an access token and issues a refresh token for an
    * already-resolved user, shaping the standard `AuthTokens` response.
    * Shared by `verifyOtp` and `SocialAuthService` so every sign-in path
-   * (OTP, Apple, future Google) issues sessions identically.
+   * (OTP, Apple, future Google) issues sessions identically -- which is
+   * exactly why the D2 "sign-in cancels a pending deletion" clear (T091
+   * plan step 31) lives HERE and nowhere else: verified that both OTP
+   * verify (via `provisionOrGetUser` above) and `SocialAuthService.login`
+   * route through this one method.
    */
   async issueSession(provisioned: ProvisionedUser): Promise<AuthTokens> {
+    await this.cancelPendingDeletionIfAny(provisioned.userId);
+
     const { token: refreshToken } = await this.refreshTokenService.issue(provisioned.userId);
     const accessToken = this.signAccessToken(provisioned.userId);
 
@@ -93,6 +101,26 @@ export class AuthService {
       user: { id: provisioned.userId, email: provisioned.email },
       householdId: provisioned.householdId,
     };
+  }
+
+  /**
+   * D2 (plan step 31/risk R3): a successful sign-in during the grace window
+   * cancels a pending `DELETE /me`. A read + conditional write (rather than
+   * an unconditional `updateMany`) so a normal sign-in for an undeleted
+   * user issues NO extra write -- only ids are logged, never email/content.
+   */
+  private async cancelPendingDeletionIfAny(userId: string): Promise<void> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { deletionScheduledAt: true },
+    });
+
+    if (!user || user.deletionScheduledAt === null) {
+      return;
+    }
+
+    await this.prisma.user.update({ where: { id: userId }, data: { deletionScheduledAt: null } });
+    this.logger.log({ event: "account_deletion_cancelled_by_signin", userId });
   }
 
   async refresh(presentedToken: string): Promise<AuthTokens> {

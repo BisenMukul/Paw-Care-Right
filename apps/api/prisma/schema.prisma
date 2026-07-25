@@ -72,6 +72,14 @@ model User {
   region    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  // T091 (privacy: consent, export & deletion, plan D5): server-side consent
+  // gate read by `AnalyticsService.captureForUser` -- also force-set true by
+  // `requestDeletion` (D2).
+  analyticsOptOut     Boolean   @default(false)
+  // T091 (plan D2): non-null while a grace-period deletion is pending; a
+  // successful sign-in during the window clears it (`AuthService.issueSession`).
+  // `@@index` below backs the daily sweep's `where: { lte: now } }` scan.
+  deletionScheduledAt DateTime?
 
   ownedHouseholds Household[]       @relation("HouseholdOwner")
   memberships     Membership[]
@@ -83,6 +91,9 @@ model User {
   notificationPrefs UserNotificationPrefs?
   subscription    Subscription?
   chatThreads     ChatThread[]
+  accountExports  AccountExport[]
+
+  @@index([deletionScheduledAt])
 }
 
 model Household {
@@ -412,6 +423,33 @@ enum AiAuditSurface {
 // discipline) -- `detectorFlags` is built by a pure function from a closed
 // code set, proven free of `failureReason`/error-message/chat-content
 // passthrough by test.
+enum AccountExportStatus {
+  PENDING
+  DONE
+  FAILED
+}
+
+// AccountExport (T091 plan D6/D4): one row per `POST /me/export` request.
+// `objectKey` is the S3 key the finished bundle was written to
+// (`exports/<userId>/<exportId>.json`); `failureReason` carries a short,
+// content-free reason string on FAILED (no user content, per plan step 20).
+// A daily sweep (`AccountDeletionService.sweep`) purges rows + objects older
+// than `ACCOUNT_EXPORT_RETENTION_DAYS` (D6) -- without this, a full
+// personal-data JSON bundle would sit in S3 forever.
+model AccountExport {
+  id            String              @id @default(uuid())
+  userId        String
+  status        AccountExportStatus @default(PENDING)
+  objectKey     String?
+  failureReason String?
+  requestedAt   DateTime            @default(now())
+  completedAt   DateTime?
+  user          User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, requestedAt(sort: Desc)])
+  @@index([requestedAt])
+}
+
 model AiAuditLog {
   id            String         @id @default(uuid())
   surface       AiAuditSurface

@@ -210,6 +210,8 @@ export const strings = {
     },
     analyticsLabel: "Share anonymous usage data",
     analyticsHint: "Helps us improve the app. Never includes your pet's symptoms, photos, or health details.",
+    analyticsSaveError: "We couldn't save that change. Please try again.",
+    privacy: "Privacy & data",
     signOut: "Sign out",
     signOutHint: "You can sign back in with your email any time.",
   },
@@ -616,6 +618,39 @@ export const strings = {
     },
     save: "Save",
     saveError: "We couldn't save your changes. Please try again.",
+  },
+  // T091 (privacy: consent, export & deletion). Calm, honest copy per
+  // CLAUDE §7 — states exactly what's deleted, that a shared household's
+  // pets/timeline stay with the household when the caller is a member, the
+  // grace window, and the sign-in-cancels-it disclosure. No dark patterns:
+  // the export copy does NOT promise an automated email (none is shipped
+  // yet — the backend's own delivery is a dev-log link stub only), so it
+  // honestly points to the privacy contact instead of over-promising.
+  privacy: {
+    title: "Privacy & data",
+    loading: "Loading…",
+    error: "We couldn't load your privacy settings.",
+    empty: "We couldn't find your privacy settings.",
+    retry: "Retry",
+    offline: "You're offline. Reconnect to manage your data.",
+    offlineBanner: "You're offline — some actions are unavailable until you're back online.",
+    exportHeading: "Export your data",
+    exportBody: "Get a copy of your account, pets, symptom checks, health timeline and chat history.",
+    exportButton: "Export my data",
+    exportPending:
+      "We've started preparing your export. This can take a few minutes. If you don't hear back, contact us at privacy@pawcareright.app.",
+    exportError: "We couldn't start your export. Please try again.",
+    deleteHeading: "Delete your account",
+    deleteButton: "Delete my account",
+    deleteConsequences:
+      "This permanently deletes your account, your pets, your symptom checks, your chat history and your reminders. If you're the only person in your household, the whole household is deleted with it. If you share your household with other people, the household, its pets and its shared timeline stay with them — only your own account and the checks and chats you created are removed.",
+    deleteGrace: (days: number) =>
+      `You have ${days} days to change your mind. Signing back in during that time cancels the deletion.`,
+    deleteConfirm: "Yes, delete my account",
+    deleteCancel: "Cancel",
+    deleteError: "We couldn't process this. Please try again.",
+    deleteConflict:
+      "You own a shared household. Ask the other members to leave (Settings → Family → Leave household), then delete your account — or email privacy@pawcareright.app and we'll handle it for you.",
   },
   carePlan: {
     title: "Set up a care plan",

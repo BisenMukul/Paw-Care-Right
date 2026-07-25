@@ -8,6 +8,16 @@ import { useAuthStore } from "../src/auth/auth-store";
  * `useConsentStore` end-to-end through `captureEvent`, proving the consent
  * gate actually reaches the transport (not just unit-tested in isolation in
  * `packages/analytics`).
+ *
+ * T091 plan AC3 (client-side half; see `AnalyticsService.captureForUser`'s
+ * own unit tests + `account-privacy.e2e-spec.ts` for the server-side half,
+ * and `privacy-screen.test.tsx` for the Settings toggle that now also PUTs
+ * this same flag to the server): the MOBILE emitter's own gate is byte-
+ * identical to T078 -- this task adds a SEPARATE server-side consent gate
+ * (`AnalyticsService.captureForUser`), it does not change how
+ * `useConsentStore`/`captureEvent` behave here, so these tests are kept
+ * verbatim as the client-side non-vacuous mutation proof (plan mutation
+ * M3's paired on/off assertions).
  */
 jest.mock("../src/config", () => ({
   getConfig: () => ({

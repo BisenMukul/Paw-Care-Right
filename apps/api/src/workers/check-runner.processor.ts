@@ -90,7 +90,7 @@ export class CheckRunnerProcessor extends WorkerHost {
         where: { createdById: userId, status: { in: [...TERMINAL_CHECK_STATUSES] } },
       });
       if (terminalCount === 1) {
-        this.analytics.capture(userId, "first_check_completed", { checkId, householdId, status, urgency });
+        await this.analytics.captureForUser(userId, "first_check_completed", { checkId, householdId, status, urgency });
       }
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);

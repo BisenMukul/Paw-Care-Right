@@ -1,3 +1,5 @@
+import { ACCOUNT_DELETION_GRACE_DAYS } from "@pawcareright/types";
+
 import { strings } from "../strings";
 import {
   PRIVACY_REVIEW_TOPICS,
@@ -106,10 +108,37 @@ describe("privacy document structure (AC2)", () => {
     expect(body).toContain("privacy@pawcareright.app");
   });
 
-  it("H3: no claim of an in-app delete button, and the contact-based route is present", () => {
+  it("H3 (re-pointed for T091, checker F3): the policy now HONESTLY describes in-app deletion in Settings, but still does not overclaim a single-tap/instant 'delete button' flow, and the contact-based route is present", () => {
+    // T086's original H3 intent was "the policy must NOT claim in-app
+    // deletion exists" -- that intent inverted the moment T091 shipped
+    // self-serve deletion, so the old assertion (unchanged, still passing
+    // "by wording luck" per the checker's review) no longer tests what its
+    // name says. Re-pointed to the CURRENT honest claim: in-app deletion
+    // in Settings is real (positive assertion), but the copy still never
+    // overclaims a single literal "delete button" / instant / no-
+    // confirmation flow (the actual UX is a two-step destructive confirm
+    // behind a 30-day grace window, not one tap).
     const body = doc.sections.flatMap((s) => s.paragraphs).join(" ");
+    expect(body.toLowerCase()).toMatch(/delete your account yourself.*in settings/);
     expect(body).not.toMatch(/delete (my|your) account (button|in the app)/i);
+    expect(body.toLowerCase()).not.toContain("one tap");
+    expect(body.toLowerCase()).not.toContain("one-tap");
+    expect(body.toLowerCase()).not.toContain("instantly delete");
     expect(body).toContain("privacy@pawcareright.app");
+  });
+
+  it("T091: the privacy policy no longer says self-serve deletion is unavailable", () => {
+    const body = doc.sections.flatMap((s) => s.paragraphs).join(" ");
+    expect(body).not.toContain("a self-serve in-app deletion option is planned but is not yet available");
+    expect(body.toLowerCase()).not.toMatch(/deletion option is planned/);
+  });
+
+  it("T091: the retention section states the deletion grace period (imported from @pawcareright/types, not hardcoded)", () => {
+    const retention = doc.sections.find((s) => s.id === "retention")!;
+    const body = retention.paragraphs.join(" ");
+    expect(body).toContain(`${ACCOUNT_DELETION_GRACE_DAYS}-day grace window`);
+    expect(body).toMatch(/signing back in.*cancels the deletion/i);
+    expect(body.toLowerCase()).toContain("in settings");
   });
 });
 

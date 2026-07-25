@@ -21,3 +21,5 @@ export * from "./vet-summary-copy";
 export * from "./entitlement";
 export * from "./rc-webhook";
 export * from "./config";
+export * from "./account-privacy";
+export * from "./account-export";

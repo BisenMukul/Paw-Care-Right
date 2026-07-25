@@ -39,6 +39,12 @@ jest.mock("../src/api/billing-api", () => ({
   useEntitlement: jest.fn(),
 }));
 
+// T091: see sweep4-a11y.test.tsx's identical mock for why this is needed.
+jest.mock("../src/api/privacy-api", () => ({
+  usePrivacySettings: jest.fn(() => ({ data: undefined })),
+  useUpdatePrivacySettings: jest.fn(() => ({ mutateAsync: jest.fn() })),
+}));
+
 jest.mock("../src/api/households-api", () => ({
   useHouseholdMe: jest.fn(),
   useCreateInvite: jest.fn(),

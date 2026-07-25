@@ -168,9 +168,9 @@ describe("CheckRunnerProcessor", () => {
     return { prisma, findUnique, update, upsert, transaction, count };
   }
 
-  function buildAnalytics(overrides: { capture?: jest.Mock } = {}) {
-    const capture = overrides.capture ?? jest.fn();
-    return { analytics: { capture } as unknown as AnalyticsService, capture };
+  function buildAnalytics(overrides: { captureForUser?: jest.Mock } = {}) {
+    const captureForUser = overrides.captureForUser ?? jest.fn().mockResolvedValue(undefined);
+    return { analytics: { captureForUser } as unknown as AnalyticsService, capture: captureForUser };
   }
 
   function buildVisionPrep(overrides: { prepare?: jest.Mock } = {}) {
@@ -646,7 +646,7 @@ describe("CheckRunnerProcessor", () => {
       const capture = jest.fn(() => {
         throw new Error("analytics boom");
       });
-      const { analytics } = buildAnalytics({ capture });
+      const { analytics } = buildAnalytics({ captureForUser: capture });
       const provider = new FakeTextProvider({ script: [textResult(triageResultText())] });
       const processor = new CheckRunnerProcessor(prisma, visionPrep, costLog, provider, MODEL_ID, followUpQueue, analytics, buildAiAudit().aiAudit);
 
