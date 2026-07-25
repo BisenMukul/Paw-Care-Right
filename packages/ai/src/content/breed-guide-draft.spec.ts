@@ -225,8 +225,8 @@ describe("mergeBreedGuides", () => {
 
   it("never overwrites a reviewed:true row", () => {
     const draft = buildTemplateDraft(findBreed("labrador-retriever", dogBreeds));
-    expect(draft.temperament).not.toBe(reviewedRow.temperament + " changed"); // sanity: distinct fixture values below
     const differentDraft: BreedGuideRow = { ...draft, temperament: "A completely different draft temperament string that is long enough." };
+    expect(differentDraft.temperament).not.toBe(reviewedRow.temperament);
 
     const merged = mergeBreedGuides([reviewedRow], [differentDraft]);
     expect(merged).toEqual([reviewedRow]);

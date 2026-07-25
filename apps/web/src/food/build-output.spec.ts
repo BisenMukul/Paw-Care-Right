@@ -57,6 +57,22 @@ describe("build-output — prerequisite", () => {
   });
 });
 
+/** The 12-pair sample this file reads for AC2 and (B14) the emitted-JSON-LD parse. Not widened to 466. */
+const SAMPLE: Array<{ segment: "can-dogs-eat" | "can-cats-eat"; itemId: string }> = [
+  { segment: "can-dogs-eat", itemId: "grapes" },
+  { segment: "can-cats-eat", itemId: "true-lilies" },
+  { segment: "can-dogs-eat", itemId: "chocolate" },
+  { segment: "can-cats-eat", itemId: "onion" },
+  { segment: "can-dogs-eat", itemId: "onion" },
+  { segment: "can-cats-eat", itemId: "chocolate" },
+  { segment: "can-cats-eat", itemId: "xylitol" },
+  { segment: "can-dogs-eat", itemId: "true-lilies" },
+  { segment: "can-cats-eat", itemId: "grapes" },
+  { segment: "can-dogs-eat", itemId: "apple" },
+  { segment: "can-cats-eat", itemId: "banana" },
+  { segment: "can-dogs-eat", itemId: "watermelon" },
+];
+
 describe("AC1 — build prerendered every /can-*-eat/* route", () => {
   it("the manifest's food route set equals allFoodPagePaths() (both directions)", () => {
     const manifest = readManifest();
@@ -93,21 +109,6 @@ describe("AC1 — build prerendered every /can-*-eat/* route", () => {
 });
 
 describe("AC2 — SEO contract on the 12-pair sample's built HTML", () => {
-  const SAMPLE: Array<{ segment: "can-dogs-eat" | "can-cats-eat"; itemId: string }> = [
-    { segment: "can-dogs-eat", itemId: "grapes" },
-    { segment: "can-cats-eat", itemId: "true-lilies" },
-    { segment: "can-dogs-eat", itemId: "chocolate" },
-    { segment: "can-cats-eat", itemId: "onion" },
-    { segment: "can-dogs-eat", itemId: "onion" },
-    { segment: "can-cats-eat", itemId: "chocolate" },
-    { segment: "can-cats-eat", itemId: "xylitol" },
-    { segment: "can-dogs-eat", itemId: "true-lilies" },
-    { segment: "can-cats-eat", itemId: "grapes" },
-    { segment: "can-dogs-eat", itemId: "apple" },
-    { segment: "can-cats-eat", itemId: "banana" },
-    { segment: "can-dogs-eat", itemId: "watermelon" },
-  ];
-
   it("every sample page has a non-empty <title> under 65 characters", () => {
     for (const { segment, itemId } of SAMPLE) {
       const html = findBuiltHtml(segment, itemId);
@@ -197,6 +198,46 @@ describe("AC2 — SEO contract on the 12-pair sample's built HTML", () => {
     expect(assertion[0]).toBe("error");
     expect(assertion[1].minScore).toBeGreaterThanOrEqual(0.95);
     expect(lighthouserc.ci.collect.url.some((url) => /\/can-[a-z]+-eat\//.test(url))).toBe(true);
+  });
+});
+
+describe("B14 — the emitted JSON-LD (not the builder's output) parses as a valid FAQPage", () => {
+  const JSON_LD_SCRIPT_PATTERN = /<script type="application\/ld\+json">([\s\S]*?)<\/script>/;
+
+  it("every sample page's built HTML contains one <script type=\"application/ld+json\"> that parses", () => {
+    for (const { segment, itemId } of SAMPLE) {
+      const html = findBuiltHtml(segment, itemId);
+      const match = html.match(JSON_LD_SCRIPT_PATTERN);
+      expect(match).not.toBeNull();
+
+      let parsed: unknown;
+      expect(() => {
+        parsed = JSON.parse(match![1]!);
+      }).not.toThrow();
+
+      const jsonLd = parsed as {
+        "@context": unknown;
+        "@type": unknown;
+        mainEntity: unknown;
+      };
+      expect(jsonLd["@context"]).toBe("https://schema.org");
+      expect(jsonLd["@type"]).toBe("FAQPage");
+      expect(Array.isArray(jsonLd.mainEntity)).toBe(true);
+      const mainEntity = jsonLd.mainEntity as Array<{
+        "@type": unknown;
+        name: unknown;
+        acceptedAnswer: { "@type": unknown; text: unknown };
+      }>;
+      expect(mainEntity.length).toBeGreaterThanOrEqual(2);
+      for (const entry of mainEntity) {
+        expect(entry["@type"]).toBe("Question");
+        expect(typeof entry.name).toBe("string");
+        expect((entry.name as string).length).toBeGreaterThan(0);
+        expect(entry.acceptedAnswer["@type"]).toBe("Answer");
+        expect(typeof entry.acceptedAnswer.text).toBe("string");
+        expect((entry.acceptedAnswer.text as string).length).toBeGreaterThan(0);
+      }
+    }
   });
 });
 

@@ -31,6 +31,52 @@ describe("build-output — prerequisite", () => {
   });
 });
 
+interface NewestSource {
+  path: string;
+  mtimeMs: number;
+}
+
+/**
+ * Walks `apps/web/src` and `apps/web/app`, skipping `node_modules`, `.next`,
+ * and any `*.spec.ts`/`*.spec.tsx` (editing a spec needs no rebuild — specs
+ * must not trip the guard), and returns the newest source file's mtime.
+ */
+function newestNonSpecSource(): NewestSource {
+  let newest: NewestSource = { path: "(none)", mtimeMs: -1 };
+
+  function walk(dir: string): void {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const fullPath = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        if (entry.name === "node_modules" || entry.name === ".next") continue;
+        walk(fullPath);
+      } else if (!/\.spec\.tsx?$/.test(entry.name)) {
+        const mtimeMs = fs.statSync(fullPath).mtimeMs;
+        if (mtimeMs > newest.mtimeMs) {
+          newest = { path: fullPath, mtimeMs };
+        }
+      }
+    }
+  }
+
+  walk(path.join(WEB_ROOT, "src"));
+  walk(path.join(WEB_ROOT, "app"));
+  return newest;
+}
+
+describe("build-output — freshness", () => {
+  it("the .next build is newer than every non-spec source file (turbo-bypass guard)", () => {
+    const newest = newestNonSpecSource();
+    const manifestMtimeMs = fs.statSync(MANIFEST_PATH).mtimeMs;
+    if (manifestMtimeMs < newest.mtimeMs) {
+      throw new Error(
+        `.next is stale: ${newest.path} is newer than the build output — run \`pnpm --filter @pawcareright/web build\` (the root \`pnpm test\` chains it via turbo)`,
+      );
+    }
+    expect(manifestMtimeMs).not.toBeLessThan(newest.mtimeMs);
+  });
+});
+
 describe("AC1 — the build prerendered /, /privacy and /terms", () => {
   it("all three static keys are present in the manifest", () => {
     const manifest = readManifest();

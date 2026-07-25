@@ -20,14 +20,22 @@ interface AnchorInfo {
   text: string;
 }
 
+/** Strips any inner tags from an anchor's body and collapses whitespace, so nested elements (e.g. `<a><span>Go</span></a>`) still yield the correct visible text (B8). */
+function visibleText(body: string): string {
+  return body
+    .replace(/<[^>]*>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 function extractAnchors(markup: string): AnchorInfo[] {
   const anchors: AnchorInfo[] = [];
-  const anchorRegex = /<a\s([^>]*)>([^<]*)<\/a>/g;
+  const anchorRegex = /<a\s([^>]*)>([\s\S]*?)<\/a>/g;
   let match: RegExpExecArray | null;
   while ((match = anchorRegex.exec(markup)) !== null) {
     const attrs = match[1]!;
     const hrefMatch = attrs.match(/href="([^"]*)"/);
-    anchors.push({ href: hrefMatch ? hrefMatch[1]! : "", text: match[2]!.trim() });
+    anchors.push({ href: hrefMatch ? hrefMatch[1]! : "", text: visibleText(match[2]!) });
   }
   return anchors;
 }
@@ -62,6 +70,24 @@ const BUILT_PAGES: Record<string, string> = {
   privacy: findBuiltHtml("privacy.html"),
   terms: findBuiltHtml("terms.html"),
 };
+
+describe("extractAnchors (B8)", () => {
+  it("captures a plain-text anchor", () => {
+    const anchors = extractAnchors('<a href="/x">Go</a>');
+    expect(anchors).toEqual([{ href: "/x", text: "Go" }]);
+  });
+
+  it("captures an anchor wrapping a nested element", () => {
+    const anchors = extractAnchors('<a href="/x"><span>Go</span></a>');
+    expect(anchors).toEqual([{ href: "/x", text: "Go" }]);
+  });
+
+  it("does not double-count anchors on the landing page vs. the prior plain-text-only behaviour", () => {
+    const plainTextOnlyAnchorRegex = /<a\s([^>]*)>([^<]*)<\/a>/g;
+    const plainTextOnlyCount = (landingMarkup.match(plainTextOnlyAnchorRegex) ?? []).length;
+    expect(extractAnchors(landingMarkup)).toHaveLength(plainTextOnlyCount);
+  });
+});
 
 describe("AC3 — every internal href resolves to a route the build generates", () => {
   const known = knownInternalRoutes();

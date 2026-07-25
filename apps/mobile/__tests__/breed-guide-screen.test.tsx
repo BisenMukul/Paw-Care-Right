@@ -2,6 +2,7 @@ import { getBreedGuide } from "@pawcareright/data";
 import { render, screen, type RenderResult } from "@testing-library/react-native";
 
 import BreedGuideDetailScreen from "../app/breeds/[species]/[slug]";
+import { guideRouteParams, listPublishedBreedGuides } from "../src/content/breed-guide-content";
 import { strings } from "../src/strings";
 
 /**
@@ -11,6 +12,11 @@ import { strings } from "../src/strings";
  * `useRouter` is mocked minimally (only `AppHeader`'s back control needs
  * it) so the "cold start from params alone" test genuinely proves the
  * screen's CONTENT depends on nothing but the URL params + local data.
+ *
+ * Native `pawcareright://` URL -> route resolution (`getInitialURL`) is NOT
+ * exercised here — RNTL cannot mount the native linking layer; these tests
+ * prove params-only cold-start rendering. Deferred per the
+ * `check-deeplink-route.test.tsx` precedent (T050 plan Risk 2).
  */
 const mockRedirect = jest.fn((href: unknown) => {
   void href;
@@ -105,6 +111,39 @@ describe("breed guide detail screen: renders exemplar content", () => {
     expect(title.props.accessibilityRole).toBe("header");
     expect(title).toHaveTextContent(strings.breedGuide.title("Labrador Retriever"));
   });
+});
+
+describe("breed guide detail screen: renders every published exemplar (B10)", () => {
+  const publishedEntries = listPublishedBreedGuides();
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  beforeAll(() => {
+    // Non-vacuity guard (M12): if the dataset ever shrinks below 5 published
+    // guides, every test in this block fails loudly instead of silently
+    // parametrising over too few (or zero) exemplars.
+    expect(publishedEntries.length).toBeGreaterThanOrEqual(5);
+  });
+
+  it.each(publishedEntries.map((entry) => [`${entry.guide.species}/${entry.guide.slug}`, entry] as const))(
+    "renders every section for %s",
+    async (_label, entry) => {
+      mockUseLocalSearchParams.mockReturnValue(guideRouteParams(entry));
+
+      await render(<BreedGuideDetailScreen />);
+
+      expect(screen.getByTestId("breed-guide-section-temperament")).toBeTruthy();
+      expect(screen.getByTestId("breed-guide-section-exercise")).toBeTruthy();
+      expect(screen.getByTestId("breed-guide-section-conditions")).toBeTruthy();
+      expect(screen.getByTestId("breed-guide-section-grooming")).toBeTruthy();
+      expect(screen.getByTestId("breed-guide-section-temperament")).toHaveTextContent(entry.guide.temperament, {
+        exact: false,
+      });
+      expect(screen.getByTestId("vet-disclaimer")).toBeTruthy();
+    },
+  );
 });
 
 describe("breed guide detail screen: deep link (AC2)", () => {

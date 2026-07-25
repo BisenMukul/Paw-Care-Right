@@ -40,7 +40,18 @@ describe("breed guide dataset — AC3 detector lint", () => {
   });
 
   it("the lint actually scanned the shipped dataset (non-vacuity)", () => {
-    expect(allFields.length).toBeGreaterThanOrEqual(50 * 4);
+    expect(allBreedGuides.length).toBeGreaterThanOrEqual(50);
+
+    // Derived independently of `collectGuideFields`: 3 fixed fields
+    // (temperament, exerciseNeeds.narrative, groomingCadence.narrative) plus
+    // 2 per commonConditionAwareness entry (topic + prompt). If the
+    // collector ever silently drops a field, this exact-equality check
+    // catches it — a `>=` floor would not (T084 F1 / P1 probe).
+    const expectedFieldCount = allBreedGuides.reduce(
+      (n, g) => n + 3 + 2 * g.commonConditionAwareness.length,
+      0,
+    );
+    expect(allFields.length).toBe(expectedFieldCount);
 
     const draftGuideSlugs = new Set(
       allBreedGuides.filter((guide) => !guide.reviewed).map((guide) => `${guide.species}/${guide.slug}`),

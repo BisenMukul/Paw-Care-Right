@@ -22,6 +22,19 @@ const termsMarkup = renderToStaticMarkup(
 );
 const ALL_PAGES = [landingMarkup, privacyMarkup, termsMarkup];
 
+/**
+ * B7 (T088): hoisted §7 scanner patterns — the single source of truth for
+ * both the production scans below and the positive control at the bottom of
+ * this file, so the control can never silently drift from what production
+ * actually checks. Byte-unchanged from their prior inline declarations.
+ */
+const DIAGNOSIS_PATTERN = /diagnos/i;
+const NUMERIC_UNIT_DOSING_PATTERN = /\b\d+\s*(mg|ml|mcg|g|kg|iu)\b/i;
+const MG_PER_KG_PATTERN = /mg\s*\/\s*kg/i;
+const PER_BODYWEIGHT_PATTERN = /per\s+(kg|pound|lb)\b/i;
+const VET_EQUIVALENCE_PATTERN =
+  /(replaces? (your |a )?vet|instead of (a |your )?vet|no need to (see|call|contact) a vet|virtual vet|online vet|we treat|\bprescribe\b)/i;
+
 describe("all three pages render the non-dismissible <VetDisclaimer/>", () => {
   it("3/3 pages carry the disclaimer testid and exact sentence", () => {
     const disclaimerSentence = strings.disclaimer(APP_DISPLAY_NAME);
@@ -48,16 +61,13 @@ describe("no page markup contains an interactive dismiss affordance", () => {
 describe("§7.1 no diagnos*", () => {
   it("no page markup contains 'diagnos'", () => {
     for (const markup of ALL_PAGES) {
-      expect(/diagnos/i.test(markup)).toBe(false);
+      expect(DIAGNOSIS_PATTERN.test(markup)).toBe(false);
     }
   });
 });
 
 describe("§5.4/§7.2 no dosing amounts", () => {
   it("no page markup contains a dosing pattern", () => {
-    const NUMERIC_UNIT_DOSING_PATTERN = /\b\d+\s*(mg|ml|mcg|g|kg|iu)\b/i;
-    const MG_PER_KG_PATTERN = /mg\s*\/\s*kg/i;
-    const PER_BODYWEIGHT_PATTERN = /per\s+(kg|pound|lb)\b/i;
     for (const markup of ALL_PAGES) {
       expect(NUMERIC_UNIT_DOSING_PATTERN.test(markup)).toBe(false);
       expect(MG_PER_KG_PATTERN.test(markup)).toBe(false);
@@ -72,8 +82,6 @@ describe("no vet-equivalence or treatment claims", () => {
     // "we prescribe", never the compliant past tense "already prescribed"
     // that the pinned no-medication-guidance clause requires, per CLAUDE
     // §7.2 — the med tracker legitimately records what a vet prescribed).
-    const VET_EQUIVALENCE_PATTERN =
-      /(replaces? (your |a )?vet|instead of (a |your )?vet|no need to (see|call|contact) a vet|virtual vet|online vet|we treat|\bprescribe\b)/i;
     for (const markup of ALL_PAGES) {
       expect(VET_EQUIVALENCE_PATTERN.test(markup)).toBe(false);
     }
@@ -184,21 +192,22 @@ describe("positive control (proves the scanners are live, not a no-op)", () => {
   it("the diagnosis / dosing / vet-equivalence scanners flag a planted string", () => {
     const planted = "Give 5 mg/kg — this online vet replaces your vet and gives you a diagnosis.";
     const findings: string[] = [];
-    if (/diagnos/i.test(planted)) findings.push("diagnosis");
+    if (DIAGNOSIS_PATTERN.test(planted)) findings.push("diagnosis");
     if (
-      /\b\d+\s*(mg|ml|mcg|g|kg|iu)\b/i.test(planted) ||
-      /mg\s*\/\s*kg/i.test(planted) ||
-      /per\s+(kg|pound|lb)\b/i.test(planted)
+      NUMERIC_UNIT_DOSING_PATTERN.test(planted) ||
+      MG_PER_KG_PATTERN.test(planted) ||
+      PER_BODYWEIGHT_PATTERN.test(planted)
     ) {
       findings.push("dosing");
     }
-    if (
-      /(replaces? (your |a )?vet|instead of (a |your )?vet|no need to (see|call|contact) a vet|virtual vet|online vet|we treat|prescribe)/i.test(
-        planted,
-      )
-    ) {
+    if (VET_EQUIVALENCE_PATTERN.test(planted)) {
       findings.push("vet-equivalence");
     }
     expect(findings).toEqual(["diagnosis", "dosing", "vet-equivalence"]);
+  });
+
+  it("the vet-equivalence scanner's `prescribe` boundary distinguishes the sanctioned past tense", () => {
+    expect(VET_EQUIVALENCE_PATTERN.test("We prescribe the right medicine for them.")).toBe(true);
+    expect(VET_EQUIVALENCE_PATTERN.test("records what a veterinarian has already prescribed")).toBe(false);
   });
 });
