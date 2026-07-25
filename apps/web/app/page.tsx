@@ -1,19 +1,18 @@
+import type { Metadata } from "next";
 import { APP_DISPLAY_NAME } from "@pawcareright/config";
+
+import { LandingView } from "../src/components/marketing/landing-view";
+import { buildLandingModel } from "../src/marketing/landing-content";
 import { strings } from "../src/strings";
+import { SITE_URL } from "../src/site";
+
+export const metadata: Metadata = {
+  title: APP_DISPLAY_NAME,
+  description: strings.layout.description,
+  alternates: { canonical: SITE_URL },
+};
 
 export default function HomePage() {
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-center gap-4 p-8 text-center">
-      <h1 className="text-4xl font-bold text-brand-700">
-        {APP_DISPLAY_NAME}
-      </h1>
-      <p className="text-lg text-brand-500">{strings.landing.tagline}</p>
-      <p className="max-w-xl text-base text-brand-900">
-        {strings.landing.body}
-      </p>
-      <span className="rounded-full bg-brand-100 px-4 py-2 text-sm font-medium text-brand-700">
-        {strings.landing.cta}
-      </span>
-    </main>
-  );
+  const model = buildLandingModel(APP_DISPLAY_NAME);
+  return <LandingView model={model} />;
 }
