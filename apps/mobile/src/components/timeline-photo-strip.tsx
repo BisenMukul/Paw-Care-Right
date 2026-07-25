@@ -3,6 +3,7 @@ import { memo } from "react";
 import { Pressable, View } from "react-native";
 
 import { usePhotoViewUrls } from "../api/pet-photos-api";
+import { REMOTE_IMAGE_CACHE_POLICY } from "../perf/image-cache-policy";
 import { strings } from "../strings";
 
 export interface TimelinePhotoStripProps {
@@ -50,6 +51,7 @@ export const TimelinePhotoStrip = memo(function TimelinePhotoStrip({
               <Image
                 testID={`timeline-photo-thumb-image-${entryId}-${index}`}
                 source={{ uri: item.thumbUrl }}
+                cachePolicy={REMOTE_IMAGE_CACHE_POLICY}
                 className="h-16 w-16 rounded-md"
               />
             ) : (

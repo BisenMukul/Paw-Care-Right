@@ -7,12 +7,24 @@
         "http://localhost:3000/can-cats-eat/onion",
         "http://localhost:3000/can-dogs-eat/apple"
       ],
+      "numberOfRuns": 3,
       "startServerCommand": "pnpm --filter @pawcareright/web start"
     },
     "assert": {
-      "assertions": {
-        "categories:seo": ["error", { "minScore": 0.95 }]
-      }
+      "assertMatrix": [
+        {
+          "matchingUrlPattern": ".*",
+          "assertions": {
+            "categories:seo": ["error", { "minScore": 0.95 }]
+          }
+        },
+        {
+          "matchingUrlPattern": "^https?://[^/]+/$",
+          "assertions": {
+            "categories:performance": ["error", { "minScore": 0.9 }]
+          }
+        }
+      ]
     },
     "upload": {
       "target": "temporary-public-storage"

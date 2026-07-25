@@ -302,6 +302,7 @@ exports[`pet home screen snapshots loaded 1`] = `
         testID="pet-home-header-card"
       >
         <Image
+          cachePolicy="memory"
           className="h-24 w-24 rounded-full"
           source={
             {

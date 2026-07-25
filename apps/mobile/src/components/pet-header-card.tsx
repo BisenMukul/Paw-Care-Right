@@ -4,6 +4,7 @@ import { Text, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
 import { useReducedMotion } from "../hooks/use-reduced-motion";
+import { LOCAL_IMAGE_CACHE_POLICY } from "../perf/image-cache-policy";
 import { derivePetAgeLabel } from "../pets/pet-age";
 import { HEADER_CARD_HEIGHT } from "../pets/pet-home-layout";
 import { strings } from "../strings";
@@ -25,6 +26,13 @@ const SPECIES_LABEL: Record<Pet["species"], string> = {
  * `PetAvatar`, the home tab's `PetHeroCard`) — the pet's name prominent,
  * and species/breed/age as small rounded chips. FadeInDown entrance.
  *
+ * `localPhoto` is a local `file://` URI handed through router params from
+ * the add-pet wizard's one-time handoff (`app/add-pet/done.tsx` ->
+ * `app/care-plan/[petId].tsx` -> `app/pets/[id].tsx`) — there is no
+ * `photoKey` -> URL network resolver wired to this component today (T095
+ * review F2; same as `PetSwitcher`/`home/pet-hero-card.tsx`), hence
+ * `LOCAL_IMAGE_CACHE_POLICY` below, not the remote one.
+ *
  * Fixed `HEADER_CARD_HEIGHT` so the above-the-fold budget test (plan
  * §AC2b) can bind its arithmetic to this component's actually-applied
  * style. No data fetching.
@@ -42,7 +50,12 @@ export function PetHeaderCard({ pet, localPhoto }: PetHeaderCardProps) {
       {...(reduced ? {} : { entering: FadeInDown.duration(320) })}
     >
       {localPhoto ? (
-        <Image testID="pet-home-photo" source={{ uri: localPhoto }} className="h-24 w-24 rounded-full" />
+        <Image
+          testID="pet-home-photo"
+          source={{ uri: localPhoto }}
+          cachePolicy={LOCAL_IMAGE_CACHE_POLICY}
+          className="h-24 w-24 rounded-full"
+        />
       ) : (
         <View
           testID="pet-home-photo-placeholder"

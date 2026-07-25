@@ -102,3 +102,33 @@ jobs:
           path: loop/eval-reports/*.md
           retention-days: 30
           if-no-files-found: warn
+  # T095: web performance/SEO budgets. This job is a REQUIRED gate (the card's
+  # AC is "CI budget job green"), so unlike T089's Sentry upload it is never
+  # skipped. It needs no secret and no external service: Chrome is preinstalled
+  # on ubuntu-latest, lhci collects against a locally served build, and the
+  # report is kept as a workflow artifact instead of lhci's cloud upload.
+  web-perf-budget:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: 10.34.3 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      - run: pnpm i --frozen-lockfile
+      - run: pnpm --filter @pawcareright/web build
+      - name: Collect Lighthouse runs
+        run: pnpm --filter @pawcareright/web exec lhci collect --config=./lighthouserc.json
+      - name: Assert performance + SEO budgets
+        run: pnpm --filter @pawcareright/web exec lhci assert --config=./lighthouserc.json
+      - name: Upload Lighthouse reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-${{ github.run_id }}
+          # `pnpm --filter @pawcareright/web exec` runs lhci with its cwd set
+          # to apps/web (verified empirically), so lhci's `.lighthouseci/`
+          # report directory lands there, not at the repo root.
+          path: apps/web/.lighthouseci/
+          retention-days: 30
+          if-no-files-found: warn

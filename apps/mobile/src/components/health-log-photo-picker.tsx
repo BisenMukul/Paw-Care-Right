@@ -12,6 +12,7 @@ import {
   type PhotoSlot,
   type PhotoUploadEvent,
 } from "../checks/photo-upload-machine";
+import { LOCAL_IMAGE_CACHE_POLICY } from "../perf/image-cache-policy";
 import { compressImage } from "../pets/compress-image";
 import { strings } from "../strings";
 
@@ -153,6 +154,7 @@ export function HealthLogPhotoPicker({
               <Image
                 testID={`health-log-photo-thumb-${slot.id}`}
                 source={{ uri: slot.uri }}
+                cachePolicy={LOCAL_IMAGE_CACHE_POLICY}
                 className="h-20 w-20 rounded-lg"
               />
             ) : null}

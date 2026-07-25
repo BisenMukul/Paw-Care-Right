@@ -184,17 +184,33 @@ describe("AC2 — SEO contract on the 12-pair sample's built HTML", () => {
     expect(result.sitemap).toBe(`${SITE_URL}/sitemap.xml`);
   });
 
-  it("lighthouserc asserts categories:seo at ≥0.95 and collects at least one /can-…-eat/ URL", () => {
+  it("lighthouserc asserts categories:seo at ≥0.95 (via assertMatrix, T095) and collects at least one /can-…-eat/ URL", () => {
+    // T095 plan D1/step 6: `assertMatrix` replaced the flat `assertions` block
+    // (perf ≥90 is scoped to the landing only, which a flat `assertions`
+    // block cannot express alongside a sample-wide SEO budget). This rewrite
+    // is NOT a fallback -- it reads the matrix shape directly, so the SEO
+    // budget cannot silently vanish if the matrix key disappears (T085 AC2
+    // stays pinned through the refactor).
     const lighthouserc = JSON.parse(
       fs.readFileSync(path.join(WEB_ROOT, "lighthouserc.json"), "utf-8"),
     ) as {
       ci: {
         collect: { url: string[] };
-        assert: { assertions: Record<string, unknown> };
+        assert: {
+          assertMatrix: Array<{
+            matchingUrlPattern: string;
+            assertions: Record<string, [string, { minScore: number }]>;
+          }>;
+        };
       };
     };
 
-    const assertion = lighthouserc.ci.assert.assertions["categories:seo"] as [string, { minScore: number }];
+    const catchAllEntry = lighthouserc.ci.assert.assertMatrix.find(
+      (entry) => entry.matchingUrlPattern === ".*",
+    );
+    expect(catchAllEntry).toBeDefined();
+
+    const assertion = catchAllEntry!.assertions["categories:seo"]!;
     expect(assertion[0]).toBe("error");
     expect(assertion[1].minScore).toBeGreaterThanOrEqual(0.95);
     expect(lighthouserc.ci.collect.url.some((url) => /\/can-[a-z]+-eat\//.test(url))).toBe(true);

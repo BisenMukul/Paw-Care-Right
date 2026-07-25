@@ -10,3 +10,6 @@ coverage/
 .env.*
 !.env.example
 dump.rdb
+# T095: local lighthouse-ci reports + mobile bundle-export/analysis output
+.lighthouseci/
+apps/mobile/.perf/
