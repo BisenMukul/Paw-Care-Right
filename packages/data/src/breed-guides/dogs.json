@@ -1,0 +1,1020 @@
+[
+  {
+    "slug": "labrador-retriever",
+    "temperament": "Friendly, outgoing and eager to please, the Labrador Retriever is typically easygoing with people and other animals. This is a food-motivated, high-energy retriever that thrives on having a job to do and can become bored or mouthy without enough mental and physical outlets.",
+    "exerciseNeeds": {
+      "level": "HIGH",
+      "narrative": "Bred as an athletic working retriever, this breed generally needs substantial daily activity: long walks, retrieving games and, for many individuals, swimming. Mental enrichment such as scent games matters as much as physical exercise for a settled temperament at home."
+    },
+    "commonConditionAwareness": [
+      {
+        "topic": "Hips and elbows",
+        "prompt": "Talk to your vet about joint screening and what exercise intensity suits a growing large-breed puppy."
+      },
+      {
+        "topic": "Weight and body condition",
+        "prompt": "Talk to your vet about a healthy weight range for this individual, since the breed can gain weight steadily on a rich diet."
+      },
+      {
+        "topic": "Eye health",
+        "prompt": "Talk to your vet about routine eye checks as part of this pet's annual wellness visit."
+      },
+      {
+        "topic": "Ear health",
+        "prompt": "Talk to your vet about ear checks and drying routines for a pet that swims or gets its ears wet often."
+      }
+    ],
+    "groomingCadence": {
+      "frequency": "WEEKLY",
+      "narrative": "The dense double coat sheds year-round with heavier seasonal shedding. A weekly brushing session keeps loose undercoat under control; ask a groomer about the right brush type for this coat."
+    },
+    "reviewed": true,
+    "provenance": {
+      "generatedBy": "HUMAN",
+      "reviewedBy": "content-editor",
+      "reviewedAt": "2026-07-24"
+    }
+  },
+  {
+    "slug": "golden-retriever",
+    "temperament": "Golden Retrievers are typically friendly, eager to please and highly people-oriented, often described as patient with children and sociable with strangers. Individuals vary, but most do best with plenty of companionship and don't thrive left alone for long stretches.",
+    "exerciseNeeds": {
+      "level": "HIGH",
+      "narrative": "This is an active sporting breed that generally needs daily walks plus play or retrieving time to stay content. Many individuals also enjoy swimming and scent-based enrichment games as a mental outlet alongside physical activity."
+    },
+    "commonConditionAwareness": [
+      {
+        "topic": "Hips and elbows",
+        "prompt": "Talk to your vet about joint screening and activity pacing for a growing or active large-breed dog."
+      },
+      {
+        "topic": "Skin and coat care",
+        "prompt": "Talk to your vet about routine skin checks, since a dense coat can trap moisture and irritation without regular grooming."
+      },
+      {
+        "topic": "Heart health",
+        "prompt": "Talk to your vet about routine heart auscultation as part of this pet's regular wellness visits."
+      },
+      {
+        "topic": "Weight and body condition",
+        "prompt": "Talk to your vet about a healthy weight range and body condition scoring for this individual pet."
+      }
+    ],
+    "groomingCadence": {
+      "frequency": "SEVERAL_TIMES_WEEKLY",
+      "narrative": "The long, feathered double coat mats easily around the ears, legs and tail if left unbrushed. Several short brushing sessions a week, with extra attention during seasonal shedding, keeps the coat comfortable."
+    },
+    "reviewed": true,
+    "provenance": {
+      "generatedBy": "HUMAN",
+      "reviewedBy": "content-editor",
+      "reviewedAt": "2026-07-24"
+    }
+  },
+  {
+    "slug": "german-shepherd",
+    "temperament": "German Shepherds are typically intelligent, confident and loyal to their household, with a working and herding heritage that shows up as a strong drive to have a job or routine. Many individuals are reserved rather than instantly friendly with unfamiliar people, and benefit from early, consistent socialisation.",
+    "exerciseNeeds": {
+      "level": "HIGH",
+      "narrative": "A working-line heritage means this breed generally needs a substantial daily combination of physical exercise and mental work such as training games, obedience practice or scent work to stay settled and satisfied."
+    },
+    "commonConditionAwareness": [
+      {
+        "topic": "Hips and elbows",
+        "prompt": "Talk to your vet about joint screening and activity pacing, especially during this breed's growth period."
+      },
+      {
+        "topic": "Digestive sensitivity",
+        "prompt": "Talk to your vet about diet choices if this individual shows a sensitive stomach or occasional loose stools."
+      },
+      {
+        "topic": "Mobility as they age",
+        "prompt": "Talk to your vet about mobility support and monitoring as this individual gets older."
+      },
+      {
+        "topic": "Weight and body condition",
+        "prompt": "Talk to your vet about a healthy weight range and body condition scoring for this individual pet."
+      }
+    ],
+    "groomingCadence": {
+      "frequency": "SEVERAL_TIMES_WEEKLY",
+      "narrative": "The dense double coat sheds heavily, particularly during seasonal coat blowout. Brushing several times a week limits loose hair around the home and gives you a chance to check the skin underneath."
+    },
+    "reviewed": true,
+    "provenance": {
+      "generatedBy": "HUMAN",
+      "reviewedBy": "content-editor",
+      "reviewedAt": "2026-07-24"
+    }
+  },
+  {
+    "slug": "french-bulldog",
+    "temperament": "Temperament varies far more between individuals than between breed labels; early socialisation, consistent handling and a predictable daily routine matter most for how any dog or cat actually behaves at home. Meeting the parents or prior owner, when possible, tells you more than the label.",
+    "exerciseNeeds": {
+      "level": "MODERATE",
+      "narrative": "Daily activity needs depend on this individual pet's age, health and energy, not the breed label alone. Build up any new activity gradually and let a vet guide the right plan for this pet."
+    },
+    "commonConditionAwareness": [
+      {
+        "topic": "Routine wellness checks",
+        "prompt": "Talk to your vet about which routine wellness checks suit this pet's age, size and lifestyle."
+      },
+      {
+        "topic": "Weight and body condition",
+        "prompt": "Talk to your vet about a healthy weight range and body condition scoring for this individual pet."
+      }
+    ],
+    "groomingCadence": {
+      "frequency": "WEEKLY",
+      "narrative": "A weekly coat check and brushing session helps you notice changes early. Ask a groomer or vet about the right routine and tools for this individual pet's coat type."
+    },
+    "reviewed": false,
+    "provenance": {
+      "generatedBy": "TEMPLATE"
+    }
+  },
+  {
+    "slug": "standard-poodle",
+    "temperament": "Temperament varies far more between individuals than between breed labels; early socialisation, consistent handling and a predictable daily routine matter most for how any dog or cat actually behaves at home. Meeting the parents or prior owner, when possible, tells you more than the label.",
+    "exerciseNeeds": {
+      "level": "HIGH",
+      "narrative": "Daily activity needs depend on this individual pet's age, health and energy, not the breed label alone. Build up any new activity gradually and let a vet guide the right plan for this pet."
+    },
+    "commonConditionAwareness": [
+      {
+        "topic": "Routine wellness checks",
+        "prompt": "Talk to your vet about which routine wellness checks suit this pet's age, size and lifestyle."
+      },
+      {
+        "topic": "Weight and body condition",
+        "prompt": "Talk to your vet about a healthy weight range and body condition scoring for this individual pet."
+      }
+    ],
+    "groomingCadence": {
+      "frequency": "WEEKLY",
+      "narrative": "A weekly coat check and brushing session helps you notice changes early. Ask a groomer or vet about the right routine and tools for this individual pet's coat type."
+    },
+    "reviewed": false,
+    "provenance": {
+      "generatedBy": "TEMPLATE"
+    }
+  },
+  {
+    "slug": "pembroke-welsh-corgi",
+    "temperament": "Temperament varies far more between individuals than between breed labels; early socialisation, consistent handling and a predictable daily routine matter most for how any dog or cat actually behaves at home. Meeting the parents or prior owner, when possible, tells you more than the label.",
+    "exerciseNeeds": {
+      "level": "MODERATE",
+      "narrative": "Daily activity needs depend on this individual pet's age, health and energy, not the breed label alone. Build up any new activity gradually and let a vet guide the right plan for this pet."
+    },
+    "commonConditionAwareness": [
+      {
+        "topic": "Routine wellness checks",
+        "prompt": "Talk to your vet about which routine wellness checks suit this pet's age, size and lifestyle."
+      },
+      {
+        "topic": "Weight and body condition",
+        "prompt": "Talk to your vet about a healthy weight range and body condition scoring for this individual pet."
+      }
+    ],
+    "groomingCadence": {
+      "frequency": "WEEKLY",
+      "narrative": "A weekly coat check and brushing session helps you notice changes early. Ask a groomer or vet about the right routine and tools for this individual pet's coat type."
+    },
+    "reviewed": false,
+    "provenance": {
+      "generatedBy": "TEMPLATE"
+    }
+  },
+  {
+    "slug": "dachshund",
+    "temperament": "Temperament varies far more between individuals than between breed labels; early socialisation, consistent handling and a predictable daily routine matter most for how any dog or cat actually behaves at home. Meeting the parents or prior owner, when possible, tells you more than the label.",
+    "exerciseNeeds": {
+      "level": "MODERATE",
+      "narrative": "Daily activity needs depend on this individual pet's age, health and energy, not the breed label alone. Build up any new activity gradually and let a vet guide the right plan for this pet."
+    },
+    "commonConditionAwareness": [
+      {
+        "topic": "Routine wellness checks",
+        "prompt": "Talk to your vet about which routine wellness checks suit this pet's age, size and lifestyle."
+      },
+      {
+        "topic": "Weight and body condition",
+        "prompt": "Talk to your vet about a healthy weight range and body condition scoring for this individual pet."
+      }
+    ],
+    "groomingCadence": {
+      "frequency": "WEEKLY",
+      "narrative": "A weekly coat check and brushing session helps you notice changes early. Ask a groomer or vet about the right routine and tools for this individual pet's coat type."
+    },
+    "reviewed": false,
+    "provenance": {
+      "generatedBy": "TEMPLATE"
+    }
+  },
+  {
+    "slug": "beagle",
+    "temperament": "Temperament varies far more between individuals than between breed labels; early socialisation, consistent handling and a predictable daily routine matter most for how any dog or cat actually behaves at home. Meeting the parents or prior owner, when possible, tells you more than the label.",
+    "exerciseNeeds": {
+      "level": "MODERATE",
+      "narrative": "Daily activity needs depend on this individual pet's age, health and energy, not the breed label alone. Build up any new activity gradually and let a vet guide the right plan for this pet."
+    },
+    "commonConditionAwareness": [
+      {
+        "topic": "Routine wellness checks",
+        "prompt": "Talk to your vet about which routine wellness checks suit this pet's age, size and lifestyle."
+      },
+      {
+        "topic": "Weight and body condition",
+        "prompt": "Talk to your vet about a healthy weight range and body condition scoring for this individual pet."
+      }
+    ],
+    "groomingCadence": {
+      "frequency": "WEEKLY",
+      "narrative": "A weekly coat check and brushing session helps you notice changes early. Ask a groomer or vet about the right routine and tools for this individual pet's coat type."
+    },
+    "reviewed": false,
+    "provenance": {
+      "generatedBy": "TEMPLATE"
+    }
+  },
+  {
+    "slug": "rottweiler",
+    "temperament": "Temperament varies far more between individuals than between breed labels; early socialisation, consistent handling and a predictable daily routine matter most for how any dog or cat actually behaves at home. Meeting the parents or prior owner, when possible, tells you more than the label.",
+    "exerciseNeeds": {
+      "level": "HIGH",
+      "narrative": "Daily activity needs depend on this individual pet's age, health and energy, not the breed label alone. Build up any new activity gradually and let a vet guide the right plan for this pet."
+    },
+    "commonConditionAwareness": [
+      {
+        "topic": "Routine wellness checks",
+        "prompt": "Talk to your vet about which routine wellness checks suit this pet's age, size and lifestyle."
+      },
+      {
+        "topic": "Weight and body condition",
+        "prompt": "Talk to your vet about a healthy weight range and body condition scoring for this individual pet."
+      }
+    ],
+    "groomingCadence": {
+      "frequency": "WEEKLY",
+      "narrative": "A weekly coat check and brushing session helps you notice changes early. Ask a groomer or vet about the right routine and tools for this individual pet's coat type."
+    },
+    "reviewed": false,
+    "provenance": {
+      "generatedBy": "TEMPLATE"
+    }
+  },
+  {
+    "slug": "german-shorthaired-pointer",
+    "temperament": "Temperament varies far more between individuals than between breed labels; early socialisation, consistent handling and a predictable daily routine matter most for how any dog or cat actually behaves at home. Meeting the parents or prior owner, when possible, tells you more than the label.",
+    "exerciseNeeds": {
+      "level": "HIGH",
+      "narrative": "Daily activity needs depend on this individual pet's age, health and energy, not the breed label alone. Build up any new activity gradually and let a vet guide the right plan for this pet."
+    },
+    "commonConditionAwareness": [
+      {
+        "topic": "Routine wellness checks",
+        "prompt": "Talk to your vet about which routine wellness checks suit this pet's age, size and lifestyle."
+      },
+      {
+        "topic": "Weight and body condition",
+        "prompt": "Talk to your vet about a healthy weight range and body condition scoring for this individual pet."
+      }
+    ],
+    "groomingCadence": {
+      "frequency": "WEEKLY",
+      "narrative": "A weekly coat check and brushing session helps you notice changes early. Ask a groomer or vet about the right routine and tools for this individual pet's coat type."
+    },
+    "reviewed": false,
+    "provenance": {
+      "generatedBy": "TEMPLATE"
+    }
+  },
+  {
+    "slug": "yorkshire-terrier",
+    "temperament": "Temperament varies far more between individuals than between breed labels; early socialisation, consistent handling and a predictable daily routine matter most for how any dog or cat actually behaves at home. Meeting the parents or prior owner, when possible, tells you more than the label.",
+    "exerciseNeeds": {
+      "level": "MODERATE",
+      "narrative": "Daily activity needs depend on this individual pet's age, health and energy, not the breed label alone. Build up any new activity gradually and let a vet guide the right plan for this pet."
+    },
+    "commonConditionAwareness": [
+      {
+        "topic": "Routine wellness checks",
+        "prompt": "Talk to your vet about which routine wellness checks suit this pet's age, size and lifestyle."
+      },
+      {
+        "topic": "Weight and body condition",
+        "prompt": "Talk to your vet about a healthy weight range and body condition scoring for this individual pet."
+      }
+    ],
+    "groomingCadence": {
+      "frequency": "WEEKLY",
+      "narrative": "A weekly coat check and brushing session helps you notice changes early. Ask a groomer or vet about the right routine and tools for this individual pet's coat type."
+    },
+    "reviewed": false,
+    "provenance": {
+      "generatedBy": "TEMPLATE"
+    }
+  },
+  {
+    "slug": "boxer",
+    "temperament": "Temperament varies far more between individuals than between breed labels; early socialisation, consistent handling and a predictable daily routine matter most for how any dog or cat actually behaves at home. Meeting the parents or prior owner, when possible, tells you more than the label.",
+    "exerciseNeeds": {
+      "level": "HIGH",
+      "narrative": "Daily activity needs depend on this individual pet's age, health and energy, not the breed label alone. Build up any new activity gradually and let a vet guide the right plan for this pet."
+    },
+    "commonConditionAwareness": [
+      {
+        "topic": "Routine wellness checks",
+        "prompt": "Talk to your vet about which routine wellness checks suit this pet's age, size and lifestyle."
+      },
+      {
+        "topic": "Weight and body condition",
+        "prompt": "Talk to your vet about a healthy weight range and body condition scoring for this individual pet."
+      }
+    ],
+    "groomingCadence": {
+      "frequency": "WEEKLY",
+      "narrative": "A weekly coat check and brushing session helps you notice changes early. Ask a groomer or vet about the right routine and tools for this individual pet's coat type."
+    },
+    "reviewed": false,
+    "provenance": {
+      "generatedBy": "TEMPLATE"
+    }
+  },
+  {
+    "slug": "cavalier-king-charles-spaniel",
+    "temperament": "Temperament varies far more between individuals than between breed labels; early socialisation, consistent handling and a predictable daily routine matter most for how any dog or cat actually behaves at home. Meeting the parents or prior owner, when possible, tells you more than the label.",
+    "exerciseNeeds": {
+      "level": "MODERATE",
+      "narrative": "Daily activity needs depend on this individual pet's age, health and energy, not the breed label alone. Build up any new activity gradually and let a vet guide the right plan for this pet."
+    },
+    "commonConditionAwareness": [
+      {
+        "topic": "Routine wellness checks",
+        "prompt": "Talk to your vet about which routine wellness checks suit this pet's age, size and lifestyle."
+      },
+      {
+        "topic": "Weight and body condition",
+        "prompt": "Talk to your vet about a healthy weight range and body condition scoring for this individual pet."
+      }
+    ],
+    "groomingCadence": {
+      "frequency": "WEEKLY",
+      "narrative": "A weekly coat check and brushing session helps you notice changes early. Ask a groomer or vet about the right routine and tools for this individual pet's coat type."
+    },
+    "reviewed": false,
+    "provenance": {
+      "generatedBy": "TEMPLATE"
+    }
+  },
+  {
+    "slug": "doberman-pinscher",
+    "temperament": "Temperament varies far more between individuals than between breed labels; early socialisation, consistent handling and a predictable daily routine matter most for how any dog or cat actually behaves at home. Meeting the parents or prior owner, when possible, tells you more than the label.",
+    "exerciseNeeds": {
+      "level": "HIGH",
+      "narrative": "Daily activity needs depend on this individual pet's age, health and energy, not the breed label alone. Build up any new activity gradually and let a vet guide the right plan for this pet."
+    },
+    "commonConditionAwareness": [
+      {
+        "topic": "Routine wellness checks",
+        "prompt": "Talk to your vet about which routine wellness checks suit this pet's age, size and lifestyle."
+      },
+      {
+        "topic": "Weight and body condition",
+        "prompt": "Talk to your vet about a healthy weight range and body condition scoring for this individual pet."
+      }
+    ],
+    "groomingCadence": {
+      "frequency": "WEEKLY",
+      "narrative": "A weekly coat check and brushing session helps you notice changes early. Ask a groomer or vet about the right routine and tools for this individual pet's coat type."
+    },
+    "reviewed": false,
+    "provenance": {
+      "generatedBy": "TEMPLATE"
+    }
+  },
+  {
+    "slug": "australian-shepherd",
+    "temperament": "Temperament varies far more between individuals than between breed labels; early socialisation, consistent handling and a predictable daily routine matter most for how any dog or cat actually behaves at home. Meeting the parents or prior owner, when possible, tells you more than the label.",
+    "exerciseNeeds": {
+      "level": "HIGH",
+      "narrative": "Daily activity needs depend on this individual pet's age, health and energy, not the breed label alone. Build up any new activity gradually and let a vet guide the right plan for this pet."
+    },
+    "commonConditionAwareness": [
+      {
+        "topic": "Routine wellness checks",
+        "prompt": "Talk to your vet about which routine wellness checks suit this pet's age, size and lifestyle."
+      },
+      {
+        "topic": "Weight and body condition",
+        "prompt": "Talk to your vet about a healthy weight range and body condition scoring for this individual pet."
+      }
+    ],
+    "groomingCadence": {
+      "frequency": "WEEKLY",
+      "narrative": "A weekly coat check and brushing session helps you notice changes early. Ask a groomer or vet about the right routine and tools for this individual pet's coat type."
+    },
+    "reviewed": false,
+    "provenance": {
+      "generatedBy": "TEMPLATE"
+    }
+  },
+  {
+    "slug": "miniature-schnauzer",
+    "temperament": "Temperament varies far more between individuals than between breed labels; early socialisation, consistent handling and a predictable daily routine matter most for how any dog or cat actually behaves at home. Meeting the parents or prior owner, when possible, tells you more than the label.",
+    "exerciseNeeds": {
+      "level": "MODERATE",
+      "narrative": "Daily activity needs depend on this individual pet's age, health and energy, not the breed label alone. Build up any new activity gradually and let a vet guide the right plan for this pet."
+    },
+    "commonConditionAwareness": [
+      {
+        "topic": "Routine wellness checks",
+        "prompt": "Talk to your vet about which routine wellness checks suit this pet's age, size and lifestyle."
+      },
+      {
+        "topic": "Weight and body condition",
+        "prompt": "Talk to your vet about a healthy weight range and body condition scoring for this individual pet."
+      }
+    ],
+    "groomingCadence": {
+      "frequency": "WEEKLY",
+      "narrative": "A weekly coat check and brushing session helps you notice changes early. Ask a groomer or vet about the right routine and tools for this individual pet's coat type."
+    },
+    "reviewed": false,
+    "provenance": {
+      "generatedBy": "TEMPLATE"
+    }
+  },
+  {
+    "slug": "cane-corso",
+    "temperament": "Temperament varies far more between individuals than between breed labels; early socialisation, consistent handling and a predictable daily routine matter most for how any dog or cat actually behaves at home. Meeting the parents or prior owner, when possible, tells you more than the label.",
+    "exerciseNeeds": {
+      "level": "HIGH",
+      "narrative": "Daily activity needs depend on this individual pet's age, health and energy, not the breed label alone. Build up any new activity gradually and let a vet guide the right plan for this pet."
+    },
+    "commonConditionAwareness": [
+      {
+        "topic": "Routine wellness checks",
+        "prompt": "Talk to your vet about which routine wellness checks suit this pet's age, size and lifestyle."
+      },
+      {
+        "topic": "Weight and body condition",
+        "prompt": "Talk to your vet about a healthy weight range and body condition scoring for this individual pet."
+      }
+    ],
+    "groomingCadence": {
+      "frequency": "WEEKLY",
+      "narrative": "A weekly coat check and brushing session helps you notice changes early. Ask a groomer or vet about the right routine and tools for this individual pet's coat type."
+    },
+    "reviewed": false,
+    "provenance": {
+      "generatedBy": "TEMPLATE"
+    }
+  },
+  {
+    "slug": "shih-tzu",
+    "temperament": "Temperament varies far more between individuals than between breed labels; early socialisation, consistent handling and a predictable daily routine matter most for how any dog or cat actually behaves at home. Meeting the parents or prior owner, when possible, tells you more than the label.",
+    "exerciseNeeds": {
+      "level": "MODERATE",
+      "narrative": "Daily activity needs depend on this individual pet's age, health and energy, not the breed label alone. Build up any new activity gradually and let a vet guide the right plan for this pet."
+    },
+    "commonConditionAwareness": [
+      {
+        "topic": "Routine wellness checks",
+        "prompt": "Talk to your vet about which routine wellness checks suit this pet's age, size and lifestyle."
+      },
+      {
+        "topic": "Weight and body condition",
+        "prompt": "Talk to your vet about a healthy weight range and body condition scoring for this individual pet."
+      }
+    ],
+    "groomingCadence": {
+      "frequency": "WEEKLY",
+      "narrative": "A weekly coat check and brushing session helps you notice changes early. Ask a groomer or vet about the right routine and tools for this individual pet's coat type."
+    },
+    "reviewed": false,
+    "provenance": {
+      "generatedBy": "TEMPLATE"
+    }
+  },
+  {
+    "slug": "boston-terrier",
+    "temperament": "Temperament varies far more between individuals than between breed labels; early socialisation, consistent handling and a predictable daily routine matter most for how any dog or cat actually behaves at home. Meeting the parents or prior owner, when possible, tells you more than the label.",
+    "exerciseNeeds": {
+      "level": "MODERATE",
+      "narrative": "Daily activity needs depend on this individual pet's age, health and energy, not the breed label alone. Build up any new activity gradually and let a vet guide the right plan for this pet."
+    },
+    "commonConditionAwareness": [
+      {
+        "topic": "Routine wellness checks",
+        "prompt": "Talk to your vet about which routine wellness checks suit this pet's age, size and lifestyle."
+      },
+      {
+        "topic": "Weight and body condition",
+        "prompt": "Talk to your vet about a healthy weight range and body condition scoring for this individual pet."
+      }
+    ],
+    "groomingCadence": {
+      "frequency": "WEEKLY",
+      "narrative": "A weekly coat check and brushing session helps you notice changes early. Ask a groomer or vet about the right routine and tools for this individual pet's coat type."
+    },
+    "reviewed": false,
+    "provenance": {
+      "generatedBy": "TEMPLATE"
+    }
+  },
+  {
+    "slug": "bernese-mountain-dog",
+    "temperament": "Temperament varies far more between individuals than between breed labels; early socialisation, consistent handling and a predictable daily routine matter most for how any dog or cat actually behaves at home. Meeting the parents or prior owner, when possible, tells you more than the label.",
+    "exerciseNeeds": {
+      "level": "HIGH",
+      "narrative": "Daily activity needs depend on this individual pet's age, health and energy, not the breed label alone. Build up any new activity gradually and let a vet guide the right plan for this pet."
+    },
+    "commonConditionAwareness": [
+      {
+        "topic": "Routine wellness checks",
+        "prompt": "Talk to your vet about which routine wellness checks suit this pet's age, size and lifestyle."
+      },
+      {
+        "topic": "Weight and body condition",
+        "prompt": "Talk to your vet about a healthy weight range and body condition scoring for this individual pet."
+      }
+    ],
+    "groomingCadence": {
+      "frequency": "WEEKLY",
+      "narrative": "A weekly coat check and brushing session helps you notice changes early. Ask a groomer or vet about the right routine and tools for this individual pet's coat type."
+    },
+    "reviewed": false,
+    "provenance": {
+      "generatedBy": "TEMPLATE"
+    }
+  },
+  {
+    "slug": "pomeranian",
+    "temperament": "Temperament varies far more between individuals than between breed labels; early socialisation, consistent handling and a predictable daily routine matter most for how any dog or cat actually behaves at home. Meeting the parents or prior owner, when possible, tells you more than the label.",
+    "exerciseNeeds": {
+      "level": "MODERATE",
+      "narrative": "Daily activity needs depend on this individual pet's age, health and energy, not the breed label alone. Build up any new activity gradually and let a vet guide the right plan for this pet."
+    },
+    "commonConditionAwareness": [
+      {
+        "topic": "Routine wellness checks",
+        "prompt": "Talk to your vet about which routine wellness checks suit this pet's age, size and lifestyle."
+      },
+      {
+        "topic": "Weight and body condition",
+        "prompt": "Talk to your vet about a healthy weight range and body condition scoring for this individual pet."
+      }
+    ],
+    "groomingCadence": {
+      "frequency": "WEEKLY",
+      "narrative": "A weekly coat check and brushing session helps you notice changes early. Ask a groomer or vet about the right routine and tools for this individual pet's coat type."
+    },
+    "reviewed": false,
+    "provenance": {
+      "generatedBy": "TEMPLATE"
+    }
+  },
+  {
+    "slug": "havanese",
+    "temperament": "Temperament varies far more between individuals than between breed labels; early socialisation, consistent handling and a predictable daily routine matter most for how any dog or cat actually behaves at home. Meeting the parents or prior owner, when possible, tells you more than the label.",
+    "exerciseNeeds": {
+      "level": "MODERATE",
+      "narrative": "Daily activity needs depend on this individual pet's age, health and energy, not the breed label alone. Build up any new activity gradually and let a vet guide the right plan for this pet."
+    },
+    "commonConditionAwareness": [
+      {
+        "topic": "Routine wellness checks",
+        "prompt": "Talk to your vet about which routine wellness checks suit this pet's age, size and lifestyle."
+      },
+      {
+        "topic": "Weight and body condition",
+        "prompt": "Talk to your vet about a healthy weight range and body condition scoring for this individual pet."
+      }
+    ],
+    "groomingCadence": {
+      "frequency": "WEEKLY",
+      "narrative": "A weekly coat check and brushing session helps you notice changes early. Ask a groomer or vet about the right routine and tools for this individual pet's coat type."
+    },
+    "reviewed": false,
+    "provenance": {
+      "generatedBy": "TEMPLATE"
+    }
+  },
+  {
+    "slug": "shiba-inu",
+    "temperament": "Temperament varies far more between individuals than between breed labels; early socialisation, consistent handling and a predictable daily routine matter most for how any dog or cat actually behaves at home. Meeting the parents or prior owner, when possible, tells you more than the label.",
+    "exerciseNeeds": {
+      "level": "HIGH",
+      "narrative": "Daily activity needs depend on this individual pet's age, health and energy, not the breed label alone. Build up any new activity gradually and let a vet guide the right plan for this pet."
+    },
+    "commonConditionAwareness": [
+      {
+        "topic": "Routine wellness checks",
+        "prompt": "Talk to your vet about which routine wellness checks suit this pet's age, size and lifestyle."
+      },
+      {
+        "topic": "Weight and body condition",
+        "prompt": "Talk to your vet about a healthy weight range and body condition scoring for this individual pet."
+      }
+    ],
+    "groomingCadence": {
+      "frequency": "WEEKLY",
+      "narrative": "A weekly coat check and brushing session helps you notice changes early. Ask a groomer or vet about the right routine and tools for this individual pet's coat type."
+    },
+    "reviewed": false,
+    "provenance": {
+      "generatedBy": "TEMPLATE"
+    }
+  },
+  {
+    "slug": "border-collie",
+    "temperament": "Temperament varies far more between individuals than between breed labels; early socialisation, consistent handling and a predictable daily routine matter most for how any dog or cat actually behaves at home. Meeting the parents or prior owner, when possible, tells you more than the label.",
+    "exerciseNeeds": {
+      "level": "HIGH",
+      "narrative": "Daily activity needs depend on this individual pet's age, health and energy, not the breed label alone. Build up any new activity gradually and let a vet guide the right plan for this pet."
+    },
+    "commonConditionAwareness": [
+      {
+        "topic": "Routine wellness checks",
+        "prompt": "Talk to your vet about which routine wellness checks suit this pet's age, size and lifestyle."
+      },
+      {
+        "topic": "Weight and body condition",
+        "prompt": "Talk to your vet about a healthy weight range and body condition scoring for this individual pet."
+      }
+    ],
+    "groomingCadence": {
+      "frequency": "WEEKLY",
+      "narrative": "A weekly coat check and brushing session helps you notice changes early. Ask a groomer or vet about the right routine and tools for this individual pet's coat type."
+    },
+    "reviewed": false,
+    "provenance": {
+      "generatedBy": "TEMPLATE"
+    }
+  },
+  {
+    "slug": "chihuahua",
+    "temperament": "Temperament varies far more between individuals than between breed labels; early socialisation, consistent handling and a predictable daily routine matter most for how any dog or cat actually behaves at home. Meeting the parents or prior owner, when possible, tells you more than the label.",
+    "exerciseNeeds": {
+      "level": "MODERATE",
+      "narrative": "Daily activity needs depend on this individual pet's age, health and energy, not the breed label alone. Build up any new activity gradually and let a vet guide the right plan for this pet."
+    },
+    "commonConditionAwareness": [
+      {
+        "topic": "Routine wellness checks",
+        "prompt": "Talk to your vet about which routine wellness checks suit this pet's age, size and lifestyle."
+      },
+      {
+        "topic": "Weight and body condition",
+        "prompt": "Talk to your vet about a healthy weight range and body condition scoring for this individual pet."
+      }
+    ],
+    "groomingCadence": {
+      "frequency": "WEEKLY",
+      "narrative": "A weekly coat check and brushing session helps you notice changes early. Ask a groomer or vet about the right routine and tools for this individual pet's coat type."
+    },
+    "reviewed": false,
+    "provenance": {
+      "generatedBy": "TEMPLATE"
+    }
+  },
+  {
+    "slug": "great-dane",
+    "temperament": "Temperament varies far more between individuals than between breed labels; early socialisation, consistent handling and a predictable daily routine matter most for how any dog or cat actually behaves at home. Meeting the parents or prior owner, when possible, tells you more than the label.",
+    "exerciseNeeds": {
+      "level": "MODERATE",
+      "narrative": "Daily activity needs depend on this individual pet's age, health and energy, not the breed label alone. Build up any new activity gradually and let a vet guide the right plan for this pet."
+    },
+    "commonConditionAwareness": [
+      {
+        "topic": "Routine wellness checks",
+        "prompt": "Talk to your vet about which routine wellness checks suit this pet's age, size and lifestyle."
+      },
+      {
+        "topic": "Weight and body condition",
+        "prompt": "Talk to your vet about a healthy weight range and body condition scoring for this individual pet."
+      }
+    ],
+    "groomingCadence": {
+      "frequency": "WEEKLY",
+      "narrative": "A weekly coat check and brushing session helps you notice changes early. Ask a groomer or vet about the right routine and tools for this individual pet's coat type."
+    },
+    "reviewed": false,
+    "provenance": {
+      "generatedBy": "TEMPLATE"
+    }
+  },
+  {
+    "slug": "siberian-husky",
+    "temperament": "Temperament varies far more between individuals than between breed labels; early socialisation, consistent handling and a predictable daily routine matter most for how any dog or cat actually behaves at home. Meeting the parents or prior owner, when possible, tells you more than the label.",
+    "exerciseNeeds": {
+      "level": "HIGH",
+      "narrative": "Daily activity needs depend on this individual pet's age, health and energy, not the breed label alone. Build up any new activity gradually and let a vet guide the right plan for this pet."
+    },
+    "commonConditionAwareness": [
+      {
+        "topic": "Routine wellness checks",
+        "prompt": "Talk to your vet about which routine wellness checks suit this pet's age, size and lifestyle."
+      },
+      {
+        "topic": "Weight and body condition",
+        "prompt": "Talk to your vet about a healthy weight range and body condition scoring for this individual pet."
+      }
+    ],
+    "groomingCadence": {
+      "frequency": "WEEKLY",
+      "narrative": "A weekly coat check and brushing session helps you notice changes early. Ask a groomer or vet about the right routine and tools for this individual pet's coat type."
+    },
+    "reviewed": false,
+    "provenance": {
+      "generatedBy": "TEMPLATE"
+    }
+  },
+  {
+    "slug": "akita",
+    "temperament": "Temperament varies far more between individuals than between breed labels; early socialisation, consistent handling and a predictable daily routine matter most for how any dog or cat actually behaves at home. Meeting the parents or prior owner, when possible, tells you more than the label.",
+    "exerciseNeeds": {
+      "level": "HIGH",
+      "narrative": "Daily activity needs depend on this individual pet's age, health and energy, not the breed label alone. Build up any new activity gradually and let a vet guide the right plan for this pet."
+    },
+    "commonConditionAwareness": [
+      {
+        "topic": "Routine wellness checks",
+        "prompt": "Talk to your vet about which routine wellness checks suit this pet's age, size and lifestyle."
+      },
+      {
+        "topic": "Weight and body condition",
+        "prompt": "Talk to your vet about a healthy weight range and body condition scoring for this individual pet."
+      }
+    ],
+    "groomingCadence": {
+      "frequency": "WEEKLY",
+      "narrative": "A weekly coat check and brushing session helps you notice changes early. Ask a groomer or vet about the right routine and tools for this individual pet's coat type."
+    },
+    "reviewed": false,
+    "provenance": {
+      "generatedBy": "TEMPLATE"
+    }
+  },
+  {
+    "slug": "american-cocker-spaniel",
+    "temperament": "Temperament varies far more between individuals than between breed labels; early socialisation, consistent handling and a predictable daily routine matter most for how any dog or cat actually behaves at home. Meeting the parents or prior owner, when possible, tells you more than the label.",
+    "exerciseNeeds": {
+      "level": "MODERATE",
+      "narrative": "Daily activity needs depend on this individual pet's age, health and energy, not the breed label alone. Build up any new activity gradually and let a vet guide the right plan for this pet."
+    },
+    "commonConditionAwareness": [
+      {
+        "topic": "Routine wellness checks",
+        "prompt": "Talk to your vet about which routine wellness checks suit this pet's age, size and lifestyle."
+      },
+      {
+        "topic": "Weight and body condition",
+        "prompt": "Talk to your vet about a healthy weight range and body condition scoring for this individual pet."
+      }
+    ],
+    "groomingCadence": {
+      "frequency": "WEEKLY",
+      "narrative": "A weekly coat check and brushing session helps you notice changes early. Ask a groomer or vet about the right routine and tools for this individual pet's coat type."
+    },
+    "reviewed": false,
+    "provenance": {
+      "generatedBy": "TEMPLATE"
+    }
+  },
+  {
+    "slug": "maltese",
+    "temperament": "Temperament varies far more between individuals than between breed labels; early socialisation, consistent handling and a predictable daily routine matter most for how any dog or cat actually behaves at home. Meeting the parents or prior owner, when possible, tells you more than the label.",
+    "exerciseNeeds": {
+      "level": "MODERATE",
+      "narrative": "Daily activity needs depend on this individual pet's age, health and energy, not the breed label alone. Build up any new activity gradually and let a vet guide the right plan for this pet."
+    },
+    "commonConditionAwareness": [
+      {
+        "topic": "Routine wellness checks",
+        "prompt": "Talk to your vet about which routine wellness checks suit this pet's age, size and lifestyle."
+      },
+      {
+        "topic": "Weight and body condition",
+        "prompt": "Talk to your vet about a healthy weight range and body condition scoring for this individual pet."
+      }
+    ],
+    "groomingCadence": {
+      "frequency": "WEEKLY",
+      "narrative": "A weekly coat check and brushing session helps you notice changes early. Ask a groomer or vet about the right routine and tools for this individual pet's coat type."
+    },
+    "reviewed": false,
+    "provenance": {
+      "generatedBy": "TEMPLATE"
+    }
+  },
+  {
+    "slug": "weimaraner",
+    "temperament": "Temperament varies far more between individuals than between breed labels; early socialisation, consistent handling and a predictable daily routine matter most for how any dog or cat actually behaves at home. Meeting the parents or prior owner, when possible, tells you more than the label.",
+    "exerciseNeeds": {
+      "level": "HIGH",
+      "narrative": "Daily activity needs depend on this individual pet's age, health and energy, not the breed label alone. Build up any new activity gradually and let a vet guide the right plan for this pet."
+    },
+    "commonConditionAwareness": [
+      {
+        "topic": "Routine wellness checks",
+        "prompt": "Talk to your vet about which routine wellness checks suit this pet's age, size and lifestyle."
+      },
+      {
+        "topic": "Weight and body condition",
+        "prompt": "Talk to your vet about a healthy weight range and body condition scoring for this individual pet."
+      }
+    ],
+    "groomingCadence": {
+      "frequency": "WEEKLY",
+      "narrative": "A weekly coat check and brushing session helps you notice changes early. Ask a groomer or vet about the right routine and tools for this individual pet's coat type."
+    },
+    "reviewed": false,
+    "provenance": {
+      "generatedBy": "TEMPLATE"
+    }
+  },
+  {
+    "slug": "vizsla",
+    "temperament": "Temperament varies far more between individuals than between breed labels; early socialisation, consistent handling and a predictable daily routine matter most for how any dog or cat actually behaves at home. Meeting the parents or prior owner, when possible, tells you more than the label.",
+    "exerciseNeeds": {
+      "level": "HIGH",
+      "narrative": "Daily activity needs depend on this individual pet's age, health and energy, not the breed label alone. Build up any new activity gradually and let a vet guide the right plan for this pet."
+    },
+    "commonConditionAwareness": [
+      {
+        "topic": "Routine wellness checks",
+        "prompt": "Talk to your vet about which routine wellness checks suit this pet's age, size and lifestyle."
+      },
+      {
+        "topic": "Weight and body condition",
+        "prompt": "Talk to your vet about a healthy weight range and body condition scoring for this individual pet."
+      }
+    ],
+    "groomingCadence": {
+      "frequency": "WEEKLY",
+      "narrative": "A weekly coat check and brushing session helps you notice changes early. Ask a groomer or vet about the right routine and tools for this individual pet's coat type."
+    },
+    "reviewed": false,
+    "provenance": {
+      "generatedBy": "TEMPLATE"
+    }
+  },
+  {
+    "slug": "west-highland-white-terrier",
+    "temperament": "Temperament varies far more between individuals than between breed labels; early socialisation, consistent handling and a predictable daily routine matter most for how any dog or cat actually behaves at home. Meeting the parents or prior owner, when possible, tells you more than the label.",
+    "exerciseNeeds": {
+      "level": "MODERATE",
+      "narrative": "Daily activity needs depend on this individual pet's age, health and energy, not the breed label alone. Build up any new activity gradually and let a vet guide the right plan for this pet."
+    },
+    "commonConditionAwareness": [
+      {
+        "topic": "Routine wellness checks",
+        "prompt": "Talk to your vet about which routine wellness checks suit this pet's age, size and lifestyle."
+      },
+      {
+        "topic": "Weight and body condition",
+        "prompt": "Talk to your vet about a healthy weight range and body condition scoring for this individual pet."
+      }
+    ],
+    "groomingCadence": {
+      "frequency": "WEEKLY",
+      "narrative": "A weekly coat check and brushing session helps you notice changes early. Ask a groomer or vet about the right routine and tools for this individual pet's coat type."
+    },
+    "reviewed": false,
+    "provenance": {
+      "generatedBy": "TEMPLATE"
+    }
+  },
+  {
+    "slug": "newfoundland",
+    "temperament": "Temperament varies far more between individuals than between breed labels; early socialisation, consistent handling and a predictable daily routine matter most for how any dog or cat actually behaves at home. Meeting the parents or prior owner, when possible, tells you more than the label.",
+    "exerciseNeeds": {
+      "level": "MODERATE",
+      "narrative": "Daily activity needs depend on this individual pet's age, health and energy, not the breed label alone. Build up any new activity gradually and let a vet guide the right plan for this pet."
+    },
+    "commonConditionAwareness": [
+      {
+        "topic": "Routine wellness checks",
+        "prompt": "Talk to your vet about which routine wellness checks suit this pet's age, size and lifestyle."
+      },
+      {
+        "topic": "Weight and body condition",
+        "prompt": "Talk to your vet about a healthy weight range and body condition scoring for this individual pet."
+      }
+    ],
+    "groomingCadence": {
+      "frequency": "WEEKLY",
+      "narrative": "A weekly coat check and brushing session helps you notice changes early. Ask a groomer or vet about the right routine and tools for this individual pet's coat type."
+    },
+    "reviewed": false,
+    "provenance": {
+      "generatedBy": "TEMPLATE"
+    }
+  },
+  {
+    "slug": "saint-bernard",
+    "temperament": "Temperament varies far more between individuals than between breed labels; early socialisation, consistent handling and a predictable daily routine matter most for how any dog or cat actually behaves at home. Meeting the parents or prior owner, when possible, tells you more than the label.",
+    "exerciseNeeds": {
+      "level": "MODERATE",
+      "narrative": "Daily activity needs depend on this individual pet's age, health and energy, not the breed label alone. Build up any new activity gradually and let a vet guide the right plan for this pet."
+    },
+    "commonConditionAwareness": [
+      {
+        "topic": "Routine wellness checks",
+        "prompt": "Talk to your vet about which routine wellness checks suit this pet's age, size and lifestyle."
+      },
+      {
+        "topic": "Weight and body condition",
+        "prompt": "Talk to your vet about a healthy weight range and body condition scoring for this individual pet."
+      }
+    ],
+    "groomingCadence": {
+      "frequency": "WEEKLY",
+      "narrative": "A weekly coat check and brushing session helps you notice changes early. Ask a groomer or vet about the right routine and tools for this individual pet's coat type."
+    },
+    "reviewed": false,
+    "provenance": {
+      "generatedBy": "TEMPLATE"
+    }
+  },
+  {
+    "slug": "brittany",
+    "temperament": "Temperament varies far more between individuals than between breed labels; early socialisation, consistent handling and a predictable daily routine matter most for how any dog or cat actually behaves at home. Meeting the parents or prior owner, when possible, tells you more than the label.",
+    "exerciseNeeds": {
+      "level": "MODERATE",
+      "narrative": "Daily activity needs depend on this individual pet's age, health and energy, not the breed label alone. Build up any new activity gradually and let a vet guide the right plan for this pet."
+    },
+    "commonConditionAwareness": [
+      {
+        "topic": "Routine wellness checks",
+        "prompt": "Talk to your vet about which routine wellness checks suit this pet's age, size and lifestyle."
+      },
+      {
+        "topic": "Weight and body condition",
+        "prompt": "Talk to your vet about a healthy weight range and body condition scoring for this individual pet."
+      }
+    ],
+    "groomingCadence": {
+      "frequency": "WEEKLY",
+      "narrative": "A weekly coat check and brushing session helps you notice changes early. Ask a groomer or vet about the right routine and tools for this individual pet's coat type."
+    },
+    "reviewed": false,
+    "provenance": {
+      "generatedBy": "TEMPLATE"
+    }
+  },
+  {
+    "slug": "english-mastiff",
+    "temperament": "Temperament varies far more between individuals than between breed labels; early socialisation, consistent handling and a predictable daily routine matter most for how any dog or cat actually behaves at home. Meeting the parents or prior owner, when possible, tells you more than the label.",
+    "exerciseNeeds": {
+      "level": "MODERATE",
+      "narrative": "Daily activity needs depend on this individual pet's age, health and energy, not the breed label alone. Build up any new activity gradually and let a vet guide the right plan for this pet."
+    },
+    "commonConditionAwareness": [
+      {
+        "topic": "Routine wellness checks",
+        "prompt": "Talk to your vet about which routine wellness checks suit this pet's age, size and lifestyle."
+      },
+      {
+        "topic": "Weight and body condition",
+        "prompt": "Talk to your vet about a healthy weight range and body condition scoring for this individual pet."
+      }
+    ],
+    "groomingCadence": {
+      "frequency": "WEEKLY",
+      "narrative": "A weekly coat check and brushing session helps you notice changes early. Ask a groomer or vet about the right routine and tools for this individual pet's coat type."
+    },
+    "reviewed": false,
+    "provenance": {
+      "generatedBy": "TEMPLATE"
+    }
+  },
+  {
+    "slug": "collie",
+    "temperament": "Temperament varies far more between individuals than between breed labels; early socialisation, consistent handling and a predictable daily routine matter most for how any dog or cat actually behaves at home. Meeting the parents or prior owner, when possible, tells you more than the label.",
+    "exerciseNeeds": {
+      "level": "HIGH",
+      "narrative": "Daily activity needs depend on this individual pet's age, health and energy, not the breed label alone. Build up any new activity gradually and let a vet guide the right plan for this pet."
+    },
+    "commonConditionAwareness": [
+      {
+        "topic": "Routine wellness checks",
+        "prompt": "Talk to your vet about which routine wellness checks suit this pet's age, size and lifestyle."
+      },
+      {
+        "topic": "Weight and body condition",
+        "prompt": "Talk to your vet about a healthy weight range and body condition scoring for this individual pet."
+      }
+    ],
+    "groomingCadence": {
+      "frequency": "WEEKLY",
+      "narrative": "A weekly coat check and brushing session helps you notice changes early. Ask a groomer or vet about the right routine and tools for this individual pet's coat type."
+    },
+    "reviewed": false,
+    "provenance": {
+      "generatedBy": "TEMPLATE"
+    }
+  }
+]

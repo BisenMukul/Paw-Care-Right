@@ -15,7 +15,8 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "jest",
-    "test:ai-evals": "tsup && node dist/evals/run.js"
+    "test:ai-evals": "tsup && node dist/evals/run.js",
+    "generate:breed-guides": "tsup && node dist/content/generate-breed-guides.js"
   },
   "dependencies": {
     "zod": "^4",
