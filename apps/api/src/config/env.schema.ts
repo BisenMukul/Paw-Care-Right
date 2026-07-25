@@ -29,6 +29,11 @@ export const apiEnvSchema = z.object({
   HOTLINE_PACK_VERSION: z.coerce.number().int().nonnegative().default(1),
   POSTHOG_API_KEY: z.string().default(""),
   POSTHOG_HOST: z.string().url().default("https://us.i.posthog.com"),
+  // --- Observability (T089). Stub-safe: empty DSN never inits Sentry. ---
+  SENTRY_DSN: z.string().default(""),
+  SENTRY_ENVIRONMENT: z.string().optional(),
+  GIT_SHA: z.string().min(1).default("dev"),
+  APP_VERSION: z.string().min(1).default("0.0.0"),
 });
 
 export type ApiEnv = z.infer<typeof apiEnvSchema>;

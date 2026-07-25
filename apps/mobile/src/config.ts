@@ -13,6 +13,8 @@ export interface AppConfig {
   privacyUrl: string;
   posthogKey: string;
   posthogHost: string;
+  sentryDsn: string;
+  gitSha: string;
 }
 
 export function getConfig(): AppConfig {
@@ -26,6 +28,8 @@ export function getConfig(): AppConfig {
         privacyUrl?: string;
         posthogKey?: string;
         posthogHost?: string;
+        sentryDsn?: string;
+        gitSha?: string;
       }
     | undefined;
 
@@ -39,6 +43,9 @@ export function getConfig(): AppConfig {
     privacyUrl: extra?.privacyUrl ?? "https://pawcareright.app/privacy",
     posthogKey: extra?.posthogKey ?? "",
     posthogHost: extra?.posthogHost ?? "https://us.i.posthog.com",
+    // T089: stub-safe by default (empty DSN => Sentry never inits, D5).
+    sentryDsn: extra?.sentryDsn ?? "",
+    gitSha: extra?.gitSha ?? "dev",
   };
 }
 

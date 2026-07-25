@@ -16,9 +16,6 @@ const {
   DEEPLINK_SCHEME,
 } = require("@pawcareright/config");
 
-// Sentry stub (future): insertion point for the `@sentry/react-native` config
-// plugin + release naming once error reporting is wired up. Omitted for now.
-
 /** @type {import('expo/config').ExpoConfig} */
 const config = {
   name: APP_DISPLAY_NAME,
@@ -57,13 +54,30 @@ const config = {
     privacyUrl: process.env.EXPO_PUBLIC_PRIVACY_URL ?? "https://pawcareright.app/privacy",
     posthogKey: process.env.EXPO_PUBLIC_POSTHOG_KEY ?? "",
     posthogHost: process.env.EXPO_PUBLIC_POSTHOG_HOST ?? "https://us.i.posthog.com",
+    // T089: stub-safe by default (empty DSN => Sentry never inits, D5).
+    sentryDsn: process.env.EXPO_PUBLIC_SENTRY_DSN ?? "",
+    gitSha: process.env.EXPO_PUBLIC_GIT_SHA ?? "dev",
     // `eas init` will create an EAS project with slug "pawcareright" (APP_SLUG)
     // and print its projectId — add it back here as `eas: { projectId: "<uuid>" }`.
     "eas": {
         "projectId": "a7a52d2d-c7f4-44b0-9234-017d07bd1ced"
       }
   },
-  plugins: ["expo-router", "expo-apple-authentication", "expo-dev-client"],
+  plugins: [
+    "expo-router",
+    "expo-apple-authentication",
+    "expo-dev-client",
+    // T089: source maps ride the EAS build/update pipeline (plan D7) — this
+    // plugin only wires native project config (org/project + properties
+    // files); the actual upload happens in EAS jobs at T099/T116, not CI.
+    [
+      "@sentry/react-native/expo",
+      {
+        organization: process.env.SENTRY_ORG ?? "pawcareright",
+        project: process.env.SENTRY_PROJECT ?? "pawcareright-mobile",
+      },
+    ],
+  ],
 };
 
 module.exports = config;

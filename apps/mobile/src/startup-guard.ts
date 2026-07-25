@@ -9,8 +9,13 @@
  * into an actionable stack trace in `expo start` / adb logcat.
  *
  * The previous handler (React Native's own red-box/dev handler) is always
- * chained afterwards -- this trap observes, it never swallows.
+ * chained afterwards -- this trap observes, it never swallows. T089 also
+ * forwards every trapped error to Sentry via `captureError` (a safe no-op
+ * until `initMobileSentry()` has run, e.g. before the root layout's Sentry
+ * wiring executes -- see `app/_layout.tsx`).
  */
+
+import { captureError } from "./observability/sentry";
 
 interface ErrorUtilsLike {
   getGlobalHandler(): ((error: unknown, isFatal?: boolean) => void) | undefined;
@@ -45,8 +50,9 @@ export function installStartupGuard(): void {
 
   const previousHandler = errorUtils.getGlobalHandler();
   errorUtils.setGlobalHandler((error: unknown, isFatal?: boolean) => {
-    // eslint-disable-next-line no-console -- JUSTIFIED: last-resort startup-crash diagnostic; fires only when the app is already going down and must reach Metro/adb logs (Sentry wiring lands in P9)
+    // eslint-disable-next-line no-console -- JUSTIFIED: last-resort startup-crash diagnostic; fires only when the app is already going down and must reach Metro/adb logs (Sentry wiring landed T089 -- captureError below is a safe no-op when uninitialized, e.g. before `initMobileSentry()` has run)
     console.error(`[pawcareright startup] ${isFatal === true ? "FATAL" : "non-fatal"} JS error:`, error);
+    captureError(error, { isFatal: isFatal === true });
     previousHandler?.(error, isFatal);
   });
 }

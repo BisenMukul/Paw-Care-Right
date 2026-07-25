@@ -4,6 +4,7 @@
     "noEmit": false,
     "outDir": "dist",
     "declaration": false,
+    "sourceMap": true,
     "paths": {
       "@pawcareright/ai": ["../ai/dist/index.d.ts"],
       "@pawcareright/analytics": ["../analytics/dist/index.d.ts"],

@@ -29,6 +29,20 @@ jobs:
     env:
       DATABASE_URL: postgresql://pawcareright:pawcareright@localhost:5432/pawcareright?schema=public
       REDIS_URL: redis://localhost:6379
+      # T089: GIT_SHA feeds the pinned pawcareright@{version}+{buildId} release
+      # shape (CLAUDE §1a). SENTRY_AUTH_TOKEN is optional — its absence must
+      # never fail CI (D7); the upload step below is gated on its presence.
+      # APP_VERSION mirrors the runtime env var (default "0.0.0" until T099
+      # wires real versioning) so the uploaded source-map release string can
+      # never silently drift from the running app's actual release name
+      # (finding F5) — once T099 sets a repo/environment `vars.APP_VERSION`,
+      # this line needs no further edits. The `|| '0.0.0'` fallback is
+      # load-bearing (review R3): an UNSET repo var renders as the empty
+      # string — not undefined — which would defeat the Zod .default() and
+      # fail every env-validated step in tokenless CI.
+      GIT_SHA: ${{ github.sha }}
+      APP_VERSION: ${{ vars.APP_VERSION || '0.0.0' }}
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -49,6 +63,22 @@ jobs:
       - run: pnpm lint
       - run: pnpm test
       - run: pnpm build
+      # T089 (plan D7): source-map upload is best-effort observability, never
+      # a required gate — it only runs when a real SENTRY_AUTH_TOKEN secret is
+      # configured. Org/project default to the §1a `pawcareright` slugs.
+      - name: Upload API source maps to Sentry
+        if: env.SENTRY_AUTH_TOKEN != ''
+        uses: getsentry/action-release@v1
+        env:
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG || 'pawcareright' }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT || 'pawcareright-api' }}
+        with:
+          environment: production
+          version: "pawcareright@${{ env.APP_VERSION || '0.0.0' }}+${{ github.sha }}"
+          sourcemaps: apps/api/dist
+      - name: Sentry source-map upload skipped
+        if: env.SENTRY_AUTH_TOKEN == ''
+        run: echo "Sentry source-map upload skipped — no SENTRY_AUTH_TOKEN secret" >> "$GITHUB_STEP_SUMMARY"
   # AI eval gate — activated at T040. Fake provider: deterministic, keyless,
   # threshold-enforcing (packages/ai harness). Report uploaded as an artifact.
   ai-evals:

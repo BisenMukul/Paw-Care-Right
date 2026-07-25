@@ -14,9 +14,11 @@
     "next": "^15",
     "react": "^19",
     "react-dom": "^19",
+    "@pawcareright/analytics": "workspace:*",
     "@pawcareright/config": "workspace:*",
     "@pawcareright/data": "workspace:*",
-    "@pawcareright/types": "workspace:*"
+    "@pawcareright/types": "workspace:*",
+    "@sentry/nextjs": "^10.68.0"
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "^15",

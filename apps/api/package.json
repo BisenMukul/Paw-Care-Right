@@ -31,6 +31,7 @@
     "@pawcareright/data": "workspace:*",
     "@pawcareright/types": "workspace:*",
     "@prisma/client": "^6",
+    "@sentry/node": "^10.68.0",
     "bullmq": "^5",
     "class-transformer": "^0.5",
     "class-validator": "^0.14",

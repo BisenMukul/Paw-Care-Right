@@ -90,4 +90,20 @@ export class AppConfigService {
   get posthogHost(): string {
     return this.env.POSTHOG_HOST;
   }
+
+  get sentryDsn(): string {
+    return this.env.SENTRY_DSN;
+  }
+
+  get sentryEnvironment(): string {
+    return this.env.SENTRY_ENVIRONMENT ?? this.nodeEnv;
+  }
+
+  get gitSha(): string {
+    return this.env.GIT_SHA;
+  }
+
+  get appVersion(): string {
+    return this.env.APP_VERSION;
+  }
 }

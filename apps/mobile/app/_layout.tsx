@@ -18,8 +18,15 @@ import { UpsellSheet } from "../src/components/upsell-sheet";
 import { AppErrorBoundary } from "../src/error-boundary";
 import { useAppFonts } from "../src/fonts/use-app-fonts";
 import { useNetworkListener } from "../src/offline/use-network-listener";
+import { initMobileSentry } from "../src/observability/sentry";
 
 import "../global.css";
+
+// T089: Sentry wiring (guard imported first above — it must trap everything,
+// including a Sentry init failure; `initMobileSentry` is itself try/catch-
+// wrapped internally so it can never throw regardless of call order).
+// Stub-safe by default (D5): a no-op when EXPO_PUBLIC_SENTRY_DSN is empty.
+initMobileSentry();
 
 /**
  * Root auth gate (classic expo-router pattern, plan R2): a single effect

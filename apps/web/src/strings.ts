@@ -384,6 +384,14 @@ export const strings = {
     notice: (appName: string) =>
       `${appName} provides general guidance only and is not a substitute for veterinary care.`,
   },
+  // T089: App Router global error boundary copy (apps/web/app/global-error.tsx).
+  // Generic, calm site-error copy only — no §5 surface (no health/AI-result
+  // content ever reaches this boundary).
+  globalError: {
+    heading: "Something went wrong",
+    body: "This page ran into an unexpected error. Please try again.",
+    retry: "Try again",
+  },
   foodPage: {
     verdictLabel: {
       safe: "Usually fine",

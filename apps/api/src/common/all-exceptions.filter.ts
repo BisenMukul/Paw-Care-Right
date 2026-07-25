@@ -9,6 +9,7 @@ import {
 import type { ErrorCode } from "@pawcareright/types";
 import type { Response } from "express";
 
+import { captureApiException } from "../observability/sentry";
 import { getRequestId, type RequestWithId } from "./request-id.middleware";
 
 const STATUS_TO_CODE: Partial<Record<number, ErrorCode>> = {
@@ -39,6 +40,19 @@ export class AllExceptionsFilter implements ExceptionFilter {
       `[${requestId}] ${status} ${code}: ${message}`,
       exception instanceof Error ? exception.stack : undefined,
     );
+
+    // T089 D8: only 5xx / non-HttpException errors are reported — 4xx are
+    // expected client noise. Tagged with `requestId` ONLY, never the raw
+    // request. Wrapped defensively so a Sentry SDK failure can never break
+    // the response envelope (`captureApiException` itself is already
+    // try/catch-wrapped — this is belt-and-braces at the call site).
+    if (status >= HttpStatus.INTERNAL_SERVER_ERROR) {
+      try {
+        captureApiException(exception, requestId);
+      } catch {
+        // never let observability break the response
+      }
+    }
 
     if (response.headersSent) {
       // T082 F1: a post-header failure (e.g. SSE persistence throwing after
