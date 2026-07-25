@@ -165,8 +165,8 @@ export const humanMeds: ToxinRowInput[] = [
     id: "antacid-calcium-carbonate",
     name: "Calcium carbonate antacid",
     category: "human-med",
-    verdicts: { dog: "safe", cat: "safe" },
-    note: "A single accidental antacid tablet is generally a low concern; a large quantity could contribute to an upset stomach or elevated calcium.",
+    verdicts: { dog: "caution", cat: "caution" },
+    note: "Human antacid products are not intended for pets, and some combine other active ingredients. If your pet swallowed any human medication, contact your veterinarian or a poison hotline to be safe.",
     aliases: ["tums"],
   },
   {
