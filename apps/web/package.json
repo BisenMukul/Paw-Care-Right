@@ -8,13 +8,15 @@
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
-    "test": "echo \"no web tests yet (T007)\" && exit 0"
+    "test": "jest"
   },
   "dependencies": {
     "next": "^15",
     "react": "^19",
     "react-dom": "^19",
-    "@pawcareright/config": "workspace:*"
+    "@pawcareright/config": "workspace:*",
+    "@pawcareright/data": "workspace:*",
+    "@pawcareright/types": "workspace:*"
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "^15",
@@ -22,13 +24,25 @@
     "postcss": "^8",
     "autoprefixer": "^10",
     "@lhci/cli": "^0.14",
+    "@types/jest": "^29.5.14",
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9.39.4",
     "eslint-config-prettier": "^9.1.2",
     "eslint-plugin-import-x": "^4.17.1",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.2.5",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.63.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "roots": ["<rootDir>/src"],
+    "transform": {
+      "^.+\\.tsx?$": ["ts-jest", { "tsconfig": "<rootDir>/tsconfig.spec.json" }]
+    },
+    "testMatch": ["**/*.spec.ts", "**/*.spec.tsx"],
+    "moduleFileExtensions": ["ts", "tsx", "js", "json"]
   }
 }

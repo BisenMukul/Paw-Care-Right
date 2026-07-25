@@ -1,11 +1,18 @@
 {
   "ci": {
     "collect": {
-      "url": ["http://localhost:3000/"],
+      "url": [
+        "http://localhost:3000/",
+        "http://localhost:3000/can-dogs-eat/grapes",
+        "http://localhost:3000/can-cats-eat/onion",
+        "http://localhost:3000/can-dogs-eat/apple"
+      ],
       "startServerCommand": "pnpm --filter @pawcareright/web start"
     },
     "assert": {
-      "assertions": {}
+      "assertions": {
+        "categories:seo": ["error", { "minScore": 0.95 }]
+      }
     },
     "upload": {
       "target": "temporary-public-storage"
