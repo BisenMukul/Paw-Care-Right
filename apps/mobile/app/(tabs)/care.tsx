@@ -14,6 +14,7 @@ import { PetFilterChips } from "../../src/components/pet-filter-chips";
 import { PrimaryButton } from "../../src/components/primary-button";
 import { ScreenScaffold } from "../../src/components/screen-scaffold";
 import { Skeleton } from "../../src/components/skeleton";
+import { useOutboxStore } from "../../src/offline/outbox-store";
 import { useActivePetStore } from "../../src/pets/active-pet-store";
 import { strings } from "../../src/strings";
 
@@ -56,6 +57,7 @@ export default function CareScreen() {
   const router = useRouter();
   const activePetId = useActivePetStore((state) => state.activePetId);
   const isOffline = useIsOffline();
+  const pendingCount = useOutboxStore((state) => state.items.length);
 
   const [selectedPetId, setSelectedPetId] = useState<string | null>(null);
 
@@ -141,6 +143,12 @@ export default function CareScreen() {
           className="text-center text-sm text-brand-700"
         >
           {strings.agenda.offlineBanner}
+        </Text>
+      ) : null}
+
+      {pendingCount > 0 ? (
+        <Text testID="agenda-outbox-banner" accessibilityRole="alert" className="text-center text-sm text-brand-700">
+          {strings.agenda.queuedBanner(pendingCount)}
         </Text>
       ) : null}
 

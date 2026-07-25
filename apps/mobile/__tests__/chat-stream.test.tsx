@@ -346,6 +346,243 @@ describe("useChatStream", () => {
   });
 });
 
+describe("chat AbortController (T094 plan step 5, folded item 1 / T083 F5 hand-off)", () => {
+  interface SignalOptions {
+    onFrame: (frame: { event: string; data: string }) => void;
+    signal: AbortSignal;
+  }
+
+  /** Sends the given frames synchronously, then hangs until `signal` aborts, rejecting the way a real aborted transport would (mirrors `streamSseRequest`'s `normalizeNetworkError` catch-all shape). */
+  function abortAwareStream(frames: FrameSpec[]) {
+    return jest.fn((_path: string, _body: unknown, options: SignalOptions) => {
+      for (const spec of frames) {
+        options.onFrame(toFrame(spec));
+      }
+      return new Promise<void>((_resolve, reject) => {
+        options.signal.addEventListener("abort", () => {
+          reject(new Error("transport aborted"));
+        });
+      });
+    });
+  }
+
+  it("unmounting the chat hook aborts the in-flight stream", async () => {
+    mockedPost.mockResolvedValue(THREAD);
+    let capturedSignal: AbortSignal | undefined;
+    mockedStreamSse.mockImplementation((_path: string, _body: unknown, options: SignalOptions) => {
+      capturedSignal = options.signal;
+      return new Promise<void>(() => {});
+    });
+    const { result, unmount } = await renderHook(() => useChatStream("pet1"));
+
+    await act(async () => {
+      result.current.send("hi");
+    });
+    await waitFor(() => expect(capturedSignal).toBeDefined());
+    expect(capturedSignal?.aborted).toBe(false);
+
+    await unmount();
+
+    expect(capturedSignal?.aborted).toBe(true);
+  });
+
+  it("an unmount-abort mid-stream removes the partial answer and never enters the retryable dropped state", async () => {
+    mockedPost.mockResolvedValue(THREAD);
+    mockedStreamSse.mockImplementation(
+      abortAwareStream([
+        { event: "start", data: { threadId: "thread-1", userMessageId: "u1", assistantMessageId: "a1" } },
+        { event: "chunk", data: { seq: 0, text: "partial answer" } },
+      ]),
+    );
+    const { result, unmount } = await renderHook(() => useChatStream("pet1"));
+
+    await act(async () => {
+      result.current.send("hi");
+    });
+    await waitFor(() => expect(result.current.state).toBe("streaming"));
+    expect(useChatStore.getState().messagesByPetId.pet1?.some((message) => message.role === "assistant")).toBe(true);
+
+    await unmount();
+    // Let the abort-triggered rejection (and the hook's own `.catch`) settle.
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    expect(useChatStore.getState().messagesByPetId.pet1?.some((message) => message.role === "assistant")).toBe(false);
+
+    // A freshly mounted hook (same pet, same store) proves no terminal
+    // "dropped"/"error" state survived the unmount -- `retry()` is a no-op
+    // outside those states, so a second `streamSse` call would mean the
+    // unmount-abort was wrongly treated as a retryable transport drop.
+    const { result: fresh } = await renderHook(() => useChatStream("pet1"));
+    expect(fresh.current.state).toBe("idle");
+
+    await act(async () => {
+      fresh.current.retry();
+    });
+    expect(mockedStreamSse).toHaveBeenCalledTimes(1);
+  });
+
+  it("an abort AFTER done(SAFE_FALLBACK) preserves the safe-fallback answer (T088 hazard pin)", async () => {
+    mockedPost.mockResolvedValue(THREAD);
+    mockedStreamSse.mockImplementation(
+      abortAwareStream([
+        { event: "start", data: { threadId: "thread-1", userMessageId: "u1", assistantMessageId: "a1" } },
+        {
+          event: "done",
+          data: { assistantMessageId: "a1", status: "SAFE_FALLBACK", quota: { used: 1, limit: 200, remaining: 199 } },
+        },
+      ]),
+    );
+    const { result, unmount } = await renderHook(() => useChatStream("pet1"));
+
+    await act(async () => {
+      result.current.send("hi");
+    });
+    await waitFor(() => expect(result.current.state).toBe("safeFallback"));
+
+    await unmount();
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    const assistant = useChatStore.getState().messagesByPetId.pet1?.find((message) => message.role === "assistant");
+    expect(assistant?.status).toBe("safeFallback");
+    // The `sawDone` guard runs BEFORE the `signal.aborted` guard -- the
+    // post-done abort is a total no-op, never a demotion.
+    expect(mockedStreamSse).toHaveBeenCalledTimes(1);
+  });
+
+  it("an abort AFTER done(OK) preserves the completed answer", async () => {
+    mockedPost.mockResolvedValue(THREAD);
+    mockedStreamSse.mockImplementation(
+      abortAwareStream([
+        { event: "start", data: { threadId: "thread-1", userMessageId: "u1", assistantMessageId: "a1" } },
+        { event: "done", data: { assistantMessageId: "a1", status: "OK", quota: { used: 1, limit: 200, remaining: 199 } } },
+      ]),
+    );
+    const { result, unmount } = await renderHook(() => useChatStream("pet1"));
+
+    await act(async () => {
+      result.current.send("hi");
+    });
+    await waitFor(() => expect(result.current.state).toBe("idle"));
+
+    await unmount();
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    const assistant = useChatStore.getState().messagesByPetId.pet1?.find((message) => message.role === "assistant");
+    expect(assistant?.status).toBe("ok");
+    expect(mockedStreamSse).toHaveBeenCalledTimes(1);
+  });
+
+  it("switching petId aborts the previous pet's stream", async () => {
+    mockedPost.mockResolvedValue(THREAD);
+    let firstSignal: AbortSignal | undefined;
+    mockedStreamSse.mockImplementationOnce((_path: string, _body: unknown, options: SignalOptions) => {
+      firstSignal = options.signal;
+      return new Promise<void>(() => {});
+    });
+    const { result, rerender } = await renderHook((props: { petId: string }) => useChatStream(props.petId), {
+      initialProps: { petId: "pet1" },
+    });
+
+    await act(async () => {
+      result.current.send("hi");
+    });
+    await waitFor(() => expect(firstSignal).toBeDefined());
+    expect(firstSignal?.aborted).toBe(false);
+
+    mockedStreamSse.mockImplementationOnce(() => new Promise<void>(() => {}));
+    await rerender({ petId: "pet2" });
+
+    expect(firstSignal?.aborted).toBe(true);
+  });
+
+  it("switching petId does not corrupt the LIVE hook's state when the old stream's abort settles later (guard 2 pin)", async () => {
+    // Unlike the test above, this transport actually REJECTS on abort
+    // (mirrors a real aborted fetch) so the `.catch` path in `runStream`
+    // genuinely runs after the `petId` switch -- proving guard 2 stops it
+    // from corrupting the SAME live hook instance's state (a component
+    // re-render on a prop change, not an unmount, so `setState` is NOT a
+    // React no-op here -- this is the strongest observable pin for M6).
+    //
+    // T094 checker F2 fix: the ORIGINAL version of this test had TWO
+    // independent order-dependency bugs.
+    //  (1) `jest.clearAllMocks()` (the file's `beforeEach`) clears call
+    //      counts but never drops already-queued `mockImplementationOnce`
+    //      entries. The preceding "switching petId aborts the previous
+    //      pet's stream" test queues a SECOND `mockImplementationOnce`
+    //      defensively that its own `rerender` never actually consumes
+    //      (switching `petId` alone does not trigger a new `send()`) --
+    //      that leftover would silently steal THIS test's first
+    //      `streamSse` call when run as part of the full file (though not
+    //      in isolation), so this test now calls `mockReset()` up front to
+    //      guarantee a clean mock queue regardless of test order.
+    //  (2) the settle timing was guessed with a fixed number of
+    //      `Promise.resolve()` hops (order-dependent) and asserted a
+    //      NEGATIVE (`not.toBe("dropped")`, which any of five other states
+    //      would also satisfy). This version instead captures the EXACT
+    //      transport promise `runStream`'s own `.then().catch()` chain is
+    //      attached to and awaits THAT SAME promise object directly:
+    //      because the internal `.then().catch()` reaction was attached to
+    //      it earlier (synchronously, inside `send()`, before this test
+    //      ever touches the promise), promise microtask ordering
+    //      guarantees the internal reaction has already run by the time
+    //      this test's own `.catch()` on the identical promise settles --
+    //      deterministic regardless of what ran before this test. The
+    //      assertion is also now the EXACT expected value, not a negative
+    //      one.
+    mockedStreamSse.mockReset();
+    mockedPost.mockResolvedValue(THREAD);
+    let firstTransportPromise: Promise<void> | undefined;
+    mockedStreamSse.mockImplementationOnce((_path: string, _body: unknown, options: SignalOptions) => {
+      options.onFrame(
+        toFrame({ event: "start", data: { threadId: "thread-1", userMessageId: "u1", assistantMessageId: "a1" } }),
+      );
+      const transportPromise = new Promise<void>((_resolve, reject) => {
+        options.signal.addEventListener("abort", () => {
+          reject(new Error("transport aborted"));
+        });
+      });
+      firstTransportPromise = transportPromise;
+      return transportPromise;
+    });
+    const { result, rerender } = await renderHook((props: { petId: string }) => useChatStream(props.petId), {
+      initialProps: { petId: "pet1" },
+    });
+
+    await act(async () => {
+      result.current.send("hi");
+    });
+    await waitFor(() => expect(firstTransportPromise).toBeDefined());
+    expect(result.current.state).toBe("streaming");
+
+    mockedStreamSse.mockImplementationOnce(() => new Promise<void>(() => {}));
+    await rerender({ petId: "pet2" });
+
+    // Deterministically wait for the OLD stream's transport promise (the
+    // exact object reference `runStream` chained its `.then().catch()`
+    // onto) to settle -- see the comment above for why this makes the
+    // assertion below order-independent.
+    await act(async () => {
+      await firstTransportPromise?.catch(() => undefined);
+    });
+
+    // With guard 2 intact, nothing further ever calls `setState` for the
+    // aborted stream -- the state stays EXACTLY what it was set to by the
+    // last real frame before the `petId` switch. A mutation that corrupts
+    // it to `"dropped"` (or any other value) now fails this exact-match
+    // assertion, not just a negative one.
+    expect(result.current.state).toBe("streaming");
+  });
+});
+
 describe("isNearBottom (pure helper, T083 plan D11)", () => {
   it("true when the scroll offset is within the threshold of the bottom", () => {
     expect(isNearBottom({ contentHeight: 1000, layoutHeight: 600, offsetY: 400 })).toBe(true);

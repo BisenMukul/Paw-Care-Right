@@ -1,7 +1,7 @@
 import { isApiError, useIsOffline } from "@pawcareright/api-client";
 import type { ChatThread } from "@pawcareright/types";
 import * as Crypto from "expo-crypto";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { apiClient } from "../api/client";
 import { parseChatFrame } from "./chat-events";
@@ -93,6 +93,7 @@ function runStream(
   threadId: string,
   assistantId: string,
   setState: (state: ChatStreamState) => void,
+  signal: AbortSignal,
 ): Promise<void> {
   let assistantText = "";
   let sawDone = false;
@@ -102,6 +103,7 @@ function runStream(
       `/v1/chat/threads/${threadId}/messages`,
       { content: text },
       {
+        signal,
         onFrame: (frame) => {
           const event = parseChatFrame(frame);
           const { patchMessage } = useChatStore.getState();
@@ -153,6 +155,19 @@ function runStream(
       if (sawDone) {
         return;
       }
+      // A user-initiated abort (unmount or a `petId` change navigating away
+      // mid-stream, T094 plan D5) is neither a completion nor a transport
+      // failure -- discard the partial bubble (it is "not a truthful record
+      // of a completed answer", `chat-store.ts:32`) and enter NO terminal
+      // state at all (no `setState` call), so no Retry affordance is ever
+      // offered for a stream the USER ended. `normalizeNetworkError`
+      // collapses both an abort and a transport drop to `httpStatus: 0`, so
+      // this must be checked via `signal.aborted`, never by inspecting the
+      // error shape.
+      if (signal.aborted) {
+        useChatStore.getState().removeMessage(petId, assistantId);
+        return;
+      }
       useChatStore.getState().removeMessage(petId, assistantId);
       setState(classifyError(err));
     });
@@ -172,6 +187,19 @@ export function useChatStream(petId: string | undefined): UseChatStream {
 
   const lastUserTextRef = useRef<string | null>(null);
   const assistantIdRef = useRef<string | null>(null);
+  // T094 (folded item 1, T083 F5 hand-off): a fresh controller per attempt,
+  // stored here so the unmount/petId-change effect below can abort
+  // whichever attempt is currently in flight.
+  const controllerRef = useRef<AbortController | null>(null);
+
+  // Cleanup fires on unmount AND on a `petId` change (navigating to another
+  // pet's chat) -- the "navigation" half of the card. `send`/`retry`
+  // themselves never pre-abort (the composer is disabled while streaming).
+  useEffect(() => {
+    return () => {
+      controllerRef.current?.abort();
+    };
+  }, [petId]);
 
   const send = useCallback(
     (text: string) => {
@@ -188,6 +216,9 @@ export function useChatStream(petId: string | undefined): UseChatStream {
       useChatStore.getState().appendMessage(resolvedPetId, { id: Crypto.randomUUID(), role: "user", text });
       setState("sending");
 
+      const controller = new AbortController();
+      controllerRef.current = controller;
+
       void ensureThreadId(resolvedPetId)
         .then((resolvedThreadId) => {
           const assistantId = Crypto.randomUUID();
@@ -195,7 +226,7 @@ export function useChatStream(petId: string | undefined): UseChatStream {
           useChatStore
             .getState()
             .appendMessage(resolvedPetId, { id: assistantId, role: "assistant", text: "", status: "streaming" });
-          return runStream(text, resolvedPetId, resolvedThreadId, assistantId, setState);
+          return runStream(text, resolvedPetId, resolvedThreadId, assistantId, setState, controller.signal);
         })
         .catch((err: unknown) => {
           setState(classifyError(err));
@@ -220,6 +251,9 @@ export function useChatStream(petId: string | undefined): UseChatStream {
     }
     setState("sending");
 
+    const controller = new AbortController();
+    controllerRef.current = controller;
+
     const existingThreadId = useChatStore.getState().threadIdByPetId[resolvedPetId];
     const threadIdPromise = existingThreadId !== undefined ? Promise.resolve(existingThreadId) : ensureThreadId(resolvedPetId);
 
@@ -230,7 +264,7 @@ export function useChatStream(petId: string | undefined): UseChatStream {
         useChatStore
           .getState()
           .appendMessage(resolvedPetId, { id: assistantId, role: "assistant", text: "", status: "streaming" });
-        return runStream(text, resolvedPetId, resolvedThreadId, assistantId, setState);
+        return runStream(text, resolvedPetId, resolvedThreadId, assistantId, setState, controller.signal);
       })
       .catch((err: unknown) => {
         setState(classifyError(err));

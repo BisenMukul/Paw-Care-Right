@@ -1,4 +1,5 @@
-import { render, screen, waitFor } from "@testing-library/react-native";
+import { setOnline } from "@pawcareright/api-client";
+import { act, render, screen, waitFor } from "@testing-library/react-native";
 import React from "react";
 
 import RootLayout from "../app/_layout";
@@ -73,6 +74,7 @@ jest.mock("../src/auth/auth-store", () => {
 });
 
 jest.mock("../src/offline/use-network-listener", () => ({ useNetworkListener: jest.fn() }));
+jest.mock("../src/offline/use-outbox-flush", () => ({ useOutboxFlush: jest.fn() }));
 jest.mock("../src/billing/use-purchases-init", () => ({ usePurchasesInit: jest.fn() }));
 jest.mock("../src/components/update-gate", () => {
   const { View } = jest.requireActual<typeof import("react-native")>("react-native");
@@ -86,6 +88,12 @@ describe("root layout startup", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockStatus = "restoring";
+  });
+
+  afterEach(async () => {
+    await act(async () => {
+      setOnline(true);
+    });
   });
 
   it("renders the auth splash while restoring, inside a single tree", async () => {
@@ -123,4 +131,37 @@ describe("root layout startup", () => {
     }
   });
 
+  // T094 (plan step 7): the global offline banner + outbox-flush hook.
+  it("the global offline banner mounts above the router stack", async () => {
+    mockStatus = "signedOut";
+    await act(async () => {
+      setOnline(false);
+    });
+
+    render(<RootLayout />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("offline-banner")).toBeTruthy();
+    });
+    expect(screen.getByTestId("router-stack")).toBeTruthy();
+
+    const serialized = JSON.stringify(screen.toJSON());
+    const bannerIndex = serialized.indexOf('"offline-banner"');
+    const stackIndex = serialized.indexOf('"router-stack"');
+    expect(bannerIndex).toBeGreaterThan(-1);
+    expect(stackIndex).toBeGreaterThan(-1);
+    expect(bannerIndex).toBeLessThan(stackIndex);
+  });
+
+  it("the outbox flush hook is mounted once at the root", async () => {
+    mockStatus = "signedOut";
+    render(<RootLayout />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("router-stack")).toBeTruthy();
+    });
+
+    const { useOutboxFlush } = jest.requireMock<{ useOutboxFlush: jest.Mock }>("../src/offline/use-outbox-flush");
+    expect(useOutboxFlush).toHaveBeenCalled();
+  });
 });

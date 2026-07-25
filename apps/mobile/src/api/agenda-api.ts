@@ -1,6 +1,8 @@
+import { getIsOfflineSnapshot } from "@pawcareright/api-client";
 import type { AgendaEntry, AgendaResponse } from "@pawcareright/types";
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
+import { useOutboxStore } from "../offline/outbox-store";
 import { apiClient } from "./client";
 
 export const agendaKeys = {
@@ -64,14 +66,25 @@ export interface CompleteOccurrenceVars {
  * `POST /v1/reminders/:reminderId/complete` (T060 plan decision 6):
  * optimistically patches every cached agenda window's matching entry to
  * `DONE`, rolling back to the exact pre-mutation snapshot on failure.
- * `onSettled` always invalidates so a success reconciles with the server's
- * real `eventId`/status.
+ * `onSettled` always invalidates on a real (non-queued) result so a success
+ * reconciles with the server's real `eventId`/status.
+ *
+ * T094 (D1): while offline, the mutation enqueues into the persisted
+ * reminder-completion outbox instead of POSTing (`flush-outbox.ts` handles
+ * the eventual sync). `onMutate`/`onError` stay byte-identical -- the
+ * optimistic patch and its rollback apply exactly the same whether the
+ * mutation resolves with a real server entry or `"queued"`.
  */
 export function useCompleteOccurrence() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (vars: CompleteOccurrenceVars) =>
-      apiClient.post<AgendaEntry>(`/v1/reminders/${vars.reminderId}/complete`, { dueAt: vars.dueAt }),
+    mutationFn: async (vars: CompleteOccurrenceVars): Promise<AgendaEntry | "queued"> => {
+      if (getIsOfflineSnapshot()) {
+        useOutboxStore.getState().enqueue(vars);
+        return "queued";
+      }
+      return apiClient.post<AgendaEntry>(`/v1/reminders/${vars.reminderId}/complete`, { dueAt: vars.dueAt });
+    },
     onMutate: async (vars: CompleteOccurrenceVars) => {
       await queryClient.cancelQueries({ queryKey: agendaKeys.all });
       const previous = queryClient.getQueriesData<AgendaResponse>({ queryKey: agendaKeys.all });
@@ -88,8 +101,13 @@ export function useCompleteOccurrence() {
         queryClient.setQueryData(queryKey, data);
       }
     },
-    onSettled: () => {
-      void queryClient.invalidateQueries({ queryKey: agendaKeys.all });
+    onSettled: (data) => {
+      // Invalidating while offline (a "queued" result) would refetch, fail,
+      // and blow away the optimistic patch the user just made. The flush's
+      // own invalidate (`flush-outbox.ts`) is what reconciles later.
+      if (data !== "queued") {
+        void queryClient.invalidateQueries({ queryKey: agendaKeys.all });
+      }
     },
   });
 }

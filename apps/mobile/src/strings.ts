@@ -739,6 +739,11 @@ export const strings = {
     // sourced from the same `MEDICATION_STATIC_COPY` SSOT the detector spec
     // scans, so the tested string is byte-identical to the rendered one.
     medDoseLabel: MEDICATION_AGENDA_DOSE_LABEL,
+    // T094: the pending-sync line shown when the reminder-completion outbox
+    // is non-empty (append-only; no medical claim, no promise about WHEN
+    // sync happens beyond "when you're back online").
+    queuedBanner: (count: number): string =>
+      `${count} completed ${count === 1 ? "reminder" : "reminders"} will sync when you're back online.`,
   },
   reminderForm: {
     createTitle: "New reminder",
@@ -991,5 +996,12 @@ export const strings = {
       upgradeCta: "See plans",
     },
     activePetA11y: (name: string) => `Chatting about ${name}`,
+  },
+  // T094: the global, root-mounted offline banner (append-only new
+  // top-level section). Non-dismissible chrome -- no medical claim, no
+  // "diagnosis"/"diagnose", no drug name, no dose, no promise about WHEN
+  // sync happens beyond "when you reconnect".
+  offline: {
+    banner: "You're offline — changes will sync when you reconnect.",
   },
 } as const;
