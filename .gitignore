@@ -8,4 +8,4 @@ coverage/
 *.log
 .env
 .env.*
-!.env.example
+!.env.exampledump.rdb
