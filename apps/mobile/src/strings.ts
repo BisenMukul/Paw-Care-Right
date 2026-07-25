@@ -1,3 +1,4 @@
+import type { ExerciseLevel, GroomingFrequency } from "@pawcareright/data";
 import {
   MEDICATION_ADD_TIME_LABEL,
   MEDICATION_AGENDA_DOSE_LABEL,
@@ -196,6 +197,7 @@ export const strings = {
     premium: (appName: string) => `Upgrade to ${appName} Plus`,
     manage: "Manage subscription",
     services: "Services",
+    breedGuides: "Breed guides",
     familyManagedNote: "Your Premium comes from your household's family plan. Only the plan owner can manage billing.",
     restore: "Restore purchases",
     restoreSuccess: "Your purchases were restored.",
@@ -744,6 +746,49 @@ export const strings = {
     },
     cardA11y: (title: string) => `${title}, coming soon`,
     cardA11yPreview: (title: string) => `${title}, preview`,
+  },
+  // T087 in-app breed guide reader: every word below is either navigation/
+  // section-label copy or a template built only from dataset values passed
+  // in at the call site (`title`, `provenance`) -- never a hardcoded claim
+  // about a pet, a diagnosis, a dose, or an outcome (CLAUDE §7,
+  // `breed-guide-safety.test.ts` tone scan). The condition-awareness prompts
+  // themselves are NOT here -- they render verbatim from the dataset.
+  breedGuide: {
+    title: (breedName: string) => `About ${breedName}`,
+    listTitle: "Breed guides",
+    listSubtitle: "General information for popular breeds",
+    listNote: "These guides are general breed information reviewed by our content team, not advice about your pet.",
+    sections: {
+      temperament: "Temperament",
+      exercise: "Exercise needs",
+      conditions: "Conditions to ask your vet about",
+      grooming: "Grooming",
+    },
+    conditionsIntro: "Questions worth raising at your pet's next vet visit:",
+    exerciseLevel: {
+      LOW: "Low",
+      MODERATE: "Moderate",
+      HIGH: "High",
+      VERY_HIGH: "Very high",
+    } satisfies Record<ExerciseLevel, string>,
+    groomingFrequency: {
+      DAILY: "Daily",
+      SEVERAL_TIMES_WEEKLY: "Several times a week",
+      WEEKLY: "Weekly",
+      MONTHLY: "Monthly",
+    } satisfies Record<GroomingFrequency, string>,
+    provenance: (reviewedBy: string, reviewedAt: string) => `Reviewed by ${reviewedBy} on ${reviewedAt}`,
+    notFoundTitle: "Guide not found",
+    notFoundBody: "We don't have a published guide for this breed yet.",
+    notFoundCta: "Browse breed guides",
+    emptyTitle: "No guides yet",
+    emptyBody: "Check back soon for breed guides.",
+    speciesGroup: {
+      DOG: "Dogs",
+      CAT: "Cats",
+    },
+    sectionA11y: (sectionTitle: string) => `${sectionTitle} section`,
+    rowA11y: (breedName: string) => `${breedName} breed guide`,
   },
   // PREVIEW-1 plan: the tap-through, PREVIEW-labeled service flows (vet
   // booking, salon, store, adoption, insurance) reached from the services

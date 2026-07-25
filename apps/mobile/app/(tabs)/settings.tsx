@@ -73,6 +73,12 @@ export default function SettingsScreen() {
             onPress={() => router.push("/services")}
           />
           <ListRow
+            testID="settings-breed-guides"
+            title={strings.settings.breedGuides}
+            leadingIcon="book-outline"
+            onPress={() => router.push("/breeds")}
+          />
+          <ListRow
             testID="settings-family"
             title={strings.settings.family}
             leadingIcon="people-outline"
