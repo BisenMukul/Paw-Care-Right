@@ -1,0 +1,11 @@
+#!/bin/sh
+# T096: opt-in, advisory secrets-scan pre-commit hook. Enable with:
+#   git config core.hooksPath githooks
+# This hook is NEVER the authoritative gate on its own -- CI's `security`
+# job runs `node scripts/scan-secrets.js --tracked` over the whole repo on
+# every push/PR, unconditionally. This hook only saves a round-trip by
+# catching an accidental secret in a staged file before it's committed.
+set -eu
+
+repo_root="$(git rev-parse --show-toplevel)"
+node "$repo_root/scripts/scan-secrets.js" --staged

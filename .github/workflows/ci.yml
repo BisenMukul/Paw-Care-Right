@@ -132,3 +132,25 @@ jobs:
           path: apps/web/.lighthouseci/
           retention-days: 30
           if-no-files-found: warn
+  # T096: security gates. REQUIRED (the card's AC is a "`pnpm audit`-gated CI
+  # step"), so — unlike T089's Sentry upload — neither step is ever skipped and
+  # neither is gated on a secret. `--audit-level high` fails the job on high +
+  # critical only; suppressions live in root package.json's
+  # `pnpm.auditConfig.ignoreGhsas`, each justified + expiry-dated in
+  # docs/security/audit-allowlist.json (kept in sync by a test).
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: 10.34.3 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      # --ignore-scripts: this job never builds or runs the app, so prisma
+      # generate & friends are pure cost. The install exists only so `pnpm
+      # audit` resolves the workspace tree exactly as a developer would see it.
+      - run: pnpm i --frozen-lockfile --ignore-scripts
+      - name: Dependency audit (fails on high + critical)
+        run: pnpm audit --audit-level high
+      - name: Secrets scan (tracked files)
+        run: node scripts/scan-secrets.js --tracked

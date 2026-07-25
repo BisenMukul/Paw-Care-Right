@@ -82,6 +82,14 @@ REDIS_URL=redis://localhost:6379
 > and minio (9000). Skip the `postgres` service if you use a native Postgres on 5432 to avoid a
 > port clash.
 
+### Optional: local secrets-scan pre-commit hook
+
+`git config core.hooksPath githooks` opts you into a local `pre-commit` hook
+that runs `node scripts/scan-secrets.js --staged` before every commit,
+catching an accidentally-staged credential before it's ever pushed. It's
+advisory only — CI's `security` job runs the same scanner over the whole
+tracked tree on every push/PR and is the authoritative gate either way.
+
 ---
 
 ## 4. Running the servers (daily) — from root, `.env` loaded

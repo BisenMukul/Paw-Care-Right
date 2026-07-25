@@ -1,0 +1,15 @@
+{
+  "entries": [
+    {
+      "ghsa": "GHSA-mh99-v99m-4gvg",
+      "cve": "CVE-2026-14257",
+      "package": "brace-expansion@1.1.16",
+      "severity": "high",
+      "reason": "brace-expansion: DoS via unbounded expansion length (out-of-memory crash). Upstream published the fix ONLY as 5.0.8 (2026-07-23); no backport exists for the 1.x/2.x/3.x/4.x lines. Verified against the npm registry: the newest available 1.x release (1.1.16, dist-tag maintenance-v1) was published 2026-07-08 -- two weeks BEFORE the fix and BEFORE the CVE's disclosure date (2026-07-24) -- and the GHSA's own patched_versions field is the single unqualified range '>=5.0.8' with no per-major carve-out. The vulnerable path here is pulled in by fork-ts-checker-webpack-plugin@9.1.0 (whose minimatch range is ^3.0.4) (a dependency of @nestjs/cli), which requires minimatch@^3.0.4 -> minimatch@3.1.5 -> brace-expansion@^1.1.7 -- a frozen legacy-API chain. We attempted the fix by force-overriding brace-expansion to 5.0.8 tree-wide via pnpm.overrides; this broke apps/web's build with a verbatim error: 'ESLint: expand is not a function' (5.x removed/changed the directly-callable export that minimatch@3.1.5 -- shared by eslint's own @eslint/config-array@0.21.2 -- calls as `require('brace-expansion')(str)`). Installing the older per-major tags (1.1.12/2.0.2/3.0.1, published 2025-06-11) is not a fix either: they predate this CVE by over a year and are OLDER than the already-resolved 1.1.16/2.1.2/3.0.2, i.e. a downgrade, not a patch. No compatible fix exists today.",
+      "reachability": "Dev-only, build-time-only transitive of @nestjs/cli (a devDependency). fork-ts-checker-webpack-plugin runs brace-expansion only to expand glob patterns from our own repo-local tsconfig include/exclude during `nest build`/`nest start --watch`; it is never bundled into, or executed by, the built/running API image, and it never processes attacker-controlled input (no network request reaches this code path). The one other consumer of the same legacy chain, eslint's @eslint/config-array, has the identical reachability profile (lint-time only). The already-fixed sibling path (@nestjs/cli's own glob@13.0.6 -> minimatch@10.2.5 -> brace-expansion@^5.0.5) now correctly resolves to the patched 5.0.8, since that chain was designed for the new API -- so the suppression here is narrowly scoped to the one chain that cannot move.",
+      "addedOn": "2026-07-25",
+      "expiresOn": "2026-10-20",
+      "addedBy": "T096"
+    }
+  ]
+}
