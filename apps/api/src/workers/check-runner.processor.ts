@@ -12,6 +12,8 @@ import { SAFE_FALLBACK, parseIntake, type CheckStatus, type TriageResult, type U
 import type { Job, Queue } from "bullmq";
 
 import { AnalyticsService } from "../analytics/analytics.service";
+import { AiAuditService } from "../audit/ai-audit.service";
+import { buildCheckDetectorFlags } from "../audit/ai-audit.flags";
 import { assertTransition, isTerminalCheckStatus, TERMINAL_CHECK_STATUSES } from "../checks/check-status";
 import { CHECKS_QUEUE, type ChecksJobData } from "../checks/checks.contract";
 import { buildRedFlagIntake, type PetProfileInput } from "../checks/red-flag-intake.mapper";
@@ -63,6 +65,7 @@ export class CheckRunnerProcessor extends WorkerHost {
     @Inject(TRIAGE_TEXT_MODEL_ID) private readonly textModelId: string,
     @InjectQueue(FOLLOWUPS_QUEUE) private readonly followUpQueue: Queue<FollowUpJobData>,
     private readonly analytics: AnalyticsService,
+    private readonly aiAudit: AiAuditService,
   ) {
     super();
   }
@@ -115,6 +118,22 @@ export class CheckRunnerProcessor extends WorkerHost {
       this.logger.log({ event: "followup_scheduled", checkId, delay });
     } catch {
       this.logger.warn({ event: "followup_schedule_failed", checkId });
+    }
+  }
+
+  /**
+   * `AiAuditLog` write (T090 plan step 16), wrapped in its own try/catch --
+   * `AiAuditService.record` never throws by its own contract, but this is a
+   * second, belt-and-braces layer (same pattern as `scheduleFollowUp`/
+   * `emitFirstCheckCompleted` above): an audit write failure must never fail
+   * this already-persisted triage job.
+   */
+  private async recordAudit(checkId: string, entry: Parameters<AiAuditService["record"]>[0]): Promise<void> {
+    try {
+      await this.aiAudit.record(entry);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      this.logger.warn({ event: "ai_audit_call_failed", checkId, message });
     }
   }
 
@@ -263,6 +282,28 @@ export class CheckRunnerProcessor extends WorkerHost {
         checkId,
       });
 
+      // T090 plan step 16 (success path). `AiAuditService.record` never
+      // throws by its own contract; `recordAudit` below is a second,
+      // belt-and-braces layer (mirrors `emitFirstCheckCompleted`/
+      // `scheduleFollowUp`'s own local try/catch in this same file) so an
+      // audit write failure can NEVER fail this already-persisted triage
+      // job, regardless of how the injected dependency behaves.
+      await this.recordAudit(checkId, {
+        surface: "CHECK",
+        checkId,
+        promptVersion: run.version,
+        modelId: this.textModelId,
+        detectorFlags: buildCheckDetectorFlags({
+          status: run.status,
+          source: outcome.source,
+          appliedRulesFloor: outcome.appliedRulesFloor,
+          redFlagHit: check.redFlagHit,
+        }),
+        costMicroUsd,
+        ...(run.usage?.latencyMs !== undefined ? { latencyMs: run.usage.latencyMs } : {}),
+        status: run.status === "SAFE_FALLBACK" ? "SAFE_FALLBACK" : "OK",
+      });
+
       this.logger.log({
         event: "triage_done",
         checkId,
@@ -336,6 +377,19 @@ export class CheckRunnerProcessor extends WorkerHost {
         status: "SAFE_FALLBACK",
         userId: check.createdById,
         checkId,
+      });
+
+      // T090 plan step 16 (final-attempt infra-fallback path). Never passes
+      // the caught `message` -- `detectorFlags` carries the fixed code
+      // `"infra_fallback"` only.
+      await this.recordAudit(checkId, {
+        surface: "CHECK",
+        checkId,
+        promptVersion: TRIAGE_PROMPT_VERSION,
+        modelId: this.textModelId,
+        detectorFlags: ["infra_fallback"],
+        costMicroUsd: 0,
+        status: "SAFE_FALLBACK",
       });
 
       this.logger.error({ event: "triage_infra_fallback", checkId, message });

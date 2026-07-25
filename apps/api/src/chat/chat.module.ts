@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 import { getTextProvider, loadAiEnv } from "@pawcareright/ai";
 
+import { AiAuditModule } from "../audit/ai-audit.module";
 import { PetsModule } from "../pets/pets.module";
 import { PrismaModule } from "../prisma/prisma.module";
 import { QuotaModule } from "../quota/quota.module";
@@ -9,7 +10,7 @@ import { ChatService } from "./chat.service";
 import { CHAT_TEXT_MODEL_ID, CHAT_TEXT_PROVIDER } from "./chat.tokens";
 
 @Module({
-  imports: [PrismaModule, PetsModule, QuotaModule],
+  imports: [PrismaModule, PetsModule, QuotaModule, AiAuditModule],
   controllers: [ChatController],
   providers: [
     ChatService,

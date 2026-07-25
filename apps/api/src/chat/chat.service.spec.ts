@@ -3,6 +3,7 @@ import { FakeTextProvider, SAFE_FALLBACK_CHAT_MESSAGE, scanUnsafeText } from "@p
 import type { TextGenerateOptions, TextStreamChunk } from "@pawcareright/ai";
 import type { Response } from "express";
 
+import type { AiAuditService } from "../audit/ai-audit.service";
 import type { PetResponse } from "../pets/pets.service";
 import type { PetsService } from "../pets/pets.service";
 import type { PrismaService } from "../prisma/prisma.service";
@@ -62,6 +63,7 @@ interface Opts {
   quotaConsume?: jest.Mock;
   threadFindFirst?: jest.Mock;
   provider?: FakeTextProvider;
+  aiAuditRecord?: jest.Mock;
 }
 
 function fakeResponse(): { res: Response; write: jest.Mock } {
@@ -90,6 +92,7 @@ function buildService(opts: Opts = {}): {
   prisma: { chatThread: { findFirst: jest.Mock; create: jest.Mock }; chatMessage: { create: jest.Mock; findMany: jest.Mock }; healthLog: { findMany: jest.Mock }; symptomCheck: { findMany: jest.Mock }; reminderEvent: { count: jest.Mock } };
   provider: FakeTextProvider;
   generateSpy: jest.SpyInstance;
+  aiAuditRecord: jest.Mock;
 } {
   const prismaChatThread = {
     findFirst: opts.threadFindFirst ?? jest.fn().mockResolvedValue(buildThreadRow()),
@@ -130,9 +133,33 @@ function buildService(opts: Opts = {}): {
   const provider = opts.provider ?? new FakeTextProvider();
   const generateSpy = jest.spyOn(provider, "generate");
 
-  const service = new ChatService(prisma, petsService, quotaService, costLog, entitlementResolver, provider, "test-model");
+  const aiAuditRecord = opts.aiAuditRecord ?? jest.fn().mockResolvedValue(undefined);
+  const aiAudit = { record: aiAuditRecord } as unknown as AiAuditService;
 
-  return { service, prisma: { chatThread: prismaChatThread, chatMessage: prismaChatMessage, healthLog: prismaHealthLog, symptomCheck: prismaSymptomCheck, reminderEvent: prismaReminderEvent }, provider, generateSpy };
+  const service = new ChatService(
+    prisma,
+    petsService,
+    quotaService,
+    costLog,
+    entitlementResolver,
+    provider,
+    "test-model",
+    aiAudit,
+  );
+
+  return {
+    service,
+    prisma: {
+      chatThread: prismaChatThread,
+      chatMessage: prismaChatMessage,
+      healthLog: prismaHealthLog,
+      symptomCheck: prismaSymptomCheck,
+      reminderEvent: prismaReminderEvent,
+    },
+    provider,
+    generateSpy,
+    aiAuditRecord,
+  };
 }
 
 function dto(content: string): SendMessageDto {
@@ -466,5 +493,71 @@ describe("ChatService.streamMessage", () => {
       ([args]: [{ data: { role: string } }]) => args.data.role === "ASSISTANT",
     ) as [{ data: { content: string } }] | undefined;
     expect(assistantCall?.[0].data.content).toBe(SAFE_FALLBACK_CHAT_MESSAGE);
+  });
+
+  describe("AiAuditLog write (T090 plan step 17)", () => {
+    it("writes an AiAuditLog row on the chat path", async () => {
+      const provider = new FakeTextProvider({ streamChunks: ["All good, keep an eye on him. "] });
+      const { service, aiAuditRecord } = buildService({ provider });
+      const { res } = fakeResponse();
+
+      await service.streamMessage(HOUSEHOLD_ID, USER_ID, THREAD_ID, dto("hello"), new SseWriter(res));
+
+      expect(aiAuditRecord).toHaveBeenCalledWith(
+        expect.objectContaining({
+          surface: "CHAT",
+          threadId: THREAD_ID,
+          promptVersion: expect.any(String) as string,
+          modelId: "test-model",
+          status: "OK",
+        }),
+      );
+      const entry = aiAuditRecord.mock.calls[0]?.[0] as { checkId?: string; detectorFlags?: string[] };
+      expect(entry.checkId).toBeUndefined();
+      // T090 review F1 (probe P2): EXACT equality — a clean stream writes an
+      // empty flag list, and nothing else (least of all message content) may
+      // ride along at this call site. objectContaining alone cannot catch a
+      // planted extra element.
+      expect(entry.detectorFlags).toEqual([]);
+    });
+
+    it("carries gate finding codes in detectorFlags when the output gate fires", async () => {
+      const [chunk1, chunk2] = straddleChunks();
+      const provider = new FakeTextProvider({ streamChunks: [chunk1, chunk2] });
+      const { service, aiAuditRecord } = buildService({ provider });
+      const { res } = fakeResponse();
+
+      await service.streamMessage(
+        HOUSEHOLD_ID,
+        USER_ID,
+        THREAD_ID,
+        dto("What should I give my dog for pain?"),
+        new SseWriter(res),
+      );
+
+      expect(aiAuditRecord).toHaveBeenCalledWith(
+        expect.objectContaining({
+          surface: "CHAT",
+          status: "SAFE_FALLBACK",
+          detectorFlags: expect.arrayContaining(["DOSING"]) as string[],
+        }),
+      );
+    });
+
+    it("an audit write failure still emits done and ends the stream", async () => {
+      const provider = new FakeTextProvider({ streamChunks: ["All good, keep an eye on him. "] });
+      const aiAuditRecord = jest.fn().mockRejectedValue(new Error("audit db down"));
+      const { service } = buildService({ provider, aiAuditRecord });
+      const { res, write } = fakeResponse();
+
+      await expect(
+        service.streamMessage(HOUSEHOLD_ID, USER_ID, THREAD_ID, dto("hello"), new SseWriter(res)),
+      ).resolves.toBeUndefined();
+
+      const frames = parseFrames(write);
+      const lastFrame = frames[frames.length - 1]!;
+      expect(lastFrame.event).toBe("done");
+      expect(res.end).toHaveBeenCalled();
+    });
   });
 });

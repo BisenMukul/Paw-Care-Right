@@ -78,3 +78,27 @@ export function captureApiException(error: unknown, requestId: string): void {
     logger.warn(`Sentry capture failed: ${String(captureError)}`);
   }
 }
+
+/**
+ * Alert-only sibling of `captureApiException` (T090 plan D6/Step 9): reports
+ * a fixed literal `message` tagged with `tags` (ids/counts only — never
+ * intake text, chat content, or any caller-supplied free-form string).
+ * Callers MUST pass a compile-time string literal for `message`, never an
+ * interpolated/free-text value — this function does not (and cannot)
+ * validate that for them. Mirrors `captureApiException`'s fail-closed
+ * `Sentry.isInitialized()` guard and try/catch: a Sentry outage can never
+ * throw out of this call.
+ */
+export function captureApiMessage(message: string, tags: Record<string, string>): void {
+  try {
+    if (!Sentry.isInitialized()) {
+      return;
+    }
+    Sentry.withScope((scope) => {
+      scope.setTags(tags);
+      Sentry.captureMessage(message, "warning");
+    });
+  } catch (captureError) {
+    logger.warn(`Sentry capture failed: ${String(captureError)}`);
+  }
+}

@@ -1,4 +1,5 @@
 import { Body, Controller, Param, Post, Res } from "@nestjs/common";
+import { Throttle } from "@nestjs/throttler";
 import {
   ApiBadRequestResponse,
   ApiCreatedResponse,
@@ -6,6 +7,7 @@ import {
   ApiOkResponse,
   ApiPaymentRequiredResponse,
   ApiTags,
+  ApiTooManyRequestsResponse,
   ApiUnauthorizedResponse,
 } from "@nestjs/swagger";
 import type { Response } from "express";
@@ -13,6 +15,7 @@ import type { Response } from "express";
 import { CurrentUser } from "../auth/auth.decorators";
 import type { HouseholdScope } from "../common/authenticated-request";
 import { CurrentHousehold, HouseholdFromMembership } from "../common/household-scope.decorators";
+import { THROTTLE_AI_WRITE } from "../common/throttle.config";
 import { ChatService, type ChatThreadResponse } from "./chat.service";
 import { CreateThreadDto } from "./dto/create-thread.dto";
 import { SendMessageDto } from "./dto/send-message.dto";
@@ -35,9 +38,11 @@ export class ChatController {
   constructor(private readonly chatService: ChatService) {}
 
   @Post("threads")
+  @Throttle(THROTTLE_AI_WRITE)
   @ApiCreatedResponse({ description: "The created chat thread." })
   @ApiPaymentRequiredResponse({ description: "Ask Paw Care Right + chat is a premium feature." })
   @ApiNotFoundResponse({ description: "No resolved household for the caller, or the pet does not exist in it." })
+  @ApiTooManyRequestsResponse({ description: "Rate limit exceeded (20/min/IP)." })
   createThread(
     @CurrentHousehold() scope: HouseholdScope,
     @CurrentUser() user: { userId: string },
@@ -47,10 +52,12 @@ export class ChatController {
   }
 
   @Post("threads/:id/messages")
+  @Throttle(THROTTLE_AI_WRITE)
   @ApiOkResponse({ description: "SSE stream of the assistant answer (text/event-stream)." })
   @ApiPaymentRequiredResponse({ description: "Chat is premium-only, or the monthly fair-use quota is exhausted." })
   @ApiNotFoundResponse({ description: "No resolved household for the caller, or the thread does not exist in it." })
   @ApiBadRequestResponse({ description: "Invalid message payload." })
+  @ApiTooManyRequestsResponse({ description: "Rate limit exceeded (20/min/IP)." })
   async sendMessage(
     @CurrentHousehold() scope: HouseholdScope,
     @CurrentUser() user: { userId: string },

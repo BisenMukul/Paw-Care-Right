@@ -393,3 +393,42 @@ model ChatMessage {
 
   @@index([threadId, createdAt])
 }
+
+enum AiAuditSurface {
+  CHECK
+  CHAT
+}
+
+// AI audit log (T090). (a) APPEND-ONLY: written once by `AiAuditService.record`,
+// deleted only in bulk by `AiAuditRetentionService`'s 90-day sweep -- no
+// update path exists anywhere in this codebase. (b) NO FOREIGN KEYS by
+// design: an FK with `onDelete: Cascade` would let a pet/check deletion
+// silently erase the audit trail, and `Restrict` would break T091's
+// deletion cascade -- `checkId`/`threadId` are loose id references,
+// exactly-one-of enforced by the `AiAuditEntry` TS discriminated union
+// (`audit/ai-audit.types.ts`) + a unit test, not a SQL `CHECK` constraint
+// (would create schema.prisma<->DB drift). (c) NO CONTENT COLUMNS, EVER:
+// ids, versions, enumerated flag CODES, and counts only (T089 PII
+// discipline) -- `detectorFlags` is built by a pure function from a closed
+// code set, proven free of `failureReason`/error-message/chat-content
+// passthrough by test.
+model AiAuditLog {
+  id            String         @id @default(uuid())
+  surface       AiAuditSurface
+  checkId       String?
+  threadId      String?
+  promptVersion String
+  modelId       String
+  detectorFlags String[]       @default([])
+  costMicroUsd  Int            @default(0)
+  latencyMs     Int?
+  status        String
+  createdAt     DateTime       @default(now())
+
+  // `createdAt` -- the retention sweep's `where createdAt < cutoff order by
+  // createdAt asc`. `checkId`/`threadId` -- per-subject audit lookup (the
+  // only reason an audit log exists).
+  @@index([createdAt])
+  @@index([checkId])
+  @@index([threadId])
+}

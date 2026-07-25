@@ -17,6 +17,8 @@ import {
 import type { ChatMessageStatus, SymptomCategory, Urgency } from "@pawcareright/types";
 import type { ChatMessage as PrismaChatMessage } from "@prisma/client";
 
+import { AiAuditService } from "../audit/ai-audit.service";
+import { buildChatDetectorFlags } from "../audit/ai-audit.flags";
 import { PetsService } from "../pets/pets.service";
 import { PrismaService } from "../prisma/prisma.service";
 import { ENTITLEMENT_RESOLVER, type EntitlementResolver } from "../quota/entitlement";
@@ -46,6 +48,7 @@ interface FinalizeStreamOptions {
   content: string;
   nudgeCategory: SymptomCategory | undefined;
   promptVersion: string;
+  detectorFlags: string[];
   quotaResult: { used: number; limit: number | null; remaining: number | null };
   sse: SseWriter;
 }
@@ -76,6 +79,7 @@ export class ChatService {
     @Inject(ENTITLEMENT_RESOLVER) private readonly entitlementResolver: EntitlementResolver,
     @Inject(CHAT_TEXT_PROVIDER) private readonly textProvider: TextProvider,
     @Inject(CHAT_TEXT_MODEL_ID) private readonly textModelId: string,
+    private readonly aiAudit: AiAuditService,
   ) {}
 
   async createThread(householdId: string, userId: string, dto: CreateThreadDto): Promise<ChatThreadResponse> {
@@ -201,6 +205,7 @@ export class ChatService {
       this.logSafetyIncident(threadId, result.incident, result.providerErrorMessage);
     }
     const status = result.status;
+    const detectorFlags = buildChatDetectorFlags(result.incident ?? undefined);
 
     if (!aborted && status === "SAFE_FALLBACK") {
       emitChunk(SAFE_FALLBACK_CHAT_MESSAGE);
@@ -222,6 +227,7 @@ export class ChatService {
       content: status === "SAFE_FALLBACK" ? SAFE_FALLBACK_CHAT_MESSAGE : delivered,
       nudgeCategory: nudge?.category,
       promptVersion: built.version,
+      detectorFlags,
       quotaResult,
       sse,
     });
@@ -259,12 +265,37 @@ export class ChatService {
    * actually delivered, but never writes to the closed socket.
    */
   private async finalizeStream(options: FinalizeStreamOptions): Promise<void> {
-    const { assistantMessageId, threadId, userId, aborted, status, content, nudgeCategory, promptVersion, quotaResult, sse } =
-      options;
+    const {
+      assistantMessageId,
+      threadId,
+      userId,
+      aborted,
+      status,
+      content,
+      nudgeCategory,
+      promptVersion,
+      detectorFlags,
+      quotaResult,
+      sse,
+    } = options;
 
     try {
       await this.persistAssistantMessage(assistantMessageId, threadId, content, status, nudgeCategory, promptVersion);
       await this.logCost(userId, status);
+      // T090 plan step 17: placed inside this existing `try`, which already
+      // converts any post-header failure into a logged `chat_persist_failed`
+      // rather than a throw -- and `AiAuditService.record` itself never
+      // throws (belt-and-braces), so `sse.send("done")`/`sse.end()` below
+      // remain unconditionally reachable.
+      await this.aiAudit.record({
+        surface: "CHAT",
+        threadId,
+        promptVersion,
+        modelId: this.textModelId,
+        detectorFlags,
+        costMicroUsd: 0,
+        status,
+      });
     } catch (error) {
       this.logger.error({
         event: "chat_persist_failed",

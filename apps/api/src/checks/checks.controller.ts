@@ -1,4 +1,5 @@
 import { Body, Controller, Get, Headers, HttpCode, Param, Post, Query } from "@nestjs/common";
+import { SkipThrottle } from "@nestjs/throttler";
 import {
   ApiBadRequestResponse,
   ApiConflictResponse,
@@ -34,6 +35,17 @@ import { ListChecksQueryDto } from "./dto/list-checks-query.dto";
 export class ChecksController {
   constructor(private readonly checksService: ChecksService) {}
 
+  // T090 plan §5 (PRODUCT_SPEC §5 rule 3 -- mandatory-FAIL surface): this is
+  // the ONLY producer of the Emergency-interstitial payload
+  // (`CheckResponse.redFlag`, consumed by
+  // `apps/mobile/src/checks/use-check-submission.ts`). `ThrottlerGuard` is
+  // the FIRST global guard (`app.module.ts`), i.e. it runs before
+  // `JwtAuthGuard`, before this controller, and therefore before
+  // `evaluateRedFlags` in `ChecksService.create` step 4 -- a 429 here would
+  // make a red-flag check unreachable. Compensating controls: authenticated
+  // (`JwtAuthGuard`), per-user metered by `QuotaService` (402), and the
+  // alert-only hourly anomaly counter (`AnomalyService`).
+  @SkipThrottle()
   @Post("pets/:petId/checks")
   @ApiCreatedResponse({ description: "The created (or, on an idempotent replay, existing) symptom check." })
   @ApiBadRequestResponse({ description: "Invalid intake payload." })
@@ -55,6 +67,9 @@ export class ChecksController {
     );
   }
 
+  // Deliberately NOT `@SkipThrottle()`d: a plain read with no escalation
+  // semantics (unlike create/followup/findOne below) -- keeps
+  // `THROTTLE_DEFAULT`.
   @Get("pets/:petId/checks")
   @ApiOkResponse({ description: "A cursor page of symptom checks for the pet, newest first." })
   @ApiNotFoundResponse({ description: "No resolved household for the caller, or the pet does not exist in it." })
@@ -66,6 +81,8 @@ export class ChecksController {
     return this.checksService.list(scope.householdId, petId, query);
   }
 
+  // §5: how the terminal `EMERGENCY_NOW`/`VET_24H` result is delivered.
+  @SkipThrottle()
   @Get("checks/:id")
   @ApiOkResponse({ description: "The requested symptom check, including its result once terminal." })
   @ApiNotFoundResponse({ description: "No resolved household for the caller, or the check does not exist in it." })
@@ -73,6 +90,9 @@ export class ChecksController {
     return this.checksService.findOne(scope.householdId, id);
   }
 
+  // §5: can only ever RAISE urgency (`raiseUrgency`, never lowers) -- an
+  // escalation surface.
+  @SkipThrottle()
   @Post("checks/:id/followup")
   @HttpCode(200)
   @ApiOkResponse({ description: "The updated symptom check, carrying the follow-up (idempotent on replay)." })

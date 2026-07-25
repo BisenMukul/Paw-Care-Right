@@ -1,6 +1,8 @@
 import { Body, Controller, HttpCode, Post, UseGuards } from "@nestjs/common";
+import { Throttle } from "@nestjs/throttler";
 import { ApiOkResponse, ApiTags, ApiTooManyRequestsResponse, ApiUnauthorizedResponse } from "@nestjs/swagger";
 
+import { THROTTLE_AUTH, THROTTLE_AUTH_REFRESH } from "../common/throttle.config";
 import { Public } from "./auth.decorators";
 import { AuthService, type AuthTokens, type LogoutResult, type RequestOtpResult } from "./auth.service";
 import { LogoutDto } from "./dto/logout.dto";
@@ -33,6 +35,7 @@ export class AuthController {
   @Post("otp/request")
   @HttpCode(200)
   @UseGuards(OtpRateLimitGuard)
+  @Throttle(THROTTLE_AUTH)
   @ApiOkResponse({ description: "Always 200, even for unknown emails (anti-enumeration)." })
   @ApiTooManyRequestsResponse({ description: "Rate limit exceeded (5/min/IP)." })
   requestOtp(@Body() dto: OtpRequestDto): Promise<RequestOtpResult> {
@@ -42,8 +45,10 @@ export class AuthController {
   @Public()
   @Post("otp/verify")
   @HttpCode(200)
+  @Throttle(THROTTLE_AUTH)
   @ApiOkResponse({ description: "Verifies the OTP code and returns access + refresh tokens." })
   @ApiUnauthorizedResponse({ description: "Wrong, expired, or too-many-attempts code." })
+  @ApiTooManyRequestsResponse({ description: "Rate limit exceeded (5/min/IP)." })
   verifyOtp(@Body() dto: OtpVerifyDto): Promise<AuthTokens> {
     return this.authService.verifyOtp(dto.email, dto.code);
   }
@@ -51,8 +56,10 @@ export class AuthController {
   @Public()
   @Post("refresh")
   @HttpCode(200)
+  @Throttle(THROTTLE_AUTH_REFRESH)
   @ApiOkResponse({ description: "Rotates the refresh token and returns a new token pair." })
   @ApiUnauthorizedResponse({ description: "Invalid, expired, or reused refresh token." })
+  @ApiTooManyRequestsResponse({ description: "Rate limit exceeded (30/min/IP)." })
   refresh(@Body() dto: RefreshDto): Promise<AuthTokens> {
     return this.authService.refresh(dto.refreshToken);
   }
@@ -60,7 +67,9 @@ export class AuthController {
   @Public()
   @Post("logout")
   @HttpCode(200)
+  @Throttle(THROTTLE_AUTH_REFRESH)
   @ApiOkResponse({ description: "Always 200, even for unknown tokens (idempotent, no probing)." })
+  @ApiTooManyRequestsResponse({ description: "Rate limit exceeded (30/min/IP)." })
   logout(@Body() dto: LogoutDto): Promise<LogoutResult> {
     return this.authService.logout(dto.refreshToken);
   }
@@ -68,8 +77,10 @@ export class AuthController {
   @Public()
   @Post("social")
   @HttpCode(200)
+  @Throttle(THROTTLE_AUTH)
   @ApiOkResponse({ description: "Verifies the social identity token and returns access + refresh tokens." })
   @ApiUnauthorizedResponse({ description: "Invalid/unverifiable token, or no linkable identity." })
+  @ApiTooManyRequestsResponse({ description: "Rate limit exceeded (5/min/IP)." })
   socialLogin(@Body() dto: SocialAuthDto): Promise<AuthTokens> {
     return this.socialAuthService.login(dto.provider, dto.identityToken);
   }

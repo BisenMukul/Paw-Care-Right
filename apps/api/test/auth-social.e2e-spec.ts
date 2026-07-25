@@ -3,6 +3,7 @@ import { randomUUID } from "node:crypto";
 import type { INestApplication } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { Test } from "@nestjs/testing";
+import { getStorageToken, type ThrottlerStorageService } from "@nestjs/throttler";
 import { errorResponseSchema } from "@pawcareright/types";
 import { PrismaClient } from "@prisma/client";
 import { createLocalJWKSet, exportJWK, generateKeyPair, SignJWT } from "jose";
@@ -15,6 +16,28 @@ import { APPLE_ISSUER, APPLE_JWKS_RESOLVER } from "../src/auth/social/apple-toke
 import { GOOGLE_ISSUERS, GOOGLE_JWKS_RESOLVER } from "../src/auth/social/google-token-verifier";
 import { DEFAULT_LOCALE, DEFAULT_REGION } from "../src/auth/auth.constants";
 import { cleanupUsers, createHousehold, createUser, overrideCheckRunner } from "./factories";
+
+/**
+ * T090 follow-up: resets `ThrottlerGuard`'s in-memory per-route rate-limit
+ * counter for `POST /auth/social` between test cases in this file. This
+ * route had no rate limiter at all before T090's `@Throttle(THROTTLE_AUTH)`
+ * (5/60s); this file's ~20 `postSocial(...)` calls across its many `it()`s
+ * all share ONE compiled app instance/`beforeAll`, so without a reset the
+ * bucket accumulates past 5 well before the file finishes. See
+ * `auth.e2e-spec.ts`'s identical helper (duplicated here rather than
+ * factored into a shared test util, per this task's narrow file-list
+ * addition) for the full rationale on `getStorageToken()` /
+ * `.storage` / why entries are zeroed in place rather than deleted.
+ */
+function resetThrottlerStorage(app: INestApplication): void {
+  const storage = app.get<ThrottlerStorageService>(getStorageToken());
+  for (const record of storage.storage.values()) {
+    for (const name of record.totalHits.keys()) {
+      record.totalHits.set(name, 0);
+    }
+    record.isBlocked = false;
+  }
+}
 
 const TEST_AUDIENCE = "com.pawcareright.app"; // APPLE_CLIENT_ID default
 const KEY_ID = "e2e-test-key-1";
@@ -69,6 +92,10 @@ describe("Auth social (e2e)", () => {
     await app.init();
 
     prisma = new PrismaClient();
+  });
+
+  beforeEach(() => {
+    resetThrottlerStorage(app);
   });
 
   afterEach(async () => {
