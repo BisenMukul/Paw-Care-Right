@@ -2,7 +2,7 @@
 // The product display name is never hardcoded here — it is injected at
 // render time from the shared `APP_DISPLAY_NAME` constant, threaded through
 // as an `appName` parameter wherever copy needs to name the product.
-import { ACCOUNT_DELETION_GRACE_DAYS } from "@pawcareright/types";
+import { ACCOUNT_DELETION_GRACE_DAYS, vetDisclaimerLine } from "@pawcareright/types";
 
 import { LEGAL_REVIEW_MARKER } from "./legal/legal-document";
 
@@ -20,8 +20,10 @@ const PRIVACY_CONTACT_EMAIL = "privacy@pawcareright.app";
 const TERMS_CONTACT_EMAIL = "legal@pawcareright.app";
 
 export const strings = {
-  disclaimer: (appName: string) =>
-    `${appName} offers general pet-care guidance, not veterinary care or treatment. Always consult a licensed veterinarian.`,
+  // T097 plan D2: delegates to the `@pawcareright/types` SSOT so this
+  // sentence cannot drift from `apps/mobile/src/strings.ts`'s copy. Byte-
+  // identical to the pre-T097 literal (see `vet-disclaimer-copy.ts`).
+  disclaimer: vetDisclaimerLine,
   layout: {
     description:
       "Peace of mind between vet visits — AI-powered guidance, reminders, and a health timeline for your dog or cat.",

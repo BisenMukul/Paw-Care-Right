@@ -11,6 +11,7 @@ import {
   MEDICATION_NAME_LABEL,
   MEDICATION_NAME_PLACEHOLDER,
   MEDICATION_SAVE_LABEL,
+  vetDisclaimerLine,
   type ActivityType,
   type ActivityUnit,
   type HealthLogKind,
@@ -469,8 +470,10 @@ export const strings = {
       errorRetry: "Retry",
     },
     result: {
-      disclaimer: (appName: string) =>
-        `${appName} offers general pet-care guidance, not veterinary care or treatment. Always consult a licensed veterinarian.`,
+      // T097 plan D2: delegates to the `@pawcareright/types` SSOT so this
+      // sentence cannot drift from `apps/web/src/strings.ts`'s copy. Byte-
+      // identical to the pre-T097 literal (see `vet-disclaimer-copy.ts`).
+      disclaimer: vetDisclaimerLine,
       tierLabel: {
         EMERGENCY_NOW: "Emergency — see a vet now",
         VET_24H: "See a vet within 24 hours",

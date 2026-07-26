@@ -18,6 +18,7 @@ export * from "./medication-copy";
 export * from "./medication-course";
 export * from "./health-log";
 export * from "./vet-summary-copy";
+export * from "./vet-disclaimer-copy";
 export * from "./entitlement";
 export * from "./rc-webhook";
 export * from "./config";

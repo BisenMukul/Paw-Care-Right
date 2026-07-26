@@ -570,8 +570,8 @@
       "attempts": 1
     },
     "T097": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 1
     },
     "T098": {
       "status": "pending",
@@ -750,7 +750,7 @@
     "surveillance-layer-corrections-v2: Write grants, fail-closed protected-paths (no python), current-task file contract, P0/no-HEAD tolerance, subshell fail-open fixes"
   ],
   "current-task": {
-    "id": "T097",
+    "id": "T098",
     "phase": 9,
     "attempts": 0,
     "state": "planning"

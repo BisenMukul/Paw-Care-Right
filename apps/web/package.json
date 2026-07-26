@@ -23,6 +23,7 @@
   "devDependencies": {
     "@lhci/cli": "^0.14",
     "@next/eslint-plugin-next": "^15",
+    "@pawcareright/ai": "workspace:*",
     "@types/jest": "^29.5.14",
     "@types/node": "^22",
     "@types/react": "^19",
