@@ -1,6 +1,6 @@
 import { HttpException, Logger, NotFoundException } from "@nestjs/common";
-import { FakeTextProvider, SAFE_FALLBACK_CHAT_MESSAGE, scanUnsafeText } from "@pawcareright/ai";
-import type { TextGenerateOptions, TextStreamChunk } from "@pawcareright/ai";
+import { FakeTextProvider, SAFE_FALLBACK_CHAT_MESSAGE, scanUnsafeText } from "@bombaypetcompany/ai";
+import type { TextGenerateOptions, TextStreamChunk } from "@bombaypetcompany/ai";
 import type { Response } from "express";
 
 import type { AiAuditService } from "../audit/ai-audit.service";

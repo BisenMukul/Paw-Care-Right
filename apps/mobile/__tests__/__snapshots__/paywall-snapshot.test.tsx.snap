@@ -30,7 +30,7 @@ exports[`paywall screen — variant A renders and matches the snapshot 1`] = `
             maxFontSizeMultiplier={1.5}
             testID="paywall-headline"
           >
-            Get more from Paw Care Right +
+            Get more from Bombay Pet Company
           </Text>
           <Text
             className="text-base text-brand-700 dark:text-ink-muted-dark font-body"
@@ -474,7 +474,7 @@ exports[`paywall screen — variant B renders and matches the snapshot 1`] = `
             maxFontSizeMultiplier={1.5}
             testID="paywall-headline"
           >
-            Paw Care Right + Plus
+            Bombay Pet Company Plus
           </Text>
           <Text
             className="text-base text-brand-700 dark:text-ink-muted-dark font-body"

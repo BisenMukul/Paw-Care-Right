@@ -9,7 +9,7 @@
 // the pin even when the real, live `retries`/`testDir` values were changed --
 // vacuous. Fixed by importing the ACTUAL config module (this runs under
 // jest/ts-jest, a plain CommonJS require -- not Playwright's own test-runner
-// loader, which is the thing that mis-resolves `@pawcareright/types`
+// loader, which is the thing that mis-resolves `@bombaypetcompany/types`
 // elsewhere in this card; `@playwright/test`'s `defineConfig` is a pure
 // pass-through with no such issue) and asserting on its RESOLVED values.
 import { readFileSync } from "node:fs";
@@ -74,13 +74,13 @@ describe("CI runs the web E2E smoke as an unconditional required job", () => {
   const ciSource = readFileSync(CI_WORKFLOW_PATH, "utf8");
   const webE2eBlock = sliceJobBlock(ciSource, "web-e2e");
 
-  it("contains a web-e2e: job that runs pnpm --filter @pawcareright/web test:e2e", () => {
+  it("contains a web-e2e: job that runs pnpm --filter @bombaypetcompany/web test:e2e", () => {
     expect(ciSource).toMatch(/^\s*web-e2e:\s*$/m);
-    expect(webE2eBlock).toContain("pnpm --filter @pawcareright/web test:e2e");
+    expect(webE2eBlock).toContain("pnpm --filter @bombaypetcompany/web test:e2e");
   });
 
   it("the test:e2e step carries no if: condition", () => {
-    const stepIndex = webE2eBlock.indexOf("pnpm --filter @pawcareright/web test:e2e");
+    const stepIndex = webE2eBlock.indexOf("pnpm --filter @bombaypetcompany/web test:e2e");
     expect(stepIndex).toBeGreaterThan(-1);
 
     const beforeStep = webE2eBlock.slice(0, stepIndex);

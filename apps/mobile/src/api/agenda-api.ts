@@ -1,5 +1,5 @@
-import { getIsOfflineSnapshot } from "@pawcareright/api-client";
-import type { AgendaEntry, AgendaResponse } from "@pawcareright/types";
+import { getIsOfflineSnapshot } from "@bombaypetcompany/api-client";
+import type { AgendaEntry, AgendaResponse } from "@bombaypetcompany/types";
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { useOutboxStore } from "../offline/outbox-store";

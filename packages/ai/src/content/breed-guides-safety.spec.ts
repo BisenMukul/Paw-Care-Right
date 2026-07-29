@@ -1,4 +1,4 @@
-import { allBreedGuides, type BreedGuide } from "@pawcareright/data";
+import { allBreedGuides, type BreedGuide } from "@bombaypetcompany/data";
 
 import { scanUnsafeText } from "../evals/detector";
 

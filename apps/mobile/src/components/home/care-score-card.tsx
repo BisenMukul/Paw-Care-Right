@@ -1,4 +1,4 @@
-import type { Pet } from "@pawcareright/types";
+import type { Pet } from "@bombaypetcompany/types";
 import { useRouter } from "expo-router";
 import { ActivityIndicator, Pressable, Text, View } from "react-native";
 

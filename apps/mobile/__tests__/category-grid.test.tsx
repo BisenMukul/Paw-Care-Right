@@ -1,4 +1,4 @@
-import { INTAKE_CATEGORIES, type CategoryDef } from "@pawcareright/types";
+import { INTAKE_CATEGORIES, type CategoryDef } from "@bombaypetcompany/types";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 
 import { CategoryGrid } from "../src/components/category-grid";

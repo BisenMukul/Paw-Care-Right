@@ -137,7 +137,7 @@ describe("AiAuditRetentionProcessor.onApplicationBootstrap", () => {
 // Sanity: the queue name constant used by both the module wiring and this
 // spec's processor construction is the single source of truth.
 describe("AI_AUDIT_RETENTION_QUEUE", () => {
-  it("is the pawcareright-prefixed queue name", () => {
-    expect(AI_AUDIT_RETENTION_QUEUE).toBe("pawcareright-ai-audit-retention");
+  it("is the bombaypetcompany-prefixed queue name", () => {
+    expect(AI_AUDIT_RETENTION_QUEUE).toBe("bombaypetcompany-ai-audit-retention");
   });
 });

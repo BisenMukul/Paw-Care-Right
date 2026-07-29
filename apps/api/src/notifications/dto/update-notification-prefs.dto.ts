@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { QUIET_TIME_REGEX, REMINDER_TYPES } from "@pawcareright/types";
+import { QUIET_TIME_REGEX, REMINDER_TYPES } from "@bombaypetcompany/types";
 import { Type } from "class-transformer";
 import { ArrayUnique, IsArray, IsIn, IsOptional, IsTimeZone, Matches, ValidateNested } from "class-validator";
 

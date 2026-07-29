@@ -1,5 +1,5 @@
-import type { NotificationPrefs } from "@pawcareright/types";
-import { REMINDER_TYPES } from "@pawcareright/types";
+import type { NotificationPrefs } from "@bombaypetcompany/types";
+import { REMINDER_TYPES } from "@bombaypetcompany/types";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react-native";
 
 import NotificationPrefsScreen from "../app/settings/notifications";

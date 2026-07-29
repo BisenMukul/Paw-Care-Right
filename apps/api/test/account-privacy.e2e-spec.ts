@@ -4,7 +4,7 @@ import { getQueueToken } from "@nestjs/bullmq";
 import type { INestApplication } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { Test } from "@nestjs/testing";
-import { accountExportSchema } from "@pawcareright/types";
+import { accountExportSchema } from "@bombaypetcompany/types";
 import { PrismaClient } from "@prisma/client";
 import type { Job, Queue } from "bullmq";
 import { QueueEvents } from "bullmq";

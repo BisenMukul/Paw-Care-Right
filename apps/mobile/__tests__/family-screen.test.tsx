@@ -1,4 +1,4 @@
-import type { HouseholdMe } from "@pawcareright/types";
+import type { HouseholdMe } from "@bombaypetcompany/types";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react-native";
 import { Share } from "react-native";
 
@@ -127,7 +127,7 @@ describe("family screen", () => {
     });
     mockMutateAsync.mockResolvedValue({
       code: "ABCD2345",
-      deepLink: "pawcareright://join/ABCD2345",
+      deepLink: "bombaypetcompany://join/ABCD2345",
       expiresAt: "2099-01-01T00:00:00.000Z",
     });
 
@@ -135,7 +135,7 @@ describe("family screen", () => {
     await fireEvent.press(screen.getByTestId("family-invite-button"));
 
     await waitFor(() => {
-      expect(Share.share).toHaveBeenCalledWith({ message: "pawcareright://join/ABCD2345" });
+      expect(Share.share).toHaveBeenCalledWith({ message: "bombaypetcompany://join/ABCD2345" });
     });
     expect(screen.queryByTestId("family-invite-error")).toBeNull();
   });

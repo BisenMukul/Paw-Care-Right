@@ -1,4 +1,4 @@
-import type { SymptomCategory } from "@pawcareright/types";
+import type { SymptomCategory } from "@bombaypetcompany/types";
 import { create } from "zustand";
 
 /**

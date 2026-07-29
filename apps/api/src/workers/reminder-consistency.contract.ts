@@ -6,7 +6,7 @@
  * so `ReminderSchedulerProcessor` is left byte-for-byte unchanged (plan
  * decision 1). No logic here.
  */
-export const REMINDER_CONSISTENCY_QUEUE = "pawcareright-reminder-consistency";
+export const REMINDER_CONSISTENCY_QUEUE = "bombaypetcompany-reminder-consistency";
 
 export const REMINDER_CONSISTENCY_JOB_NAME = "reminder-consistency-check";
 

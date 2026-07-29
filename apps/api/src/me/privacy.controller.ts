@@ -10,7 +10,7 @@ import type {
   AccountExportRequest,
   AccountPrivacySettings,
   UpdateAccountPrivacySettingsInput,
-} from "@pawcareright/types";
+} from "@bombaypetcompany/types";
 
 import { CurrentUser } from "../auth/auth.decorators";
 import { UpdatePrivacySettingsDto } from "./dto/update-privacy-settings.dto";

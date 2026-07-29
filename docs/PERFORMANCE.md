@@ -1,6 +1,6 @@
 # Performance budgets (T095)
 
-This document is the single place that states Paw Care Right +'s performance
+This document is the single place that states Bombay Pet Company's performance
 budgets, where each one is enforced in code/CI, how to reproduce a
 measurement locally, and an honest log of what has and has not actually been
 measured. Every number below is either a real measurement taken while
@@ -29,7 +29,7 @@ which must stay in sync:
    `ubuntu-latest`. Reports are kept as a GitHub Actions artifact
    (`lighthouse-<run-id>`, path `apps/web/.lighthouseci/` — `lhci`'s working
    directory is the `apps/web` package when invoked via
-   `pnpm --filter @pawcareright/web exec`, confirmed by direct inspection
+   `pnpm --filter @bombaypetcompany/web exec`, confirmed by direct inspection
    while building this task) instead of using lhci's `temporary-public-storage`
    cloud upload, so the job never depends on third-party network access.
 3. Two jest pins: `apps/web/src/perf/lighthouse-budget.spec.ts` (the new T095
@@ -69,11 +69,11 @@ selection for reporting — and is unaffected by this correction.
 ### 1.1 How to run it locally
 
 ```
-pnpm --filter @pawcareright/web build
+pnpm --filter @bombaypetcompany/web build
 CHROME_PATH=$(ls -d /opt/pw-browsers/chromium-*/chrome-linux/chrome | head -1) \
-  pnpm --filter @pawcareright/web exec lhci collect --config=./lighthouserc.json \
+  pnpm --filter @bombaypetcompany/web exec lhci collect --config=./lighthouserc.json \
   --settings.chromeFlags="--no-sandbox --headless=new"
-pnpm --filter @pawcareright/web exec lhci assert --config=./lighthouserc.json
+pnpm --filter @bombaypetcompany/web exec lhci assert --config=./lighthouserc.json
 ```
 
 `CHROME_PATH` and `--settings.chromeFlags="--no-sandbox ..."` are **only**
@@ -176,7 +176,7 @@ itself provides no such protection.
 
 ## 2. Mobile bundle analysis
 
-`pnpm --filter @pawcareright/mobile perf:bundle` (script: `scripts/analyze-bundle.ts`,
+`pnpm --filter @bombaypetcompany/mobile perf:bundle` (script: `scripts/analyze-bundle.ts`,
 run via `tsx`) reads an exported Metro bundle + its `.map` and prints a
 per-package byte table, using a hand-rolled base64-VLQ decoder
 (`src/perf/source-map-attribution.ts` — no new dependency; see plan decision

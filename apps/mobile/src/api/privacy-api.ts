@@ -3,7 +3,7 @@ import type {
   AccountExportRequest,
   AccountPrivacySettings,
   UpdateAccountPrivacySettingsInput,
-} from "@pawcareright/types";
+} from "@bombaypetcompany/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { apiClient } from "./client";

@@ -1,4 +1,4 @@
-import { SAFE_FALLBACK, type CompletedIntake, type TriageResult } from "@pawcareright/types";
+import { SAFE_FALLBACK, type CompletedIntake, type TriageResult } from "@bombaypetcompany/types";
 
 import { FakeTextProvider } from "../providers/fake";
 import type { TextResult } from "../providers/types";

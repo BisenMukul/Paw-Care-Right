@@ -1,4 +1,4 @@
-import { isApiError } from "@pawcareright/api-client";
+import { isApiError } from "@bombaypetcompany/api-client";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { Text, View } from "react-native";
@@ -11,7 +11,7 @@ import { useNavBack } from "../../src/hooks/use-nav-back";
 import { strings } from "../../src/strings";
 
 /**
- * Deep-link handler for `pawcareright://join/:code` (T026 plan). This route
+ * Deep-link handler for `bombaypetcompany://join/:code` (T026 plan). This route
  * only PARSES the `code` param from the URL — the scheme/deep-link string
  * itself is minted server-side (`households.service.ts`) and never
  * hardcoded here (CLAUDE.md §1a). A 404 (invalid/expired/already-used —

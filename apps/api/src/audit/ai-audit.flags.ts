@@ -1,4 +1,4 @@
-import type { ChatSafetyIncident } from "@pawcareright/ai";
+import type { ChatSafetyIncident } from "@bombaypetcompany/ai";
 
 /**
  * Closed set of `AiAuditLog.detectorFlags` codes (T090 plan step 14). Every

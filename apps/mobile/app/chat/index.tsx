@@ -1,6 +1,6 @@
-import { useIsOffline } from "@pawcareright/api-client";
-import { APP_DISPLAY_NAME } from "@pawcareright/config";
-import type { SymptomCategory } from "@pawcareright/types";
+import { useIsOffline } from "@bombaypetcompany/api-client";
+import { APP_DISPLAY_NAME } from "@bombaypetcompany/config";
+import type { SymptomCategory } from "@bombaypetcompany/types";
 import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import type { NativeScrollEvent, NativeSyntheticEvent } from "react-native";
@@ -30,7 +30,7 @@ import { useActivePet } from "../../src/pets/use-active-pet";
 import { strings } from "../../src/strings";
 
 /**
- * Chat screen (T083 plan, F7 "Ask Paw Care Right +"): pushed from the home
+ * Chat screen (T083 plan, F7 "Ask Bombay Pet Company"): pushed from the home
  * tab's quick-actions grid (D9 — not a 5th tab). Composes the active-pet
  * badge, streaming transcript, quick prompts, a tappable nudge card into
  * the EXISTING `/check/[category]` intake, and a PERSISTENT non-dismissible

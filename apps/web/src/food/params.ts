@@ -1,7 +1,7 @@
 // Static-param derivation for the programmatic food-safety pages (T085 D1/D3).
 // The page count is derived from the toxin dataset's own length — never a
 // literal — so it stays true as `packages/data` grows (plan decision D1).
-import { toxins } from "@pawcareright/data";
+import { toxins } from "@bombaypetcompany/data";
 
 import { SPECIES_SEGMENTS, speciesBySegment, type SpeciesDescriptor } from "./species";
 

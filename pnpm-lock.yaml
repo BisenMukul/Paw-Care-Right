@@ -26,6 +26,21 @@ importers:
       '@aws-sdk/s3-request-presigner':
         specifier: ^3
         version: 3.1085.0
+      '@bombaypetcompany/ai':
+        specifier: workspace:*
+        version: link:../../packages/ai
+      '@bombaypetcompany/analytics':
+        specifier: workspace:*
+        version: link:../../packages/analytics
+      '@bombaypetcompany/config':
+        specifier: workspace:*
+        version: link:../../packages/config
+      '@bombaypetcompany/data':
+        specifier: workspace:*
+        version: link:../../packages/data
+      '@bombaypetcompany/types':
+        specifier: workspace:*
+        version: link:../../packages/types
       '@nestjs/bullmq':
         specifier: ^11
         version: 11.0.4(@nestjs/common@11.1.28(class-transformer@0.5.1)(class-validator@0.14.4)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.28)(bullmq@5.80.1)
@@ -47,21 +62,6 @@ importers:
       '@nestjs/throttler':
         specifier: ^6.5.0
         version: 6.5.0(@nestjs/common@11.1.28(class-transformer@0.5.1)(class-validator@0.14.4)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.28)(reflect-metadata@0.2.2)
-      '@pawcareright/ai':
-        specifier: workspace:*
-        version: link:../../packages/ai
-      '@pawcareright/analytics':
-        specifier: workspace:*
-        version: link:../../packages/analytics
-      '@pawcareright/config':
-        specifier: workspace:*
-        version: link:../../packages/config
-      '@pawcareright/data':
-        specifier: workspace:*
-        version: link:../../packages/data
-      '@pawcareright/types':
-        specifier: workspace:*
-        version: link:../../packages/types
       '@prisma/client':
         specifier: ^6
         version: 6.19.3(prisma@6.19.3(typescript@5.9.3))(typescript@5.9.3)
@@ -159,6 +159,21 @@ importers:
 
   apps/mobile:
     dependencies:
+      '@bombaypetcompany/analytics':
+        specifier: workspace:*
+        version: link:../../packages/analytics
+      '@bombaypetcompany/api-client':
+        specifier: workspace:*
+        version: link:../../packages/api-client
+      '@bombaypetcompany/config':
+        specifier: workspace:*
+        version: link:../../packages/config
+      '@bombaypetcompany/data':
+        specifier: workspace:*
+        version: link:../../packages/data
+      '@bombaypetcompany/types':
+        specifier: workspace:*
+        version: link:../../packages/types
       '@expo-google-fonts/bricolage-grotesque':
         specifier: ^0.4.1
         version: 0.4.1
@@ -168,21 +183,6 @@ importers:
       '@expo/vector-icons':
         specifier: ^15.1.1
         version: 15.1.1(expo-font@57.0.1)(react-native@0.86.0(@babel/core@7.29.7)(@react-native/jest-preset@0.86.0(@babel/core@7.29.7)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)
-      '@pawcareright/analytics':
-        specifier: workspace:*
-        version: link:../../packages/analytics
-      '@pawcareright/api-client':
-        specifier: workspace:*
-        version: link:../../packages/api-client
-      '@pawcareright/config':
-        specifier: workspace:*
-        version: link:../../packages/config
-      '@pawcareright/data':
-        specifier: workspace:*
-        version: link:../../packages/data
-      '@pawcareright/types':
-        specifier: workspace:*
-        version: link:../../packages/types
       '@sentry/react-native':
         specifier: ^8.20.0
         version: 8.20.0(@expo/env@2.4.2)(dotenv@17.4.2)(expo@57.0.6)(react-native@0.86.0(@babel/core@7.29.7)(@react-native/jest-preset@0.86.0(@babel/core@7.29.7)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.17)(react@19.2.3))(react@19.2.3)
@@ -292,7 +292,7 @@ importers:
       '@babel/core':
         specifier: ^7.29.7
         version: 7.29.7
-      '@pawcareright/ai':
+      '@bombaypetcompany/ai':
         specifier: workspace:*
         version: link:../../packages/ai
       '@testing-library/react-native':
@@ -340,16 +340,16 @@ importers:
 
   apps/web:
     dependencies:
-      '@pawcareright/analytics':
+      '@bombaypetcompany/analytics':
         specifier: workspace:*
         version: link:../../packages/analytics
-      '@pawcareright/config':
+      '@bombaypetcompany/config':
         specifier: workspace:*
         version: link:../../packages/config
-      '@pawcareright/data':
+      '@bombaypetcompany/data':
         specifier: workspace:*
         version: link:../../packages/data
-      '@pawcareright/types':
+      '@bombaypetcompany/types':
         specifier: workspace:*
         version: link:../../packages/types
       '@sentry/nextjs':
@@ -365,15 +365,15 @@ importers:
         specifier: ^19
         version: 19.2.7(react@19.2.7)
     devDependencies:
+      '@bombaypetcompany/ai':
+        specifier: workspace:*
+        version: link:../../packages/ai
       '@lhci/cli':
         specifier: ^0.14
         version: 0.14.0
       '@next/eslint-plugin-next':
         specifier: ^15
         version: 15.5.20
-      '@pawcareright/ai':
-        specifier: workspace:*
-        version: link:../../packages/ai
       '@playwright/test':
         specifier: ^1
         version: 1.62.0
@@ -422,13 +422,13 @@ importers:
 
   packages/ai:
     dependencies:
-      '@pawcareright/config':
+      '@bombaypetcompany/config':
         specifier: workspace:*
         version: link:../config
-      '@pawcareright/data':
+      '@bombaypetcompany/data':
         specifier: workspace:*
         version: link:../data
-      '@pawcareright/types':
+      '@bombaypetcompany/types':
         specifier: workspace:*
         version: link:../types
       zod:
@@ -474,11 +474,11 @@ importers:
 
   packages/analytics:
     dependencies:
-      '@pawcareright/types':
+      '@bombaypetcompany/types':
         specifier: workspace:*
         version: link:../types
     devDependencies:
-      '@pawcareright/config':
+      '@bombaypetcompany/config':
         specifier: workspace:*
         version: link:../config
       '@types/jest':
@@ -517,7 +517,7 @@ importers:
 
   packages/api-client:
     dependencies:
-      '@pawcareright/types':
+      '@bombaypetcompany/types':
         specifier: workspace:*
         version: link:../types
       '@tanstack/react-query':
@@ -530,7 +530,7 @@ importers:
         specifier: ^4
         version: 4.4.3
     devDependencies:
-      '@pawcareright/config':
+      '@bombaypetcompany/config':
         specifier: workspace:*
         version: link:../config
       '@types/jest':
@@ -621,14 +621,14 @@ importers:
 
   packages/data:
     dependencies:
-      '@pawcareright/types':
+      '@bombaypetcompany/types':
         specifier: workspace:*
         version: link:../types
       zod:
         specifier: ^4
         version: 4.4.3
     devDependencies:
-      '@pawcareright/config':
+      '@bombaypetcompany/config':
         specifier: workspace:*
         version: link:../config
       '@types/jest':
@@ -671,7 +671,7 @@ importers:
         specifier: ^4
         version: 4.4.3
     devDependencies:
-      '@pawcareright/config':
+      '@bombaypetcompany/config':
         specifier: workspace:*
         version: link:../config
       '@types/jest':

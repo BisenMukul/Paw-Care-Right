@@ -2,7 +2,7 @@ import { getQueueToken } from "@nestjs/bullmq";
 import type { INestApplication } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { Test } from "@nestjs/testing";
-import { errorResponseSchema, SAFE_FALLBACK, type Urgency } from "@pawcareright/types";
+import { errorResponseSchema, SAFE_FALLBACK, type Urgency } from "@bombaypetcompany/types";
 import { PrismaClient } from "@prisma/client";
 import type { Queue } from "bullmq";
 import request from "supertest";
@@ -21,7 +21,7 @@ import { cleanupUsers, createOwnerContext, createUser, mintAccessToken, resolveJ
  * overrides it with a no-op `useValue` so the BullMQ explorer's
  * `isProcessor` scan (which keys off `@Processor` reflect-metadata on the
  * resolved instance's constructor) finds nothing to attach a real `Worker`
- * to for `pawcareright-checks` here -- this suite only ever asserts a job
+ * to for `bombaypetcompany-checks` here -- this suite only ever asserts a job
  * was *enqueued*, and several tests manually stage `SymptomCheck.status`/
  * `TriageResult` rows to exercise the GET read-path in isolation; a live
  * worker racing those manual writes against T043's real (network-calling by

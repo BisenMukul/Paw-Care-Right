@@ -1,5 +1,5 @@
-import { setOnline } from "@pawcareright/api-client";
-import { petIdSchema, type Pet } from "@pawcareright/types";
+import { setOnline } from "@bombaypetcompany/api-client";
+import { petIdSchema, type Pet } from "@bombaypetcompany/types";
 import { act, fireEvent, render, screen, type RenderResult } from "@testing-library/react-native";
 
 import CareScreen from "../app/(tabs)/care";

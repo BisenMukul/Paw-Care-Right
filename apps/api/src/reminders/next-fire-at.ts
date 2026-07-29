@@ -1,5 +1,5 @@
-import type { ParsedRRule, RRuleWeekday } from "@pawcareright/types";
-import { RRULE_WEEKDAYS } from "@pawcareright/types";
+import type { ParsedRRule, RRuleWeekday } from "@bombaypetcompany/types";
+import { RRULE_WEEKDAYS } from "@bombaypetcompany/types";
 
 /**
  * `computeNextFireAt` — pure, DST-correct "single next occurrence" helper

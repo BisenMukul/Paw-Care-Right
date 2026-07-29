@@ -1,11 +1,11 @@
-import { EMERGENCY_PAYLOADS, emergencyPayloadByKey, GENERIC_EMERGENCY_PAYLOAD, resolveEmergencyPayload } from "@pawcareright/data";
+import { EMERGENCY_PAYLOADS, emergencyPayloadByKey, GENERIC_EMERGENCY_PAYLOAD, resolveEmergencyPayload } from "@bombaypetcompany/data";
 
 import { RED_FLAG_RULES } from "./rules-table";
 
 /**
  * Cross-package completeness/parity test (T049 plan D5): the only cycle-free
  * home able to import both `RED_FLAG_RULES` (packages/ai) and the
- * `@pawcareright/data` emergency-payload content (ai -> data is already a
+ * `@bombaypetcompany/data` emergency-payload content (ai -> data is already a
  * dependency; data -> ai would cycle). Would fail if a 23rd rule lands
  * without matching content.
  */

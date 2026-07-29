@@ -1,5 +1,5 @@
 import { BadRequestException, HttpException, NotFoundException } from "@nestjs/common";
-import { SAFE_FALLBACK, type CompletedIntake, parseIntake } from "@pawcareright/types";
+import { SAFE_FALLBACK, type CompletedIntake, parseIntake } from "@bombaypetcompany/types";
 import { Prisma } from "@prisma/client";
 import type { Queue } from "bullmq";
 

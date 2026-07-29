@@ -1,5 +1,5 @@
 import { BadRequestException, HttpException, NotFoundException } from "@nestjs/common";
-import { sexSchema, speciesSchema } from "@pawcareright/types";
+import { sexSchema, speciesSchema } from "@bombaypetcompany/types";
 import { Sex, Species } from "@prisma/client";
 
 import type { PrismaService } from "../prisma/prisma.service";

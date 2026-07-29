@@ -1,4 +1,4 @@
-import { ApiError, setOnline } from "@pawcareright/api-client";
+import { ApiError, setOnline } from "@bombaypetcompany/api-client";
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react-native";
 
 import IntakeScreen from "../app/check/[category]";

@@ -2,7 +2,7 @@ import { useSyncExternalStore } from "react";
 
 // Module-level online/offline store, shared by every consumer of this
 // package (web + mobile). Zero new dependencies: `react` is already a peer
-// dependency of `@pawcareright/api-client` (see `query-provider.tsx`).
+// dependency of `@bombaypetcompany/api-client` (see `query-provider.tsx`).
 // Network-detection plumbing (e.g. `expo-network` on mobile) calls
 // `setOnline`; UI reads the state via `useIsOffline`.
 let online = true;

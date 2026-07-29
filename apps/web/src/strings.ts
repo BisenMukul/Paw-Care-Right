@@ -2,7 +2,7 @@
 // The product display name is never hardcoded here — it is injected at
 // render time from the shared `APP_DISPLAY_NAME` constant, threaded through
 // as an `appName` parameter wherever copy needs to name the product.
-import { ACCOUNT_DELETION_GRACE_DAYS, vetDisclaimerLine } from "@pawcareright/types";
+import { ACCOUNT_DELETION_GRACE_DAYS, vetDisclaimerLine } from "@bombaypetcompany/types";
 
 import { LEGAL_REVIEW_MARKER } from "./legal/legal-document";
 
@@ -16,11 +16,11 @@ const COMPANY_ENTITY_PLACEHOLDER = "[COMPANY ENTITY — TO CONFIRM AT C3]";
 const REGISTERED_ADDRESS_PLACEHOLDER = "[REGISTERED ADDRESS — TO CONFIRM AT C3]";
 const JURISDICTION_PLACEHOLDER = "[GOVERNING LAW AND JURISDICTION — TO CONFIRM AT C3]";
 const EFFECTIVE_DATE_PLACEHOLDER = "[EFFECTIVE DATE — TO CONFIRM AT LAUNCH]";
-const PRIVACY_CONTACT_EMAIL = "privacy@pawcareright.app";
-const TERMS_CONTACT_EMAIL = "legal@pawcareright.app";
+const PRIVACY_CONTACT_EMAIL = "privacy@bombaypetcompany.app";
+const TERMS_CONTACT_EMAIL = "legal@bombaypetcompany.app";
 
 export const strings = {
-  // T097 plan D2: delegates to the `@pawcareright/types` SSOT so this
+  // T097 plan D2: delegates to the `@bombaypetcompany/types` SSOT so this
   // sentence cannot drift from `apps/mobile/src/strings.ts`'s copy. Byte-
   // identical to the pre-T097 literal (see `vet-disclaimer-copy.ts`).
   disclaimer: vetDisclaimerLine,

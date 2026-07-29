@@ -1,4 +1,4 @@
-import { ACCOUNT_EXPORT_RETENTION_DAYS } from "@pawcareright/types";
+import { ACCOUNT_EXPORT_RETENTION_DAYS } from "@bombaypetcompany/types";
 
 import * as sentry from "../observability/sentry";
 import type { AccountErasureService } from "../me/account-erasure.service";

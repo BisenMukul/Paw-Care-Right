@@ -6,7 +6,7 @@ import {
   HttpStatus,
   Logger,
 } from "@nestjs/common";
-import type { ErrorCode } from "@pawcareright/types";
+import type { ErrorCode } from "@bombaypetcompany/types";
 import type { Response } from "express";
 
 import { captureApiException } from "../observability/sentry";

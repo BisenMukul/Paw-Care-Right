@@ -16,8 +16,8 @@
 #   runs   number of force-stopped launches to sample (default 10)
 set -eu
 
-PKG="com.pawcareright.app"
-ACTIVITY="com.pawcareright.app/.MainActivity"
+PKG="com.bombaypetcompany.app"
+ACTIVITY="com.bombaypetcompany.app/.MainActivity"
 RUNS="${1:-10}"
 
 if ! command -v adb >/dev/null 2>&1; then
@@ -44,7 +44,7 @@ while [ "$i" -le "$RUNS" ]; do
   fi
 
   TOTAL_TIME=$(echo "$RAW_OUTPUT" | awk -F': ' '/TotalTime/ {print $2}')
-  echo "$TOTAL_TIME" >> /tmp/pawcareright-cold-start-samples.$$
+  echo "$TOTAL_TIME" >> /tmp/bombaypetcompany-cold-start-samples.$$
 
   adb shell am force-stop "$PKG"
   sleep 1
@@ -52,10 +52,10 @@ while [ "$i" -le "$RUNS" ]; do
 done
 
 echo "--- raw TotalTime samples (ms) ---"
-cat /tmp/pawcareright-cold-start-samples.$$
+cat /tmp/bombaypetcompany-cold-start-samples.$$
 
 echo "--- informational median (NOT a pass/fail judgement -- see src/perf/cold-start.ts) ---"
-sort -n /tmp/pawcareright-cold-start-samples.$$ | awk '
+sort -n /tmp/bombaypetcompany-cold-start-samples.$$ | awk '
   { a[NR] = $1 }
   END {
     if (NR % 2 == 1) {
@@ -66,4 +66,4 @@ sort -n /tmp/pawcareright-cold-start-samples.$$ | awk '
   }
 '
 
-rm -f /tmp/pawcareright-cold-start-samples.$$
+rm -f /tmp/bombaypetcompany-cold-start-samples.$$

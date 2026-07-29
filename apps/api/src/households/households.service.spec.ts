@@ -74,7 +74,7 @@ describe("HouseholdsService", () => {
       const after = Date.now();
 
       expect(result.code).toMatch(INVITE_CODE_REGEX);
-      expect(result.deepLink).toBe(`pawcareright://join/${result.code}`);
+      expect(result.deepLink).toBe(`bombaypetcompany://join/${result.code}`);
       const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
       expect(result.expiresAt.getTime()).toBeGreaterThanOrEqual(before + sevenDaysMs - 1000);
       expect(result.expiresAt.getTime()).toBeLessThanOrEqual(after + sevenDaysMs + 1000);

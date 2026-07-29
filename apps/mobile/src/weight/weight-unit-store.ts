@@ -39,7 +39,7 @@ export const useWeightUnitStore = create<WeightUnitState>()(
       },
     }),
     {
-      name: "pawcareright.weight-unit",
+      name: "bombaypetcompany.weight-unit",
       storage: createJSONStorage(() => mmkvStorage),
       partialize: (state) => ({ override: state.override }),
     },

@@ -1,4 +1,4 @@
-import type { Sex, Species, SymptomCategory, Urgency } from "@pawcareright/types";
+import type { Sex, Species, SymptomCategory, Urgency } from "@bombaypetcompany/types";
 
 import type { TextMessage } from "../providers/types";
 

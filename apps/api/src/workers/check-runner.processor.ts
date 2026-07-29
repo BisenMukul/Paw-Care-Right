@@ -7,8 +7,8 @@ import {
   TRIAGE_PROMPT_VERSION,
   type TextProvider,
   type TriagePetContext,
-} from "@pawcareright/ai";
-import { SAFE_FALLBACK, parseIntake, type CheckStatus, type TriageResult, type Urgency } from "@pawcareright/types";
+} from "@bombaypetcompany/ai";
+import { SAFE_FALLBACK, parseIntake, type CheckStatus, type TriageResult, type Urgency } from "@bombaypetcompany/types";
 import type { Job, Queue } from "bullmq";
 
 import { AnalyticsService } from "../analytics/analytics.service";
@@ -40,7 +40,7 @@ export function isFinalAttempt(job: Pick<Job<ChecksJobData>, "attemptsMade" | "o
 }
 
 /**
- * Consumes `pawcareright-checks` "triage" jobs (T043): load the check + pet,
+ * Consumes `bombaypetcompany-checks` "triage" jobs (T043): load the check + pet,
  * recompute the deterministic red-flag rules floor, prep photos (T034,
  * text-only `runTriage` does not consume them -- plan R7), run the
  * provider-injected triage pipeline (T033), apply the post-rules safety

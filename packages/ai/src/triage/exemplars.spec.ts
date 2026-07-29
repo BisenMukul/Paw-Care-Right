@@ -1,4 +1,4 @@
-import { parseTriage, URGENCY_SEVERITY, URGENCY_TIERS, VET_SOON_FLOOR_SEVERITY } from "@pawcareright/types";
+import { parseTriage, URGENCY_SEVERITY, URGENCY_TIERS, VET_SOON_FLOOR_SEVERITY } from "@bombaypetcompany/types";
 
 import { TRIAGE_EXEMPLARS } from "./exemplars";
 

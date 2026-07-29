@@ -89,7 +89,7 @@ exports[`chat screen snapshot chat screen with a completed answer 1`] = `
       maxFontSizeMultiplier={1.5}
       testID="app-header-title"
     >
-      Ask Paw Care Right +
+      Ask Bombay Pet Company
     </Text>
   </View>
   <View
@@ -269,7 +269,7 @@ exports[`chat screen snapshot chat screen with a completed answer 1`] = `
         <Text
           className="text-center text-sm text-brand-900"
         >
-          Paw Care Right + offers general pet-care guidance, not veterinary care or treatment. Always consult a licensed veterinarian.
+          Bombay Pet Company offers general pet-care guidance, not veterinary care or treatment. Always consult a licensed veterinarian.
         </Text>
       </View>
     </View>

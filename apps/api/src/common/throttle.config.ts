@@ -51,7 +51,7 @@ export const THROTTLE_FOOD = { default: { limit: 60, ttl: 60_000 } };
 // is NOT exempted. Verified: `RemoteConfigService.getConfig` only ever
 // returns the paywall variant, `minSupportedVersion`, and a
 // `hotlinePackVersion` NUMBER (a staleness tag) -- never the hotline phone
-// numbers themselves, which are bundled client-side in `@pawcareright/data`
+// numbers themselves, which are bundled client-side in `@bombaypetcompany/data`
 // (`apps/mobile/src/config/hotline-pack.ts` only compares that number
 // against `BUNDLED_HOTLINE_PACK_VERSION`; it never fetches or renders
 // numbers from the network). The app can render emergency hotlines with

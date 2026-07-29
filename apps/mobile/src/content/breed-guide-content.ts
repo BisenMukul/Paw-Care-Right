@@ -1,12 +1,12 @@
-import type { BreedGuide, BreedSpecies } from "@pawcareright/data";
-import { allBreeds, getBreedGuide, publishedBreedGuides } from "@pawcareright/data";
+import type { BreedGuide, BreedSpecies } from "@bombaypetcompany/data";
+import { allBreeds, getBreedGuide, publishedBreedGuides } from "@bombaypetcompany/data";
 
 /**
  * T087 plan (in-app breed guide reader), step 4. Pure, no-React module — the
  * ONLY place app code may resolve a breed guide. Imports exclusively
  * `publishedBreedGuides` / `getBreedGuide` (both draft-safe) plus `allBreeds`
- * for display names (D7) from `@pawcareright/data`. The draft-inclusive
- * audit/tooling export from `@pawcareright/data` (the one that also carries
+ * for display names (D7) from `@bombaypetcompany/data`. The draft-inclusive
+ * audit/tooling export from `@bombaypetcompany/data` (the one that also carries
  * unreviewed guides) is FORBIDDEN here and everywhere else under
  * `apps/mobile/**` — safety statement 4, `breed-guide-safety.test.ts`
  * enforces this with a source-scan test.

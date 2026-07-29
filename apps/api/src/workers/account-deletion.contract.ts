@@ -3,7 +3,7 @@
  * queue/job/scheduler-id/cron/batch constants (T091 plan step 24). Mirrors
  * `ai-audit-retention.contract.ts`'s style. No logic here.
  */
-export const ACCOUNT_DELETION_QUEUE = "pawcareright-account-deletion";
+export const ACCOUNT_DELETION_QUEUE = "bombaypetcompany-account-deletion";
 
 export const ACCOUNT_DELETION_JOB_NAME = "account-deletion-sweep";
 

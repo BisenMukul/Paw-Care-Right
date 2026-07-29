@@ -1,4 +1,4 @@
-import { FOOD_SAFETY_FALLBACK } from "@pawcareright/types";
+import { FOOD_SAFETY_FALLBACK } from "@bombaypetcompany/types";
 
 import { FakeTextProvider } from "../providers/fake";
 import type { TextResult } from "../providers/types";

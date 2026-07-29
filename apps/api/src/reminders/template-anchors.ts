@@ -1,4 +1,4 @@
-import type { TemplateAnchor } from "@pawcareright/data";
+import type { TemplateAnchor } from "@bombaypetcompany/data";
 
 /**
  * Anchor-derivation helpers for T055's `from-template` instantiation (plan

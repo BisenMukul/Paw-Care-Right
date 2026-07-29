@@ -4,7 +4,7 @@
 // ignores such a preset, dropping the whole brand scale so `bg-brand-*` renders as
 // nothing. Unwrap `.default`; the `??` keeps this correct under loaders (e.g. jiti
 // with interopDefault) that already unwrap it.
-const brandPreset = require("@pawcareright/config/tailwind");
+const brandPreset = require("@bombaypetcompany/config/tailwind");
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {

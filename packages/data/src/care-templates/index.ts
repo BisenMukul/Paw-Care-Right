@@ -1,4 +1,4 @@
-import { SPECIES, type ReminderType, type Species } from "@pawcareright/types";
+import { SPECIES, type ReminderType, type Species } from "@bombaypetcompany/types";
 
 import { BASE_SCHEDULES } from "./data/base";
 import { VACCINE_OVERLAYS } from "./data/vaccine-overlays";

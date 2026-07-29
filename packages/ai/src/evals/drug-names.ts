@@ -1,9 +1,9 @@
-import { toxins } from "@pawcareright/data";
+import { toxins } from "@bombaypetcompany/data";
 
 /**
  * Single-sourced drug-name token list feeding the T038 `DRUG_RECOMMENDATION`
  * detector rule (plan "Drug-name list source decision"). Human-med
- * names/aliases are derived from `@pawcareright/data` (auto-tracks T035
+ * names/aliases are derived from `@bombaypetcompany/data` (auto-tracks T035
  * edits); `VET_DRUG_NAMES` is a small curated supplement for vet drugs a bad
  * output might recommend that are NOT ingestion toxins, so are absent from
  * the toxin dataset by design.

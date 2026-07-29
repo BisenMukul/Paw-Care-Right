@@ -1,5 +1,5 @@
-import type { ActivityType, ActivityUnit } from "@pawcareright/types";
-import { ACTIVITY_TYPES } from "@pawcareright/types";
+import type { ActivityType, ActivityUnit } from "@bombaypetcompany/types";
+import { ACTIVITY_TYPES } from "@bombaypetcompany/types";
 import type { ComponentProps } from "react";
 import type { Ionicons } from "@expo/vector-icons";
 
@@ -8,7 +8,7 @@ type IconName = ComponentProps<typeof Ionicons>["name"];
 /**
  * The quantity/unit control an activity type presents in the sheet
  * (design-system §5.2, collapsed onto the shared `unit` enum -- see
- * `@pawcareright/types`' `health-log.ts` header for why).
+ * `@bombaypetcompany/types`' `health-log.ts` header for why).
  *
  * - `stepperWithUnit` (FOOD/WATER): an integer stepper plus a two-way unit
  *   segment toggle (`defaultUnit` <-> `altUnit`), each with its own step/range.
@@ -41,7 +41,7 @@ export interface ActivityTypeConfig {
 
 /**
  * Per-type defaults (design-system §5.2's table), with `quantity` kept a
- * plain positive integer everywhere (see `@pawcareright/types` header --
+ * plain positive integer everywhere (see `@bombaypetcompany/types` header --
  * design-system's 0.5-step meals/bowls is simplified to a whole-unit step
  * of 1, flagged for the checker).
  */

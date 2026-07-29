@@ -5,7 +5,7 @@ import { buildDemo, persistDemo, wipeDemo } from "./seed/persist";
 // Fixed dev fixtures — obviously non-production values. Fixed UUID constants
 // let this script upsert-by-id for Household/Membership (which have no
 // natural business-unique key), making repeated runs a true no-op.
-const DEV_USER_EMAIL = "dev@pawcareright.local";
+const DEV_USER_EMAIL = "dev@bombaypetcompany.local";
 const DEV_HOUSEHOLD_ID = "00000000-0000-4000-8000-000000000001";
 const DEV_MEMBERSHIP_ID = "00000000-0000-4000-8000-000000000002";
 

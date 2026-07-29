@@ -1,5 +1,5 @@
 {
-  "name": "@pawcareright/web",
+  "name": "@bombaypetcompany/web",
   "private": true,
   "version": "0.0.0",
   "scripts": {
@@ -12,10 +12,10 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
-    "@pawcareright/analytics": "workspace:*",
-    "@pawcareright/config": "workspace:*",
-    "@pawcareright/data": "workspace:*",
-    "@pawcareright/types": "workspace:*",
+    "@bombaypetcompany/analytics": "workspace:*",
+    "@bombaypetcompany/config": "workspace:*",
+    "@bombaypetcompany/data": "workspace:*",
+    "@bombaypetcompany/types": "workspace:*",
     "@sentry/nextjs": "^10.68.0",
     "next": "^15.5.22",
     "react": "^19",
@@ -24,7 +24,7 @@
   "devDependencies": {
     "@lhci/cli": "^0.14",
     "@next/eslint-plugin-next": "^15",
-    "@pawcareright/ai": "workspace:*",
+    "@bombaypetcompany/ai": "workspace:*",
     "@playwright/test": "^1",
     "@types/jest": "^29.5.14",
     "@types/node": "^22",

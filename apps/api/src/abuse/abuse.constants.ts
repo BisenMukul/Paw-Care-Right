@@ -7,7 +7,7 @@
  */
 
 /** Redis key prefix for every key this module writes. */
-export const ABUSE_KEY_PREFIX = "pawcareright:abuse:";
+export const ABUSE_KEY_PREFIX = "bombaypetcompany:abuse:";
 
 /**
  * 20 checks/hour by one user is roughly 10x the plausible human rate for a

@@ -1,4 +1,4 @@
-import type { Answer, QuestionDef } from "@pawcareright/types";
+import type { Answer, QuestionDef } from "@bombaypetcompany/types";
 import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 import { useEffect, useRef, useState } from "react";

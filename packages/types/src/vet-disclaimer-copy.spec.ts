@@ -31,7 +31,7 @@ describe("vetDisclaimerLine", () => {
   });
 
   it("hardcodes no product display name (§1a — appName is always a parameter)", () => {
-    expect(vetDisclaimerLine("X")).not.toMatch(/Paw Care Right/);
+    expect(vetDisclaimerLine("X")).not.toMatch(/Bombay Pet Company/);
   });
 
   it("is a pure function of appName only (same input, same output)", () => {

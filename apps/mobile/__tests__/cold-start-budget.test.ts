@@ -6,10 +6,10 @@ import {
 } from "../src/perf/cold-start";
 
 describe("parseAmStartOutput", () => {
-  const REAL_AM_START_BLOCK = `Starting: Intent { cmp=com.pawcareright.app/.MainActivity }
+  const REAL_AM_START_BLOCK = `Starting: Intent { cmp=com.bombaypetcompany.app/.MainActivity }
 Status: ok
 LaunchState: COLD
-Activity: com.pawcareright.app/.MainActivity
+Activity: com.bombaypetcompany.app/.MainActivity
 TotalTime: 1843
 WaitTime: 1901
 Complete`;

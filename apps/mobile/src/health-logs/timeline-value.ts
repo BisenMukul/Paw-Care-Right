@@ -7,7 +7,7 @@ import {
   vetVisitValueSchema,
   weightValueSchema,
   type ActivityValue,
-} from "@pawcareright/types";
+} from "@bombaypetcompany/types";
 
 import type { TimelineItem } from "../api/health-logs-api";
 import { strings } from "../strings";

@@ -7,7 +7,7 @@
  * (`packages/ai/src/evals/medication-copy-safety.spec.ts`) import -- so the
  * tested string is byte-identical to the rendered string (no drift).
  * Mirrors the `FOOD_SAFETY_FALLBACK`/`SAFE_FALLBACK` precedent of
- * safety-critical constants living in `@pawcareright/types` (plan decision
+ * safety-critical constants living in `@bombaypetcompany/types` (plan decision
  * 10).
  *
  * Constraints on every value below (mechanically enforced by the detector

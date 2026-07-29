@@ -1,6 +1,6 @@
 import { Logger } from "@nestjs/common";
-import { FakeTextProvider, ProviderError, TRIAGE_PROMPT_VERSION, type TextProvider, type TextResult } from "@pawcareright/ai";
-import { parseIntake, type CompletedIntake, type Sex, type Species } from "@pawcareright/types";
+import { FakeTextProvider, ProviderError, TRIAGE_PROMPT_VERSION, type TextProvider, type TextResult } from "@bombaypetcompany/ai";
+import { parseIntake, type CompletedIntake, type Sex, type Species } from "@bombaypetcompany/types";
 import type { Job, Queue } from "bullmq";
 
 import type { AnalyticsService } from "../analytics/analytics.service";

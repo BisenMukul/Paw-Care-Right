@@ -1,4 +1,4 @@
-import type { CheckResponse } from "@pawcareright/types";
+import type { CheckResponse } from "@bombaypetcompany/types";
 import { Pressable, Text, View } from "react-native";
 
 import { deriveCheckChip, formatCheckDate, getCategoryLabel } from "../checks/check-history";

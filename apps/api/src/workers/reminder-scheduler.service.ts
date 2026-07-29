@@ -1,6 +1,6 @@
 import { InjectQueue } from "@nestjs/bullmq";
 import { Injectable, Logger } from "@nestjs/common";
-import { parseRRule } from "@pawcareright/types";
+import { parseRRule } from "@bombaypetcompany/types";
 import { Prisma } from "@prisma/client";
 import type { Queue } from "bullmq";
 

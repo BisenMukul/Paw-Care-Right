@@ -1,6 +1,6 @@
 import { BullModule } from "@nestjs/bullmq";
 import { Module } from "@nestjs/common";
-import { getTextProvider, loadAiEnv } from "@pawcareright/ai";
+import { getTextProvider, loadAiEnv } from "@bombaypetcompany/ai";
 
 import { AnalyticsModule } from "../analytics/analytics.module";
 import { AiAuditModule } from "../audit/ai-audit.module";

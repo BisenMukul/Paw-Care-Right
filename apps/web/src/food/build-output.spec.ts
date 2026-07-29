@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
-import { toxins } from "@pawcareright/data";
+import { toxins } from "@bombaypetcompany/data";
 
 import sitemap from "../../app/sitemap";
 import robots from "../../app/robots";
@@ -47,12 +47,12 @@ function findBuiltHtml(segment: string, itemId: string): string {
     }
   }
   throw new Error(
-    `could not find built HTML for ${segment}/${itemId} under ${appDir} — run \`pnpm --filter @pawcareright/web build\` first`,
+    `could not find built HTML for ${segment}/${itemId} under ${appDir} — run \`pnpm --filter @bombaypetcompany/web build\` first`,
   );
 }
 
 describe("build-output — prerequisite", () => {
-  it("the prerender manifest exists (run `pnpm --filter @pawcareright/web build` first)", () => {
+  it("the prerender manifest exists (run `pnpm --filter @bombaypetcompany/web build` first)", () => {
     expect(fs.existsSync(MANIFEST_PATH)).toBe(true);
   });
 });

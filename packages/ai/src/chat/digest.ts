@@ -1,4 +1,4 @@
-import type { Urgency } from "@pawcareright/types";
+import type { Urgency } from "@bombaypetcompany/types";
 
 import type { TimelineDigestInput } from "./types";
 

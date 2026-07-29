@@ -1,4 +1,4 @@
-import { APP_DISPLAY_NAME } from "@pawcareright/config";
+import { APP_DISPLAY_NAME } from "@bombaypetcompany/config";
 
 import { strings } from "../strings";
 

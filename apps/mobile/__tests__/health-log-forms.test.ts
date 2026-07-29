@@ -1,7 +1,7 @@
 import { validateNoteForm, validateVetVisitForm } from "../src/health-logs/health-log-forms";
 
 // T066 plan "Tests to write" — AC "forms validate via shared schemas".
-// Exercises the REAL `@pawcareright/types` schemas, no mocks.
+// Exercises the REAL `@bombaypetcompany/types` schemas, no mocks.
 
 describe("validateNoteForm", () => {
   it("accepts non-empty text and trims it", () => {

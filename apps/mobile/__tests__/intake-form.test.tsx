@@ -1,5 +1,5 @@
-import type { CategoryDef } from "@pawcareright/types";
-import { getCategoryDef } from "@pawcareright/types";
+import type { CategoryDef } from "@bombaypetcompany/types";
+import { getCategoryDef } from "@bombaypetcompany/types";
 import { act, fireEvent, render, screen, within } from "@testing-library/react-native";
 
 import { AUTO_ADVANCE_MS, IntakeForm } from "../src/components/intake/intake-form";

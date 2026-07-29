@@ -1,5 +1,5 @@
-import { isApiError, useIsOffline } from "@pawcareright/api-client";
-import type { CompletedIntake } from "@pawcareright/types";
+import { isApiError, useIsOffline } from "@bombaypetcompany/api-client";
+import type { CompletedIntake } from "@bombaypetcompany/types";
 import * as Crypto from "expo-crypto";
 import { useCallback, useRef, useState } from "react";
 

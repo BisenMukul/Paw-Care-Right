@@ -3,7 +3,7 @@
  * job payload shape, imported by the producer (`ChecksService`) and the T043
  * consumer. Mirrors `../workers/images.contract.ts`.
  */
-export const CHECKS_QUEUE = "pawcareright-checks";
+export const CHECKS_QUEUE = "bombaypetcompany-checks";
 
 export interface ChecksJobData {
   checkId: string;

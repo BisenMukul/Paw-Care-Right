@@ -1,5 +1,5 @@
-import { useIsOffline } from "@pawcareright/api-client";
-import type { VetVisitValue } from "@pawcareright/types";
+import { useIsOffline } from "@bombaypetcompany/api-client";
+import type { VetVisitValue } from "@bombaypetcompany/types";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { Text } from "react-native";

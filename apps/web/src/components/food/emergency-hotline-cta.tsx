@@ -1,4 +1,4 @@
-import { REGION_HOTLINES } from "@pawcareright/data";
+import { REGION_HOTLINES } from "@bombaypetcompany/data";
 
 import { strings } from "../../strings";
 

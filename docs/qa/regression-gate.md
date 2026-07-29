@@ -34,7 +34,7 @@ the M9 readiness section (§7) and must be carried into `loop/journal.md` verbat
 
 ### 3a. `apps/api` (scope: `src/**/*.service.ts`, CLAUDE §6 "coverage on services")
 
-Measured (real `pnpm --filter @pawcareright/api test:cov` run, live Postgres+Redis+MinIO):
+Measured (real `pnpm --filter @bombaypetcompany/api test:cov` run, live Postgres+Redis+MinIO):
 
 | Metric | Global | Threshold |
 |---|---|---|
@@ -92,8 +92,8 @@ to inflate the measurement).
 ### 3c. How to run it locally
 
 ```
-pnpm --filter @pawcareright/api test:cov
-pnpm --filter @pawcareright/ai test:cov
+pnpm --filter @bombaypetcompany/api test:cov
+pnpm --filter @bombaypetcompany/ai test:cov
 pnpm test:cov   # both, via turbo, cache: false
 ```
 
@@ -131,42 +131,42 @@ Two tests in `apps/web/e2e/smoke.spec.ts`:
 
 **Browser resolution (Step 10b):** the resolved chromium revision for playwright-core 1.62.0 is
 **1234**, not the `/opt/pw-browsers/chromium-1194` precedent from T085/T095. Branch taken: **3** —
-`pnpm --filter @pawcareright/web exec playwright install chromium`, downloaded via the configured proxy
+`pnpm --filter @bombaypetcompany/web exec playwright install chromium`, downloaded via the configured proxy
 to `/opt/pw-browsers/chromium-1234` (184.3 MiB Chrome for Testing 151.0.7922.34 + 114.7 MiB headless
 shell). `PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers` used on the command line for local runs only, never
 committed to `playwright.config.ts`.
 
 **A genuine environment finding, investigated and resolved without touching any frozen file:**
 Playwright's own module loader (regardless of `import`, `require()`, or dynamic `import()` syntax)
-mis-resolves the `@pawcareright/types` workspace package specifically — it returns an empty/default-only
+mis-resolves the `@bombaypetcompany/types` workspace package specifically — it returns an empty/default-only
 module in this environment, reproducibly, for every named export (`vetDisclaimerLine`, `petIdSchema`,
-etc.), while `@pawcareright/config` (a much smaller bundle) resolves correctly via the identical
+etc.), while `@bombaypetcompany/config` (a much smaller bundle) resolves correctly via the identical
 resolution shape. This was verified NOT to be a product bug: `packages/types/dist/index.js` and
 `dist/index.cjs` both load correctly (157 named exports) via plain Node (`node -e "require(...)"` and
 `node --input-type=module -e "import(...)"`), and via `ts-jest` (the "frozen copy is byte-identical" jest
 test in `strings-detector-lint.spec.ts` passes, proving `strings.disclaimer` resolves correctly under
 jest). The break is isolated to Playwright's own transform/loader for this one large tsup-bundled ESM
 package. Since `apps/web/src/strings.ts` (frozen, cannot be edited) imports `vetDisclaimerLine` from
-`@pawcareright/types` at module scope, `strings.disclaimer(...)` is `undefined` under Playwright in this
+`@bombaypetcompany/types` at module scope, `strings.disclaimer(...)` is `undefined` under Playwright in this
 repo/environment specifically — every other `strings.*` property (plain template literals with no
-`@pawcareright/types` dependency) is unaffected. **Fix, entirely within `apps/web/e2e/smoke.spec.ts`
+`@bombaypetcompany/types` dependency) is unaffected. **Fix, entirely within `apps/web/e2e/smoke.spec.ts`
 (not a frozen file):** the expected disclaimer text is computed via `execFileSync` spawning a genuinely
-separate `node` process that correctly requires the real `@pawcareright/types` package — still fully
+separate `node` process that correctly requires the real `@bombaypetcompany/types` package — still fully
 derived from the real source of truth (CLAUDE §6, never hardcoded), zero product-file touch, and
 documented inline in the spec file. A second, unrelated, real bug was also found and fixed in my own
 first draft of the test: `page.getByText(model.verdictLabel)` without `{ exact: true }` was a Playwright
 strict-mode violation (9 ambiguous substring matches on the food page) — fixed by adding `{ exact: true
 }` to both `getByText` calls in test 2.
 
-**Local run result (Step 10h):** `pnpm --filter @pawcareright/web build` then
-`PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers pnpm --filter @pawcareright/web test:e2e` — run **3 times**
+**Local run result (Step 10h):** `pnpm --filter @bombaypetcompany/web build` then
+`PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers pnpm --filter @bombaypetcompany/web test:e2e` — run **3 times**
 independently (once standalone, twice more as part of each of the 3 cold full-gate cycles in §6): **2/2
 tests passed every time**, deterministic (`retries: 0`, no flakes observed).
 
 **CI wiring:** `.github/workflows/ci.yml`'s `web-e2e` job follows the `web-perf-budget` pattern exactly —
 unconditional (no `if:` at job or step level), no secret, `pnpm i --frozen-lockfile` →
-`pnpm --filter @pawcareright/web build` → `npx playwright install --with-deps chromium` →
-`pnpm --filter @pawcareright/web test:e2e`, plus an `if: always()` Playwright-report artifact upload.
+`pnpm --filter @bombaypetcompany/web build` → `npx playwright install --with-deps chromium` →
+`pnpm --filter @bombaypetcompany/web test:e2e`, plus an `if: always()` Playwright-report artifact upload.
 `apps/web/src/e2e/e2e-gate.spec.ts` pins the config shape, the package script, the CI job, and the
 smoke suite's exact two-test count.
 
@@ -223,8 +223,8 @@ not fixed, not masked:**
    under concurrent load; out of scope for T098 (file not on this card's list, `apps/api/src/**`
    frozen).
 
-3. **eslint/tsup/jiti temp-bundled-config race (observed 2×, two different packages):** `@pawcareright/
-   analytics` (cycle v5 run 3) and `@pawcareright/api-client` (cycle v6 run 1) both failed `lint` with
+3. **eslint/tsup/jiti temp-bundled-config race (observed 2×, two different packages):** `@bombaypetcompany/
+   analytics` (cycle v5 run 3) and `@bombaypetcompany/api-client` (cycle v6 run 1) both failed `lint` with
    `ENOENT: no such file or directory, open '.../tsup.config.bundled_<hash>.mjs'` — a race between
    ESLint's jiti-based config loading and tsup's own jiti-based config bundling for the same package
    under turbo's parallel task scheduling (turbo runs each package's `build` — a `lint` dependency per
@@ -242,8 +242,8 @@ despite 9 individually-green cycles. See §6/§7 for the full ledger and the hon
 
 Sequence (from repo root, cold): `pnpm typecheck` → `pnpm lint` → `pnpm test` → `pnpm test:cov` →
 `pnpm build` → `pnpm test:ai-evals` → `pnpm audit --audit-level high` →
-`node scripts/scan-secrets.js --tracked` → `pnpm --filter @pawcareright/web build` →
-`pnpm --filter @pawcareright/web test:e2e`.
+`node scripts/scan-secrets.js --tracked` → `pnpm --filter @bombaypetcompany/web build` →
+`pnpm --filter @bombaypetcompany/web test:e2e`.
 
 **Note on scope:** the lighthouse (`web-perf-budget`) job is intentionally **excluded** from this
 sequence — it is a separate CI job already proven green by T095, and it needs the container-only
@@ -277,8 +277,8 @@ silently, or hidden; every one is itemized here with its own diagnosis.
 | v4 | 3 | **RED — same class as v2's run 3** | `account-deletion.e2e-spec.ts`, a *different* test case this time ("F1 regression (checker review): a user who left a shared household still gets fully erased"), identical `Engine is not yet connected` symptom, same `purgeExpiredExports`/`QueueEvents.onFailed` path. Confirms this is a real, reproducible-under-`test:cov` timing race in that spec file's test-cleanup ordering (see diagnosis in §5), not a one-off fluke — and not something T098 touches. |
 | v5 | 1 | **ALL GREEN** | 2026-07-29T13:10:37Z → 13:15:49Z. |
 | v5 | 2 | **ALL GREEN** | 2026-07-29T13:16:13Z → 13:21:28Z. |
-| v5 | 3 | **RED — different failure class** | `@pawcareright/analytics` `lint` step: `ENOENT: no such file or directory, open '.../packages/analytics/tsup.config.bundled_<hash>.mjs'` — a genuine race between ESLint's (jiti-based) config loading and tsup's own jiti-based config bundling for the *same* package under turbo's parallel task scheduling. `packages/analytics` has zero T098 diff (verified via `git diff --stat`). |
-| v6 | 1 | **RED — same lint-race class, different package** | Identical `ENOENT .../tsup.config.bundled_<hash>.mjs` pattern, this time in `@pawcareright/api-client` (also zero T098 diff). Confirms this is a systemic, probabilistic race in the eslint/tsup/jiti interaction under this container's parallel scheduling, not a one-off. |
+| v5 | 3 | **RED — different failure class** | `@bombaypetcompany/analytics` `lint` step: `ENOENT: no such file or directory, open '.../packages/analytics/tsup.config.bundled_<hash>.mjs'` — a genuine race between ESLint's (jiti-based) config loading and tsup's own jiti-based config bundling for the *same* package under turbo's parallel task scheduling. `packages/analytics` has zero T098 diff (verified via `git diff --stat`). |
+| v6 | 1 | **RED — same lint-race class, different package** | Identical `ENOENT .../tsup.config.bundled_<hash>.mjs` pattern, this time in `@bombaypetcompany/api-client` (also zero T098 diff). Confirms this is a systemic, probabilistic race in the eslint/tsup/jiti interaction under this container's parallel scheduling, not a one-off. |
 | v7 | 1 | **RED — devices.e2e-spec.ts again** | Same ECONNRESET symptom as v3's run 2, this time surfacing at the `test:cov` step instead of `test`. Second independent occurrence of this specific test's concurrency race. |
 
 **Stopped here** per explicit orchestrator direction ("don't let another stall eat the deliverable") —
@@ -360,7 +360,7 @@ review section it came from — no row claims verification that was not actually
 | MU9 | Removed `<VetDisclaimer/>` (+ its now-unused import) from `apps/web/src/components/marketing/landing-view.tsx`, rebuilt, ran the E2E landing test | **Executor**; **checker accepted on the executor's sha1-verified evidence plus an independent code read** (review §4) | **RED** — `vet-disclaimer` testid not found (timeout). Reverted; sha1 before/after `c9578712bd2d249344140304df84ef7ec1a3e16d` (match). Rebuilt + re-ran: 2/2 green. |
 | MU10 | Forced `showHotlineCta = false` in `apps/web/src/food/page-model.ts`, rebuilt, ran the E2E food-page test | **Executor**; **checker accepted on the same basis as MU9** (review §4) | **RED** — caught at the fixture-precondition assertion (`expect(model!.showHotlineCta).toBe(true)`), exactly as designed. Reverted; sha1 `814b4e795866c504adbe868e781e6e9d46a0445c` (match). Rebuilt + re-ran: 2/2 green. |
 | MU11 | Moved `<EmergencyHotlineCta variant="urgent"/>` to after the `<h1>` in `apps/web/src/components/food/food-page-view.tsx`, rebuilt, ran the E2E food-page test | **Executor**, then independently **Checker** (review §4) | **RED both times** — the DOM-order assertion (`order === true`) failed as expected in both runs. Executor sha1 `b562afa1c932a960ca89f1d06e36cd23282d229a`; the checker's review states its own restore matched that same sha1 byte-for-byte. |
-| MU12 | Real second `persist(...)` store planted in the *existing* `apps/mobile/src/pets/active-pet-store.ts` (`name: "pawcareright.checker-probe"`, a `partialize` returning `refreshToken`) — the mutation as the plan actually specified, not the executor's inline-synthetic substitute | **Checker** (review §2) | **RED on both** target tests ("no credential-shaped key is persisted…" and "the set of MMKV-persisted store names is pinned…"), 2 failed/8 passed/10 total. Restored, sha1 `e06667ada07090cb6f3bed6746c872eabc4d3058`. (The executor's own inline-synthetic-source version, still present in `storage-audit.test.ts` as a non-vacuity test, is a real but narrower proof; the checker's run against a genuine second store in a real, existing file is the stronger evidence and is what actually closes the T096 review nit.) |
+| MU12 | Real second `persist(...)` store planted in the *existing* `apps/mobile/src/pets/active-pet-store.ts` (`name: "bombaypetcompany.checker-probe"`, a `partialize` returning `refreshToken`) — the mutation as the plan actually specified, not the executor's inline-synthetic substitute | **Checker** (review §2) | **RED on both** target tests ("no credential-shaped key is persisted…" and "the set of MMKV-persisted store names is pinned…"), 2 failed/8 passed/10 total. Restored, sha1 `e06667ada07090cb6f3bed6746c872eabc4d3058`. (The executor's own inline-synthetic-source version, still present in `storage-audit.test.ts` as a non-vacuity test, is a real but narrower proof; the checker's run against a genuine second store in a real, existing file is the stronger evidence and is what actually closes the T096 review nit.) |
 | MU13 | Planted a strings leaf containing the exempted excerpt plus harmful copy into the frozen `apps/web/src/strings.ts` | **Checker** (review §2) | **RED** — `no strings leaf produces a detector finding` failed, i.e. the T097-F2 hole is genuinely closed. Restored, sha1 `b3075fcb3803bd55143813d5cef7168575a650c5`. |
 | MU14 | Reworded the exempted acceptable-use clause by one word | **Checker** (review §2) | **RED on two tests** (the detector test + `allowlist hygiene`'s stale-entry check) — T097 mutation B has not regressed. Restored, same sha1 as MU13. |
 | MU15 | Deleted 10 `[AUTO]` rows from `docs/qa/a11y-script.md` | **Checker** (review §2) | **RED** — `the script has a non-empty set of [AUTO] tags (non-vacuity)` failed. Confirmed **GREEN before this fix** (the executor's raised floor is what makes this row RED). |

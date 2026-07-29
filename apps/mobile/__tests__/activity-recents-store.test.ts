@@ -58,14 +58,14 @@ describe("useActivityRecentsStore", () => {
     useActivityRecentsStore.getState().addRecent("pet1", { activityType: "GROOMING", unit: "brush" });
 
     const mmkv = createMMKV();
-    const persistedRaw = mmkv.getString("pawcareright.activity-recents");
+    const persistedRaw = mmkv.getString("bombaypetcompany.activity-recents");
     expect(persistedRaw).toBeTruthy();
     expect(persistedRaw).toContain("GROOMING");
 
     useActivityRecentsStore.setState({ byPet: {} });
     expect(useActivityRecentsStore.getState().byPet.pet1).toBeUndefined();
 
-    mmkv.set("pawcareright.activity-recents", persistedRaw as string);
+    mmkv.set("bombaypetcompany.activity-recents", persistedRaw as string);
     await useActivityRecentsStore.persist.rehydrate();
 
     expect(useActivityRecentsStore.getState().byPet.pet1).toEqual([{ activityType: "GROOMING", unit: "brush" }]);

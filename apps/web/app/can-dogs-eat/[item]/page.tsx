@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { APP_DISPLAY_NAME } from "@pawcareright/config";
+import { APP_DISPLAY_NAME } from "@bombaypetcompany/config";
 import { FoodPageView } from "../../../src/components/food/food-page-view";
 import { buildFoodPageModel } from "../../../src/food/page-model";
 import { staticParamsFor } from "../../../src/food/params";

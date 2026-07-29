@@ -6,7 +6,7 @@ import {
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
-import { DEEPLINK_SCHEME } from "@pawcareright/config";
+import { DEEPLINK_SCHEME } from "@bombaypetcompany/config";
 import { Prisma, type Role } from "@prisma/client";
 
 import { DEFAULT_HOUSEHOLD_NAME } from "../auth/auth.constants";

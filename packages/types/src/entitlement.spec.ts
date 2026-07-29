@@ -3,7 +3,7 @@ import { billingEntitlementSchema, entitlementSourceSchema, FAMILY_PLAN_PRODUCT_
 const VALID_PAYLOAD = {
   entitled: true,
   source: "own",
-  plan: "pawcareright_monthly",
+  plan: "bombaypetcompany_monthly",
   expiresAt: "2026-08-01T00:00:00.000Z",
   billingIssue: false,
 };
@@ -52,6 +52,6 @@ describe("entitlementSourceSchema", () => {
 
 describe("FAMILY_PLAN_PRODUCT_ID", () => {
   it("pins the exact server-side family product id (must match mobile PRODUCT_IDS.family)", () => {
-    expect(FAMILY_PLAN_PRODUCT_ID).toBe("pawcareright_family_annual");
+    expect(FAMILY_PLAN_PRODUCT_ID).toBe("bombaypetcompany_family_annual");
   });
 });

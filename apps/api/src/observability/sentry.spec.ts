@@ -5,7 +5,7 @@
 // envelope body that would have been POSTed to Sentry's ingest endpoint).
 // See loop/journal.md for the honest limitation + the founder real-DSN
 // smoke-test to-do.
-import { baseSentryOptions, buildSentryRelease } from "@pawcareright/analytics";
+import { baseSentryOptions, buildSentryRelease } from "@bombaypetcompany/analytics";
 import * as Sentry from "@sentry/node";
 
 import { AppConfigService } from "../config/app-config.service";
@@ -59,7 +59,7 @@ describe("initApiSentry", () => {
     const options = Sentry.getClient()?.getOptions();
     expect(options?.dsn).toBe(TEST_DSN);
     expect(options?.environment).toBe("staging");
-    expect(options?.release).toBe("pawcareright@0.0.0+abc1234");
+    expect(options?.release).toBe("bombaypetcompany@0.0.0+abc1234");
     expect(options?.sendDefaultPii).toBe(false);
     expect(options?.tracesSampleRate).toBe(0);
     // T089 finding F1: this asserts the REAL `initApiSentry` wiring (not a
@@ -98,8 +98,8 @@ describe("Sentry pipeline (D4 mock-transport proof)", () => {
 
     expect(sink.bodies.length).toBeGreaterThan(0);
     const envelope = sink.bodies.join("\n");
-    expect(envelope).toMatch(/"release":"pawcareright@\d+\.\d+\.\d+\+.+?"/);
-    expect(envelope).toContain('"release":"pawcareright@0.0.0+abc1234"');
+    expect(envelope).toMatch(/"release":"bombaypetcompany@\d+\.\d+\.\d+\+.+?"/);
+    expect(envelope).toContain('"release":"bombaypetcompany@0.0.0+abc1234"');
     expect(envelope).toContain('"environment":"test"');
   });
 

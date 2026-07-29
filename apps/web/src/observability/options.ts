@@ -1,6 +1,6 @@
 // T089 — web (Next.js) Sentry init-options factory. Reads env, defers all
 // scrubbing/release/enablement policy to the shared factory (plan D1/D5/D6).
-import { baseSentryOptions, buildSentryRelease, type BaseSentryOptions } from "@pawcareright/analytics";
+import { baseSentryOptions, buildSentryRelease, type BaseSentryOptions } from "@bombaypetcompany/analytics";
 
 /**
  * Stub-safe by default (plan D5): an empty DSN means `enabled: false` and no

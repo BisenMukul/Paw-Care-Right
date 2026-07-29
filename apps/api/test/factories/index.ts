@@ -29,10 +29,10 @@ import { CheckRunnerProcessor } from "../../src/workers/check-runner.processor";
  */
 
 export function uniqueEmail(prefix = "user"): string {
-  return `${prefix}-${randomUUID()}@pawcareright.local`;
+  return `${prefix}-${randomUUID()}@bombaypetcompany.local`;
 }
 
-/** Registers a no-op CheckRunnerProcessor so BullMQ attaches NO live `pawcareright-checks`
+/** Registers a no-op CheckRunnerProcessor so BullMQ attaches NO live `bombaypetcompany-checks`
  *  Worker for this app instance (the explorer keys off @Processor metadata on the resolved
  *  instance's constructor; a plain object has none). Only the T052 lifecycle suite omits this. */
 export function overrideCheckRunner(builder: TestingModuleBuilder): TestingModuleBuilder {

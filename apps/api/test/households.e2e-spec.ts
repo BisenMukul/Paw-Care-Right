@@ -5,7 +5,7 @@ import {
   billingEntitlementSchema,
   errorResponseSchema,
   FAMILY_PLAN_PRODUCT_ID,
-} from "@pawcareright/types";
+} from "@bombaypetcompany/types";
 import { PrismaClient } from "@prisma/client";
 import request from "supertest";
 
@@ -127,7 +127,7 @@ describe("Households — invites (e2e)", () => {
 
       expect(res.status).toBe(201);
       expect(res.body.code).toMatch(INVITE_CODE_REGEX);
-      expect(res.body.deepLink).toBe(`pawcareright://join/${res.body.code}`);
+      expect(res.body.deepLink).toBe(`bombaypetcompany://join/${res.body.code}`);
 
       const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
       const expiresAt = new Date(res.body.expiresAt as string).getTime();

@@ -1,4 +1,4 @@
-import { isTerminalCheckStatus } from "@pawcareright/types";
+import { isTerminalCheckStatus } from "@bombaypetcompany/types";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect } from "react";
 import { ActivityIndicator, Text, useColorScheme } from "react-native";

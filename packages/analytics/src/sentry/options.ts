@@ -9,7 +9,7 @@ const DEFAULT_VERSION = "0.0.0";
 const DEFAULT_BUILD_ID = "dev";
 
 /**
- * `pawcareright@{version}+{buildId}` — the release-identity SHAPE pinned by
+ * `bombaypetcompany@{version}+{buildId}` — the release-identity SHAPE pinned by
  * CLAUDE.md §1a and OTA_UPDATES §7 (never invent a new scheme). Empty/blank
  * inputs fall back to `"0.0.0"`/`"dev"` (plan D2/D6) so a missing env var
  * never produces a malformed release string.
@@ -17,7 +17,7 @@ const DEFAULT_BUILD_ID = "dev";
 export function buildSentryRelease(version: string, buildId: string): string {
   const safeVersion = version.trim() !== "" ? version : DEFAULT_VERSION;
   const safeBuildId = buildId.trim() !== "" ? buildId : DEFAULT_BUILD_ID;
-  return `pawcareright@${safeVersion}+${safeBuildId}`;
+  return `bombaypetcompany@${safeVersion}+${safeBuildId}`;
 }
 
 export interface BaseSentryOptions {

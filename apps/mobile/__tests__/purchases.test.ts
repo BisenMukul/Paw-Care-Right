@@ -162,9 +162,9 @@ const DOCUMENTED_STORE_SETUP = {
   entitlementId: "plus",
   offeringId: "default",
   productIds: {
-    monthly: "pawcareright_monthly",
-    annual: "pawcareright_annual",
-    family: "pawcareright_family_annual",
+    monthly: "bombaypetcompany_monthly",
+    annual: "bombaypetcompany_annual",
+    family: "bombaypetcompany_family_annual",
   },
   packageIds: { monthly: "$rc_monthly", annual: "$rc_annual", family: "family" },
 } as const;

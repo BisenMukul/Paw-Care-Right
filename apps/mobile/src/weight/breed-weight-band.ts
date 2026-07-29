@@ -1,5 +1,5 @@
-import type { Species } from "@pawcareright/types";
-import { allBreeds } from "@pawcareright/data";
+import type { Species } from "@bombaypetcompany/types";
+import { allBreeds } from "@bombaypetcompany/data";
 
 /**
  * A breed's typical adult weight range, in grams — neutral reference

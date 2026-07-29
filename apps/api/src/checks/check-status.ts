@@ -1,4 +1,4 @@
-import type { CheckStatus } from "@pawcareright/types";
+import type { CheckStatus } from "@bombaypetcompany/types";
 
 /**
  * `SymptomCheck.status` transition contract (T041 card, verbatim):

@@ -1,4 +1,4 @@
-import { FAMILY_PLAN_PRODUCT_ID } from "@pawcareright/types";
+import { FAMILY_PLAN_PRODUCT_ID } from "@bombaypetcompany/types";
 
 import type { PrismaService } from "../prisma/prisma.service";
 import { BillingService } from "./billing.service";
@@ -14,7 +14,7 @@ describe("BillingService", () => {
       rcAppUserId: userId,
       householdId,
       entitlement: "PREMIUM",
-      plan: "pawcareright_monthly",
+      plan: "bombaypetcompany_monthly",
       expiresAt: new Date(Date.now() + 60_000),
       status: RC_WEBHOOK_STATUS.ACTIVE,
       ...overrides,
@@ -55,7 +55,7 @@ describe("BillingService", () => {
       expect(result).toEqual({
         entitled: true,
         source: "own",
-        plan: "pawcareright_monthly",
+        plan: "bombaypetcompany_monthly",
         expiresAt: expiresAt.toISOString(),
         billingIssue: false,
       });
@@ -94,7 +94,7 @@ describe("BillingService", () => {
     it("does NOT entitle from another member's active NON-family sub", async () => {
       const findUnique = jest.fn().mockResolvedValue(null);
       const findMany = jest.fn().mockResolvedValue([
-        buildRow({ rcAppUserId: "other-member", plan: "pawcareright_monthly" }),
+        buildRow({ rcAppUserId: "other-member", plan: "bombaypetcompany_monthly" }),
       ]);
       const service = new BillingService(buildPrisma({ findUnique, findMany }));
 
@@ -129,7 +129,7 @@ describe("BillingService", () => {
       expect(result).toEqual({
         entitled: true,
         source: "own",
-        plan: "pawcareright_monthly",
+        plan: "bombaypetcompany_monthly",
         expiresAt: expiresAt.toISOString(),
         billingIssue: true,
       });

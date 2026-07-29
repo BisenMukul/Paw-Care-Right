@@ -11,7 +11,7 @@ import { strings } from "../../../src/strings";
 
 /**
  * T087 plan step 6 — breed guide detail screen and deep-link target
- * (`pawcareright://breeds/dog/labrador-retriever`). D2: the route is
+ * (`bombaypetcompany://breeds/dog/labrador-retriever`). D2: the route is
  * `(species)/(slug)` because slugs are unique only WITHIN a species; a
  * single-segment route could resolve the wrong species' guide.
  *

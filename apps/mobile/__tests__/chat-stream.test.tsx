@@ -1,4 +1,4 @@
-import { ApiError, setOnline } from "@pawcareright/api-client";
+import { ApiError, setOnline } from "@bombaypetcompany/api-client";
 import { act, renderHook, waitFor } from "@testing-library/react-native";
 
 import { apiClient } from "../src/api/client";

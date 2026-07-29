@@ -1,4 +1,4 @@
-import { createApiClient } from "@pawcareright/api-client";
+import { createApiClient } from "@bombaypetcompany/api-client";
 
 import { useAuthStore } from "../auth/auth-store";
 import { expoSseTransport } from "../chat/expo-sse-transport";

@@ -1,5 +1,5 @@
-import { APP_DISPLAY_NAME } from "@pawcareright/config";
-import type { TriageResult } from "@pawcareright/types";
+import { APP_DISPLAY_NAME } from "@bombaypetcompany/config";
+import type { TriageResult } from "@bombaypetcompany/types";
 
 import { buildSharePayload } from "../src/checks/share-payload";
 import { strings } from "../src/strings";

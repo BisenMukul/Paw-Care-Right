@@ -1,5 +1,5 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { createAnalytics, createHttpTransport, type Analytics, type AnalyticsEventMap, type AnalyticsEventName } from "@pawcareright/analytics";
+import { createAnalytics, createHttpTransport, type Analytics, type AnalyticsEventMap, type AnalyticsEventName } from "@bombaypetcompany/analytics";
 
 import { AppConfigService } from "../config/app-config.service";
 import { PrismaService } from "../prisma/prisma.service";

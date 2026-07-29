@@ -1,4 +1,4 @@
-import type { Pet } from "@pawcareright/types";
+import type { Pet } from "@bombaypetcompany/types";
 import { Image } from "expo-image";
 import { Text, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";

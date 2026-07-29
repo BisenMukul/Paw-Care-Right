@@ -1,4 +1,4 @@
-import type { TriageResult } from "@pawcareright/types";
+import type { TriageResult } from "@bombaypetcompany/types";
 
 import { findingCodes, scanUnsafe, scanUnsafeText } from "./detector";
 

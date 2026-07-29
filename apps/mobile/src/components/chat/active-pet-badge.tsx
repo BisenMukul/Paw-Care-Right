@@ -1,4 +1,4 @@
-import type { Pet } from "@pawcareright/types";
+import type { Pet } from "@bombaypetcompany/types";
 import { Ionicons } from "@expo/vector-icons";
 import { Text, useColorScheme, View } from "react-native";
 

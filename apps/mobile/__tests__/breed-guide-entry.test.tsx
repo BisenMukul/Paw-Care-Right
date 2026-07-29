@@ -1,4 +1,4 @@
-import { petIdSchema, type Pet } from "@pawcareright/types";
+import { petIdSchema, type Pet } from "@bombaypetcompany/types";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 
 import SettingsScreen from "../app/(tabs)/settings";

@@ -1,5 +1,5 @@
-import { useIsOffline } from "@pawcareright/api-client";
-import type { AgendaEntry } from "@pawcareright/types";
+import { useIsOffline } from "@bombaypetcompany/api-client";
+import type { AgendaEntry } from "@bombaypetcompany/types";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { RefreshControl, Text, View } from "react-native";

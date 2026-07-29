@@ -1,5 +1,5 @@
 {
-  "name": "@pawcareright/api",
+  "name": "@bombaypetcompany/api",
   "private": true,
   "version": "0.0.0",
   "scripts": {
@@ -25,11 +25,11 @@
     "@nestjs/platform-express": "^11",
     "@nestjs/swagger": "^11",
     "@nestjs/throttler": "^6.5.0",
-    "@pawcareright/ai": "workspace:*",
-    "@pawcareright/analytics": "workspace:*",
-    "@pawcareright/config": "workspace:*",
-    "@pawcareright/data": "workspace:*",
-    "@pawcareright/types": "workspace:*",
+    "@bombaypetcompany/ai": "workspace:*",
+    "@bombaypetcompany/analytics": "workspace:*",
+    "@bombaypetcompany/config": "workspace:*",
+    "@bombaypetcompany/data": "workspace:*",
+    "@bombaypetcompany/types": "workspace:*",
     "@prisma/client": "^6",
     "@sentry/node": "^10.68.0",
     "bullmq": "^5",
@@ -95,9 +95,9 @@
       "json"
     ],
     "moduleNameMapper": {
-      "^@pawcareright/config$": "<rootDir>/../../packages/config/src/index.ts",
-      "^@pawcareright/config/env$": "<rootDir>/../../packages/config/src/env/index.ts",
-      "^@pawcareright/data$": "<rootDir>/../../packages/data/src/index.ts"
+      "^@bombaypetcompany/config$": "<rootDir>/../../packages/config/src/index.ts",
+      "^@bombaypetcompany/config/env$": "<rootDir>/../../packages/config/src/env/index.ts",
+      "^@bombaypetcompany/data$": "<rootDir>/../../packages/data/src/index.ts"
     },
     "collectCoverageFrom": [
       "src/**/*.service.ts"

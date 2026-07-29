@@ -3,7 +3,7 @@
  * payload shape, imported by both the producer (`PhotosService`) and the
  * consumer (`ImagesProcessor`).
  */
-export const IMAGES_QUEUE = "pawcareright-images";
+export const IMAGES_QUEUE = "bombaypetcompany-images";
 
 export interface ImagesJobData {
   petId: string;

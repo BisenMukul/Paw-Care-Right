@@ -150,7 +150,7 @@ exports[`check result screen snapshots renders a distinct FALLBACK snapshot with
           <Text
             className="text-center text-sm text-brand-900"
           >
-            Paw Care Right + offers general pet-care guidance, not veterinary care or treatment. Always consult a licensed veterinarian.
+            Bombay Pet Company offers general pet-care guidance, not veterinary care or treatment. Always consult a licensed veterinarian.
           </Text>
         </View>
         <View
@@ -552,7 +552,7 @@ exports[`check result screen snapshots renders a distinct snapshot with the emer
           <Text
             className="text-center text-sm text-brand-900"
           >
-            Paw Care Right + offers general pet-care guidance, not veterinary care or treatment. Always consult a licensed veterinarian.
+            Bombay Pet Company offers general pet-care guidance, not veterinary care or treatment. Always consult a licensed veterinarian.
           </Text>
         </View>
         <View
@@ -898,7 +898,7 @@ exports[`check result screen snapshots renders a stable snapshot for EMERGENCY_N
           <Text
             className="text-center text-sm text-brand-900"
           >
-            Paw Care Right + offers general pet-care guidance, not veterinary care or treatment. Always consult a licensed veterinarian.
+            Bombay Pet Company offers general pet-care guidance, not veterinary care or treatment. Always consult a licensed veterinarian.
           </Text>
         </View>
         <View
@@ -1260,7 +1260,7 @@ exports[`check result screen snapshots renders a stable snapshot for MONITOR wit
           <Text
             className="text-center text-sm text-brand-900"
           >
-            Paw Care Right + offers general pet-care guidance, not veterinary care or treatment. Always consult a licensed veterinarian.
+            Bombay Pet Company offers general pet-care guidance, not veterinary care or treatment. Always consult a licensed veterinarian.
           </Text>
         </View>
         <View
@@ -1622,7 +1622,7 @@ exports[`check result screen snapshots renders a stable snapshot for REASSURE wi
           <Text
             className="text-center text-sm text-brand-900"
           >
-            Paw Care Right + offers general pet-care guidance, not veterinary care or treatment. Always consult a licensed veterinarian.
+            Bombay Pet Company offers general pet-care guidance, not veterinary care or treatment. Always consult a licensed veterinarian.
           </Text>
         </View>
         <View
@@ -1968,7 +1968,7 @@ exports[`check result screen snapshots renders a stable snapshot for VET_24H wit
           <Text
             className="text-center text-sm text-brand-900"
           >
-            Paw Care Right + offers general pet-care guidance, not veterinary care or treatment. Always consult a licensed veterinarian.
+            Bombay Pet Company offers general pet-care guidance, not veterinary care or treatment. Always consult a licensed veterinarian.
           </Text>
         </View>
         <View
@@ -2330,7 +2330,7 @@ exports[`check result screen snapshots renders a stable snapshot for VET_SOON wi
           <Text
             className="text-center text-sm text-brand-900"
           >
-            Paw Care Right + offers general pet-care guidance, not veterinary care or treatment. Always consult a licensed veterinarian.
+            Bombay Pet Company offers general pet-care guidance, not veterinary care or treatment. Always consult a licensed veterinarian.
           </Text>
         </View>
         <View

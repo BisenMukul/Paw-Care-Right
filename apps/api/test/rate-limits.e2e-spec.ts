@@ -79,7 +79,7 @@ describe("Rate limits + §5 exemption (e2e)", () => {
       for (let i = 0; i < 6; i += 1) {
         const res = await request(app.getHttpServer())
           .post("/v1/auth/otp/verify")
-          .send({ email: "nobody@pawcareright.local", code: "000000" });
+          .send({ email: "nobody@bombaypetcompany.local", code: "000000" });
         statuses.push(res.status);
       }
 

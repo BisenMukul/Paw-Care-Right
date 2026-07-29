@@ -1,4 +1,4 @@
-import { URGENCY_SEVERITY, type Urgency } from "@pawcareright/types";
+import { URGENCY_SEVERITY, type Urgency } from "@bombaypetcompany/types";
 
 /**
  * Pure, platform-agnostic "find a vet" deep link (T048 plan D6). Google's

@@ -1,5 +1,5 @@
-import type { Answer, CategoryDef, CompletedIntake, QuestionDef } from "@pawcareright/types";
-import { parseIntake } from "@pawcareright/types";
+import type { Answer, CategoryDef, CompletedIntake, QuestionDef } from "@bombaypetcompany/types";
+import { parseIntake } from "@bombaypetcompany/types";
 import { useEffect, useRef, useState } from "react";
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, TextInput, useColorScheme, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";

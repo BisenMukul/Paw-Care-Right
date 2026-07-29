@@ -2,20 +2,20 @@ import { scrubBreadcrumb, scrubSentryEvent } from "./scrub";
 import { baseSentryOptions, buildSentryRelease } from "./options";
 
 describe("buildSentryRelease", () => {
-  it("builds pawcareright@{version}+{buildId} (CLAUDE §1a shape)", () => {
-    expect(buildSentryRelease("1.2.3", "abc")).toBe("pawcareright@1.2.3+abc");
+  it("builds bombaypetcompany@{version}+{buildId} (CLAUDE §1a shape)", () => {
+    expect(buildSentryRelease("1.2.3", "abc")).toBe("bombaypetcompany@1.2.3+abc");
   });
 
   it("falls back to 0.0.0 when version is empty", () => {
-    expect(buildSentryRelease("", "abc")).toBe("pawcareright@0.0.0+abc");
+    expect(buildSentryRelease("", "abc")).toBe("bombaypetcompany@0.0.0+abc");
   });
 
   it("falls back to dev when buildId is empty", () => {
-    expect(buildSentryRelease("1.2.3", "")).toBe("pawcareright@1.2.3+dev");
+    expect(buildSentryRelease("1.2.3", "")).toBe("bombaypetcompany@1.2.3+dev");
   });
 
   it("falls back on whitespace-only inputs too", () => {
-    expect(buildSentryRelease("   ", "   ")).toBe("pawcareright@0.0.0+dev");
+    expect(buildSentryRelease("   ", "   ")).toBe("bombaypetcompany@0.0.0+dev");
   });
 });
 
@@ -24,7 +24,7 @@ describe("baseSentryOptions", () => {
     const options = baseSentryOptions({
       dsn: "https://pub@o0.ingest.example/0",
       environment: "test",
-      release: "pawcareright@0.0.0+abc",
+      release: "bombaypetcompany@0.0.0+abc",
     });
 
     expect(options.beforeSend).toBe(scrubSentryEvent);
@@ -36,7 +36,7 @@ describe("baseSentryOptions", () => {
     const options = baseSentryOptions({
       dsn: "https://pub@o0.ingest.example/0",
       environment: "test",
-      release: "pawcareright@0.0.0+abc",
+      release: "bombaypetcompany@0.0.0+abc",
     });
 
     expect(options.beforeBreadcrumb).toBe(scrubBreadcrumb);
@@ -46,7 +46,7 @@ describe("baseSentryOptions", () => {
     const options = baseSentryOptions({
       dsn: "https://pub@o0.ingest.example/0",
       environment: "test",
-      release: "pawcareright@0.0.0+abc",
+      release: "bombaypetcompany@0.0.0+abc",
     });
 
     expect(options.sendDefaultPii).toBe(false);
@@ -57,9 +57,9 @@ describe("baseSentryOptions", () => {
     const enabled = baseSentryOptions({
       dsn: "https://pub@o0.ingest.example/0",
       environment: "test",
-      release: "pawcareright@0.0.0+abc",
+      release: "bombaypetcompany@0.0.0+abc",
     });
-    const disabled = baseSentryOptions({ dsn: "", environment: "test", release: "pawcareright@0.0.0+abc" });
+    const disabled = baseSentryOptions({ dsn: "", environment: "test", release: "bombaypetcompany@0.0.0+abc" });
 
     expect(enabled.enabled).toBe(true);
     expect(disabled.enabled).toBe(false);
@@ -69,10 +69,10 @@ describe("baseSentryOptions", () => {
     const options = baseSentryOptions({
       dsn: "",
       environment: "staging",
-      release: "pawcareright@1.2.3+deadbeef",
+      release: "bombaypetcompany@1.2.3+deadbeef",
     });
 
-    expect(options.release).toBe("pawcareright@1.2.3+deadbeef");
+    expect(options.release).toBe("bombaypetcompany@1.2.3+deadbeef");
     expect(options.environment).toBe("staging");
   });
 });

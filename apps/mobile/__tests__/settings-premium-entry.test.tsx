@@ -1,4 +1,4 @@
-import { APP_DISPLAY_NAME } from "@pawcareright/config";
+import { APP_DISPLAY_NAME } from "@bombaypetcompany/config";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 
 import SettingsScreen from "../app/(tabs)/settings";

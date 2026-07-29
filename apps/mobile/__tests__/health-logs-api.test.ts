@@ -1,11 +1,11 @@
-import { createQueryClient } from "@pawcareright/api-client";
+import { createQueryClient } from "@bombaypetcompany/api-client";
 import type { QueryClient } from "@tanstack/react-query";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react-native";
 import type { ReactNode } from "react";
 import React from "react";
 
-import type { VetVisitValue } from "@pawcareright/types";
+import type { VetVisitValue } from "@bombaypetcompany/types";
 
 import {
   healthTimelineKeys,

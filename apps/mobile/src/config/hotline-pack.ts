@@ -1,4 +1,4 @@
-import { BUNDLED_HOTLINE_PACK_VERSION } from "@pawcareright/data";
+import { BUNDLED_HOTLINE_PACK_VERSION } from "@bombaypetcompany/data";
 
 import { DEFAULT_APP_CONFIG, useAppConfig } from "./app-config-queries";
 

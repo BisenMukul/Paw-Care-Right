@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { renderToStaticMarkup } from "react-dom/server";
 
-import { APP_DISPLAY_NAME, DEEPLINK_SCHEME } from "@pawcareright/config";
+import { APP_DISPLAY_NAME, DEEPLINK_SCHEME } from "@bombaypetcompany/config";
 
 import { LegalDocumentView } from "../components/legal/legal-document-view";
 import { LandingView } from "../components/marketing/landing-view";
@@ -147,14 +147,14 @@ describe("no hardcoded display name or deep-link scheme (§1a)", () => {
     const webRoot = path.join(__dirname, "..", "..");
     const srcDir = path.join(webRoot, "src");
     const appDir = path.join(webRoot, "app");
-    const FORBIDDEN_DISPLAY_NAME = ["Paw Care Right", "+"].join(" ");
+    const FORBIDDEN_DISPLAY_NAME = ["Bombay", "Pet", "Company"].join(" ");
     const SCHEME_URL = `${DEEPLINK_SCHEME}://`;
     const deepLinkFile = path.join(srcDir, "deep-link.ts");
-    // Matches a bare quoted "pawcareright" token — NOT the substring inside
-    // the legitimate `"@pawcareright/config"` package specifier, because
-    // there a quote character never sits directly next to "pawcareright"
+    // Matches a bare quoted "bombaypetcompany" token — NOT the substring inside
+    // the legitimate `"@bombaypetcompany/config"` package specifier, because
+    // there a quote character never sits directly next to "bombaypetcompany"
     // (it's preceded by "@" and followed by "/config").
-    const BARE_SCHEME_LITERAL = /["'`]pawcareright["'`]/;
+    const BARE_SCHEME_LITERAL = /["'`]bombaypetcompany["'`]/;
 
     const displayNameOffenders: string[] = [];
     const schemeOffenders: string[] = [];

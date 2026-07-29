@@ -5,7 +5,7 @@ import type { AppConfig } from "../src/config/app-config-queries";
 
 // MMKV persist/round-trip coverage, mirroring `active-pet-store.test.ts`'s
 // direct use of the shared in-memory MMKV mock (`jest.setup.ts`).
-const CACHE_KEY = "pawcareright.app-config-cache";
+const CACHE_KEY = "bombaypetcompany.app-config-cache";
 
 describe("app-config-cache", () => {
   it("read returns null when nothing has been written", () => {

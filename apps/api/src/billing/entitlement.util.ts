@@ -1,4 +1,4 @@
-import { FAMILY_PLAN_PRODUCT_ID, type BillingEntitlement } from "@pawcareright/types";
+import { FAMILY_PLAN_PRODUCT_ID, type BillingEntitlement } from "@bombaypetcompany/types";
 
 import { SUBSCRIPTION_GRACE_MS } from "./billing.constants";
 import { RC_WEBHOOK_STATUS } from "./rc-webhook.state";

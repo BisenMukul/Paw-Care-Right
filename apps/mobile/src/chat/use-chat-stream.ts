@@ -1,5 +1,5 @@
-import { isApiError, useIsOffline } from "@pawcareright/api-client";
-import type { ChatThread } from "@pawcareright/types";
+import { isApiError, useIsOffline } from "@bombaypetcompany/api-client";
+import type { ChatThread } from "@bombaypetcompany/types";
 import * as Crypto from "expo-crypto";
 import { useCallback, useEffect, useRef, useState } from "react";
 

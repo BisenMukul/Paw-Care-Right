@@ -1,4 +1,4 @@
-import { CONFIDENCE_LEVELS, URGENCY_TIERS } from "@pawcareright/types";
+import { CONFIDENCE_LEVELS, URGENCY_TIERS } from "@bombaypetcompany/types";
 
 import { SAFETY_RULES_SECTION } from "../safety/policy";
 import { TRIAGE_SCHEMA_TEXT } from "./schema-text";

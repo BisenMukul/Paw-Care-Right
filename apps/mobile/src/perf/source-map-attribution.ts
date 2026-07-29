@@ -146,7 +146,7 @@ const PACKAGES_SEGMENT = "packages/";
  * - `node_modules/<pkg>` (or the pnpm-nested `.pnpm/.../node_modules/<pkg>`
  *   shape actually observed in this repo's exported bundles) -> `<pkg>`
  *   (`@scope/name` kept together for scoped packages).
- * - `packages/<workspace>` -> `@pawcareright/<workspace>`.
+ * - `packages/<workspace>` -> `@bombaypetcompany/<workspace>`.
  * - anything else (app-relative source) -> `apps/mobile`.
  */
 function derivePackageLabel(sourcePath: string): string {
@@ -170,7 +170,7 @@ function derivePackageLabel(sourcePath: string): string {
     const afterPackages = normalized.slice(packagesIndex + PACKAGES_SEGMENT.length);
     const workspaceName = afterPackages.split("/")[0];
     if (workspaceName !== undefined && workspaceName.length > 0) {
-      return `@pawcareright/${workspaceName}`;
+      return `@bombaypetcompany/${workspaceName}`;
     }
   }
 

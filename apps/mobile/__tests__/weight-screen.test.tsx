@@ -1,5 +1,5 @@
-import { setOnline } from "@pawcareright/api-client";
-import { petIdSchema, type Pet } from "@pawcareright/types";
+import { setOnline } from "@bombaypetcompany/api-client";
+import { petIdSchema, type Pet } from "@bombaypetcompany/types";
 import { act, fireEvent, render, screen } from "@testing-library/react-native";
 
 import WeightScreen from "../app/weight/[petId]";

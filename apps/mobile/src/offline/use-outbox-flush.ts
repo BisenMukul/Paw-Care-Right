@@ -1,4 +1,4 @@
-import { useIsOffline } from "@pawcareright/api-client";
+import { useIsOffline } from "@bombaypetcompany/api-client";
 import { useEffect, useRef } from "react";
 
 import { flushOutbox } from "./flush-outbox";

@@ -1,5 +1,5 @@
-import { scanUnsafeText } from "@pawcareright/ai";
-import { APP_DISPLAY_NAME } from "@pawcareright/config";
+import { scanUnsafeText } from "@bombaypetcompany/ai";
+import { APP_DISPLAY_NAME } from "@bombaypetcompany/config";
 
 import { strings } from "./strings";
 
@@ -17,7 +17,7 @@ import { strings } from "./strings";
  * test helpers").
  */
 
-const SAMPLE_ARG = "Paw Care Right +";
+const SAMPLE_ARG = "Bombay Pet Company";
 
 interface Leaf {
   readonly path: string;
@@ -163,7 +163,7 @@ describe("web strings tree — AC1 detector + claims lint", () => {
 
   it("frozen copy is byte-identical", () => {
     expect(strings.disclaimer(APP_DISPLAY_NAME)).toBe(
-      "Paw Care Right + offers general pet-care guidance, not veterinary care or treatment. Always consult a licensed veterinarian.",
+      "Bombay Pet Company offers general pet-care guidance, not veterinary care or treatment. Always consult a licensed veterinarian.",
     );
     expect(strings.landing.emergencyNote).toBe(
       "If something is seriously wrong right now, do not wait for an app — contact your vet or your nearest emergency veterinary clinic.",

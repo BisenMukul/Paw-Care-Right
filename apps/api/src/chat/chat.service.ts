@@ -13,8 +13,8 @@ import {
   type TextProvider,
   type TextStreamChunk,
   type TimelineDigestInput,
-} from "@pawcareright/ai";
-import type { ChatMessageStatus, SymptomCategory, Urgency } from "@pawcareright/types";
+} from "@bombaypetcompany/ai";
+import type { ChatMessageStatus, SymptomCategory, Urgency } from "@bombaypetcompany/types";
 import type { ChatMessage as PrismaChatMessage } from "@prisma/client";
 
 import { AiAuditService } from "../audit/ai-audit.service";
@@ -55,12 +55,12 @@ interface FinalizeStreamOptions {
 
 /**
  * `POST /chat/threads` + `POST /chat/threads/:id/messages` business logic
- * (T081 — F7 "Ask Paw Care Right +"; T082 hardens the output gate). The
+ * (T081 — F7 "Ask Bombay Pet Company"; T082 hardens the output gate). The
  * message-send flow's step order is PRODUCT_SPEC §5-critical (plan
  * "Endpoint specs"): 404 thread -> 402 feature-lock -> 402 quota -> persist
  * USER row -> deterministic pre-AI nudge -> build prompt -> write SSE
  * headers -> stream through the SHARED, overlap-scanned
- * `@pawcareright/ai` output gate (`runGatedStream`) -> persist ASSISTANT
+ * `@bombaypetcompany/ai` output gate (`runGatedStream`) -> persist ASSISTANT
  * row -> `done`. Every failure mode (detector finding, provider
  * error/timeout, empty completion, client disconnect) converges on the SAME
  * fail-upward `SAFE_FALLBACK` path — no silent retry, no bare `error` event.
@@ -90,7 +90,7 @@ export class ChatService {
     // threads are free to open for premium users, only messages are metered.
     const entitlement = await this.entitlementResolver.resolve(userId, householdId);
     if (entitlement.tier === "FREE") {
-      throw new HttpException("Ask Paw Care Right + is a premium feature.", HttpStatus.PAYMENT_REQUIRED);
+      throw new HttpException("Ask Bombay Pet Company is a premium feature.", HttpStatus.PAYMENT_REQUIRED);
     }
 
     const thread = await this.prisma.chatThread.create({
@@ -125,7 +125,7 @@ export class ChatService {
     // 3. Feature lock. JSON error, no SSE headers yet.
     const entitlement = await this.entitlementResolver.resolve(userId, householdId);
     if (entitlement.tier === "FREE") {
-      throw new HttpException("Ask Paw Care Right + is a premium feature.", HttpStatus.PAYMENT_REQUIRED);
+      throw new HttpException("Ask Bombay Pet Company is a premium feature.", HttpStatus.PAYMENT_REQUIRED);
     }
 
     // 4. Fair-use quota. JSON error, no SSE headers yet.
@@ -181,7 +181,7 @@ export class ChatService {
     };
     sse.onClose(onClose);
 
-    // 9/10. Release-gated streaming through the SHARED `@pawcareright/ai`
+    // 9/10. Release-gated streaming through the SHARED `@bombaypetcompany/ai`
     // output gate (T082 D1/F3 fix) — every finding/error/timeout/empty
     // completion converges on the same SAFE_FALLBACK path.
     const options: TextGenerateOptions = {

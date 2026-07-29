@@ -1,5 +1,5 @@
 import { BadRequestException } from "@nestjs/common";
-import { VET_SUMMARY_DISCLAIMER, VET_SUMMARY_MAX_CHARS } from "@pawcareright/types";
+import { VET_SUMMARY_DISCLAIMER, VET_SUMMARY_MAX_CHARS } from "@bombaypetcompany/types";
 
 import type { PetResponse } from "../pets/pets.service";
 import type { PetsService } from "../pets/pets.service";

@@ -1,7 +1,7 @@
 import type { INestApplication } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { Test } from "@nestjs/testing";
-import { billingEntitlementSchema, errorResponseSchema, FAMILY_PLAN_PRODUCT_ID } from "@pawcareright/types";
+import { billingEntitlementSchema, errorResponseSchema, FAMILY_PLAN_PRODUCT_ID } from "@bombaypetcompany/types";
 import { PrismaClient } from "@prisma/client";
 import request from "supertest";
 
@@ -72,7 +72,7 @@ describe("Billing — entitlement (e2e)", () => {
       rcAppUserId: ctx.user.id,
       householdId: ctx.household.id,
       entitlement: "PREMIUM",
-      plan: "pawcareright_monthly",
+      plan: "bombaypetcompany_monthly",
       expiresAt,
     });
 
@@ -92,7 +92,7 @@ describe("Billing — entitlement (e2e)", () => {
       rcAppUserId: ctx.user.id,
       householdId: ctx.household.id,
       entitlement: "PREMIUM",
-      plan: "pawcareright_monthly",
+      plan: "bombaypetcompany_monthly",
       status: RC_WEBHOOK_STATUS.BILLING_ISSUE,
       expiresAt,
     });

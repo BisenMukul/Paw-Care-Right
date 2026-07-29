@@ -1,4 +1,4 @@
-import type { AgendaResponse } from "@pawcareright/types";
+import type { AgendaResponse } from "@bombaypetcompany/types";
 import { render, screen, waitFor, within } from "@testing-library/react-native";
 
 import CareScreen from "../app/(tabs)/care";

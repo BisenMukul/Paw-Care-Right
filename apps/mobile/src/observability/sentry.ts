@@ -11,9 +11,9 @@
 // D2: the release's `+{buildId}` slot is filled with the build-time git sha
 // (`EXPO_PUBLIC_GIT_SHA`, default `"dev"`) because `expo-updates` does not
 // exist yet (T113) — T117 owns swapping this slot to `Updates.updateId` per
-// OTA_UPDATES §7. The §1a release SHAPE (`pawcareright@{version}+{buildId}`)
+// OTA_UPDATES §7. The §1a release SHAPE (`bombaypetcompany@{version}+{buildId}`)
 // is preserved unchanged.
-import { baseSentryOptions, buildSentryRelease, type SentryEventLike } from "@pawcareright/analytics";
+import { baseSentryOptions, buildSentryRelease, type SentryEventLike } from "@bombaypetcompany/analytics";
 
 import { getAppVersion, getConfig } from "../config";
 

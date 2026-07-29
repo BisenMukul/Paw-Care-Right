@@ -45,8 +45,8 @@ function resetStore() {
 describe("useAuthStore", () => {
   beforeEach(async () => {
     jest.clearAllMocks();
-    await SecureStore.deleteItemAsync("pawcareright.auth.accessToken");
-    await SecureStore.deleteItemAsync("pawcareright.auth.refreshToken");
+    await SecureStore.deleteItemAsync("bombaypetcompany.auth.accessToken");
+    await SecureStore.deleteItemAsync("bombaypetcompany.auth.refreshToken");
     resetStore();
   });
 
@@ -59,7 +59,7 @@ describe("useAuthStore", () => {
     });
 
     it("ends signedIn and re-persists tokens when the stored refresh token refreshes successfully", async () => {
-      await SecureStore.setItemAsync("pawcareright.auth.refreshToken", "stale-refresh");
+      await SecureStore.setItemAsync("bombaypetcompany.auth.refreshToken", "stale-refresh");
       mockedAuthApi.refresh.mockResolvedValue(tokens);
 
       await useAuthStore.getState().restore();
@@ -71,17 +71,17 @@ describe("useAuthStore", () => {
       expect(state.accessToken).toBe(tokens.accessToken);
       expect(mockedAuthApi.refresh).toHaveBeenCalledWith("stale-refresh");
 
-      expect(await SecureStore.getItemAsync("pawcareright.auth.accessToken")).toBe(
+      expect(await SecureStore.getItemAsync("bombaypetcompany.auth.accessToken")).toBe(
         tokens.accessToken,
       );
-      expect(await SecureStore.getItemAsync("pawcareright.auth.refreshToken")).toBe(
+      expect(await SecureStore.getItemAsync("bombaypetcompany.auth.refreshToken")).toBe(
         tokens.refreshToken,
       );
     });
 
     it("ends signedOut and clears SecureStore when the stored refresh token fails to refresh", async () => {
-      await SecureStore.setItemAsync("pawcareright.auth.refreshToken", "expired-refresh");
-      await SecureStore.setItemAsync("pawcareright.auth.accessToken", "stale-access");
+      await SecureStore.setItemAsync("bombaypetcompany.auth.refreshToken", "expired-refresh");
+      await SecureStore.setItemAsync("bombaypetcompany.auth.accessToken", "stale-access");
       mockedAuthApi.refresh.mockRejectedValue(new Error("expired"));
 
       await useAuthStore.getState().restore();
@@ -90,8 +90,8 @@ describe("useAuthStore", () => {
       expect(state.status).toBe("signedOut");
       expect(state.user).toBeNull();
       expect(state.accessToken).toBeNull();
-      expect(await SecureStore.getItemAsync("pawcareright.auth.accessToken")).toBeNull();
-      expect(await SecureStore.getItemAsync("pawcareright.auth.refreshToken")).toBeNull();
+      expect(await SecureStore.getItemAsync("bombaypetcompany.auth.accessToken")).toBeNull();
+      expect(await SecureStore.getItemAsync("bombaypetcompany.auth.refreshToken")).toBeNull();
     });
   });
 
@@ -105,10 +105,10 @@ describe("useAuthStore", () => {
       expect(state.status).toBe("signedIn");
       expect(state.user).toEqual(tokens.user);
       expect(state.accessToken).toBe(tokens.accessToken);
-      expect(await SecureStore.getItemAsync("pawcareright.auth.accessToken")).toBe(
+      expect(await SecureStore.getItemAsync("bombaypetcompany.auth.accessToken")).toBe(
         tokens.accessToken,
       );
-      expect(await SecureStore.getItemAsync("pawcareright.auth.refreshToken")).toBe(
+      expect(await SecureStore.getItemAsync("bombaypetcompany.auth.refreshToken")).toBe(
         tokens.refreshToken,
       );
     });
@@ -125,7 +125,7 @@ describe("useAuthStore", () => {
 
   describe("refreshSession()", () => {
     it("persists tokens, sets signedIn, and returns the access token on success", async () => {
-      await SecureStore.setItemAsync("pawcareright.auth.refreshToken", "stale-refresh");
+      await SecureStore.setItemAsync("bombaypetcompany.auth.refreshToken", "stale-refresh");
       mockedAuthApi.refresh.mockResolvedValue(tokens);
 
       const result = await useAuthStore.getState().refreshSession();
@@ -135,16 +135,16 @@ describe("useAuthStore", () => {
       expect(state.status).toBe("signedIn");
       expect(state.user).toEqual(tokens.user);
       expect(state.accessToken).toBe(tokens.accessToken);
-      expect(await SecureStore.getItemAsync("pawcareright.auth.accessToken")).toBe(
+      expect(await SecureStore.getItemAsync("bombaypetcompany.auth.accessToken")).toBe(
         tokens.accessToken,
       );
-      expect(await SecureStore.getItemAsync("pawcareright.auth.refreshToken")).toBe(
+      expect(await SecureStore.getItemAsync("bombaypetcompany.auth.refreshToken")).toBe(
         tokens.refreshToken,
       );
     });
 
     it("returns null and leaves state untouched on failure", async () => {
-      await SecureStore.setItemAsync("pawcareright.auth.refreshToken", "expired-refresh");
+      await SecureStore.setItemAsync("bombaypetcompany.auth.refreshToken", "expired-refresh");
       mockedAuthApi.refresh.mockRejectedValue(new Error("expired"));
       useAuthStore.setState({
         status: "signedIn",
@@ -159,7 +159,7 @@ describe("useAuthStore", () => {
       const state = useAuthStore.getState();
       expect(state.status).toBe("signedIn");
       expect(state.accessToken).toBe("still-here");
-      expect(await SecureStore.getItemAsync("pawcareright.auth.refreshToken")).toBe(
+      expect(await SecureStore.getItemAsync("bombaypetcompany.auth.refreshToken")).toBe(
         "expired-refresh",
       );
     });
@@ -174,8 +174,8 @@ describe("useAuthStore", () => {
 
   describe("sessionExpired()", () => {
     it("clears SecureStore and sets signedOut without calling logout", async () => {
-      await SecureStore.setItemAsync("pawcareright.auth.refreshToken", "refresh-1");
-      await SecureStore.setItemAsync("pawcareright.auth.accessToken", "access-1");
+      await SecureStore.setItemAsync("bombaypetcompany.auth.refreshToken", "refresh-1");
+      await SecureStore.setItemAsync("bombaypetcompany.auth.accessToken", "access-1");
       useAuthStore.setState({ status: "signedIn", accessToken: "access-1" });
 
       await useAuthStore.getState().sessionExpired();
@@ -185,8 +185,8 @@ describe("useAuthStore", () => {
       expect(state.user).toBeNull();
       expect(state.householdId).toBeNull();
       expect(state.accessToken).toBeNull();
-      expect(await SecureStore.getItemAsync("pawcareright.auth.refreshToken")).toBeNull();
-      expect(await SecureStore.getItemAsync("pawcareright.auth.accessToken")).toBeNull();
+      expect(await SecureStore.getItemAsync("bombaypetcompany.auth.refreshToken")).toBeNull();
+      expect(await SecureStore.getItemAsync("bombaypetcompany.auth.accessToken")).toBeNull();
       expect(mockedAuthApi.logout).not.toHaveBeenCalled();
     });
   });
@@ -205,7 +205,7 @@ describe("useAuthStore", () => {
 
   describe("signOut()", () => {
     it("clears SecureStore and resets to signedOut even when logout fails", async () => {
-      await SecureStore.setItemAsync("pawcareright.auth.refreshToken", "refresh-1");
+      await SecureStore.setItemAsync("bombaypetcompany.auth.refreshToken", "refresh-1");
       mockedAuthApi.logout.mockRejectedValue(new Error("network down"));
       useAuthStore.setState({ status: "signedIn", accessToken: "access-1" });
 
@@ -215,7 +215,7 @@ describe("useAuthStore", () => {
       expect(state.status).toBe("signedOut");
       expect(state.accessToken).toBeNull();
       expect(state.pushAsked).toBe(false);
-      expect(await SecureStore.getItemAsync("pawcareright.auth.refreshToken")).toBeNull();
+      expect(await SecureStore.getItemAsync("bombaypetcompany.auth.refreshToken")).toBeNull();
     });
   });
 

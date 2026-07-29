@@ -1,9 +1,9 @@
-import { CONFIDENCE_LEVELS, URGENCY_TIERS } from "@pawcareright/types";
+import { CONFIDENCE_LEVELS, URGENCY_TIERS } from "@bombaypetcompany/types";
 
 /**
  * `TriageResult` rendered as model-facing text (T033). The two enum lists
  * are interpolated from `URGENCY_TIERS`/`CONFIDENCE_LEVELS` so they cannot
- * drift from `@pawcareright/types`; the rest of the shape is static
+ * drift from `@bombaypetcompany/types`; the rest of the shape is static
  * descriptive text mirroring `triageResultSchema` (plan R1). `parseTriage`
  * remains the real validation gate — this text is a teaching aid, not a
  * schema serializer.

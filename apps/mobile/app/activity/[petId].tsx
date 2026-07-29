@@ -1,5 +1,5 @@
-import { useIsOffline } from "@pawcareright/api-client";
-import type { ActivityType } from "@pawcareright/types";
+import { useIsOffline } from "@bombaypetcompany/api-client";
+import type { ActivityType } from "@bombaypetcompany/types";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { ScrollView, Text, View } from "react-native";

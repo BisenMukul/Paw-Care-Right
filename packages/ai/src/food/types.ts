@@ -1,10 +1,10 @@
-import type { FoodVerdict, Species } from "@pawcareright/types";
+import type { FoodVerdict, Species } from "@bombaypetcompany/types";
 
 import type { TextProvider } from "../providers/types";
 
 /**
  * Pure TS interfaces for the food-safety fallback service (T035). No zod
- * here — `@pawcareright/types`'s `foodSafetyAnswerSchema`/
+ * here — `@bombaypetcompany/types`'s `foodSafetyAnswerSchema`/
  * `parseFoodSafetyAnswer` remain the single validation source of truth for
  * AI output; this file only shapes the orchestration seam.
  */
@@ -35,7 +35,7 @@ export type FoodAnswerSource = "DATASET" | "AI" | "FALLBACK";
 export interface FoodSafetyResult {
   source: FoodAnswerSource;
   species: Species;
-  /** Normalized item text (see `normalizeItem` in `@pawcareright/data`). */
+  /** Normalized item text (see `normalizeItem` in `@bombaypetcompany/data`). */
   item: string;
   verdict: FoodVerdict;
   note: string;

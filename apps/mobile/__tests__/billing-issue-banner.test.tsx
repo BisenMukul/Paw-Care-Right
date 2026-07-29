@@ -26,7 +26,7 @@ describe("BillingIssueBanner", () => {
 
   it("renders on a BILLING_ISSUE fixture", async () => {
     mockedUseEntitlement.mockReturnValue({
-      data: { entitled: true, source: "own", plan: "pawcareright_monthly", expiresAt: null, billingIssue: true },
+      data: { entitled: true, source: "own", plan: "bombaypetcompany_monthly", expiresAt: null, billingIssue: true },
     });
 
     await render(<BillingIssueBanner />);
@@ -36,7 +36,7 @@ describe("BillingIssueBanner", () => {
 
   it("is absent when entitled-clean (billingIssue: false)", async () => {
     mockedUseEntitlement.mockReturnValue({
-      data: { entitled: true, source: "own", plan: "pawcareright_monthly", expiresAt: null, billingIssue: false },
+      data: { entitled: true, source: "own", plan: "bombaypetcompany_monthly", expiresAt: null, billingIssue: false },
     });
 
     await render(<BillingIssueBanner />);

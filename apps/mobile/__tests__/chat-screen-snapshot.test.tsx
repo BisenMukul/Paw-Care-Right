@@ -1,5 +1,5 @@
-import { createQueryClient } from "@pawcareright/api-client";
-import { petIdSchema, type Pet } from "@pawcareright/types";
+import { createQueryClient } from "@bombaypetcompany/api-client";
+import { petIdSchema, type Pet } from "@bombaypetcompany/types";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react-native";
 import { QueryClientProvider, type QueryClient } from "@tanstack/react-query";
 import type { ReactNode } from "react";

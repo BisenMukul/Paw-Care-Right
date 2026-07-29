@@ -2,7 +2,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
 import { IsInt, IsOptional, IsString, Max, Min } from "class-validator";
 
-/** Bounds mirror `@pawcareright/types`' `paginationQuerySchema` (1..100, default 20). */
+/** Bounds mirror `@bombaypetcompany/types`' `paginationQuerySchema` (1..100, default 20). */
 export class ListChecksQueryDto {
   @ApiProperty({ required: false, description: "Opaque cursor: the `id` of the last item from the previous page." })
   @IsOptional()

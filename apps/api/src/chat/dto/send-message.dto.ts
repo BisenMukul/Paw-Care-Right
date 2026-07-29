@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { CHAT_MESSAGE_MAX_CHARS } from "@pawcareright/types";
+import { CHAT_MESSAGE_MAX_CHARS } from "@bombaypetcompany/types";
 import { IsString, Length } from "class-validator";
 
 /** `POST /chat/threads/:id/messages` body (T081). */

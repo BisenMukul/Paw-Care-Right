@@ -1,4 +1,4 @@
-import { HEALTH_LOG_PHOTO_KEYS_MAX } from "@pawcareright/types";
+import { HEALTH_LOG_PHOTO_KEYS_MAX } from "@bombaypetcompany/types";
 import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 import { useEffect, useRef, useState } from "react";

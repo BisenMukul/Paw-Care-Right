@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { APP_DISPLAY_NAME } from "@pawcareright/config";
+import { APP_DISPLAY_NAME } from "@bombaypetcompany/config";
 
 import { LegalDocumentView } from "../../src/components/legal/legal-document-view";
 import { buildPrivacyDocument } from "../../src/legal/privacy-document";

@@ -1,5 +1,5 @@
-import type { ParsedRRule } from "@pawcareright/types";
-import { parseRRule } from "@pawcareright/types";
+import type { ParsedRRule } from "@bombaypetcompany/types";
+import { parseRRule } from "@bombaypetcompany/types";
 
 import { computeNextFireAt } from "./next-fire-at";
 

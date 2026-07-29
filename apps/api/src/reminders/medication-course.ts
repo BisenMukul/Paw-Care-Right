@@ -1,4 +1,4 @@
-import { parseRRule } from "@pawcareright/types";
+import { parseRRule } from "@bombaypetcompany/types";
 
 import { computeNextFireAt } from "./next-fire-at";
 

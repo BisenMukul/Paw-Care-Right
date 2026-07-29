@@ -1,5 +1,5 @@
-import type { AgendaEntry, CheckResponse } from "@pawcareright/types";
-import { petIdSchema, type Pet } from "@pawcareright/types";
+import type { AgendaEntry, CheckResponse } from "@bombaypetcompany/types";
+import { petIdSchema, type Pet } from "@bombaypetcompany/types";
 import { render, screen } from "@testing-library/react-native";
 import React from "react";
 import { Text } from "react-native";

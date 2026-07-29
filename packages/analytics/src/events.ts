@@ -1,4 +1,4 @@
-import type { Urgency } from "@pawcareright/types";
+import type { Urgency } from "@bombaypetcompany/types";
 
 /**
  * The shared, typed PostHog event map (T078 plan decision 3 / SPEC §8).

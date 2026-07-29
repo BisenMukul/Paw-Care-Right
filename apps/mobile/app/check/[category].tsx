@@ -1,5 +1,5 @@
-import { useIsOffline } from "@pawcareright/api-client";
-import { getCategoryDef } from "@pawcareright/types";
+import { useIsOffline } from "@bombaypetcompany/api-client";
+import { getCategoryDef } from "@bombaypetcompany/types";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useMemo } from "react";
 import { ActivityIndicator, Text, useColorScheme, View } from "react-native";

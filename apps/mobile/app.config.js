@@ -6,7 +6,7 @@
 // tools to transpile TypeScript AND resolve the workspace import, which fails
 // in eas-cli's isolated environment ("Cannot read properties of undefined
 // (reading 'CommonJS')"). Requiring the already-built CommonJS entry of
-// `@pawcareright/config` removes all transpilation from the config-load path
+// `@bombaypetcompany/config` removes all transpilation from the config-load path
 // while keeping the brand constants single-sourced (CLAUDE.md §1a).
 
 const {
@@ -14,7 +14,7 @@ const {
   APP_SLUG,
   BUNDLE_ID,
   DEEPLINK_SCHEME,
-} = require("@pawcareright/config");
+} = require("@bombaypetcompany/config");
 
 /** @type {import('expo/config').ExpoConfig} */
 const config = {
@@ -50,14 +50,14 @@ const config = {
     googleClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID ?? "",
     revenueCatIosKey: process.env.EXPO_PUBLIC_RC_IOS_KEY ?? "stub_ios_key",
     revenueCatAndroidKey: process.env.EXPO_PUBLIC_RC_ANDROID_KEY ?? "stub_android_key",
-    termsUrl: process.env.EXPO_PUBLIC_TERMS_URL ?? "https://pawcareright.app/terms",
-    privacyUrl: process.env.EXPO_PUBLIC_PRIVACY_URL ?? "https://pawcareright.app/privacy",
+    termsUrl: process.env.EXPO_PUBLIC_TERMS_URL ?? "https://bombaypetcompany.app/terms",
+    privacyUrl: process.env.EXPO_PUBLIC_PRIVACY_URL ?? "https://bombaypetcompany.app/privacy",
     posthogKey: process.env.EXPO_PUBLIC_POSTHOG_KEY ?? "",
     posthogHost: process.env.EXPO_PUBLIC_POSTHOG_HOST ?? "https://us.i.posthog.com",
     // T089: stub-safe by default (empty DSN => Sentry never inits, D5).
     sentryDsn: process.env.EXPO_PUBLIC_SENTRY_DSN ?? "",
     gitSha: process.env.EXPO_PUBLIC_GIT_SHA ?? "dev",
-    // `eas init` will create an EAS project with slug "pawcareright" (APP_SLUG)
+    // `eas init` will create an EAS project with slug "bombaypetcompany" (APP_SLUG)
     // and print its projectId — add it back here as `eas: { projectId: "<uuid>" }`.
     "eas": {
         "projectId": "a7a52d2d-c7f4-44b0-9234-017d07bd1ced"
@@ -73,8 +73,8 @@ const config = {
     [
       "@sentry/react-native/expo",
       {
-        organization: process.env.SENTRY_ORG ?? "pawcareright",
-        project: process.env.SENTRY_PROJECT ?? "pawcareright-mobile",
+        organization: process.env.SENTRY_ORG ?? "bombaypetcompany",
+        project: process.env.SENTRY_PROJECT ?? "bombaypetcompany-mobile",
       },
     ],
   ],

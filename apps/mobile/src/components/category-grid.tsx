@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { INTAKE_CATEGORIES, type CategoryDef, type SymptomCategory } from "@pawcareright/types";
+import { INTAKE_CATEGORIES, type CategoryDef, type SymptomCategory } from "@bombaypetcompany/types";
 import type { ComponentProps } from "react";
 import { Pressable, Text, View } from "react-native";
 

@@ -1,7 +1,7 @@
 import { execFileSync } from "node:child_process";
 import path from "node:path";
 
-import { FAMILY_PLAN_PRODUCT_ID } from "@pawcareright/types";
+import { FAMILY_PLAN_PRODUCT_ID } from "@bombaypetcompany/types";
 import { PrismaClient } from "@prisma/client";
 
 import apiPackageJson from "../../package.json";
@@ -36,7 +36,7 @@ async function runDemoSeed(prisma: PrismaClient): Promise<void> {
   await persistDemo(prisma, buildDemo(new Date()));
 }
 
-const DEV_USER_EMAIL = "dev@pawcareright.local";
+const DEV_USER_EMAIL = "dev@bombaypetcompany.local";
 const DEV_HOUSEHOLD_ID = "00000000-0000-4000-8000-000000000001";
 const DEV_MEMBERSHIP_ID = "00000000-0000-4000-8000-000000000002";
 
@@ -143,12 +143,12 @@ describe("demo seed — DB smoke + idempotency (e2e)", () => {
   /**
    * Gap-closure (checker finding, `loop/reviews/SEEDER-1.review.md`): every
    * test above calls `runDemoSeed` (`wipeDemo`/`persistDemo`/`buildDemo`)
-   * DIRECTLY under ts-jest, which resolves `@pawcareright/data`/
-   * `@pawcareright/types` via plain Node module resolution — it never
+   * DIRECTLY under ts-jest, which resolves `@bombaypetcompany/data`/
+   * `@bombaypetcompany/types` via plain Node module resolution — it never
    * proves the REAL `pnpm --filter api prisma:seed` command (which runs
    * `prisma db seed` -> `tsx --tsconfig prisma/seed/tsconfig.json
    * prisma/seed.ts`) actually works, since `tsx` resolves bare
-   * `@pawcareright/*` specifiers via tsconfig `paths` at RUNTIME (ts-jest
+   * `@bombaypetcompany/*` specifiers via tsconfig `paths` at RUNTIME (ts-jest
    * does not), so a broken `paths` target is invisible to every spec above
    * — a true false-green risk. This spawns the LITERAL configured command
    * (read from `package.json` at test time, so a future edit can't silently

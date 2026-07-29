@@ -1,4 +1,4 @@
-import { RRULE_WEEKDAYS, type RRuleWeekday } from "@pawcareright/types";
+import { RRULE_WEEKDAYS, type RRuleWeekday } from "@bombaypetcompany/types";
 import { Pressable, Text, View } from "react-native";
 
 import type { ScheduleConfig, ScheduleFrequency } from "../reminders/schedule-builder";

@@ -1,4 +1,4 @@
-import type { SymptomCategory } from "@pawcareright/types";
+import type { SymptomCategory } from "@bombaypetcompany/types";
 
 /**
  * Deterministic, code-only symptom nudge detector (T081 plan decision D5).

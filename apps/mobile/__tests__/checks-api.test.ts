@@ -1,5 +1,5 @@
-import { createQueryClient } from "@pawcareright/api-client";
-import type { CheckResponse, CompletedIntake } from "@pawcareright/types";
+import { createQueryClient } from "@bombaypetcompany/api-client";
+import type { CheckResponse, CompletedIntake } from "@bombaypetcompany/types";
 import type { Query, QueryClient } from "@tanstack/react-query";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react-native";

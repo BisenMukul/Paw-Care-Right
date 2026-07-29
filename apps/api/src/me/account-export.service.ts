@@ -3,7 +3,7 @@ import {
   ACCOUNT_EXPORT_SCHEMA_VERSION,
   accountExportSchema,
   EXPORT_LINK_TTL_SECONDS,
-} from "@pawcareright/types";
+} from "@bombaypetcompany/types";
 
 import { AppConfigService } from "../config/app-config.service";
 import { PrismaService } from "../prisma/prisma.service";

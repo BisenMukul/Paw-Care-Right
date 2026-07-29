@@ -1,4 +1,4 @@
-import sharedConfig from "@pawcareright/config/eslint";
+import sharedConfig from "@bombaypetcompany/config/eslint";
 
 export default [
   {

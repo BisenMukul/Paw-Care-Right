@@ -1,5 +1,5 @@
-import { APP_DISPLAY_NAME } from "@pawcareright/config";
-import { HOME_CARE_ALLOWED_TIERS, SAFE_FALLBACK, URGENCY_TIERS, type TriageResult, type Urgency } from "@pawcareright/types";
+import { APP_DISPLAY_NAME } from "@bombaypetcompany/config";
+import { HOME_CARE_ALLOWED_TIERS, SAFE_FALLBACK, URGENCY_TIERS, type TriageResult, type Urgency } from "@bombaypetcompany/types";
 import { render, screen } from "@testing-library/react-native";
 
 import CheckResultScreen from "../app/check/result/[checkId]";

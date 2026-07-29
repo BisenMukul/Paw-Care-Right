@@ -1,7 +1,7 @@
 import type { INestApplication } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { Test } from "@nestjs/testing";
-import { errorResponseSchema, HEALTH_LOG_PHOTO_KEYS_MAX } from "@pawcareright/types";
+import { errorResponseSchema, HEALTH_LOG_PHOTO_KEYS_MAX } from "@bombaypetcompany/types";
 import { PrismaClient } from "@prisma/client";
 
 import { AppModule } from "../src/app.module";
@@ -232,7 +232,7 @@ describe("Photos presign/confirm/view-urls fuzz (e2e)", () => {
     expect(url.searchParams.get("X-Amz-Signature")).toBeTruthy();
     // The credential is present (needed to verify the signature), but the
     // raw secret access key itself must never appear in the URL.
-    expect(uploadUrl).not.toContain("pawcareright-dev-secret");
+    expect(uploadUrl).not.toContain("bombaypetcompany-dev-secret");
   });
 
   it("view-urls rejects an over-cap key array (unbounded-work guard)", async () => {

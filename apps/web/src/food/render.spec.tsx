@@ -2,8 +2,8 @@ import fs from "node:fs";
 import path from "node:path";
 import { renderToStaticMarkup } from "react-dom/server";
 
-import { REGION_HOTLINES, toxins } from "@pawcareright/data";
-import { APP_DISPLAY_NAME } from "@pawcareright/config";
+import { REGION_HOTLINES, toxins } from "@bombaypetcompany/data";
+import { APP_DISPLAY_NAME } from "@bombaypetcompany/config";
 
 import { FoodPageView } from "../components/food/food-page-view";
 import { strings } from "../strings";
@@ -351,7 +351,7 @@ describe("App-store honesty (§5.7)", () => {
     const offenders: string[] = [];
     // Excludes *.spec.* files, which legitimately reference this literal as
     // the comparison target for this very check.
-    const FORBIDDEN_DISPLAY_NAME = ["Paw Care Right", "+"].join(" ");
+    const FORBIDDEN_DISPLAY_NAME = ["Bombay Pet Company", "+"].join(" ");
 
     function walk(dir: string): void {
       for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {

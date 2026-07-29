@@ -1,4 +1,4 @@
-import { URGENCY_SEVERITY, type Urgency } from "@pawcareright/types";
+import { URGENCY_SEVERITY, type Urgency } from "@bombaypetcompany/types";
 
 import type { PipelineOutcome } from "./pipeline";
 import type { Aggregate, CaseResult, LoadedCase, ThresholdResult } from "./types";

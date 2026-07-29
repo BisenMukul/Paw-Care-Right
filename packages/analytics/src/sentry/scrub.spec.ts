@@ -16,7 +16,7 @@ describe("scrubSentryEvent", () => {
     const event: SentryEventLike = {
       request: {
         headers: {
-          host: "api.pawcareright.app",
+          host: "api.bombaypetcompany.app",
           authorization: "Bearer super-secret-token",
           cookie: "session=abc123",
           "x-api-key": "leak-me",
@@ -28,7 +28,7 @@ describe("scrubSentryEvent", () => {
     const result = scrubSentryEvent(event);
 
     expect(result?.request?.headers).toEqual({
-      host: "api.pawcareright.app",
+      host: "api.bombaypetcompany.app",
       "user-agent": "jest",
     });
   });
@@ -36,14 +36,14 @@ describe("scrubSentryEvent", () => {
   it("strips query strings from url and deletes query_string", () => {
     const event: SentryEventLike = {
       request: {
-        url: "https://api.pawcareright.app/v1/auth/verify?token=abc&otp=123456",
+        url: "https://api.bombaypetcompany.app/v1/auth/verify?token=abc&otp=123456",
         query_string: "token=abc&otp=123456",
       },
     };
 
     const result = scrubSentryEvent(event);
 
-    expect(result?.request?.url).toBe("https://api.pawcareright.app/v1/auth/verify");
+    expect(result?.request?.url).toBe("https://api.bombaypetcompany.app/v1/auth/verify");
     expect(result?.request?.query_string).toBeUndefined();
   });
 
@@ -55,7 +55,7 @@ describe("scrubSentryEvent", () => {
     const event: SentryEventLike = {
       request: {
         method: "POST",
-        url: "https://api.pawcareright.app/v1/checks",
+        url: "https://api.bombaypetcompany.app/v1/checks",
         env: { REMOTE_ADDR: "203.0.113.9" },
       },
     };
@@ -66,7 +66,7 @@ describe("scrubSentryEvent", () => {
     expect(result?.request?.env).toBeUndefined();
     expect(result?.request).toEqual({
       method: "POST",
-      url: "https://api.pawcareright.app/v1/checks",
+      url: "https://api.bombaypetcompany.app/v1/checks",
     });
   });
 
@@ -88,7 +88,7 @@ describe("scrubSentryEvent", () => {
           data: {
             method: "POST",
             status_code: 500,
-            url: "https://api.pawcareright.app/v1/checks?token=abc",
+            url: "https://api.bombaypetcompany.app/v1/checks?token=abc",
             authorization: "Bearer leak",
           },
         },
@@ -100,7 +100,7 @@ describe("scrubSentryEvent", () => {
     expect(result?.breadcrumbs?.[0]?.data).toEqual({
       method: "POST",
       status_code: 500,
-      url: "https://api.pawcareright.app/v1/checks",
+      url: "https://api.bombaypetcompany.app/v1/checks",
     });
   });
 
@@ -197,7 +197,7 @@ describe("scrubSentryEvent", () => {
     const event: SentryEventLike = {
       event_id: "evt-1",
       level: "error",
-      release: "pawcareright@0.0.0+abc1234",
+      release: "bombaypetcompany@0.0.0+abc1234",
       environment: "production",
       tags: { requestId: "req-1" },
       exception: {
@@ -215,7 +215,7 @@ describe("scrubSentryEvent", () => {
 
     expect(result?.event_id).toBe("evt-1");
     expect(result?.level).toBe("error");
-    expect(result?.release).toBe("pawcareright@0.0.0+abc1234");
+    expect(result?.release).toBe("bombaypetcompany@0.0.0+abc1234");
     expect(result?.environment).toBe("production");
     expect(result?.tags).toEqual({ requestId: "req-1" });
     expect(result?.exception).toEqual({

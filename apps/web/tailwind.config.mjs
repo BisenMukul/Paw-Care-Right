@@ -1,4 +1,4 @@
-import preset from "@pawcareright/config/tailwind";
+import preset from "@bombaypetcompany/config/tailwind";
 
 /** @type {import('tailwindcss').Config} */
 export default {

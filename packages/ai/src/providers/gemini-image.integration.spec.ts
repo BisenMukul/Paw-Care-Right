@@ -4,7 +4,7 @@
  *
  * To run locally:
  *   RUN_AI_INTEGRATION=1 GEMINI_API_KEY=<real key> \
- *     pnpm --filter @pawcareright/ai test -- gemini-image.integration.spec.ts
+ *     pnpm --filter @bombaypetcompany/ai test -- gemini-image.integration.spec.ts
  */
 import { GeminiImageProvider } from "./gemini-image";
 

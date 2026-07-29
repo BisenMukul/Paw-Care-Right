@@ -1,4 +1,4 @@
-import { HEALTH_LOG_KINDS, type HealthLogKind } from "@pawcareright/types";
+import { HEALTH_LOG_KINDS, type HealthLogKind } from "@bombaypetcompany/types";
 import { ScrollView } from "react-native";
 
 import { strings } from "../strings";

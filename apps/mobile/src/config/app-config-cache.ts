@@ -1,4 +1,4 @@
-import { PAYWALL_VARIANTS } from "@pawcareright/types";
+import { PAYWALL_VARIANTS } from "@bombaypetcompany/types";
 
 import { createSafeStorage } from "../storage/safe-storage";
 import type { AppConfig } from "./app-config-queries";
@@ -14,7 +14,7 @@ const mmkv = createSafeStorage({
   },
 });
 
-const CACHE_KEY = "pawcareright.app-config-cache";
+const CACHE_KEY = "bombaypetcompany.app-config-cache";
 
 /**
  * Re-validated on read (plan Risk R4): a poisoned/corrupt stored value is
@@ -22,7 +22,7 @@ const CACHE_KEY = "pawcareright.app-config-cache";
  * an update gate or inject a bogus variant/version. A plain type guard --
  * NOT a `zod` schema -- because `zod` is not a direct `apps/mobile`
  * dependency (only consumed indirectly via already-built schemas exported
- * from `@pawcareright/types`); this keeps the "no new dependencies" rule
+ * from `@bombaypetcompany/types`); this keeps the "no new dependencies" rule
  * intact while still re-validating every field the same schema would.
  */
 function isValidAppConfig(value: unknown): value is AppConfig {

@@ -178,7 +178,7 @@ describe("Billing — RC webhook fuzz (e2e)", () => {
           id: eventId,
           type: "INITIAL_PURCHASE",
           app_user_id: ctx.user.id,
-          product_id: "pawcareright_monthly",
+          product_id: "bombaypetcompany_monthly",
           expiration_at_ms: Date.parse("2026-08-16T12:00:00.000Z"),
           event_timestamp_ms: Date.parse("2026-07-16T12:00:00.000Z"),
         },

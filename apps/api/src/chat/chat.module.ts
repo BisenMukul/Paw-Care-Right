@@ -1,5 +1,5 @@
 import { Module } from "@nestjs/common";
-import { getTextProvider, loadAiEnv } from "@pawcareright/ai";
+import { getTextProvider, loadAiEnv } from "@bombaypetcompany/ai";
 
 import { AiAuditModule } from "../audit/ai-audit.module";
 import { PetsModule } from "../pets/pets.module";

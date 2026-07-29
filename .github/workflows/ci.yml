@@ -13,12 +13,12 @@ jobs:
       postgres:
         image: postgres:16
         env:
-          POSTGRES_USER: pawcareright
-          POSTGRES_PASSWORD: pawcareright
-          POSTGRES_DB: pawcareright
+          POSTGRES_USER: bombaypetcompany
+          POSTGRES_PASSWORD: bombaypetcompany
+          POSTGRES_DB: bombaypetcompany
         ports: ["5432:5432"]
         options: >-
-          --health-cmd "pg_isready -U pawcareright -d pawcareright"
+          --health-cmd "pg_isready -U bombaypetcompany -d bombaypetcompany"
           --health-interval 5s --health-timeout 5s --health-retries 10
       redis:
         image: redis:7
@@ -27,9 +27,9 @@ jobs:
           --health-cmd "redis-cli ping" --health-interval 5s
           --health-timeout 3s --health-retries 10
     env:
-      DATABASE_URL: postgresql://pawcareright:pawcareright@localhost:5432/pawcareright?schema=public
+      DATABASE_URL: postgresql://bombaypetcompany:bombaypetcompany@localhost:5432/bombaypetcompany?schema=public
       REDIS_URL: redis://localhost:6379
-      # T089: GIT_SHA feeds the pinned pawcareright@{version}+{buildId} release
+      # T089: GIT_SHA feeds the pinned bombaypetcompany@{version}+{buildId} release
       # shape (CLAUDE §1a). SENTRY_AUTH_TOKEN is optional — its absence must
       # never fail CI (D7); the upload step below is gated on its presence.
       # APP_VERSION mirrors the runtime env var (default "0.0.0" until T099
@@ -56,7 +56,7 @@ jobs:
       - name: Start MinIO
         run: |
           docker run -d --name minio -p 9000:9000 \
-            -e MINIO_ROOT_USER=pawcareright -e MINIO_ROOT_PASSWORD=pawcareright-dev-secret \
+            -e MINIO_ROOT_USER=bombaypetcompany -e MINIO_ROOT_PASSWORD=bombaypetcompany-dev-secret \
             minio/minio:RELEASE.2024-11-07T00-52-20Z server /data
           for i in $(seq 1 30); do curl -sf http://localhost:9000/minio/health/live && break; sleep 2; done
       - run: pnpm typecheck
@@ -74,16 +74,16 @@ jobs:
       - run: pnpm build
       # T089 (plan D7): source-map upload is best-effort observability, never
       # a required gate — it only runs when a real SENTRY_AUTH_TOKEN secret is
-      # configured. Org/project default to the §1a `pawcareright` slugs.
+      # configured. Org/project default to the §1a `bombaypetcompany` slugs.
       - name: Upload API source maps to Sentry
         if: env.SENTRY_AUTH_TOKEN != ''
         uses: getsentry/action-release@v1
         env:
-          SENTRY_ORG: ${{ secrets.SENTRY_ORG || 'pawcareright' }}
-          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT || 'pawcareright-api' }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG || 'bombaypetcompany' }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT || 'bombaypetcompany-api' }}
         with:
           environment: production
-          version: "pawcareright@${{ env.APP_VERSION || '0.0.0' }}+${{ github.sha }}"
+          version: "bombaypetcompany@${{ env.APP_VERSION || '0.0.0' }}+${{ github.sha }}"
           sourcemaps: apps/api/dist
       - name: Sentry source-map upload skipped
         if: env.SENTRY_AUTH_TOKEN == ''
@@ -125,17 +125,17 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: pnpm }
       - run: pnpm i --frozen-lockfile
-      - run: pnpm --filter @pawcareright/web build
+      - run: pnpm --filter @bombaypetcompany/web build
       - name: Collect Lighthouse runs
-        run: pnpm --filter @pawcareright/web exec lhci collect --config=./lighthouserc.json
+        run: pnpm --filter @bombaypetcompany/web exec lhci collect --config=./lighthouserc.json
       - name: Assert performance + SEO budgets
-        run: pnpm --filter @pawcareright/web exec lhci assert --config=./lighthouserc.json
+        run: pnpm --filter @bombaypetcompany/web exec lhci assert --config=./lighthouserc.json
       - name: Upload Lighthouse reports
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: lighthouse-${{ github.run_id }}
-          # `pnpm --filter @pawcareright/web exec` runs lhci with its cwd set
+          # `pnpm --filter @bombaypetcompany/web exec` runs lhci with its cwd set
           # to apps/web (verified empirically), so lhci's `.lighthouseci/`
           # report directory lands there, not at the repo root.
           path: apps/web/.lighthouseci/
@@ -153,9 +153,9 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: pnpm }
       - run: pnpm i --frozen-lockfile
-      - run: pnpm --filter @pawcareright/web build
+      - run: pnpm --filter @bombaypetcompany/web build
       - run: npx playwright install --with-deps chromium
-      - run: pnpm --filter @pawcareright/web test:e2e
+      - run: pnpm --filter @bombaypetcompany/web test:e2e
       - name: Upload Playwright report
         if: always()
         uses: actions/upload-artifact@v4

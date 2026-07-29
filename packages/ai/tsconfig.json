@@ -1,5 +1,5 @@
 {
-  "extends": "@pawcareright/config/tsconfig.base.json",
+  "extends": "@bombaypetcompany/config/tsconfig.base.json",
   "compilerOptions": {
     "noEmit": true
   },

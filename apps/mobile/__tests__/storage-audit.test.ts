@@ -101,7 +101,7 @@ describe("storage-audit: no source file references AsyncStorage", () => {
 // MMKV-persisted zustand stores: pinned set + no credential-shaped key.
 // ---------------------------------------------------------------------------
 const PERSIST_CALL_PATTERN = /createJSONStorage\(/;
-const STORE_NAME_PATTERN = /name:\s*["'`](pawcareright\.[^"'`]+)["'`]/g;
+const STORE_NAME_PATTERN = /name:\s*["'`](bombaypetcompany\.[^"'`]+)["'`]/g;
 const NAME_DECLARATION_PATTERN = /name:\s*["'`][^"'`]+["'`]/g;
 const PARTIALIZE_DECLARATION_PATTERN = /partialize:\s*\([^)]*\)\s*=>\s*\(\{[^}]*\}\)/g;
 const CREDENTIAL_SHAPED_KEY_PATTERN =
@@ -124,7 +124,7 @@ function persistedRegions(source: string): string[] {
   return [...names, ...partializes];
 }
 
-/** Every `pawcareright.*` persisted store name declared anywhere in `source`. */
+/** Every `bombaypetcompany.*` persisted store name declared anywhere in `source`. */
 function persistedStoreNames(source: string): string[] {
   return [...source.matchAll(STORE_NAME_PATTERN)]
     .map((match) => match[1])
@@ -137,13 +137,13 @@ function persistedStoreNames(source: string): string[] {
  * updated -- the point of the pin (T096 plan D8).
  */
 const EXPECTED_PERSISTED_STORE_NAMES = [
-  "pawcareright.activity-recents",
-  "pawcareright.paywall-shown",
-  "pawcareright.weight-unit",
-  "pawcareright.reminder-outbox",
-  "pawcareright.active-pet",
-  "pawcareright.add-pet-draft",
-  "pawcareright.analytics-consent",
+  "bombaypetcompany.activity-recents",
+  "bombaypetcompany.paywall-shown",
+  "bombaypetcompany.weight-unit",
+  "bombaypetcompany.reminder-outbox",
+  "bombaypetcompany.active-pet",
+  "bombaypetcompany.add-pet-draft",
+  "bombaypetcompany.analytics-consent",
 ].sort();
 
 describe("storage-audit: MMKV-persisted zustand stores", () => {
@@ -181,13 +181,13 @@ describe("storage-audit: MMKV-persisted zustand stores", () => {
     const synthetic = `
       const useStoreA = create(
         persist((set) => ({ shown: false, setShown: (v) => set({ shown: v }) }), {
-          name: "pawcareright.synthetic-store-a",
+          name: "bombaypetcompany.synthetic-store-a",
           storage: createJSONStorage(() => mmkvStorage),
         }),
       );
       const useStoreB = create(
         persist((set) => ({ refreshToken: null }), {
-          name: "pawcareright.synthetic-store-b",
+          name: "bombaypetcompany.synthetic-store-b",
           partialize: (state) => ({ refreshToken: state.refreshToken }),
           storage: createJSONStorage(() => mmkvStorage),
         }),
@@ -195,7 +195,7 @@ describe("storage-audit: MMKV-persisted zustand stores", () => {
     `;
 
     const names = persistedStoreNames(synthetic);
-    expect(names).toEqual(["pawcareright.synthetic-store-a", "pawcareright.synthetic-store-b"]);
+    expect(names).toEqual(["bombaypetcompany.synthetic-store-a", "bombaypetcompany.synthetic-store-b"]);
 
     const regions = persistedRegions(synthetic);
     const partializeRegions = regions.filter((region) => region.startsWith("partialize"));
@@ -203,14 +203,14 @@ describe("storage-audit: MMKV-persisted zustand stores", () => {
     expect(CREDENTIAL_SHAPED_KEY_PATTERN.test(partializeRegions[0]!)).toBe(true);
   });
 
-  it("the set of MMKV-persisted store names is pinned and every name starts with pawcareright.", () => {
+  it("the set of MMKV-persisted store names is pinned and every name starts with bombaypetcompany.", () => {
     const names = PERSISTED_STORE_FILES.flatMap((file) =>
       persistedStoreNames(fs.readFileSync(file, "utf8")),
     ).sort();
 
     expect(names).toEqual(EXPECTED_PERSISTED_STORE_NAMES);
     for (const name of names) {
-      expect(name.startsWith("pawcareright.")).toBe(true);
+      expect(name.startsWith("bombaypetcompany.")).toBe(true);
     }
   });
 });
@@ -219,9 +219,9 @@ describe("storage-audit: MMKV-persisted zustand stores", () => {
 // SecureStore keys: the two documented token keys.
 // ---------------------------------------------------------------------------
 describe("storage-audit: SecureStore keys are the two documented token keys", () => {
-  it("src/auth/secure-store.ts declares exactly pawcareright.auth.accessToken and pawcareright.auth.refreshToken", () => {
+  it("src/auth/secure-store.ts declares exactly bombaypetcompany.auth.accessToken and bombaypetcompany.auth.refreshToken", () => {
     const source = fs.readFileSync(nodePath.join(SRC_DIR, "auth", "secure-store.ts"), "utf8");
-    expect(source).toContain('"pawcareright.auth.accessToken"');
-    expect(source).toContain('"pawcareright.auth.refreshToken"');
+    expect(source).toContain('"bombaypetcompany.auth.accessToken"');
+    expect(source).toContain('"bombaypetcompany.auth.refreshToken"');
   });
 });

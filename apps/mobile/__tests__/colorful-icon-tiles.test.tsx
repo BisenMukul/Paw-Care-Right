@@ -1,4 +1,4 @@
-import { INTAKE_CATEGORIES } from "@pawcareright/types";
+import { INTAKE_CATEGORIES } from "@bombaypetcompany/types";
 import { render, screen } from "@testing-library/react-native";
 
 import ServicesAdoptScreen from "../app/services/adopt";

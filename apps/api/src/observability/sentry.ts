@@ -1,7 +1,7 @@
 // T089 — Sentry init + capture helper for the API (plan D1/D5/D8).
 //
 // SAFETY (CLAUDE §7 / plan "Safety statement"): the shared `baseSentryOptions`
-// factory (from `@pawcareright/analytics`) pins `beforeSend` to the shared
+// factory (from `@bombaypetcompany/analytics`) pins `beforeSend` to the shared
 // scrubber and `sendDefaultPii: false` — no call site here may override
 // either. Only 5xx / non-`HttpException` errors are ever reported (plan
 // D8); the request object itself is never passed to Sentry, only the error
@@ -12,7 +12,7 @@ import {
   buildSentryRelease,
   type Breadcrumb,
   type SentryEventLike,
-} from "@pawcareright/analytics";
+} from "@bombaypetcompany/analytics";
 import * as Sentry from "@sentry/node";
 
 import type { AppConfigService } from "../config/app-config.service";

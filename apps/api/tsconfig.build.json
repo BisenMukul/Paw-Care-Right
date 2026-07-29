@@ -6,12 +6,12 @@
     "declaration": false,
     "sourceMap": true,
     "paths": {
-      "@pawcareright/ai": ["../ai/dist/index.d.ts"],
-      "@pawcareright/analytics": ["../analytics/dist/index.d.ts"],
-      "@pawcareright/types": ["../types/dist/index.d.ts"],
-      "@pawcareright/data": ["../data/dist/index.d.ts"],
-      "@pawcareright/config": ["../config/dist/index.d.ts"],
-      "@pawcareright/config/env": ["../config/dist/env/index.d.ts"]
+      "@bombaypetcompany/ai": ["../ai/dist/index.d.ts"],
+      "@bombaypetcompany/analytics": ["../analytics/dist/index.d.ts"],
+      "@bombaypetcompany/types": ["../types/dist/index.d.ts"],
+      "@bombaypetcompany/data": ["../data/dist/index.d.ts"],
+      "@bombaypetcompany/config": ["../config/dist/index.d.ts"],
+      "@bombaypetcompany/config/env": ["../config/dist/env/index.d.ts"]
     }
   },
   "exclude": ["node_modules", "dist", "test", "**/*.spec.ts"]

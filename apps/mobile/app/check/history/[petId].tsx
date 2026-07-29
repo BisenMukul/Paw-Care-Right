@@ -1,4 +1,4 @@
-import { useIsOffline } from "@pawcareright/api-client";
+import { useIsOffline } from "@bombaypetcompany/api-client";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { RefreshControl, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";

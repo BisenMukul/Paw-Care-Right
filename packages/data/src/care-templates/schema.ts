@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { rruleSchema, reminderTypeSchema, speciesSchema, type ReminderType } from "@pawcareright/types";
+import { rruleSchema, reminderTypeSchema, speciesSchema, type ReminderType } from "@bombaypetcompany/types";
 
 import { slugSchema } from "../breeds/schema";
 
@@ -46,7 +46,7 @@ export const careTemplateItemSchema = z.strictObject({
   category: templateCategorySchema,
   title: z.string().min(1).max(120), // plain language, no brand names, no dosing
   note: noteWithVetConfirmSchema,
-  rrule: rruleSchema, // validated by parseRRule (@pawcareright/types)
+  rrule: rruleSchema, // validated by parseRRule (@bombaypetcompany/types)
   anchor: templateAnchorSchema,
   startOffsetDays: z.number().int().min(0),
   emphasis: z.boolean().default(false), // true = region strongly emphasizes (e.g. rabies in IN)
@@ -66,5 +66,5 @@ export const CATEGORY_TO_REMINDER_TYPE: Record<TemplateCategory, ReminderType> =
 };
 
 // Re-exported so callers of this module don't need a second import from
-// `@pawcareright/types` just to type a `species`/`reminderType` field.
+// `@bombaypetcompany/types` just to type a `species`/`reminderType` field.
 export { reminderTypeSchema, speciesSchema };

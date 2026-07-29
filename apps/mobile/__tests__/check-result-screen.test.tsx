@@ -1,5 +1,5 @@
-import { APP_DISPLAY_NAME } from "@pawcareright/config";
-import { HOME_CARE_ALLOWED_TIERS, type TriageResult, type Urgency } from "@pawcareright/types";
+import { APP_DISPLAY_NAME } from "@bombaypetcompany/config";
+import { HOME_CARE_ALLOWED_TIERS, type TriageResult, type Urgency } from "@bombaypetcompany/types";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react-native";
 import * as Linking from "expo-linking";
 import { Share } from "react-native";

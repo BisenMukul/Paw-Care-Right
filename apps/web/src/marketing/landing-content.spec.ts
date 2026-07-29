@@ -1,4 +1,4 @@
-import { DEEPLINK_SCHEME } from "@pawcareright/config";
+import { DEEPLINK_SCHEME } from "@bombaypetcompany/config";
 
 import { allFoodPagePaths } from "../food/params";
 import { buildAppDeepLink, APP_URL_SCHEME } from "../deep-link";
@@ -87,14 +87,14 @@ describe("buildAppDeepLink", () => {
 describe("buildLandingModel throws on a bad popular-answer pair (never silently drops a link)", () => {
   it("throws when a pinned pair's item id is not in the dataset", () => {
     jest.resetModules();
-    jest.doMock("@pawcareright/data", () => {
-      const actual = jest.requireActual("@pawcareright/data") as Record<string, unknown>;
+    jest.doMock("@bombaypetcompany/data", () => {
+      const actual = jest.requireActual("@bombaypetcompany/data") as Record<string, unknown>;
       return { ...actual, toxins: [] };
     });
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { buildLandingModel: rebuiltModel } = require("./landing-content") as typeof import("./landing-content");
     expect(() => rebuiltModel(APP_NAME)).toThrow(/not a page the food dataset generates/);
-    jest.dontMock("@pawcareright/data");
+    jest.dontMock("@bombaypetcompany/data");
     jest.resetModules();
   });
 });

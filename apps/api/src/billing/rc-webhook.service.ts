@@ -1,5 +1,5 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { RC_WEBHOOK_EVENT_TYPES, rcWebhookEnvelopeSchema } from "@pawcareright/types";
+import { RC_WEBHOOK_EVENT_TYPES, rcWebhookEnvelopeSchema } from "@bombaypetcompany/types";
 import { Prisma } from "@prisma/client";
 
 import { AnalyticsService } from "../analytics/analytics.service";

@@ -1,4 +1,4 @@
-import { ACCOUNT_DELETION_GRACE_DAYS } from "@pawcareright/types";
+import { ACCOUNT_DELETION_GRACE_DAYS } from "@bombaypetcompany/types";
 
 import { strings } from "../strings";
 import {
@@ -105,7 +105,7 @@ describe("privacy document structure (AC2)", () => {
     expect(body.toLowerCase()).toContain("we do not sell");
     expect(body.toLowerCase()).toContain("supervisory authority");
     expect(body).toContain("under 13");
-    expect(body).toContain("privacy@pawcareright.app");
+    expect(body).toContain("privacy@bombaypetcompany.app");
   });
 
   it("H3 (re-pointed for T091, checker F3): the policy now HONESTLY describes in-app deletion in Settings, but still does not overclaim a single-tap/instant 'delete button' flow, and the contact-based route is present", () => {
@@ -124,7 +124,7 @@ describe("privacy document structure (AC2)", () => {
     expect(body.toLowerCase()).not.toContain("one tap");
     expect(body.toLowerCase()).not.toContain("one-tap");
     expect(body.toLowerCase()).not.toContain("instantly delete");
-    expect(body).toContain("privacy@pawcareright.app");
+    expect(body).toContain("privacy@bombaypetcompany.app");
   });
 
   it("T091: the privacy policy no longer says self-serve deletion is unavailable", () => {
@@ -133,7 +133,7 @@ describe("privacy document structure (AC2)", () => {
     expect(body.toLowerCase()).not.toMatch(/deletion option is planned/);
   });
 
-  it("T091: the retention section states the deletion grace period (imported from @pawcareright/types, not hardcoded)", () => {
+  it("T091: the retention section states the deletion grace period (imported from @bombaypetcompany/types, not hardcoded)", () => {
     const retention = doc.sections.find((s) => s.id === "retention")!;
     const body = retention.paragraphs.join(" ");
     expect(body).toContain(`${ACCOUNT_DELETION_GRACE_DAYS}-day grace window`);
@@ -194,7 +194,7 @@ describe("terms document structure (AC2)", () => {
     expect(body).toContain("7-day");
     expect(body).toMatch(/app stores|App Store/);
     expect(body.toLowerCase()).toContain("cruelty");
-    expect(body).toContain("legal@pawcareright.app");
+    expect(body).toContain("legal@bombaypetcompany.app");
   });
 
   it("the governing-law placeholder appears inside its LEGAL-REVIEW-marked section", () => {

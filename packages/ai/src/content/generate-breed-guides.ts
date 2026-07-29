@@ -11,7 +11,7 @@ import {
   type Breed,
   type BreedGuideRow,
   type BreedSpecies,
-} from "@pawcareright/data";
+} from "@bombaypetcompany/data";
 
 import { loadAiEnv } from "../env.schema";
 import { resolveMode } from "../evals/harness";

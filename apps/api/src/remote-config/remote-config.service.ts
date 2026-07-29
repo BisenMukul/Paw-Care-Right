@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import type { AppConfigResponse } from "@pawcareright/types";
+import type { AppConfigResponse } from "@bombaypetcompany/types";
 
 import { AppConfigService } from "../config/app-config.service";
 import { assignPaywallVariant } from "./variant-assignment";

@@ -1,4 +1,4 @@
-import type { Sex, Species, Urgency } from "@pawcareright/types";
+import type { Sex, Species, Urgency } from "@bombaypetcompany/types";
 
 /**
  * The deterministic red-flag rules engine (SPEC §5 rule 3 — "the red-flag

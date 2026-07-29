@@ -1,4 +1,4 @@
-import { HOME_CARE_ALLOWED_TIERS, petIdSchema, type Pet, type TriageResult } from "@pawcareright/types";
+import { HOME_CARE_ALLOWED_TIERS, petIdSchema, type Pet, type TriageResult } from "@bombaypetcompany/types";
 import { fireEvent, render, screen, type RenderResult } from "@testing-library/react-native";
 
 import WelcomeScreen from "../app/(auth)/welcome";

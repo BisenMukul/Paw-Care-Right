@@ -4,7 +4,7 @@ import type { INestApplication } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { Test } from "@nestjs/testing";
 import { getStorageToken, type ThrottlerStorageService } from "@nestjs/throttler";
-import { errorResponseSchema } from "@pawcareright/types";
+import { errorResponseSchema } from "@bombaypetcompany/types";
 import { PrismaClient } from "@prisma/client";
 import { createLocalJWKSet, exportJWK, generateKeyPair, SignJWT } from "jose";
 import type { JWK, KeyLike } from "jose";
@@ -39,9 +39,9 @@ function resetThrottlerStorage(app: INestApplication): void {
   }
 }
 
-const TEST_AUDIENCE = "com.pawcareright.app"; // APPLE_CLIENT_ID default
+const TEST_AUDIENCE = "com.bombaypetcompany.app"; // APPLE_CLIENT_ID default
 const KEY_ID = "e2e-test-key-1";
-const GOOGLE_TEST_AUDIENCE = "pawcareright-dev.apps.googleusercontent.com"; // GOOGLE_CLIENT_ID default
+const GOOGLE_TEST_AUDIENCE = "bombaypetcompany-dev.apps.googleusercontent.com"; // GOOGLE_CLIENT_ID default
 const GOOGLE_KEY_ID = "google-e2e-key-1";
 const GOOGLE_DEFAULT_ISSUER: string = GOOGLE_ISSUERS[0] ?? "https://accounts.google.com";
 
@@ -113,7 +113,7 @@ describe("Auth social (e2e)", () => {
   }
 
   function uniqueEmail(): string {
-    return `apple-${randomUUID()}@pawcareright.local`;
+    return `apple-${randomUUID()}@bombaypetcompany.local`;
   }
 
   async function signAppleToken(options: {
@@ -165,7 +165,7 @@ describe("Auth social (e2e)", () => {
   }
 
   function uniqueGoogleEmail(): string {
-    return `google-${randomUUID()}@pawcareright.local`;
+    return `google-${randomUUID()}@bombaypetcompany.local`;
   }
 
   async function signGoogleToken(options: {

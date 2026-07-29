@@ -1,6 +1,6 @@
-import { setOnline } from "@pawcareright/api-client";
-import { resolveCareTemplateForPet, VET_CONFIRM_SENTENCE } from "@pawcareright/data";
-import type { CareTemplateSuggestions } from "@pawcareright/types";
+import { setOnline } from "@bombaypetcompany/api-client";
+import { resolveCareTemplateForPet, VET_CONFIRM_SENTENCE } from "@bombaypetcompany/data";
+import type { CareTemplateSuggestions } from "@bombaypetcompany/types";
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react-native";
 
 import CarePlanWizardScreen from "../app/care-plan/[petId]";

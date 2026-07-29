@@ -16,8 +16,8 @@ import RootLayout from "../app/_layout";
 
 const mockReplace = jest.fn();
 
-jest.mock("@pawcareright/api-client", () => {
-  const actual = jest.requireActual("@pawcareright/api-client");
+jest.mock("@bombaypetcompany/api-client", () => {
+  const actual = jest.requireActual("@bombaypetcompany/api-client");
   const { View } = jest.requireActual<typeof import("react-native")>("react-native");
   return {
     ...actual,

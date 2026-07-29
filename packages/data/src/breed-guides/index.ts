@@ -7,7 +7,7 @@ import { breedGuideSchema, type BreedGuide } from "./schema";
 // Re-exported here (not from the top-level `src/index.ts`, which only gains
 // the two lines the plan pins) so both this package's own tests and
 // `packages/ai`'s cross-package tests can resolve the pinned slug lists via
-// `@pawcareright/data` without a bespoke subpath export.
+// `@bombaypetcompany/data` without a bespoke subpath export.
 export * from "./top-breeds";
 
 // Parsing at module load is the runtime validation layer; `breed-guides.spec.ts`

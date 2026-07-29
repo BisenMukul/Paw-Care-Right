@@ -9,7 +9,7 @@ import {
   type BreedGuideRow,
   type ExerciseLevel,
   type SizeClass,
-} from "@pawcareright/data";
+} from "@bombaypetcompany/data";
 
 import { scanUnsafeText } from "../evals/detector";
 import { FakeTextProvider } from "../providers/fake";

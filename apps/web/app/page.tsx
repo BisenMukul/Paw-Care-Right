@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { APP_DISPLAY_NAME } from "@pawcareright/config";
+import { APP_DISPLAY_NAME } from "@bombaypetcompany/config";
 
 import { LandingView } from "../src/components/marketing/landing-view";
 import { buildLandingModel } from "../src/marketing/landing-content";

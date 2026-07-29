@@ -1,4 +1,4 @@
-import { type ErrorCode, errorResponseSchema } from "@pawcareright/types";
+import { type ErrorCode, errorResponseSchema } from "@bombaypetcompany/types";
 
 export interface ApiErrorArgs {
   code: ErrorCode;

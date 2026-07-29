@@ -1,4 +1,4 @@
-import { parseRRule, type RRuleWeekday } from "@pawcareright/types";
+import { parseRRule, type RRuleWeekday } from "@bombaypetcompany/types";
 
 /**
  * T060 plan decision 7: an in-house pure schedule-builder (no new

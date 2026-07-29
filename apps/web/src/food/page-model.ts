@@ -1,7 +1,7 @@
 // Presentation-ready model for one `/can-{species}-eat/{item}` page (T085).
 // `buildFoodPageModel` is the single place that turns a dataset row into
 // every string the page renders — no component invents toxicology text.
-import { toxins, type ToxinRow } from "@pawcareright/data";
+import { toxins, type ToxinRow } from "@bombaypetcompany/data";
 
 import { strings } from "../strings";
 import { SITE_URL } from "../site";

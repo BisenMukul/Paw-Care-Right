@@ -1,14 +1,14 @@
 import { randomUUID } from "node:crypto";
 
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
-import { resolveCareTemplate, resolveCareTemplateForPet, resolveLifeStage } from "@pawcareright/data";
+import { resolveCareTemplate, resolveCareTemplateForPet, resolveLifeStage } from "@bombaypetcompany/data";
 import {
   parseRRule,
   type CareTemplateSuggestions,
   type MedicationCourseResponse,
   type ReminderEventStatus,
   type Species,
-} from "@pawcareright/types";
+} from "@bombaypetcompany/types";
 import type { Reminder, ReminderEvent } from "@prisma/client";
 
 import { PetsService } from "../pets/pets.service";

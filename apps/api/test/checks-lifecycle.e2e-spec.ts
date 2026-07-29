@@ -4,8 +4,8 @@ import { getQueueToken } from "@nestjs/bullmq";
 import type { INestApplication } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { Test } from "@nestjs/testing";
-import { FakeTextProvider } from "@pawcareright/ai";
-import { parseTriage } from "@pawcareright/types";
+import { FakeTextProvider } from "@bombaypetcompany/ai";
+import { parseTriage } from "@bombaypetcompany/types";
 import { PrismaClient } from "@prisma/client";
 import type { Job, Queue } from "bullmq";
 import { QueueEvents } from "bullmq";
@@ -48,7 +48,7 @@ const cannedTriageTextResult = {
 
 /**
  * Full API-level lifecycle E2E (T052): the ONLY suite with a REAL,
- * `@Processor`-attached `pawcareright-checks` BullMQ `Worker` (the actual
+ * `@Processor`-attached `bombaypetcompany-checks` BullMQ `Worker` (the actual
  * `CheckRunnerProcessor` — not overridden here). Only the `TRIAGE_TEXT_PROVIDER`
  * DI seam is swapped for a deterministic `FakeTextProvider`, so
  * `evaluateRedFlags`/`applyPostRules`/`VisionPrepService`/Prisma persistence all
@@ -173,7 +173,7 @@ describe("Checks lifecycle (e2e)", () => {
       const triageRow = await prisma.triageResult.findUnique({ where: { checkId } });
       expect(triageRow).not.toBeNull();
 
-      // 24h follow-up hours -> a delayed job in `pawcareright-followups`.
+      // 24h follow-up hours -> a delayed job in `bombaypetcompany-followups`.
       const followUpJob = (await followupsQueue.getJob(checkId)) as Job<FollowUpJobData>;
       expect(followUpJob).toBeDefined();
       expect(followUpJob.opts.delay).toBe(86_400_000);

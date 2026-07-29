@@ -1,4 +1,4 @@
-import { toxins } from "@pawcareright/data";
+import { toxins } from "@bombaypetcompany/data";
 
 import { allFoodPagePaths, FOOD_PAGE_COUNT, foodItemIds, staticParamsFor } from "./params";
 import { SPECIES_SEGMENTS } from "./species";

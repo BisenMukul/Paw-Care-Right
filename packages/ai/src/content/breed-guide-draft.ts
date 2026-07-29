@@ -5,7 +5,7 @@ import {
   type BreedGuideRow,
   type ExerciseLevel,
   type SizeClass,
-} from "@pawcareright/data";
+} from "@bombaypetcompany/data";
 
 import { scanUnsafeText } from "../evals/detector";
 import type { TextProvider } from "../providers/types";

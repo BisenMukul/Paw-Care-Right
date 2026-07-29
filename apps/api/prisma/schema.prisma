@@ -367,7 +367,7 @@ model ProcessedWebhookEvent {
   processedAt DateTime @default(now())
 }
 
-// ChatThread/ChatMessage (T081 -- F7 "Ask Paw Care Right +"). A thread is a
+// ChatThread/ChatMessage (T081 -- F7 "Ask Bombay Pet Company"). A thread is a
 // per-pet conversation; messages carry role, delivered content, and safety/
 // cost metadata. `content` on an ASSISTANT row is exactly what was released
 // to the client (never a flagged/undelivered span) -- `status` records

@@ -1,5 +1,5 @@
-import { setOnline } from "@pawcareright/api-client";
-import { INTAKE_CATEGORIES, type CheckResponse } from "@pawcareright/types";
+import { setOnline } from "@bombaypetcompany/api-client";
+import { INTAKE_CATEGORIES, type CheckResponse } from "@bombaypetcompany/types";
 import { act, fireEvent, render, screen } from "@testing-library/react-native";
 
 import CheckEntryScreen from "../app/check/index";
@@ -7,7 +7,7 @@ import { strings } from "../src/strings";
 
 // Screen tests for the check entry screen (T044 plan; recent section made
 // live by T050). `expo-router` is mocked; offline is driven by the REAL
-// shared store (`setOnline`) from `@pawcareright/api-client`, reset to
+// shared store (`setOnline`) from `@bombaypetcompany/api-client`, reset to
 // online in `afterEach`. RNTL v14 — every render is awaited. `useChecksList`
 // is mocked since the screen now calls it for the recent-checks section.
 const mockPush = jest.fn();

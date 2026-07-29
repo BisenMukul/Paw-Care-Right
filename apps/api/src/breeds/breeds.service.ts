@@ -1,5 +1,5 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { normalize, searchBreeds, type Breed, type BreedSpecies } from "@pawcareright/data";
+import { normalize, searchBreeds, type Breed, type BreedSpecies } from "@bombaypetcompany/data";
 
 import { RedisService } from "../redis/redis.service";
 
@@ -29,7 +29,7 @@ export class BreedsService {
       return l1Hit;
     }
 
-    const redisKey = `pawcareright:breeds:${species}:${nq === "" ? "_all" : nq.replace(/\s+/g, "_")}`;
+    const redisKey = `bombaypetcompany:breeds:${species}:${nq === "" ? "_all" : nq.replace(/\s+/g, "_")}`;
 
     try {
       const cached = await this.redis.get(redisKey);

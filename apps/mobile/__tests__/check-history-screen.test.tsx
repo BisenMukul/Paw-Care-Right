@@ -1,5 +1,5 @@
-import { setOnline } from "@pawcareright/api-client";
-import type { CheckResponse } from "@pawcareright/types";
+import { setOnline } from "@bombaypetcompany/api-client";
+import type { CheckResponse } from "@bombaypetcompany/types";
 import { act, fireEvent, render, screen } from "@testing-library/react-native";
 
 import CheckHistoryScreen from "../app/check/history/[petId]";
@@ -7,7 +7,7 @@ import { strings } from "../src/strings";
 
 // T050 plan "Tests to write" -> check-history-screen.test.tsx. `expo-router`
 // and `useChecksList` are mocked; offline is driven by the REAL shared store
-// (`setOnline`) from `@pawcareright/api-client`, reset to online in
+// (`setOnline`) from `@bombaypetcompany/api-client`, reset to online in
 // `afterEach`. RNTL v14 — every render is awaited.
 const mockPush = jest.fn();
 

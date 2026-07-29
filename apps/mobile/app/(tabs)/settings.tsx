@@ -1,4 +1,4 @@
-import { APP_DISPLAY_NAME } from "@pawcareright/config";
+import { APP_DISPLAY_NAME } from "@bombaypetcompany/config";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Switch, Text, View } from "react-native";

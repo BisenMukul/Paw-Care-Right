@@ -1321,3 +1321,21 @@
 - **OPEN at the tag (recorded, non-blocking):** no GitHub Actions run observed from this environment (founder-verifiable on push); FLAKE-1/FLAKE-2 follow-ups with the expect-CI-red caveat; the standing founder to-dos (store consoles, RC keys, Sentry DSNs, billing sandbox, device a11y pass, dev-client rebuild — now to be done under the NEW brand, see below).
 - Tag `milestone/M9` (local-only per standing note).
 - **Next: REBRAND-1 (founder-directed, supersedes T099 ordering): full rebrand "Paw Care Right +" → "Bombay Pet Company"** — display name + ALL technical identifiers (bombaypetcompany slug family), founder decisions locked 2026-07-29 via AskUserQuestion (full scope; exact string "Bombay Pet Company", no trailing +; sequenced explicitly after this tag). §1a's table update is founder-authorized by the rebrand directive. Then Phase 10 (T099+) under the new brand.
+
+---
+
+## REBRAND-1 — Full rebrand "Paw Care Right +" → "Bombay Pet Company" (2026-07-29)
+
+Founder-directed (supersedes T099 ordering; decisions locked 2026-07-29: full scope NOW, exact display string "Bombay Pet Company", no trailing +, sequenced after milestone/M9). Planner → executor → adversarial checker, verdict **PASS** (zero HIGH/MED, 4 LOW).
+
+**What changed (535 files):** display name via APP_DISPLAY_NAME only; identifier family `pawcareright` → `bombaypetcompany` everywhere: @bombaypetcompany/* package renames + all imports/moduleNameMapper/tsconfig-paths/turbo/CI filters; com.bombaypetcompany.app bundle id; bombaypetcompany:// scheme; bombaypetcompany-* S3/Redis/queue prefixes; Sentry release/org/project slugs; bombaypetcompany.app domain placeholder; EAS slug (server-assigned projectId UUID intentionally unchanged — EAS project rename is a T099/T116 founder to-do); seeds (*@bombaypetcompany.local); docker-compose + CI postgres/MinIO creds; 4 mobile snapshots rebaselined (name-string-only, grep-gate empty). pnpm-lock.yaml regenerated via `pnpm i`, never hand-edited. CLAUDE.md §1/§1a/§4 updated by the ORCHESTRATOR (founder-authorized; hook-protected paths untouched by loop agents).
+
+**Local infra migrated:** new postgres role/db `bombaypetcompany` (CREATEDB only, not superuser; legacy role left as rollback), 15 migrations + seed applied; MinIO restarted with bombaypetcompany creds + bombaypetcompany-media bucket; stale pawcareright:* Redis keys flushed.
+
+**Gates (executor-run, checker-reproduced incl. --force uncached):** typecheck 16/16, lint 15/15, build 9/9, api 108 suites/1103 tests (no FLAKE-1/FLAKE-2 occurrence this run), mobile 173/1417 + 19 snapshots, web 16/203, types 25/566, ai 44/634 (3 pre-existing skips), ai-evals 195 cases thresholdsPassed=true + chat gate 11/11. Survivor scan == plan allowlist exactly (loop history, hook-protected docs, KICKOFF_PROMPT) + `claude-surveillance.zip` (pre-existing unrelated tracked binary, byte-identical to HEAD, orchestrator-ruled exempt — founder attention flagged).
+
+**Notable execution events:** batched sed flattened the deliberate join-trick in apps/web/src/marketing/render.spec.tsx into the forbidden literal "Bombay Pet Company +" — executor hand-fixed to `["Bombay","Pet","Company"].join(" ")` per plan; checker mutation-proved the guard non-vacuous (planted mutant → spec RED → restored, sha1-verified). Sed also transiently corrupted claude-surveillance.zip; restored byte-identical from HEAD.
+
+**Checker LOW findings / follow-ups:** (LOW-3) README CI badge still points at github.com/BisenMukul/Paw-Care-Right — correct until the founder renames the GitHub repo; (LOW-4) chat 402 message hardcodes display name (pre-existing T097 debt, follow-up ticket). Stale-until-authorized: docs/PHASES.md T099/T102 cards, docs/OTA_UPDATES.md §7 Sentry slug, MODEL_STRATEGY/AI_PROVIDERS/LOOP_PROTOCOL/.claude/** — all hook-protected, documented exemptions. Founder to-dos renewed under new brand: GitHub repo rename + badge, EAS project rename/re-create, store consoles, T102 trademark check targets "Bombay Pet Company", dev-client rebuild (new bundle id = new native app), re-seed devices.
+
+**Next:** T099 (Phase 10) under the new brand.

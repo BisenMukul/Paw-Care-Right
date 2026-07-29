@@ -22,7 +22,7 @@ import { SendMessageDto } from "./dto/send-message.dto";
 import { SseWriter } from "./sse-writer";
 
 /**
- * Household-scoped chat endpoints (T081 — F7 "Ask Paw Care Right +"),
+ * Household-scoped chat endpoints (T081 — F7 "Ask Bombay Pet Company"),
  * resolved via the caller's membership (same posture as `ChecksController`/
  * `PetsController`). The message-send route is `@Res()`-based SSE (plan
  * decision D2) — thin: every rejection is thrown by the service BEFORE any
@@ -40,7 +40,7 @@ export class ChatController {
   @Post("threads")
   @Throttle(THROTTLE_AI_WRITE)
   @ApiCreatedResponse({ description: "The created chat thread." })
-  @ApiPaymentRequiredResponse({ description: "Ask Paw Care Right + chat is a premium feature." })
+  @ApiPaymentRequiredResponse({ description: "Ask Bombay Pet Company chat is a premium feature." })
   @ApiNotFoundResponse({ description: "No resolved household for the caller, or the pet does not exist in it." })
   @ApiTooManyRequestsResponse({ description: "Rate limit exceeded (20/min/IP)." })
   createThread(

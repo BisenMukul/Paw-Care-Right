@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import type { ActivityType, ActivityUnit } from "@pawcareright/types";
+import type { ActivityType, ActivityUnit } from "@bombaypetcompany/types";
 import { useEffect, useState } from "react";
 import { KeyboardAvoidingView, Modal, Platform, Pressable, Text, TextInput, useColorScheme, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";

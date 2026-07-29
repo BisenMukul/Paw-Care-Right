@@ -3,7 +3,7 @@
  * queue/job/scheduler-id/cron/retention constants (T090 plan step 18).
  * Mirrors `reminder-consistency.contract.ts`. No logic here.
  */
-export const AI_AUDIT_RETENTION_QUEUE = "pawcareright-ai-audit-retention";
+export const AI_AUDIT_RETENTION_QUEUE = "bombaypetcompany-ai-audit-retention";
 
 export const AI_AUDIT_RETENTION_JOB_NAME = "ai-audit-retention";
 

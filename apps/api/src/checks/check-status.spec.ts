@@ -1,4 +1,4 @@
-import { CHECK_STATUSES, type CheckStatus } from "@pawcareright/types";
+import { CHECK_STATUSES, type CheckStatus } from "@bombaypetcompany/types";
 import { CheckStatus as PrismaCheckStatus } from "@prisma/client";
 
 import {
@@ -79,7 +79,7 @@ describe("TERMINAL_CHECK_STATUSES / isTerminalCheckStatus", () => {
   });
 });
 
-describe("Prisma CheckStatus <-> @pawcareright/types CHECK_STATUSES parity", () => {
+describe("Prisma CheckStatus <-> @bombaypetcompany/types CHECK_STATUSES parity", () => {
   it("has the same member set (order-independent) so the enum can't silently drift", () => {
     const prismaValues = Object.values(PrismaCheckStatus).sort();
     const typesValues = [...CHECK_STATUSES].sort();

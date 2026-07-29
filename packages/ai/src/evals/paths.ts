@@ -10,7 +10,7 @@ import { dirname, join } from "node:path";
  * suite compiles specs via ts-jest under `tsconfig.spec.json`
  * (`module: "CommonJS"`, required so ts-jest/CJS-Jest can run them) — `tsc`
  * rejects `import.meta` under a CommonJS module target, so any file using it
- * would break `pnpm --filter @pawcareright/ai test`. `__dirname` is equally
+ * would break `pnpm --filter @bombaypetcompany/ai test`. `__dirname` is equally
  * unusable because tsup's ESM output (the artifact `test:ai-evals` actually
  * executes, `dist/evals/run.js`) has no `__dirname` binding (verified by
  * running the built artifact directly).
@@ -20,7 +20,7 @@ import { dirname, join } from "node:path";
  * set to that package's directory (`packages/ai`) regardless of the
  * invoking shell's cwd — walking up two levels from there reaches the repo
  * root in every invocation path exercised by this task (`pnpm --filter
- * @pawcareright/ai test:ai-evals`, `pnpm test:ai-evals` via turbo from the
+ * @bombaypetcompany/ai test:ai-evals`, `pnpm test:ai-evals` via turbo from the
  * repo root, and Jest specs run the same way).
  */
 export function findRepoRoot(startDir: string = process.cwd()): string {

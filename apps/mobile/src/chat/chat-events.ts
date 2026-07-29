@@ -1,4 +1,4 @@
-import type { SseFrame } from "@pawcareright/api-client";
+import type { SseFrame } from "@bombaypetcompany/api-client";
 import {
   chatChunkEventSchema,
   chatDoneEventSchema,
@@ -8,7 +8,7 @@ import {
   type ChatDoneEvent,
   type ChatNudgeEvent,
   type ChatStartEvent,
-} from "@pawcareright/types";
+} from "@bombaypetcompany/types";
 
 /**
  * Maps a raw `SseFrame` to a typed chat event (T083 plan decision D4). Every

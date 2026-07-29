@@ -1,5 +1,5 @@
-import { APP_DISPLAY_NAME } from "@pawcareright/config";
-import { scanUnsafeText } from "@pawcareright/ai";
+import { APP_DISPLAY_NAME } from "@bombaypetcompany/config";
+import { scanUnsafeText } from "@bombaypetcompany/ai";
 
 import { strings } from "../src/strings";
 
@@ -18,7 +18,7 @@ import { strings } from "../src/strings";
  * counterpart, kept byte-parallel in shape.
  */
 
-const SAMPLE_ARG = "Paw Care Right +";
+const SAMPLE_ARG = "Bombay Pet Company";
 
 interface Leaf {
   readonly path: string;
@@ -167,7 +167,7 @@ describe("mobile strings tree — AC1 detector + claims lint", () => {
 
   it("frozen copy is byte-identical", () => {
     expect(strings.check.result.disclaimer(APP_DISPLAY_NAME)).toBe(
-      "Paw Care Right + offers general pet-care guidance, not veterinary care or treatment. Always consult a licensed veterinarian.",
+      "Bombay Pet Company offers general pet-care guidance, not veterinary care or treatment. Always consult a licensed veterinarian.",
     );
     expect(strings.check.emergency).toEqual({
       goNowBadge: "Emergency",

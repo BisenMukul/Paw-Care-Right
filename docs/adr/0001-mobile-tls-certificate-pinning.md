@@ -11,11 +11,11 @@ which the decision should be revisited.
 
 Certificate pinning constrains which certificate(s) or public key(s) a
 client will accept for a given host, beyond ordinary OS trust-store
-validation. For Paw Care Right +, the candidate target would be the
-mobile app's connection to its own API (`pawcareright.app`).
+validation. For Bombay Pet Company, the candidate target would be the
+mobile app's connection to its own API (`bombaypetcompany.app`).
 
 **Threat model.** The platform trust store (iOS/Android's built-in set of
-CA roots) already authenticates `pawcareright.app` for the overwhelming
+CA roots) already authenticates `bombaypetcompany.app` for the overwhelming
 majority of network conditions: a normal ISP, public Wi-Fi, or mobile
 carrier network cannot forge a certificate for our domain without
 compromising a publicly trusted CA. Pinning only adds defence against a

@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { PROTOCOL_GROUPS, type ProtocolGroup } from "@pawcareright/data";
+import { PROTOCOL_GROUPS, type ProtocolGroup } from "@bombaypetcompany/data";
 import { Type } from "class-transformer";
 import {
   IsArray,

@@ -1,4 +1,4 @@
-import type { SymptomCategory } from "@pawcareright/types";
+import type { SymptomCategory } from "@bombaypetcompany/types";
 
 /**
  * Tap-first quick-pick descriptor chips for the symptom-intake free-text

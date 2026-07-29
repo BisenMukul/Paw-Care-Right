@@ -3,7 +3,7 @@ import {
   type CheckResponse,
   type TriageResult,
   type Urgency,
-} from "@pawcareright/types";
+} from "@bombaypetcompany/types";
 import { render, screen, type RenderResult } from "@testing-library/react-native";
 
 import CheckHistoryScreen from "../app/check/history/[petId]";

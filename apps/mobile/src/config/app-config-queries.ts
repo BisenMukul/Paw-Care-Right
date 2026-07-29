@@ -1,4 +1,4 @@
-import { appConfigResponseSchema, type PaywallVariant } from "@pawcareright/types";
+import { appConfigResponseSchema, type PaywallVariant } from "@bombaypetcompany/types";
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";
 
 import { apiClient } from "../api/client";

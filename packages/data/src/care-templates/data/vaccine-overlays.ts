@@ -1,4 +1,4 @@
-import type { Species } from "@pawcareright/types";
+import type { Species } from "@bombaypetcompany/types";
 
 import { VET_CONFIRM_SENTENCE, type CareTemplateItemInput, type LifeStage, type ProtocolGroup } from "../schema";
 

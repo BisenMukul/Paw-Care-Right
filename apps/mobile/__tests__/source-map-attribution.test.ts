@@ -113,9 +113,9 @@ describe("groupByPackage", () => {
     expect(groupByPackage(rows)).toEqual([{ source: "@expo/vector-icons", bytes: 50 }]);
   });
 
-  it("buckets a workspace packages/ path to its @pawcareright/<workspace> label", () => {
+  it("buckets a workspace packages/ path to its @bombaypetcompany/<workspace> label", () => {
     const rows = [{ source: "../../packages/types/src/a.ts", bytes: 30 }];
-    expect(groupByPackage(rows)).toEqual([{ source: "@pawcareright/types", bytes: 30 }]);
+    expect(groupByPackage(rows)).toEqual([{ source: "@bombaypetcompany/types", bytes: 30 }]);
   });
 
   it("buckets an app-relative source (no node_modules, no packages/) to apps/mobile", () => {

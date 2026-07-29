@@ -57,7 +57,7 @@ describe("startup guard", () => {
     const boom = new Error("boom-at-startup");
     fake.current(boom, true);
 
-    expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining("[pawcareright startup] FATAL"), boom);
+    expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining("[bombaypetcompany startup] FATAL"), boom);
     expect(previous).toHaveBeenCalledWith(boom, true);
   });
 

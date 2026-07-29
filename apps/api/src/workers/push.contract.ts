@@ -14,7 +14,7 @@
  * reprocess every OTHER co-household member too, double-pushing anyone
  * already sent in the original run (T058 checker BLOCKING finding).
  */
-export const PUSH_QUEUE = "pawcareright-push";
+export const PUSH_QUEUE = "bombaypetcompany-push";
 
 export const PUSH_JOB_NAME = "reminder-push";
 

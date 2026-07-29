@@ -5,7 +5,7 @@ import {
   type AccountDeletionStatus,
   type AccountExportRequest,
   type AccountPrivacySettings,
-} from "@pawcareright/types";
+} from "@bombaypetcompany/types";
 import type { Queue } from "bullmq";
 
 import { PrismaService } from "../prisma/prisma.service";

@@ -1,4 +1,4 @@
-import { createQueryClient, setOnline } from "@pawcareright/api-client";
+import { createQueryClient, setOnline } from "@bombaypetcompany/api-client";
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react-native";
 import { Share } from "react-native";
 

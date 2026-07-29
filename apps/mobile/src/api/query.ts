@@ -1,5 +1,5 @@
-import { createQueryClient, isApiError } from "@pawcareright/api-client";
-import { createMmkvPersister } from "@pawcareright/api-client/mmkv-persister";
+import { createQueryClient, isApiError } from "@bombaypetcompany/api-client";
+import { createMmkvPersister } from "@bombaypetcompany/api-client/mmkv-persister";
 import { MutationCache } from "@tanstack/react-query";
 
 import { useUpsellStore } from "../billing/upsell-store";

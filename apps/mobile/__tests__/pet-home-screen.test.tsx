@@ -1,5 +1,5 @@
-import { ApiError, setOnline } from "@pawcareright/api-client";
-import { petIdSchema, type Pet } from "@pawcareright/types";
+import { ApiError, setOnline } from "@bombaypetcompany/api-client";
+import { petIdSchema, type Pet } from "@bombaypetcompany/types";
 import { act, fireEvent, render, screen, within } from "@testing-library/react-native";
 import { Dimensions, StyleSheet } from "react-native";
 import type { JsonElement, JsonNode } from "test-renderer";
@@ -15,7 +15,7 @@ import {
 
 // 4-state matrix + the two above-the-fold assertions (T025 plan §Tests AC1
 // and AC2). `expo-router` and `usePet` are mocked; offline is driven by the
-// REAL shared store (`setOnline`) from `@pawcareright/api-client`, reset to
+// REAL shared store (`setOnline`) from `@bombaypetcompany/api-client`, reset to
 // online in `afterEach`. RNTL v14 — every render is awaited.
 const mockPush = jest.fn();
 const mockBack = jest.fn();

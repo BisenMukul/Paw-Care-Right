@@ -1,4 +1,4 @@
-import { getBreedGuide, publishedBreedGuides } from "@pawcareright/data";
+import { getBreedGuide, publishedBreedGuides } from "@bombaypetcompany/data";
 
 import {
   guideRouteParams,

@@ -66,8 +66,8 @@ describe("QuotaService.consume", () => {
 
     const keys = (redis.incr as jest.Mock).mock.calls.map(([key]: [string]) => key);
     expect(keys).toEqual([
-      "pawcareright:quota:foodLookups:day:u1:2026-07-12",
-      "pawcareright:quota:checks:month:u1:2026-07",
+      "bombaypetcompany:quota:foodLookups:day:u1:2026-07-12",
+      "bombaypetcompany:quota:checks:month:u1:2026-07",
     ]);
   });
 

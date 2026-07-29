@@ -1,6 +1,6 @@
-import { evaluateRedFlags } from "@pawcareright/ai";
-import type { CompletedIntake } from "@pawcareright/types";
-import { parseIntake } from "@pawcareright/types";
+import { evaluateRedFlags } from "@bombaypetcompany/ai";
+import type { CompletedIntake } from "@bombaypetcompany/types";
+import { parseIntake } from "@bombaypetcompany/types";
 
 import { buildRedFlagIntake, type PetProfileInput } from "./red-flag-intake.mapper";
 

@@ -1,5 +1,5 @@
-import { createQueryClient, setOnline, streamSseRequest, type SseTransport } from "@pawcareright/api-client";
-import { petIdSchema, type Pet } from "@pawcareright/types";
+import { createQueryClient, setOnline, streamSseRequest, type SseTransport } from "@bombaypetcompany/api-client";
+import { petIdSchema, type Pet } from "@bombaypetcompany/types";
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react-native";
 import { QueryClientProvider, type QueryClient } from "@tanstack/react-query";
 import type { ReactNode } from "react";
@@ -360,7 +360,7 @@ describe("chat screen -- AC-S1 safety surfaces", () => {
     }],
     ["blocked402", async () => {
       mockedStreamSse.mockImplementation(async () => {
-        const { ApiError } = jest.requireActual("@pawcareright/api-client") as typeof import("@pawcareright/api-client");
+        const { ApiError } = jest.requireActual("@bombaypetcompany/api-client") as typeof import("@bombaypetcompany/api-client");
         throw new ApiError({ code: "PAYMENT_REQUIRED", message: "premium only", httpStatus: 402, requestId: null });
       });
       await renderWithPetLoaded();
@@ -433,7 +433,7 @@ describe("chat screen -- AC-S1 safety surfaces", () => {
 
   it("402 while unentitled routes to the paywall", async () => {
     mockedStreamSse.mockImplementation(async () => {
-      const { ApiError } = jest.requireActual("@pawcareright/api-client") as typeof import("@pawcareright/api-client");
+      const { ApiError } = jest.requireActual("@bombaypetcompany/api-client") as typeof import("@bombaypetcompany/api-client");
       throw new ApiError({ code: "PAYMENT_REQUIRED", message: "premium only", httpStatus: 402, requestId: null });
     });
     await renderWithPetLoaded();
@@ -448,7 +448,7 @@ describe("chat screen -- AC-S1 safety surfaces", () => {
   it("402 while entitled shows the fair-use copy with no upgrade CTA", async () => {
     usePremiumStore.setState({ status: "entitled" });
     mockedStreamSse.mockImplementation(async () => {
-      const { ApiError } = jest.requireActual("@pawcareright/api-client") as typeof import("@pawcareright/api-client");
+      const { ApiError } = jest.requireActual("@bombaypetcompany/api-client") as typeof import("@bombaypetcompany/api-client");
       throw new ApiError({ code: "PAYMENT_REQUIRED", message: "quota exhausted", httpStatus: 402, requestId: null });
     });
     await renderWithPetLoaded();
@@ -475,7 +475,7 @@ describe("chat screen -- quick prompts (D10)", () => {
 describe("chat screen -- FINDING-3 blocked402 is not a permanent dead-end", () => {
   it("blocked402 (feature-lock) clears when premiumStatus transitions to entitled (post-purchase) -- composer re-enabled", async () => {
     mockedStreamSse.mockImplementation(async () => {
-      const { ApiError } = jest.requireActual("@pawcareright/api-client") as typeof import("@pawcareright/api-client");
+      const { ApiError } = jest.requireActual("@bombaypetcompany/api-client") as typeof import("@bombaypetcompany/api-client");
       throw new ApiError({ code: "PAYMENT_REQUIRED", message: "premium only", httpStatus: 402, requestId: null });
     });
 
@@ -502,7 +502,7 @@ describe("chat screen -- FINDING-3 blocked402 is not a permanent dead-end", () =
   it("blocked402 (fair-use quota, entitled throughout) is NOT cleared by a no-op premiumStatus write -- stays blocked", async () => {
     usePremiumStore.setState({ status: "entitled" });
     mockedStreamSse.mockImplementation(async () => {
-      const { ApiError } = jest.requireActual("@pawcareright/api-client") as typeof import("@pawcareright/api-client");
+      const { ApiError } = jest.requireActual("@bombaypetcompany/api-client") as typeof import("@bombaypetcompany/api-client");
       throw new ApiError({ code: "PAYMENT_REQUIRED", message: "quota exhausted", httpStatus: 402, requestId: null });
     });
 
@@ -526,7 +526,7 @@ describe("chat screen -- FINDING-3 blocked402 is not a permanent dead-end", () =
 describe("chat screen -- FINDING-4 distinct copy for a non-transport error state", () => {
   it("a non-402 ApiError renders chat-stream-error with the neutral errorNotice copy (not the dropped 'lost connection' copy), and retry is still offered", async () => {
     mockedStreamSse.mockImplementation(async () => {
-      const { ApiError } = jest.requireActual("@pawcareright/api-client") as typeof import("@pawcareright/api-client");
+      const { ApiError } = jest.requireActual("@bombaypetcompany/api-client") as typeof import("@bombaypetcompany/api-client");
       throw new ApiError({ code: "INTERNAL", message: "server exploded", httpStatus: 500, requestId: null });
     });
 

@@ -7,7 +7,7 @@
  * independent copy of the same sentence. This function is the ONE source of
  * truth both apps delegate to, so the two surfaces cannot drift byte-for-byte
  * (mirrors the `MEDICATION_STATIC_COPY` / `VET_SUMMARY_DISCLAIMER` precedent
- * of safety-critical copy living in `@pawcareright/types`).
+ * of safety-critical copy living in `@bombaypetcompany/types`).
  *
  * Constraints on the returned sentence (mechanically asserted by
  * `vet-disclaimer-copy.spec.ts`, never by convention alone): no "diagnos*"
@@ -15,7 +15,7 @@
  * 2), and no hardcoded product display name (CLAUDE §1a) — `appName` is
  * always a parameter, injected by the caller from the shared
  * `APP_DISPLAY_NAME` constant at the render site. This file does not import
- * `@pawcareright/config` itself, keeping the §1a injection point at the
+ * `@bombaypetcompany/config` itself, keeping the §1a injection point at the
  * render site and this package free of a runtime dependency on config.
  */
 export function vetDisclaimerLine(appName: string): string {

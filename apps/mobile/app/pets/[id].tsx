@@ -1,4 +1,4 @@
-import { isApiError, useIsOffline } from "@pawcareright/api-client";
+import { isApiError, useIsOffline } from "@bombaypetcompany/api-client";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from "react-native";

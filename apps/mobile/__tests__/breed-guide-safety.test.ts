@@ -63,7 +63,7 @@ describe("breed-guide-safety: source scan bans allBreedGuides in app code", () =
   });
 
   it("the regex genuinely matches a planted violating literal (non-vacuity proof)", () => {
-    const plantedLine = 'import { allBreedGuides } from "@pawcareright/data";';
+    const plantedLine = 'import { allBreedGuides } from "@bombaypetcompany/data";';
     expect(ALL_BREED_GUIDES_PATTERN.test(plantedLine)).toBe(true);
   });
 });

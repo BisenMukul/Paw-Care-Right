@@ -7,8 +7,8 @@ import {
   type TextGenerateOptions,
   type TextProvider,
   type TextStreamChunk,
-} from "@pawcareright/ai";
-import { errorResponseSchema } from "@pawcareright/types";
+} from "@bombaypetcompany/ai";
+import { errorResponseSchema } from "@bombaypetcompany/types";
 import { PrismaClient } from "@prisma/client";
 
 import { AppModule } from "../src/app.module";

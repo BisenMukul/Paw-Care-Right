@@ -1,6 +1,6 @@
-import type { Breed } from "@pawcareright/data";
+import type { Breed } from "@bombaypetcompany/data";
 
-import { VET_PROMPT_PREFIX } from "@pawcareright/data";
+import { VET_PROMPT_PREFIX } from "@bombaypetcompany/data";
 
 /**
  * Provider-mode prompt for drafting one breed guide row (T084 plan D4/D10).

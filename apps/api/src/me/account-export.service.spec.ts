@@ -10,7 +10,7 @@ const NOW = new Date("2026-07-25T00:00:00.000Z");
 function buildValidUser() {
   return {
     id: "user-1",
-    email: "owner@pawcareright.local",
+    email: "owner@bombaypetcompany.local",
     locale: "en-US",
     region: "US",
     createdAt: NOW,

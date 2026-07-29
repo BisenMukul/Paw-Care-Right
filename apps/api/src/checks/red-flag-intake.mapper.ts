@@ -1,5 +1,5 @@
-import type { RedFlagIntake, RedFlagSign } from "@pawcareright/ai";
-import type { CompletedIntake, Sex, Species } from "@pawcareright/types";
+import type { RedFlagIntake, RedFlagSign } from "@bombaypetcompany/ai";
+import type { CompletedIntake, Sex, Species } from "@bombaypetcompany/types";
 
 /**
  * The fields the mapper reads off the resolved `Pet` (T042 plan, Mapper

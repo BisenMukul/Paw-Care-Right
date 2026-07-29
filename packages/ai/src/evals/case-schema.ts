@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { sexSchema, speciesSchema, symptomCategorySchema, urgencySchema } from "@pawcareright/types";
+import { sexSchema, speciesSchema, symptomCategorySchema, urgencySchema } from "@bombaypetcompany/types";
 
 import { RED_FLAG_SIGNS, SIZE_CLASSES } from "../rules";
 

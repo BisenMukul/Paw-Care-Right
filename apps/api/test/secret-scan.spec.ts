@@ -45,8 +45,8 @@ describe("scan-secrets: detects each rule class", () => {
 describe("scan-secrets: does not flag placeholders and low-entropy fixtures", () => {
   const placeholders = [
     'accessToken: "access-token-value"',
-    "POSTGRES_PASSWORD: pawcareright",
-    "MINIO_ROOT_PASSWORD=pawcareright-dev-secret",
+    "POSTGRES_PASSWORD: bombaypetcompany",
+    "MINIO_ROOT_PASSWORD=bombaypetcompany-dev-secret",
     'apiKey: "your-api-key-here"',
     'token: "test-token"',
   ];

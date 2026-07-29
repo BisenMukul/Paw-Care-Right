@@ -1,4 +1,4 @@
-import type { SseFrame } from "@pawcareright/api-client";
+import type { SseFrame } from "@bombaypetcompany/api-client";
 
 import { parseChatFrame } from "./chat-events";
 

@@ -93,7 +93,7 @@ export const useOutboxStore = create<OutboxState>()(
       },
     }),
     {
-      name: "pawcareright.reminder-outbox",
+      name: "bombaypetcompany.reminder-outbox",
       storage: createJSONStorage(() => mmkvStorage),
       partialize: (state) => ({ items: state.items }),
     },

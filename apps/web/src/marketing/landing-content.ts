@@ -1,4 +1,4 @@
-import { toxins } from "@pawcareright/data";
+import { toxins } from "@bombaypetcompany/data";
 
 import { buildAppDeepLink } from "../deep-link";
 import { allFoodPagePaths } from "../food/params";

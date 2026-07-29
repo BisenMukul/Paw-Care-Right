@@ -1,4 +1,4 @@
-import { scrubSentryEvent } from "@pawcareright/analytics";
+import { scrubSentryEvent } from "@bombaypetcompany/analytics";
 
 import { webSentryOptions } from "./options";
 
@@ -38,7 +38,7 @@ describe("webSentryOptions", () => {
     expect(options.enabled).toBe(true);
     expect(options.dsn).toBe("https://pub@o0.ingest.example/0");
     expect(options.environment).toBe("staging");
-    expect(options.release).toBe("pawcareright@1.2.3+deadbeef");
+    expect(options.release).toBe("bombaypetcompany@1.2.3+deadbeef");
   });
 
   it("pins beforeSend to the shared scrubber and sendDefaultPii to false", () => {

@@ -1,4 +1,4 @@
-import type { Species, Urgency } from "@pawcareright/types";
+import type { Species, Urgency } from "@bombaypetcompany/types";
 
 import type { TextProvider } from "../providers/types";
 

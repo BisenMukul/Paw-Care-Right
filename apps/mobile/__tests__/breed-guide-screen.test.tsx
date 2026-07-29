@@ -1,4 +1,4 @@
-import { getBreedGuide } from "@pawcareright/data";
+import { getBreedGuide } from "@bombaypetcompany/data";
 import { render, screen, type RenderResult } from "@testing-library/react-native";
 
 import BreedGuideDetailScreen from "../app/breeds/[species]/[slug]";
@@ -13,7 +13,7 @@ import { strings } from "../src/strings";
  * it) so the "cold start from params alone" test genuinely proves the
  * screen's CONTENT depends on nothing but the URL params + local data.
  *
- * Native `pawcareright://` URL -> route resolution (`getInitialURL`) is NOT
+ * Native `bombaypetcompany://` URL -> route resolution (`getInitialURL`) is NOT
  * exercised here — RNTL cannot mount the native linking layer; these tests
  * prove params-only cold-start rendering. Deferred per the
  * `check-deeplink-route.test.tsx` precedent (T050 plan Risk 2).

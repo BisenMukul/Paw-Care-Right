@@ -1,4 +1,4 @@
-import type { Sex, Species } from "@pawcareright/types";
+import type { Sex, Species } from "@bombaypetcompany/types";
 
 import type { TextMessage } from "../providers/types";
 import { buildTimelineDigest } from "./digest";

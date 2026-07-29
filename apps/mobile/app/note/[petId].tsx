@@ -1,4 +1,4 @@
-import { useIsOffline } from "@pawcareright/api-client";
+import { useIsOffline } from "@bombaypetcompany/api-client";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { Text } from "react-native";

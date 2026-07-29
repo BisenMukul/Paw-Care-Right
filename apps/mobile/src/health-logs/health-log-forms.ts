@@ -1,4 +1,4 @@
-import { noteValueSchema, vetVisitValueSchema, type NoteValue, type VetVisitValue } from "@pawcareright/types";
+import { noteValueSchema, vetVisitValueSchema, type NoteValue, type VetVisitValue } from "@bombaypetcompany/types";
 
 /**
  * Pure, React-free validators over the shared `packages/types` Zod schemas

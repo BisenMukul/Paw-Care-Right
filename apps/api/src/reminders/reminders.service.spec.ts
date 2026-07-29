@@ -1,5 +1,5 @@
 import { BadRequestException, NotFoundException } from "@nestjs/common";
-import { resolveCareTemplate } from "@pawcareright/data";
+import { resolveCareTemplate } from "@bombaypetcompany/data";
 
 import type { PetResponse } from "../pets/pets.service";
 import type { PetsService } from "../pets/pets.service";

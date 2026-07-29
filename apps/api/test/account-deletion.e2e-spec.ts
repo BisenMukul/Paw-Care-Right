@@ -4,7 +4,7 @@ import { getQueueToken } from "@nestjs/bullmq";
 import type { INestApplication } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { Test } from "@nestjs/testing";
-import { errorResponseSchema } from "@pawcareright/types";
+import { errorResponseSchema } from "@bombaypetcompany/types";
 import { PrismaClient } from "@prisma/client";
 import type { Queue } from "bullmq";
 import { QueueEvents } from "bullmq";
@@ -289,7 +289,7 @@ describe("Account deletion (e2e)", () => {
       // for the member) -- this test needs the member to share the OWNER's
       // household.
       const memberRow = await prisma.user.create({
-        data: { email: `member-${randomUUID()}@pawcareright.local`, locale: "en-US", region: "US" },
+        data: { email: `member-${randomUUID()}@bombaypetcompany.local`, locale: "en-US", region: "US" },
       });
       userIds.push(memberRow.id);
       await addMembership(prisma, { userId: memberRow.id, householdId: ownerCtx.household.id, role: "MEMBER" });
@@ -396,7 +396,7 @@ describe("Account deletion (e2e)", () => {
       // forever (every subsequent sweep repeats the same throw).
       const ownerCtx = await owner();
       const memberRow = await prisma.user.create({
-        data: { email: `leaver-${randomUUID()}@pawcareright.local`, locale: "en-US", region: "US" },
+        data: { email: `leaver-${randomUUID()}@bombaypetcompany.local`, locale: "en-US", region: "US" },
       });
       userIds.push(memberRow.id);
       await addMembership(prisma, { userId: memberRow.id, householdId: ownerCtx.household.id, role: "MEMBER" });
@@ -455,7 +455,7 @@ describe("Account deletion (e2e)", () => {
     it("D1c: 409 CONFLICT, deletionScheduledAt stays null, refresh token stays valid", async () => {
       const ctx = await owner();
       const otherMember = await prisma.user.create({
-        data: { email: `co-member-${randomUUID()}@pawcareright.local`, locale: "en-US", region: "US" },
+        data: { email: `co-member-${randomUUID()}@bombaypetcompany.local`, locale: "en-US", region: "US" },
       });
       userIds.push(otherMember.id);
       await addMembership(prisma, { userId: otherMember.id, householdId: ctx.household.id, role: "MEMBER" });

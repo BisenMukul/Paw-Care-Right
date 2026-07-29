@@ -1,5 +1,5 @@
-import { ApiError, createQueryClient, setOnline } from "@pawcareright/api-client";
-import { petIdSchema, type AgendaEntry, type AgendaResponse, type Pet } from "@pawcareright/types";
+import { ApiError, createQueryClient, setOnline } from "@bombaypetcompany/api-client";
+import { petIdSchema, type AgendaEntry, type AgendaResponse, type Pet } from "@bombaypetcompany/types";
 import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react-native";
 import { QueryClientProvider, type QueryClient } from "@tanstack/react-query";
 import type { ReactNode } from "react";

@@ -1,4 +1,4 @@
-import { petIdSchema, type Pet } from "@pawcareright/types";
+import { petIdSchema, type Pet } from "@bombaypetcompany/types";
 import { render } from "@testing-library/react-native";
 
 import PetHomeScreen from "../app/pets/[id]";

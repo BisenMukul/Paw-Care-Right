@@ -3,7 +3,7 @@
 // name as a standalone quoted literal — so a future rename of
 // DEEPLINK_SCHEME cannot silently drift the web marketing surface out of
 // sync with the mobile app.
-import { DEEPLINK_SCHEME } from "@pawcareright/config";
+import { DEEPLINK_SCHEME } from "@bombaypetcompany/config";
 
 /** The full app URL scheme — derived, never a literal, from the shared scheme constant. */
 export const APP_URL_SCHEME = `${DEEPLINK_SCHEME}://`;

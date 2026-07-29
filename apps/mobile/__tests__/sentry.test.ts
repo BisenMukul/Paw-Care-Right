@@ -19,7 +19,7 @@ jest.mock("../src/config", () => ({
   getAppVersion: jest.fn(() => "1.2.3"),
 }));
 
-import { scrubSentryEvent } from "@pawcareright/analytics";
+import { scrubSentryEvent } from "@bombaypetcompany/analytics";
 
 import { getConfig } from "../src/config";
 import { captureError, initMobileSentry } from "../src/observability/sentry";
@@ -67,7 +67,7 @@ describe("initMobileSentry", () => {
       beforeSend: (event: unknown) => unknown;
     };
     expect(options.dsn).toBe("https://pub@o0.ingest.example/0");
-    expect(options.release).toBe("pawcareright@1.2.3+abc1234");
+    expect(options.release).toBe("bombaypetcompany@1.2.3+abc1234");
     expect(options.sendDefaultPii).toBe(false);
     expect(options.tracesSampleRate).toBe(0);
 

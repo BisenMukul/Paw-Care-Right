@@ -1,4 +1,4 @@
-import { SAFE_FALLBACK, parseTriage, type Urgency } from "@pawcareright/types";
+import { SAFE_FALLBACK, parseTriage, type Urgency } from "@bombaypetcompany/types";
 
 import { applyPostRules } from "../post-rules";
 import { RED_FLAG_RULES, evaluateRedFlags, type RedFlagIntake } from "../rules";

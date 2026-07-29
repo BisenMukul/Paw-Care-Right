@@ -1,5 +1,5 @@
-import { resolveCareTemplateForPet, VET_CONFIRM_SENTENCE } from "@pawcareright/data";
-import type { CareTemplateSuggestions } from "@pawcareright/types";
+import { resolveCareTemplateForPet, VET_CONFIRM_SENTENCE } from "@bombaypetcompany/data";
+import type { CareTemplateSuggestions } from "@bombaypetcompany/types";
 import { render, screen } from "@testing-library/react-native";
 
 import CarePlanWizardScreen from "../app/care-plan/[petId]";

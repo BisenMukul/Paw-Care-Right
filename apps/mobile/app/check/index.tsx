@@ -1,5 +1,5 @@
-import { useIsOffline } from "@pawcareright/api-client";
-import type { SymptomCategory } from "@pawcareright/types";
+import { useIsOffline } from "@bombaypetcompany/api-client";
+import type { SymptomCategory } from "@bombaypetcompany/types";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Pressable, RefreshControl, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";

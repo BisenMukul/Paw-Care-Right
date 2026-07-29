@@ -1,4 +1,4 @@
-import type { NotificationPrefs, UpdateNotificationPrefsInput } from "@pawcareright/types";
+import type { NotificationPrefs, UpdateNotificationPrefsInput } from "@bombaypetcompany/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { apiClient } from "./client";

@@ -35,7 +35,7 @@
 | Step | Action | Expected announcement | Tag | Result |
 |---|---|---|---|---|
 | 1 | Cold-launch the app (no session) | VoiceOver/TalkBack focuses the welcome screen; the paw icon is skipped (decorative) | `[DEVICE-ONLY]` | |
-| 2 | Swipe to the app title | Announces "Paw Care Right +, header" | `[AUTO: a11y-sweep › the screen title is a header]` | |
+| 2 | Swipe to the app title | Announces "Bombay Pet Company, header" | `[AUTO: a11y-sweep › the screen title is a header]` | |
 | 3 | Continue swiping | Reading order is title → tagline → "Continue with email" → social buttons (no jump-around) | `[AUTO: a11y-sweep › reading order matches visual order]` | |
 | 4 | Swipe through every focusable element on the screen | Each one announces a role or a label — never silent | `[AUTO: a11y-sweep › every welcome-screen interactive element exposes a role or a label]` | |
 | 5 | Double-tap "Continue with email" | Navigates to the email screen; VoiceOver/TalkBack focus lands near the top (not lost) | `[DEVICE-ONLY]` | |

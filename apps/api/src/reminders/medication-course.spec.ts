@@ -1,4 +1,4 @@
-import { parseRRule } from "@pawcareright/types";
+import { parseRRule } from "@bombaypetcompany/types";
 
 import { buildMedicationCourse, type MedicationCourseSpec } from "./medication-course";
 import { occurrencesBetween } from "./occurrences-between";

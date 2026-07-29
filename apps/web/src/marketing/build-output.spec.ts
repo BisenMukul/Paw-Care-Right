@@ -20,13 +20,13 @@ function readManifest(): PrerenderManifest {
 function readBuiltHtml(fileName: string): string {
   const filePath = path.join(NEXT_DIR, "server", "app", fileName);
   if (!fs.existsSync(filePath)) {
-    throw new Error(`could not find ${filePath} — run \`pnpm --filter @pawcareright/web build\` first`);
+    throw new Error(`could not find ${filePath} — run \`pnpm --filter @bombaypetcompany/web build\` first`);
   }
   return fs.readFileSync(filePath, "utf-8");
 }
 
 describe("build-output — prerequisite", () => {
-  it("the prerender manifest exists (run `pnpm --filter @pawcareright/web build` first)", () => {
+  it("the prerender manifest exists (run `pnpm --filter @bombaypetcompany/web build` first)", () => {
     expect(fs.existsSync(MANIFEST_PATH)).toBe(true);
   });
 });
@@ -70,7 +70,7 @@ describe("build-output — freshness", () => {
     const manifestMtimeMs = fs.statSync(MANIFEST_PATH).mtimeMs;
     if (manifestMtimeMs < newest.mtimeMs) {
       throw new Error(
-        `.next is stale: ${newest.path} is newer than the build output — run \`pnpm --filter @pawcareright/web build\` (the root \`pnpm test\` chains it via turbo)`,
+        `.next is stale: ${newest.path} is newer than the build output — run \`pnpm --filter @bombaypetcompany/web build\` (the root \`pnpm test\` chains it via turbo)`,
       );
     }
     expect(manifestMtimeMs).not.toBeLessThan(newest.mtimeMs);
@@ -113,7 +113,7 @@ describe("AC1 — the build prerendered /, /privacy and /terms", () => {
       expect(descriptionMatch![1]!.length).toBeGreaterThan(0);
       expect(descriptionMatch![1]!.length).toBeLessThanOrEqual(160);
 
-      expect(html).toMatch(/<link rel="canonical" href="https:\/\/pawcareright\.app[^"]*"/);
+      expect(html).toMatch(/<link rel="canonical" href="https:\/\/bombaypetcompany\.app[^"]*"/);
       expect(html).toContain('<html lang="en"');
       expect(html).toContain('name="viewport"');
     }

@@ -18,12 +18,12 @@ export function windowBucket(window: QuotaWindow, now: Date): string {
   return `${year}-${month}-${day}`;
 }
 
-/** `pawcareright:quota:{metric}:{window}:{userId}:{bucket}` */
+/** `bombaypetcompany:quota:{metric}:{window}:{userId}:{bucket}` */
 export function quotaKey(metric: QuotaMetric, window: QuotaWindow, userId: string, now: Date): string {
   return `${QUOTA_KEY_PREFIX}${metric}:${window}:${userId}:${windowBucket(window, now)}`;
 }
 
-/** `pawcareright:cost:daily:{YYYY-MM-DD}` (UTC, global — not per-user). */
+/** `bombaypetcompany:cost:daily:{YYYY-MM-DD}` (UTC, global — not per-user). */
 export function costDailyKey(now: Date): string {
   return `${COST_DAILY_KEY_PREFIX}${windowBucket("day", now)}`;
 }

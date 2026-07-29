@@ -23,7 +23,7 @@ describe("ImagesProcessor", () => {
       create: { width: 2000, height: 1500, channels: 3, background: { r: 10, g: 120, b: 200 } },
     })
       .jpeg()
-      .withExif({ IFD0: { Software: "pawcareright-test", Copyright: "t" } })
+      .withExif({ IFD0: { Software: "bombaypetcompany-test", Copyright: "t" } })
       .toBuffer();
   }
 

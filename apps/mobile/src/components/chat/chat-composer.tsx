@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { CHAT_MESSAGE_MAX_CHARS } from "@pawcareright/types";
+import { CHAT_MESSAGE_MAX_CHARS } from "@bombaypetcompany/types";
 import { Pressable, TextInput, View } from "react-native";
 
 import { strings } from "../../strings";

@@ -9,7 +9,7 @@ export function hourBucket(now: Date): string {
   return `${year}-${month}-${day}T${hour}`;
 }
 
-/** `pawcareright:abuse:checks:hour:{userId}:{bucket}` */
+/** `bombaypetcompany:abuse:checks:hour:{userId}:{bucket}` */
 export function checksPerHourKey(userId: string, now: Date): string {
   return `${ABUSE_KEY_PREFIX}checks:hour:${userId}:${hourBucket(now)}`;
 }

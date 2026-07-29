@@ -1,4 +1,4 @@
-import { ApiError } from "@pawcareright/api-client";
+import { ApiError } from "@bombaypetcompany/api-client";
 import type { Mutation } from "@tanstack/react-query";
 
 import { queryClient } from "../src/api/query";

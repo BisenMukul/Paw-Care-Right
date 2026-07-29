@@ -1,5 +1,5 @@
-import { useIsOffline } from "@pawcareright/api-client";
-import { REMINDER_TYPES } from "@pawcareright/types";
+import { useIsOffline } from "@bombaypetcompany/api-client";
+import { REMINDER_TYPES } from "@bombaypetcompany/types";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";

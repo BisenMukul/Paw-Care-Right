@@ -1,4 +1,4 @@
-import { isValidRRule } from "@pawcareright/types";
+import { isValidRRule } from "@bombaypetcompany/types";
 import {
   registerDecorator,
   ValidationOptions,
@@ -8,7 +8,7 @@ import {
 
 /**
  * First custom class-validator decorator in the repo (T053 plan). Delegates
- * to the shared `isValidRRule` parser (`@pawcareright/types`) so the DTO
+ * to the shared `isValidRRule` parser (`@bombaypetcompany/types`) so the DTO
  * layer here, mobile's T060 schedule builder, and the future T055/T056
  * recurrence engine all agree on "valid rrule" (plan decision 2) — no
  * parsing logic is duplicated in this file.
@@ -24,7 +24,7 @@ class IsRRuleConstraint implements ValidatorConstraintInterface {
   }
 }
 
-/** Validates a property as an RFC5545-subset `RRULE` string (see `@pawcareright/types` `parseRRule`). */
+/** Validates a property as an RFC5545-subset `RRULE` string (see `@bombaypetcompany/types` `parseRRule`). */
 export function IsRRule(validationOptions?: ValidationOptions) {
   return function (object: object, propertyName: string): void {
     registerDecorator({

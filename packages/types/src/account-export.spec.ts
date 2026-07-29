@@ -9,7 +9,7 @@ function buildValidBundle(): Record<string, unknown> {
     linkExpiresAt: "2026-08-01T00:00:00.000Z",
     user: {
       id: "user-1",
-      email: "owner@pawcareright.local",
+      email: "owner@bombaypetcompany.local",
       locale: "en-US",
       region: "US",
       createdAt: NOW,
@@ -96,7 +96,7 @@ function buildValidBundle(): Record<string, unknown> {
       },
     ],
     notificationPrefs: { disabledTypes: [], quietHours: null },
-    subscription: { entitlement: "PREMIUM", plan: "pawcareright_monthly", status: "active", expiresAt: null },
+    subscription: { entitlement: "PREMIUM", plan: "bombaypetcompany_monthly", status: "active", expiresAt: null },
     devices: [{ platform: "ios", lastSeenAt: NOW, createdAt: NOW }],
     photos: [{ key: "pets/pet-1/main/x.jpg", downloadUrl: "https://minio.example/pets/pet-1/main/x.jpg" }],
   };

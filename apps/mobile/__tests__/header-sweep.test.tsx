@@ -1,4 +1,4 @@
-import { petIdSchema, type CareTemplateSuggestions, type HouseholdMe, type Pet, type TriageResult } from "@pawcareright/types";
+import { petIdSchema, type CareTemplateSuggestions, type HouseholdMe, type Pet, type TriageResult } from "@bombaypetcompany/types";
 import { render, screen } from "@testing-library/react-native";
 
 import CarePlanWizardScreen from "../app/care-plan/[petId]";

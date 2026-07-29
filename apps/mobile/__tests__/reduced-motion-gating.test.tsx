@@ -1,4 +1,4 @@
-import { petIdSchema, type CategoryDef, type Pet } from "@pawcareright/types";
+import { petIdSchema, type CategoryDef, type Pet } from "@bombaypetcompany/types";
 import { render, screen } from "@testing-library/react-native";
 import React from "react";
 

@@ -3,7 +3,7 @@ import { z } from "zod";
 import { symptomCategorySchema } from "./intake";
 
 /**
- * Chat API schemas (T081 — F7 "Ask Paw Care Right +"): thread creation, the
+ * Chat API schemas (T081 — F7 "Ask Bombay Pet Company"): thread creation, the
  * outbound message request, and the four pinned SSE event payload shapes.
  * These are the single Zod source of truth (CLAUDE §6) — api validates with
  * them, client infers types from them.

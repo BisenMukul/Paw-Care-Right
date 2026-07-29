@@ -7,7 +7,7 @@ import {
   type SymptomCategory,
   type TriageResult,
   type Urgency,
-} from "@pawcareright/types";
+} from "@bombaypetcompany/types";
 
 import { daysAgo } from "../clock";
 import { DEMO_MODEL_ID, DEMO_PROMPT_VERSION } from "../constants";

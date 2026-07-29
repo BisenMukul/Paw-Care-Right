@@ -1,6 +1,6 @@
 import { Controller, Get, Query } from "@nestjs/common";
 import { ApiBadRequestResponse, ApiOkResponse, ApiTags } from "@nestjs/swagger";
-import type { Breed } from "@pawcareright/data";
+import type { Breed } from "@bombaypetcompany/data";
 
 import { Public } from "../auth/auth.decorators";
 import { BreedsQueryDto } from "./dto/breeds-query.dto";

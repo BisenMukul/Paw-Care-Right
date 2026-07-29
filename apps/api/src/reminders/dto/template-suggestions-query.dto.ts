@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from "@nestjs/swagger";
-import { PROTOCOL_GROUPS, type ProtocolGroup } from "@pawcareright/data";
+import { PROTOCOL_GROUPS, type ProtocolGroup } from "@bombaypetcompany/data";
 import { IsIn, IsOptional, IsString } from "class-validator";
 
 /**

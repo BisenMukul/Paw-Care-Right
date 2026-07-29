@@ -4,7 +4,7 @@ import {
   isTerminalCheckStatus,
   type CheckResponse,
   type Urgency,
-} from "@pawcareright/types";
+} from "@bombaypetcompany/types";
 
 /**
  * Pure check-history helpers (T050 plan). `deriveCheckChip` fails UPWARD

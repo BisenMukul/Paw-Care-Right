@@ -1,4 +1,4 @@
-import type { ExerciseLevel, GroomingFrequency } from "@pawcareright/data";
+import type { ExerciseLevel, GroomingFrequency } from "@bombaypetcompany/data";
 import {
   MEDICATION_ADD_TIME_LABEL,
   MEDICATION_AGENDA_DOSE_LABEL,
@@ -16,7 +16,7 @@ import {
   type ActivityUnit,
   type HealthLogKind,
   type ReminderType,
-} from "@pawcareright/types";
+} from "@bombaypetcompany/types";
 
 import type { ScheduleFrequency } from "./reminders/schedule-builder";
 
@@ -470,7 +470,7 @@ export const strings = {
       errorRetry: "Retry",
     },
     result: {
-      // T097 plan D2: delegates to the `@pawcareright/types` SSOT so this
+      // T097 plan D2: delegates to the `@bombaypetcompany/types` SSOT so this
       // sentence cannot drift from `apps/web/src/strings.ts`'s copy. Byte-
       // identical to the pre-T097 literal (see `vet-disclaimer-copy.ts`).
       disclaimer: vetDisclaimerLine,
@@ -641,7 +641,7 @@ export const strings = {
     exportBody: "Get a copy of your account, pets, symptom checks, health timeline and chat history.",
     exportButton: "Export my data",
     exportPending:
-      "We've started preparing your export. This can take a few minutes. If you don't hear back, contact us at privacy@pawcareright.app.",
+      "We've started preparing your export. This can take a few minutes. If you don't hear back, contact us at privacy@bombaypetcompany.app.",
     exportError: "We couldn't start your export. Please try again.",
     deleteHeading: "Delete your account",
     deleteButton: "Delete my account",
@@ -653,7 +653,7 @@ export const strings = {
     deleteCancel: "Cancel",
     deleteError: "We couldn't process this. Please try again.",
     deleteConflict:
-      "You own a shared household. Ask the other members to leave (Settings → Family → Leave household), then delete your account — or email privacy@pawcareright.app and we'll handle it for you.",
+      "You own a shared household. Ask the other members to leave (Settings → Family → Leave household), then delete your account — or email privacy@bombaypetcompany.app and we'll handle it for you.",
   },
   carePlan: {
     title: "Set up a care plan",
@@ -933,7 +933,7 @@ export const strings = {
     },
   },
   // T061 medication tracker: every value below comes from the
-  // `MEDICATION_STATIC_COPY` SSOT (`@pawcareright/types`) -- CLAUDE §7 rule
+  // `MEDICATION_STATIC_COPY` SSOT (`@bombaypetcompany/types`) -- CLAUDE §7 rule
   // 2, the med tracker RECORDS what a vet prescribed, it never suggests. Do
   // not hardcode medication copy here; add to the SSOT instead so the T038
   // detector lint test keeps scanning the exact rendered string.
@@ -949,7 +949,7 @@ export const strings = {
     disclaimer: MEDICATION_DISCLAIMER,
     save: MEDICATION_SAVE_LABEL,
   },
-  // T083 mobile chat UI ("Ask Paw Care Right +", F7): every string below is
+  // T083 mobile chat UI ("Ask Bombay Pet Company", F7): every string below is
   // scanned by `chat-strings-tone.test.ts` (mirrors `craft2-strings-tone.test.ts`)
   // for diagnosis/dosing/outcome-claim/streak-pressure language (CLAUDE §7).
   // The disclaimer itself is NOT duplicated here -- the screen renders the

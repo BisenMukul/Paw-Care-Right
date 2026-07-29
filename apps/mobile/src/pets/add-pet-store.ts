@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { createJSONStorage, persist, type StateStorage } from "zustand/middleware";
 
-import { type CreatePetInput, createPetSchema, type Sex, type Species } from "@pawcareright/types";
+import { type CreatePetInput, createPetSchema, type Sex, type Species } from "@bombaypetcompany/types";
 
 import { createSafeStorage } from "../storage/safe-storage";
 
@@ -131,7 +131,7 @@ export const useAddPetStore = create<AddPetState>()(
       },
     }),
     {
-      name: "pawcareright.add-pet-draft",
+      name: "bombaypetcompany.add-pet-draft",
       storage: createJSONStorage(() => mmkvStorage),
       partialize: (state) => ({ draft: state.draft, stepIndex: state.stepIndex }),
     },

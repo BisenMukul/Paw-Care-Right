@@ -4,7 +4,7 @@ import type {
   CreateInviteResponse,
   HouseholdMe,
   LeaveHouseholdResponse,
-} from "@pawcareright/types";
+} from "@bombaypetcompany/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { billingKeys } from "./billing-api";

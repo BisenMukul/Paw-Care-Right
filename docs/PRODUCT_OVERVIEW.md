@@ -1,4 +1,4 @@
-# Paw Care Right + — Product Overview & Long-Term Vision
+# Bombay Pet Company — Product Overview & Long-Term Vision
 
 *A non-technical summary for anyone who wants to understand what we're building, in what order, and why. (The detailed build plan lives in `docs/PRODUCT_SPEC.md` and `docs/PHASES.md`; this document is the plain-language view, including future directions not yet in the build plan.)*
 
@@ -6,7 +6,7 @@
 
 ## The one-line idea
 
-**Paw Care Right + is the one app a pet owner needs** — starting as a "pocket vet" that gives peace of mind between veterinary visits, and growing into an all-in-one platform where pet owners connect with each other, discover the right products, and find trusted trainers and services.
+**Bombay Pet Company is the one app a pet owner needs** — starting as a "pocket vet" that gives peace of mind between veterinary visits, and growing into an all-in-one platform where pet owners connect with each other, discover the right products, and find trusted trainers and services.
 
 ## Who it's for
 

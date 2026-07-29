@@ -1,4 +1,4 @@
-import type { ChatSafetyIncident } from "@pawcareright/ai";
+import type { ChatSafetyIncident } from "@bombaypetcompany/ai";
 
 import {
   AI_AUDIT_FLAG_CODES,

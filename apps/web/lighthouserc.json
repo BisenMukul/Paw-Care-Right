@@ -8,7 +8,7 @@
         "http://localhost:3000/can-dogs-eat/apple"
       ],
       "numberOfRuns": 3,
-      "startServerCommand": "pnpm --filter @pawcareright/web start"
+      "startServerCommand": "pnpm --filter @bombaypetcompany/web start"
     },
     "assert": {
       "assertMatrix": [

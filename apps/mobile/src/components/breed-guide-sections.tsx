@@ -1,4 +1,4 @@
-import type { BreedGuide } from "@pawcareright/data";
+import type { BreedGuide } from "@bombaypetcompany/data";
 import { Text, View } from "react-native";
 
 import { strings } from "../strings";

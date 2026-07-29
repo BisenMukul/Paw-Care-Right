@@ -1,5 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
-import type { BillingEntitlement } from "@pawcareright/types";
+import type { BillingEntitlement } from "@bombaypetcompany/types";
 
 import { BillingService } from "../billing/billing.service";
 import type { Entitlement } from "./quota.types";

@@ -1,5 +1,5 @@
-import { isApiError, useIsOffline } from "@pawcareright/api-client";
-import { ACCOUNT_DELETION_GRACE_DAYS } from "@pawcareright/types";
+import { isApiError, useIsOffline } from "@bombaypetcompany/api-client";
+import { ACCOUNT_DELETION_GRACE_DAYS } from "@bombaypetcompany/types";
 import { useState } from "react";
 import { Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";

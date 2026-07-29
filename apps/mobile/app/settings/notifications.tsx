@@ -1,5 +1,5 @@
-import { useIsOffline } from "@pawcareright/api-client";
-import { REMINDER_TYPES, type ReminderType } from "@pawcareright/types";
+import { useIsOffline } from "@bombaypetcompany/api-client";
+import { REMINDER_TYPES, type ReminderType } from "@bombaypetcompany/types";
 import { useEffect, useState } from "react";
 import { ScrollView, Switch, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";

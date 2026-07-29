@@ -20,7 +20,7 @@ import { strings } from "../src/strings";
  * owner-gated "Invite someone" button that mints a fresh invite and opens
  * the native share sheet with the deep link. The invite/join deep link
  * itself comes from the API response only — nothing here hardcodes the
- * `pawcareright://` scheme (CLAUDE.md §1a).
+ * `bombaypetcompany://` scheme (CLAUDE.md §1a).
  *
  * T077: a non-owner (MEMBER) caller instead sees a "Leave household"
  * button. Pressing it opens a confirmation with a grace warning shown only

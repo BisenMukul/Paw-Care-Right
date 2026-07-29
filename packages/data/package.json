@@ -1,5 +1,5 @@
 {
-  "name": "@pawcareright/data",
+  "name": "@bombaypetcompany/data",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -18,10 +18,10 @@
   },
   "dependencies": {
     "zod": "^4",
-    "@pawcareright/types": "workspace:*"
+    "@bombaypetcompany/types": "workspace:*"
   },
   "devDependencies": {
-    "@pawcareright/config": "workspace:*",
+    "@bombaypetcompany/config": "workspace:*",
     "@types/jest": "^29.5.14",
     "@types/node": "^22",
     "eslint": "^9.39.4",

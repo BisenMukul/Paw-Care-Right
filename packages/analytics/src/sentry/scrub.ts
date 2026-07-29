@@ -78,7 +78,7 @@ const DROPPED_BREADCRUMB_CATEGORIES = new Set(["console"]);
 const BEARER_RE = /Bearer\s+[A-Za-z0-9\-_.~+/]+=*/gi;
 const JWT_RE = /eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+/g;
 // The TLD segment is restricted to letters (length >= 2, no digits) so a
-// release string like `pawcareright@0.0.0+abc1234` (digit-only version) is
+// release string like `bombaypetcompany@0.0.0+abc1234` (digit-only version) is
 // never mistaken for an email address and redacted by accident.
 const EMAIL_RE = /[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*\.[a-zA-Z]{2,}/g;
 

@@ -4,7 +4,7 @@ import type { INestApplication } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { Test } from "@nestjs/testing";
 import { getStorageToken, type ThrottlerStorageService } from "@nestjs/throttler";
-import { errorResponseSchema } from "@pawcareright/types";
+import { errorResponseSchema } from "@bombaypetcompany/types";
 import { PrismaClient } from "@prisma/client";
 import { Redis } from "ioredis";
 import request from "supertest";
@@ -20,7 +20,7 @@ import { overrideCheckRunner } from "./factories";
  * T090 follow-up: resets `ThrottlerGuard`'s in-memory per-route rate-limit
  * counters between test cases in this file. Mirrors this file's existing
  * `beforeEach` reset of the pre-existing, Redis-backed `OtpRateLimitGuard`
- * counter (`pawcareright:rl:*`) below -- that reset has no visibility into
+ * counter (`bombaypetcompany:rl:*`) below -- that reset has no visibility into
  * the NEW, separate in-memory `ThrottlerGuard` bucket that T090's
  * `@Throttle(THROTTLE_AUTH)`/`@Throttle(THROTTLE_AUTH_REFRESH)` decorators
  * add to `verifyOtp`/`refresh`/`logout`. Without this, this file's
@@ -103,7 +103,7 @@ describe("Auth (e2e)", () => {
   beforeEach(async () => {
     // Isolate the per-IP rate-limit counter across tests — supertest can't
     // vary the request IP, so every test would otherwise share one counter.
-    const rateLimitKeys = await redis.keys("pawcareright:rl:*");
+    const rateLimitKeys = await redis.keys("bombaypetcompany:rl:*");
     if (rateLimitKeys.length > 0) {
       await redis.del(...rateLimitKeys);
     }
@@ -113,7 +113,7 @@ describe("Auth (e2e)", () => {
   });
 
   afterEach(async () => {
-    const otpKeys = await redis.keys("pawcareright:otp:*");
+    const otpKeys = await redis.keys("bombaypetcompany:otp:*");
     if (otpKeys.length > 0) {
       await redis.del(...otpKeys);
     }
@@ -136,7 +136,7 @@ describe("Auth (e2e)", () => {
   });
 
   function uniqueEmail(): string {
-    return `otp-${randomUUID()}@pawcareright.local`;
+    return `otp-${randomUUID()}@bombaypetcompany.local`;
   }
 
   async function requestAndCapture(email: string): Promise<string> {
@@ -242,7 +242,7 @@ describe("Auth (e2e)", () => {
     const code = await requestAndCapture(email);
 
     // Simulate TTL expiry by deleting the OTP record directly.
-    const otpKeys = await redis.keys("pawcareright:otp:*");
+    const otpKeys = await redis.keys("bombaypetcompany:otp:*");
     if (otpKeys.length > 0) {
       await redis.del(...otpKeys);
     }

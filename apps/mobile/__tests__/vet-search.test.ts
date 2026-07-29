@@ -1,4 +1,4 @@
-import { URGENCY_TIERS, type Urgency } from "@pawcareright/types";
+import { URGENCY_TIERS, type Urgency } from "@bombaypetcompany/types";
 
 import {
   buildVetSearchQuery,

@@ -1,5 +1,5 @@
-import { ApiError, getIsOfflineSnapshot, isApiError } from "@pawcareright/api-client";
-import type { AgendaEntry } from "@pawcareright/types";
+import { ApiError, getIsOfflineSnapshot, isApiError } from "@bombaypetcompany/api-client";
+import type { AgendaEntry } from "@bombaypetcompany/types";
 
 import { apiClient } from "../api/client";
 import { agendaKeys } from "../api/agenda-api";

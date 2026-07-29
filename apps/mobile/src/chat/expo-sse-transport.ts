@@ -1,4 +1,4 @@
-import type { SseTransport, SseTransportResponse } from "@pawcareright/api-client";
+import type { SseTransport, SseTransportResponse } from "@bombaypetcompany/api-client";
 import { fetch as expoFetch } from "expo/fetch";
 
 /**

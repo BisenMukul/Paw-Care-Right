@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import type { BillingEntitlement } from "@pawcareright/types";
+import type { BillingEntitlement } from "@bombaypetcompany/types";
 
 import { PrismaService } from "../prisma/prisma.service";
 import { pickEntitlement, type SubscriptionRow } from "./entitlement.util";

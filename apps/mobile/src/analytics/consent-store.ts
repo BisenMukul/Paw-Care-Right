@@ -50,7 +50,7 @@ export const useConsentStore = create<ConsentState>()(
       },
     }),
     {
-      name: "pawcareright.analytics-consent",
+      name: "bombaypetcompany.analytics-consent",
       storage: createJSONStorage(() => mmkvStorage),
       partialize: (state) => ({ enabled: state.enabled }),
     },

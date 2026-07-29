@@ -3,7 +3,7 @@ import path from "node:path";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
-import { APP_DISPLAY_NAME, DEEPLINK_SCHEME } from "@pawcareright/config";
+import { APP_DISPLAY_NAME, DEEPLINK_SCHEME } from "@bombaypetcompany/config";
 
 import { LegalDocumentView } from "../components/legal/legal-document-view";
 import { LandingView } from "../components/marketing/landing-view";
@@ -43,7 +43,7 @@ function extractAnchors(markup: string): AnchorInfo[] {
 function findBuiltHtml(fileName: string): string {
   const filePath = path.join(NEXT_DIR, "server", "app", fileName);
   if (!fs.existsSync(filePath)) {
-    throw new Error(`could not find ${filePath} — run \`pnpm --filter @pawcareright/web build\` first`);
+    throw new Error(`could not find ${filePath} — run \`pnpm --filter @bombaypetcompany/web build\` first`);
   }
   return fs.readFileSync(filePath, "utf-8");
 }
@@ -139,7 +139,7 @@ describe("AC3 — every href matches the allowlisted shapes", () => {
     for (const { href } of anchors) {
       const isInternalPath = href.startsWith("/");
       const isFragment = /^#[a-z0-9-]+$/.test(href);
-      const isMailto = /^mailto:[^@]+@pawcareright\.app$/.test(href);
+      const isMailto = /^mailto:[^@]+@bombaypetcompany\.app$/.test(href);
       const isDeepLink = href.startsWith(`${DEEPLINK_SCHEME}://`);
       expect(isInternalPath || isFragment || isMailto || isDeepLink).toBe(true);
     }

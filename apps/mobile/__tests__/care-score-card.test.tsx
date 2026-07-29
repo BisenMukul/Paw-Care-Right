@@ -1,4 +1,4 @@
-import { petIdSchema, type AgendaResponse, type Pet } from "@pawcareright/types";
+import { petIdSchema, type AgendaResponse, type Pet } from "@bombaypetcompany/types";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 import * as ReactNative from "react-native";
 

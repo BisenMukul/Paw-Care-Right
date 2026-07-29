@@ -1,6 +1,6 @@
 import { Controller, Get, UseGuards } from "@nestjs/common";
 import { ApiOkResponse, ApiTags } from "@nestjs/swagger";
-import type { AppConfigResponse } from "@pawcareright/types";
+import type { AppConfigResponse } from "@bombaypetcompany/types";
 
 import { CurrentUser, Public } from "../auth/auth.decorators";
 import { OptionalJwtAuthGuard } from "../auth/optional-jwt-auth.guard";

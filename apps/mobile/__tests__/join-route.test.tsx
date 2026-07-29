@@ -1,4 +1,4 @@
-import { ApiError } from "@pawcareright/api-client";
+import { ApiError } from "@bombaypetcompany/api-client";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react-native";
 
 import JoinScreen from "../app/join/[code]";

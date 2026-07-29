@@ -4,7 +4,7 @@
  * create/modify"). Mirrors `followups.contract.ts`/`images.contract.ts`. No
  * logic here.
  */
-export const REMINDERS_QUEUE = "pawcareright-reminders";
+export const REMINDERS_QUEUE = "bombaypetcompany-reminders";
 
 export const REMINDER_TICK_JOB_NAME = "reminder-tick";
 

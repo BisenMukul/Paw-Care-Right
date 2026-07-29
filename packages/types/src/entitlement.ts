@@ -8,7 +8,7 @@ import { z } from "zod";
  * `apps/mobile/src/billing/products.ts` (T071-owned; not edited here, so
  * this is a documented drift point, not an enforced one).
  */
-export const FAMILY_PLAN_PRODUCT_ID = "pawcareright_family_annual" as const;
+export const FAMILY_PLAN_PRODUCT_ID = "bombaypetcompany_family_annual" as const;
 
 export const entitlementSourceSchema = z.enum(["own", "family", "none"]);
 

@@ -1,4 +1,4 @@
-import type { TriageResult } from "@pawcareright/types";
+import type { TriageResult } from "@bombaypetcompany/types";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 
 import IntakeScreen from "../app/check/[category]";

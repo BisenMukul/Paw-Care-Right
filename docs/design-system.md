@@ -1,4 +1,4 @@
-# Paw Care Right + — Mobile Design System Brief
+# Bombay Pet Company — Mobile Design System Brief
 
 > **Audience:** planner/executor/checker agents doing UI work in `apps/mobile`.
 > **Status:** opinionated, binding for every screen sweep. Where this file names a class or token, use exactly that class or token. Safety rules in `docs/PRODUCT_SPEC.md §5` and CLAUDE.md §7 always win (e.g. `<VetDisclaimer/>`, Emergency interstitial ordering).

@@ -1,4 +1,4 @@
-import type { Urgency } from "@pawcareright/types";
+import type { Urgency } from "@bombaypetcompany/types";
 
 /**
  * Tier banner presentation map (T048 plan D4). One banner component reads

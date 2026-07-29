@@ -1,4 +1,4 @@
-import { HOME_CARE_ALLOWED_TIERS, type TriageResult, type Urgency } from "@pawcareright/types";
+import { HOME_CARE_ALLOWED_TIERS, type TriageResult, type Urgency } from "@bombaypetcompany/types";
 import { render, screen } from "@testing-library/react-native";
 import React from "react";
 import * as ReactNative from "react-native";

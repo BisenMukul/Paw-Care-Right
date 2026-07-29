@@ -42,17 +42,17 @@ describe("token storage (AC3)", () => {
     await useAuthStore.getState().verifyOtp("a@b.com", "123456");
 
     expect(SecureStore.setItemAsync).toHaveBeenCalledWith(
-      "pawcareright.auth.accessToken",
+      "bombaypetcompany.auth.accessToken",
       tokens.accessToken,
     );
     expect(SecureStore.setItemAsync).toHaveBeenCalledWith(
-      "pawcareright.auth.refreshToken",
+      "bombaypetcompany.auth.refreshToken",
       tokens.refreshToken,
     );
-    expect(await SecureStore.getItemAsync("pawcareright.auth.accessToken")).toBe(
+    expect(await SecureStore.getItemAsync("bombaypetcompany.auth.accessToken")).toBe(
       tokens.accessToken,
     );
-    expect(await SecureStore.getItemAsync("pawcareright.auth.refreshToken")).toBe(
+    expect(await SecureStore.getItemAsync("bombaypetcompany.auth.refreshToken")).toBe(
       tokens.refreshToken,
     );
   });

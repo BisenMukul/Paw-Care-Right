@@ -1,4 +1,4 @@
-import { setOnline } from "@pawcareright/api-client";
+import { setOnline } from "@bombaypetcompany/api-client";
 import { act, render, screen } from "@testing-library/react-native";
 
 import { OfflineBanner } from "../src/components/offline-banner";

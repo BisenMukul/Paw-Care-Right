@@ -51,7 +51,7 @@ export function installStartupGuard(): void {
   const previousHandler = errorUtils.getGlobalHandler();
   errorUtils.setGlobalHandler((error: unknown, isFatal?: boolean) => {
     // eslint-disable-next-line no-console -- JUSTIFIED: last-resort startup-crash diagnostic; fires only when the app is already going down and must reach Metro/adb logs (Sentry wiring landed T089 -- captureError below is a safe no-op when uninitialized, e.g. before `initMobileSentry()` has run)
-    console.error(`[pawcareright startup] ${isFatal === true ? "FATAL" : "non-fatal"} JS error:`, error);
+    console.error(`[bombaypetcompany startup] ${isFatal === true ? "FATAL" : "non-fatal"} JS error:`, error);
     captureError(error, { isFatal: isFatal === true });
     previousHandler?.(error, isFatal);
   });

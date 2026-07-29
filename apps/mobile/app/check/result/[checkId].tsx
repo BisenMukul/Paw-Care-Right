@@ -1,5 +1,5 @@
-import { APP_DISPLAY_NAME } from "@pawcareright/config";
-import { isTerminalCheckStatus, SAFE_FALLBACK, type Urgency } from "@pawcareright/types";
+import { APP_DISPLAY_NAME } from "@bombaypetcompany/config";
+import { isTerminalCheckStatus, SAFE_FALLBACK, type Urgency } from "@bombaypetcompany/types";
 import * as Linking from "expo-linking";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ScrollView, Share, Text, View } from "react-native";

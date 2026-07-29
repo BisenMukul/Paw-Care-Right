@@ -1,5 +1,5 @@
-import { EMERGENCY_PAYLOADS } from "@pawcareright/data";
-import type { CheckResponse, TriageResult } from "@pawcareright/types";
+import { EMERGENCY_PAYLOADS } from "@bombaypetcompany/data";
+import type { CheckResponse, TriageResult } from "@bombaypetcompany/types";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 import * as Linking from "expo-linking";
 import { BackHandler } from "react-native";

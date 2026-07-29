@@ -8,7 +8,7 @@ import {
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
-import { evaluateRedFlags } from "@pawcareright/ai";
+import { evaluateRedFlags } from "@bombaypetcompany/ai";
 import {
   parseIntake,
   parseTriage,
@@ -17,7 +17,7 @@ import {
   type FollowUpResponse,
   type TriageResult,
   type Urgency,
-} from "@pawcareright/types";
+} from "@bombaypetcompany/types";
 import {
   Prisma,
   type CheckFollowUp,

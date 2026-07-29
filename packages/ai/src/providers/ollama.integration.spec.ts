@@ -5,7 +5,7 @@
  *
  * To run locally:
  *   RUN_AI_INTEGRATION=1 OLLAMA_CLOUD_API_KEY=<real key> \
- *     pnpm --filter @pawcareright/ai test -- ollama.integration.spec.ts
+ *     pnpm --filter @bombaypetcompany/ai test -- ollama.integration.spec.ts
  */
 import { OllamaTextProvider } from "./ollama-text";
 import { OllamaVisionProvider } from "./ollama-vision";

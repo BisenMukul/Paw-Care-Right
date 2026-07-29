@@ -1,5 +1,5 @@
-import { ApiError, createQueryClient, setOnline } from "@pawcareright/api-client";
-import type { AgendaResponse } from "@pawcareright/types";
+import { ApiError, createQueryClient, setOnline } from "@bombaypetcompany/api-client";
+import type { AgendaResponse } from "@bombaypetcompany/types";
 import { act, renderHook, waitFor } from "@testing-library/react-native";
 import { QueryClientProvider, type QueryClient } from "@tanstack/react-query";
 import { createMMKV } from "react-native-mmkv";
@@ -128,18 +128,18 @@ describe("useOutboxStore", () => {
     expect(useOutboxStore.getState().items.find((item) => item.id === "r2:d2")?.attempts).toBe(0);
   });
 
-  it("the outbox survives a cold start (persisted to MMKV under pawcareright.reminder-outbox)", async () => {
+  it("the outbox survives a cold start (persisted to MMKV under bombaypetcompany.reminder-outbox)", async () => {
     useOutboxStore.getState().enqueue({ reminderId: "r1", dueAt: "2024-01-01T09:00:00.000Z" });
 
     const mmkv = createMMKV();
-    const persistedRaw = mmkv.getString("pawcareright.reminder-outbox");
+    const persistedRaw = mmkv.getString("bombaypetcompany.reminder-outbox");
     expect(persistedRaw).toBeTruthy();
     expect(persistedRaw).toContain("r1");
 
     // Simulate relaunch: clear in-memory state, then rehydrate from the
     // still-persisted snapshot (mirrors `active-pet-store.test.ts`).
     useOutboxStore.setState({ items: [] });
-    mmkv.set("pawcareright.reminder-outbox", persistedRaw as string);
+    mmkv.set("bombaypetcompany.reminder-outbox", persistedRaw as string);
     await useOutboxStore.persist.rehydrate();
 
     expect(useOutboxStore.getState().items).toEqual([expect.objectContaining({ reminderId: "r1" })]);

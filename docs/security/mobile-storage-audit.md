@@ -21,8 +21,8 @@ exclusively through `src/auth/secure-store.ts`.
 
 | Key | Data class | Why SecureStore |
 |---|---|---|
-| `pawcareright.auth.accessToken` | Credential (short-lived bearer token) | OS-keychain-backed, encrypted at rest, not readable by other apps. |
-| `pawcareright.auth.refreshToken` | Credential (long-lived rotation token) | Same as above -- this is the one credential that must survive an app restart, so it cannot live only in memory. |
+| `bombaypetcompany.auth.accessToken` | Credential (short-lived bearer token) | OS-keychain-backed, encrypted at rest, not readable by other apps. |
+| `bombaypetcompany.auth.refreshToken` | Credential (long-lived rotation token) | Same as above -- this is the one credential that must survive an app restart, so it cannot live only in memory. |
 
 No other credential-shaped value (password, OTP, API key, session id) is
 persisted anywhere in the app; auth state that isn't a token (e.g. "is the
@@ -39,13 +39,13 @@ human look before it merges.
 
 | Store name | File | Data class | `partialize` shape | Why MMKV (unencrypted) is correct here |
 |---|---|---|---|---|
-| `pawcareright.activity-recents` | `src/health-logs/activity-recents-store.ts` | Preference/recents cache | `{ byPet }` -- per-pet recently-used activity chips | Non-sensitive UI convenience data (which quick-log chips a household used recently); no PII, no credential. |
-| `pawcareright.paywall-shown` | `src/billing/paywall-shown-store.ts` | Preference | `{ shown }` -- has the paywall been shown this session/cohort | A boolean flag; carries no personal or billing data (entitlement itself is server-mirrored, not stored here). |
-| `pawcareright.weight-unit` | `src/weight/weight-unit-store.ts` | Preference | `{ override }` -- kg/lb display override | Pure UI preference, no sensitivity. |
-| `pawcareright.reminder-outbox` | `src/offline/outbox-store.ts` | Queue (offline-write buffer) | `{ items }` -- pending reminder-ack writes not yet synced | Operational queue data (which reminder was acknowledged offline), not a credential or contact identifier. |
-| `pawcareright.active-pet` | `src/pets/active-pet-store.ts` | Preference | `{ activePetId }` -- which pet is currently selected | An opaque server-generated UUID selecting a already-authorized pet; not sensitive on its own (useless without the session's own access token, which is never here). |
-| `pawcareright.add-pet-draft` | `src/pets/add-pet-store.ts` | Draft (resumable form state) | `{ draft, stepIndex }` -- in-progress add-pet wizard answers | Draft pet profile fields (name, species, breed, etc.) -- not a credential or contact identifier; resumability is the entire point of persisting it. |
-| `pawcareright.analytics-consent` | `src/analytics/consent-store.ts` | Preference | `{ enabled }` -- analytics opt-in/out | A boolean consent flag; must survive restart precisely so consent doesn't need re-asking, and carries no personal data itself. |
+| `bombaypetcompany.activity-recents` | `src/health-logs/activity-recents-store.ts` | Preference/recents cache | `{ byPet }` -- per-pet recently-used activity chips | Non-sensitive UI convenience data (which quick-log chips a household used recently); no PII, no credential. |
+| `bombaypetcompany.paywall-shown` | `src/billing/paywall-shown-store.ts` | Preference | `{ shown }` -- has the paywall been shown this session/cohort | A boolean flag; carries no personal or billing data (entitlement itself is server-mirrored, not stored here). |
+| `bombaypetcompany.weight-unit` | `src/weight/weight-unit-store.ts` | Preference | `{ override }` -- kg/lb display override | Pure UI preference, no sensitivity. |
+| `bombaypetcompany.reminder-outbox` | `src/offline/outbox-store.ts` | Queue (offline-write buffer) | `{ items }` -- pending reminder-ack writes not yet synced | Operational queue data (which reminder was acknowledged offline), not a credential or contact identifier. |
+| `bombaypetcompany.active-pet` | `src/pets/active-pet-store.ts` | Preference | `{ activePetId }` -- which pet is currently selected | An opaque server-generated UUID selecting a already-authorized pet; not sensitive on its own (useless without the session's own access token, which is never here). |
+| `bombaypetcompany.add-pet-draft` | `src/pets/add-pet-store.ts` | Draft (resumable form state) | `{ draft, stepIndex }` -- in-progress add-pet wizard answers | Draft pet profile fields (name, species, breed, etc.) -- not a credential or contact identifier; resumability is the entire point of persisting it. |
+| `bombaypetcompany.analytics-consent` | `src/analytics/consent-store.ts` | Preference | `{ enabled }` -- analytics opt-in/out | A boolean consent flag; must survive restart precisely so consent doesn't need re-asking, and carries no personal data itself. |
 
 Every entry above was checked against the credential-shaped pattern the
 static scan enforces (`(access|refresh)?token|password|passwd|otp|secret|

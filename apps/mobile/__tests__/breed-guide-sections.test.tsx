@@ -1,4 +1,4 @@
-import { getBreedGuide, VET_PROMPT_PREFIX, type BreedGuide } from "@pawcareright/data";
+import { getBreedGuide, VET_PROMPT_PREFIX, type BreedGuide } from "@bombaypetcompany/data";
 import { render, screen } from "@testing-library/react-native";
 
 import { BreedGuideSections } from "../src/components/breed-guide-sections";

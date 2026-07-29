@@ -1,7 +1,7 @@
 import { execFileSync } from "node:child_process";
 
 import { expect, test } from "@playwright/test";
-import { APP_DISPLAY_NAME } from "@pawcareright/config";
+import { APP_DISPLAY_NAME } from "@bombaypetcompany/config";
 
 import { buildFoodPageModel } from "../src/food/page-model";
 import { buildLandingModel } from "../src/marketing/landing-content";
@@ -17,11 +17,11 @@ import { buildLandingModel } from "../src/marketing/landing-content";
  * `vetDisclaimerLine` (the source of `strings.disclaimer` in the frozen
  * `../src/strings.ts`) is computed here via a genuinely separate `node`
  * child process rather than an in-process `import`/`require` of
- * `@pawcareright/types`. This environment's Playwright module loader
+ * `@bombaypetcompany/types`. This environment's Playwright module loader
  * mis-resolves that one workspace package specifically (reproducible via
  * `import`, `require`, and dynamic `import()` alike — a pnpm-symlinked
  * workspace-package resolution quirk in Playwright's own loader, unrelated
- * to any product code; every other workspace package, e.g. `@pawcareright/
+ * to any product code; every other workspace package, e.g. `@bombaypetcompany/
  * config` above, resolves correctly). Spawning a plain `node -e` process
  * sidesteps that loader entirely while still deriving the string from the
  * real, frozen source of truth (never hardcoded) — see
@@ -29,7 +29,7 @@ import { buildLandingModel } from "../src/marketing/landing-content";
  */
 function expectedDisclaimer(appName: string): string {
   const script = `
-    const { vetDisclaimerLine } = require("@pawcareright/types");
+    const { vetDisclaimerLine } = require("@bombaypetcompany/types");
     process.stdout.write(vetDisclaimerLine(${JSON.stringify(appName)}));
   `;
   return execFileSync(process.execPath, ["-e", script], {

@@ -3,7 +3,7 @@
 // becomes a readable Metro/adb trace).
 import "../src/startup-guard";
 
-import { PersistedApiQueryProvider } from "@pawcareright/api-client";
+import { PersistedApiQueryProvider } from "@bombaypetcompany/api-client";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { useEffect } from "react";
 import { View } from "react-native";

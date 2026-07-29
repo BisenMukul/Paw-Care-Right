@@ -1,4 +1,4 @@
-# Paw Care Right + — Autonomous Build Bundle
+# Bombay Pet Company — Autonomous Build Bundle
 
 ![CI](https://github.com/BisenMukul/Paw-Care-Right/actions/workflows/ci.yml/badge.svg)
 
@@ -18,14 +18,14 @@ AI pet care companion (B2C, global, subscription). This folder is a **repo seed*
 | `loop/journal.md` | Append-only build log (starts empty) |
 
 ## Naming
-- **Display name (users see this):** `Paw Care Right +`
-- **Technical identifiers (code/config/URLs):** `pawcareright`, bundle id `com.pawcareright.app`, deep-link `pawcareright://` — the `+` and spaces are illegal in these contexts. See `CLAUDE.md §1a`. The store name + bundle id are confirmed at checkpoint C3 after the T102 trademark pass; treat as provisional until then.
+- **Display name (users see this):** `Bombay Pet Company`
+- **Technical identifiers (code/config/URLs):** `bombaypetcompany`, bundle id `com.bombaypetcompany.app`, deep-link `bombaypetcompany://` — the `+` and spaces are illegal in these contexts. See `CLAUDE.md §1a`. The store name + bundle id are confirmed at checkpoint C3 after the T102 trademark pass; treat as provisional until then.
 
 ## What to do after you download this file
 
 1. **Unzip and create the repo.**
-   `unzip pawcareright-loop-bundle.zip && cd pawcareright`
-   `git init && git add -A && git commit -m "chore: seed Paw Care Right + loop bundle"`
+   `unzip bombaypetcompany-loop-bundle.zip && cd bombaypetcompany`
+   `git init && git add -A && git commit -m "chore: seed Bombay Pet Company loop bundle"`
    Create an empty repo on your Git host and `git remote add origin … && git push -u origin main`.
 2. **Prep the machine** (see Prerequisites below): Node 22 + pnpm, Docker running. AI provider keys (`OLLAMA_CLOUD_API_KEY`, `GEMINI_API_KEY`) are only needed for real AI-eval runs from Phase 3; CI uses fake providers. See docs/AI_PROVIDERS.md.
 3. **Set up the model-switching loop.** This bundle runs a **Fable-planner → Sonnet-executor → Fable-checker** loop via `.claude/agents/` + SubagentStop hooks (Fable plans and supervises; Sonnet does the high-volume coding). Read `docs/model-strategy-setup.md` (~2-min setup, includes an Opus fallback if your plan can't route Fable) and run its three gate smoke-tests once so you trust the surveillance layer.
@@ -46,7 +46,7 @@ Pause/resume, checkpoint approval, deferrals, and re-scoping: see `LOOP_PROTOCOL
 Node 22 + pnpm, Docker (postgres/redis/minio via compose), git with push access. Product AI keys `OLLAMA_CLOUD_API_KEY` (text+vision) and `GEMINI_API_KEY` (images) for real AI-eval runs from Phase 3 (CI uses fake providers otherwise); see docs/AI_PROVIDERS.md. Store/RevenueCat/Sentry/PostHog keys are only needed from Phase 7 onward and are requested via checkpoint notes, never hardcoded.
 
 ## Local infrastructure (docker compose)
-`docker-compose.yml` at the repo root brings up the local dev backing services: `postgres` (16), `redis` (7), and `minio` (S3-compatible object storage) plus a one-shot `createbuckets` sidecar that bootstraps the `pawcareright-media` bucket.
+`docker-compose.yml` at the repo root brings up the local dev backing services: `postgres` (16), `redis` (7), and `minio` (S3-compatible object storage) plus a one-shot `createbuckets` sidecar that bootstraps the `bombaypetcompany-media` bucket.
 
 | Service | Port | Notes |
 |---|---|---|
@@ -55,7 +55,7 @@ Node 22 + pnpm, Docker (postgres/redis/minio via compose), git with push access.
 | minio API | `9000` | S3-compatible endpoint |
 | minio console | `9001` | `http://localhost:9001` — login with `MINIO_ROOT_USER` / `MINIO_ROOT_PASSWORD` |
 
-Bucket: `pawcareright-media` (created automatically by the `createbuckets` sidecar on first `up`).
+Bucket: `bombaypetcompany-media` (created automatically by the `createbuckets` sidecar on first `up`).
 
 Creds and ports are read from `.env` (copy `.env.example` to `.env` first); all defaults are obviously-fake dev values. If a default port is already bound on your machine, override it via the corresponding `*_PORT` env var (`POSTGRES_PORT`, `REDIS_PORT`, `MINIO_PORT`, `MINIO_CONSOLE_PORT`) instead of editing `docker-compose.yml`.
 

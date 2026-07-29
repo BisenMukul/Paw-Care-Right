@@ -1,5 +1,5 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { ACCOUNT_EXPORT_RETENTION_DAYS } from "@pawcareright/types";
+import { ACCOUNT_EXPORT_RETENTION_DAYS } from "@bombaypetcompany/types";
 
 import { AccountErasureService } from "../me/account-erasure.service";
 import { captureApiMessage } from "../observability/sentry";

@@ -1,4 +1,4 @@
-import { resolveEmergencyPayload, resolveRegionHotline } from "@pawcareright/data";
+import { resolveEmergencyPayload, resolveRegionHotline } from "@bombaypetcompany/data";
 import * as Linking from "expo-linking";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect } from "react";

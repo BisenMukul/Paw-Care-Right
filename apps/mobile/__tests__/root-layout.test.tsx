@@ -1,4 +1,4 @@
-import { setOnline } from "@pawcareright/api-client";
+import { setOnline } from "@bombaypetcompany/api-client";
 import { act, render, screen, waitFor } from "@testing-library/react-native";
 import React from "react";
 
@@ -23,8 +23,8 @@ const mockReplace = jest.fn();
 // boundary sits OUTSIDE the provider.
 let mockProviderThrows = false;
 
-jest.mock("@pawcareright/api-client", () => {
-  const actual = jest.requireActual("@pawcareright/api-client");
+jest.mock("@bombaypetcompany/api-client", () => {
+  const actual = jest.requireActual("@bombaypetcompany/api-client");
   const { View } = jest.requireActual<typeof import("react-native")>("react-native");
   return {
     ...actual,

@@ -1,4 +1,4 @@
-import { SAFE_FALLBACK, type TriageResult } from "@pawcareright/types";
+import { SAFE_FALLBACK, type TriageResult } from "@bombaypetcompany/types";
 
 /**
  * The single audited home for every §7-sensitive free-text string the demo

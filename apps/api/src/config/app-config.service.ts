@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { defineEnv } from "@pawcareright/config/env";
+import { defineEnv } from "@bombaypetcompany/config/env";
 
 import { apiEnvSchema, type ApiEnv } from "./env.schema";
 

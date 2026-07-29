@@ -3,8 +3,8 @@ import * as SecureStore from "expo-secure-store";
 // The ONLY module in this app that touches `expo-secure-store` (CLAUDE.md
 // §6 — tokens live in SecureStore, never AsyncStorage). Centralizing here
 // makes the "no AsyncStorage" guarantee auditable in one place.
-const ACCESS_TOKEN_KEY = "pawcareright.auth.accessToken";
-const REFRESH_TOKEN_KEY = "pawcareright.auth.refreshToken";
+const ACCESS_TOKEN_KEY = "bombaypetcompany.auth.accessToken";
+const REFRESH_TOKEN_KEY = "bombaypetcompany.auth.refreshToken";
 
 export interface StoredTokens {
   accessToken: string;

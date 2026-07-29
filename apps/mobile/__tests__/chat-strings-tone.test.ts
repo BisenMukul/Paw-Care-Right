@@ -16,7 +16,7 @@ function flattenLeaves(node: unknown): StringLeaf[] {
     return [node];
   }
   if (typeof node === "function") {
-    return [(node as (arg: string) => string)("Paw Care Right +")];
+    return [(node as (arg: string) => string)("Bombay Pet Company")];
   }
   if (node !== null && typeof node === "object") {
     return Object.values(node as Record<string, unknown>).flatMap(flattenLeaves);
