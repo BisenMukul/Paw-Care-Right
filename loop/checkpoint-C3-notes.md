@@ -196,7 +196,7 @@ simulation.
 - [ ] **[FOUNDER]** Create the EAS environment variables listed in `docs/release-runbook.md` §4 (`EXPO_PUBLIC_RC_IOS_KEY`, `EXPO_PUBLIC_RC_ANDROID_KEY`, `EXPO_PUBLIC_POSTHOG_KEY`, `EXPO_PUBLIC_SENTRY_DSN`, `EXPO_PUBLIC_GOOGLE_CLIENT_ID`, `SENTRY_AUTH_TOKEN`/`SENTRY_ORG`/`SENTRY_PROJECT`).
 - [ ] **[FOUNDER]** Set the GitHub repo variable `APP_VERSION` to match `apps/mobile/app.config.js`'s marketing `version` (`docs/release-runbook.md` §5/§9 item 3).
 - [ ] **[FOUNDER]** Confirm `staging-api.bombaypetcompany.app` is reachable before inviting any internal tester — the `preview` profile's `EXPO_PUBLIC_API_URL` points every tester at it; an unreachable staging API means every tester sees network errors on first launch. **This is a hard blocker for a usable internal test.**
-- [ ] **[FOUNDER]** Re-confirm the final display name and bundle id at **C3**, after T102's trademark pass, before inviting external-facing testers.
+- [ ] **[FOUNDER]** Re-confirm the final display name and bundle id at **C3**, after T102's trademark pass, before inviting external-facing testers. See docs/store-listing.md §6 for the evidence pack and the preliminary go/no-go screen.
 
 ## 9. Definition of done for internal distribution
 
