@@ -1371,3 +1371,21 @@ Attempt 2, checker verdict **PASS** (attempt-1 FAIL superseded; review §11 bind
 **Founder to-dos (README §11 / runbook §9):** capture 8 real screens via local /emulator-test → store-assets/raw/ → `pnpm --filter mobile store:screenshots`; `npx expo install expo-splash-screen` + wire plugin; store-console uploads with copy-blocks.md; C3 re-check after T102.
 
 **Next:** T101 (internal distribution).
+
+---
+
+## T101 — Internal distribution (2026-07-29)
+
+Attempt 1, checker verdict **PASS** (0 HIGH/MED, 5 LOW — 3 orchestrator-fixed pre-commit, spec re-run green).
+
+**Shipped:** loop/checkpoint-C3-notes.md — the complete ordered path to TestFlight internal + Play internal (now 39 checkbox steps: 35 [FOUNDER], 4 [AUTOMATED-READY], zero untagged), with verbatim evidence sections; apps/mobile/scripts/internal-distribution.sh (POSIX sh, preflight credentials→dirty-tree→4 ordered eas commands, offline --dry-run) + `dist:internal` script; checkpoint-c3-notes-doc.test.ts drift guard (9 tests — tag discipline, §7 safety on beta-notes copy via real scanUnsafeText + claims patterns, frozen-disclaimer byte-equality, bashism/secret scans, and a CI-pinned honesty assertion that no signed store artifact was produced in this environment); runbook §9 items 10–12 + delegating §11. eas.json deliberately untouched (D3 — no invented Apple/Google IDs). Zero new deps.
+
+**AC evidence (honest split, T099 pattern):** expo export both platforms exit=0 (hbc bundles 9.28MB/9.09MB + hashed assets, outputs gitignored+deleted); eas submit both platforms attempted, exit=1 verbatim auth boundary; script dry-run exit=0 offline, real run correct credential refusal; fake-token mutation advanced preflight to the dirty-tree gate (ordering non-vacuous).
+
+**Checker:** reproduced gates (typecheck 16/16, lint 15/15, mobile 182/1485, full test 16/16, build 9/9), re-ran the android submit boundary byte-identical, 7 atomic mutation proofs all RED with sha1-verified restores. Endorsed D1 + D3 as the honest options.
+
+**Incidents:** executor never wrote its progress ledger during the run (hard-rule violation, self-disclosed; post-hoc reconstruction labeled as such; surviving scratchpad logs corroborated the export figures — and exposed LOW-1, "65" vs actual 67 hashed android assets). Orchestrator fixed pre-commit: 65→67 count, root-.gitignore attribution, and the missing Apple-side IAP step (Paid Applications Agreement + sandbox testers + RevenueCat ASC credentials).
+
+**Process note for future executors: the progress-ledger rule and the report-from-git-diff rule are now BOTH standing hard rules (T100/T101 lessons).**
+
+**Next:** T102 (naming/trademark check + store listing copy) — targets "Bombay Pet Company" per the rebrand.

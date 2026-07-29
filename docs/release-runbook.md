@@ -163,6 +163,9 @@ error.
 7. Re-confirm bundle id / display name at **C3** after T102; if they change, `app.config.js` + `packages/config/src/constants.ts` are the only edit sites.
 8. Run the 8-shot capture from a `preview` build via the `.claude/skills/emulator-test/SKILL.md` flow (save each as `apps/mobile/store-assets/raw/<shot-id>.png`), then re-run `pnpm --filter mobile store:screenshots` and upload the framed PNGs + `out/copy-blocks.md` copy to App Store Connect / Play Console.
 9. Install and wire `expo-splash-screen` (`npx expo install expo-splash-screen`) using the plugin block documented in `apps/mobile/store-assets/README.md` §9, to activate the final splash artwork.
+10. Complete the C3 internal-distribution checklist in `loop/checkpoint-C3-notes.md` §§4–5 (Apple Developer + App Store Connect record + ASC API key; Play Console record + declarations + service-account JSON), then run `pnpm --filter mobile dist:internal`.
+11. Confirm `staging-api.bombaypetcompany.app` is reachable before inviting internal testers — the `preview` profile points every tester at it.
+12. Add internal testers (App Store Connect Internal Testing group; Play internal tester list + opt-in URL) and Play license testers for IAP sandbox.
 
 ## 10. Store assets & screenshots (T100)
 
@@ -180,3 +183,22 @@ Honest note: no real device/simulator capture was possible in this build
 environment (headless Linux, no staging build) — the 8-shot set is proven
 against synthetic captures in `apps/mobile/__tests__/store-screenshot-kit.test.ts`;
 closing it against a real `preview` build is a founder to-do (§9 item 8).
+
+## 11. Internal distribution (T101)
+
+TestFlight-internal + Play-internal-track submission is tracked in
+`loop/checkpoint-C3-notes.md` — the ordered, founder-tagged checklist and the
+evidence of everything attempted in this build environment live there, not
+here (avoids duplication/drift). Two entry points:
+
+```
+pnpm --filter mobile dist:internal --dry-run
+pnpm --filter mobile dist:internal
+```
+
+The first prints the ordered build/submit plan offline and always exits 0;
+the second runs the real preflight (Expo credentials, clean git tree, then
+both `eas build`s followed by both `eas submit`s for the `preview` profile).
+Honest note: neither has produced a signed `.ipa`/`.aab` in this environment —
+there is no `EXPO_TOKEN`/`eas login` session here, matching the §8 boundary
+above; `loop/checkpoint-C3-notes.md` §7 records the verbatim attempt.

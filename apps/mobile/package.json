@@ -13,6 +13,7 @@
     "postinstall": "cd ../.. && pnpm -r --filter \"./packages/*\" build",
     "perf:bundle": "tsx scripts/analyze-bundle.ts",
     "perf:cold-start": "sh scripts/measure-cold-start.sh",
+    "dist:internal": "sh scripts/internal-distribution.sh",
     "assets:generate": "tsx store-assets/generate-assets.ts",
     "store:screenshots": "tsx store-assets/compose-screenshots.ts"
   },
