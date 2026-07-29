@@ -1353,3 +1353,21 @@ Attempt 1, checker verdict **PASS** (0 HIGH/MED, 6 LOW). First Phase 10 card und
 **LOW findings/follow-ups:** runbook §8 omits three D5 risks (notably requireCommit=true refusing dirty trees — founder will hit this; document in T101/T113 window); docs/store-privacy.md:250 stale 0.0.0 release example (ticket); §3 profile-table drift not guarded by the doc spec (accepted, plan-specified). Founder to-dos (runbook §9): EAS project re-create → new projectId, EXPO_TOKEN + real `eas build --profile preview` confirmation, GitHub var APP_VERSION=1.0.0, EAS env vars for RC/PostHog/Sentry keys, API hostnames confirmation, Apple/Play consoles + eas credentials, C3 bundle-id re-confirmation after T102.
 
 **Next:** T100 (app icon, splash & store screenshot kit).
+
+---
+
+## T100 — App icon, splash & store screenshot kit (2026-07-29)
+
+Attempt 2, checker verdict **PASS** (attempt-1 FAIL superseded; review §11 binding).
+
+**Shipped:** apps/mobile/store-assets/ kit — pure-TS PNG encoder/decoder + procedural paw-mark renderer (ZERO new dependencies; sharp stays api-only), 15 deterministic regenerable PNGs (app-store icon 1024 no-alpha, play icon 512, feature graphic 1024x500, android legacy densities 48–192, splash previews light/dark 1290x2796) + regenerated apps/mobile/assets icons + new splash-icon-dark; screenshot compositor proving the 8-shot × 4-profile set end-to-end from synthetic captures (real staging capture = founder /emulator-test step); marketing captions externalized in marketing-strings.ts as sidecars + copy-blocks.md, §7 safety-linted with positive controls; 6 new mobile specs (mobile suite now 181 suites / 1476 tests); real expo-doctor evidence run (asset/config checks green; 12-package SDK drift pre-existing, deliberately untouched); adaptiveIcon.backgroundColor #ffffff→#1f6350 (brand.700) with a both-from-disk drift-guard spec; release-runbook §10 + founder to-dos.
+
+**Incident (attempt 1 → FAIL):** executor's final report claimed the app.config.js D7 edit was in the diff — it was never made (report derived from plan narrative, not `git diff`; honestly disclosed on the fix round). Without it the Android adaptive icon composited cream-on-white ≈1.15:1 — a blank launcher tile — and no spec pinned the value. Checker caught it as inventory-mismatch finding 1 (HIGH). Fix round: one-line config change + cross-check assertion; checker ran its own stronger mutation proof (brand.900 mutant, RED at the equality assertion, restore sha1-verified). **Systemic lesson recorded: executor final reports must be derived from `git diff`, never from the plan narrative.**
+
+**Checker independent evidence:** all 15 PNGs validated by an independent zlib/struct walker (every chunk CRC recomputed, IDAT inflated, all 5 filters unfiltered); byte-identical regeneration; 4 mutation proofs total RED; contrast now ≈6.2:1; gates reproduced (typecheck 16/16, lint 15/15, build 9/9, full test EXIT=0).
+
+**Follow-ups:** (LOW) cross-check regex takes first match per file — scope to the adaptiveIcon object when the expo-splash-screen plugin block lands (founder to-do 2); caption pixel burn-in optional follow-up card; docs/store-privacy.md:250 stale 0.0.0 example (carried from T099 LOW-3).
+
+**Founder to-dos (README §11 / runbook §9):** capture 8 real screens via local /emulator-test → store-assets/raw/ → `pnpm --filter mobile store:screenshots`; `npx expo install expo-splash-screen` + wire plugin; store-console uploads with copy-blocks.md; C3 re-check after T102.
+
+**Next:** T101 (internal distribution).

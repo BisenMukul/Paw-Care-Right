@@ -49,7 +49,13 @@ const config = {
     package: BUNDLE_ID,
     adaptiveIcon: {
       foregroundImage: "./assets/adaptive-icon.png",
-      backgroundColor: "#ffffff",
+      // T100 (plan D7): the adaptive foreground is a transparent-background
+      // cream paw mark (store-assets/tools/asset-manifest.ts's "adaptive-icon"
+      // entry), so the launcher background must be the brand field colour for
+      // the icon to read as the brand mark instead of a blank tile. Matches
+      // `packages/config/tailwind-preset.mjs` `brand.700` -- cross-checked by
+      // `apps/mobile/__tests__/store-assets-manifest.test.ts`.
+      backgroundColor: "#1f6350",
     },
   },
   web: {

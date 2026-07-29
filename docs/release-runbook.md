@@ -161,3 +161,22 @@ error.
 5. Confirm or replace the provisional API hostnames (`staging-api.bombaypetcompany.app`, `api.bombaypetcompany.app`) once infra + T102 naming land.
 6. Apple Developer + App Store Connect app record for `com.bombaypetcompany.app`; Play Console app + service-account JSON stored outside the repo; run `eas credentials` for iOS signing and the Android keystore.
 7. Re-confirm bundle id / display name at **C3** after T102; if they change, `app.config.js` + `packages/config/src/constants.ts` are the only edit sites.
+8. Run the 8-shot capture from a `preview` build via the `.claude/skills/emulator-test/SKILL.md` flow (save each as `apps/mobile/store-assets/raw/<shot-id>.png`), then re-run `pnpm --filter mobile store:screenshots` and upload the framed PNGs + `out/copy-blocks.md` copy to App Store Connect / Play Console.
+9. Install and wire `expo-splash-screen` (`npx expo install expo-splash-screen`) using the plugin block documented in `apps/mobile/store-assets/README.md` §9, to activate the final splash artwork.
+
+## 10. Store assets & screenshots (T100)
+
+Final app icon/splash artwork (all densities) and the 8-shot marketing
+screenshot compositor live in `apps/mobile/store-assets/` — see
+`apps/mobile/store-assets/README.md` for the full manifest, device
+profiles, shot list, and marketing copy blocks (not restated here).
+
+```
+pnpm --filter mobile assets:generate
+pnpm --filter mobile store:screenshots
+```
+
+Honest note: no real device/simulator capture was possible in this build
+environment (headless Linux, no staging build) — the 8-shot set is proven
+against synthetic captures in `apps/mobile/__tests__/store-screenshot-kit.test.ts`;
+closing it against a real `preview` build is a founder to-do (§9 item 8).

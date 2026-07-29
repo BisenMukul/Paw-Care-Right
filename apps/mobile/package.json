@@ -12,7 +12,9 @@
     "build": "echo \"no native build in CI (T008)\" && exit 0",
     "postinstall": "cd ../.. && pnpm -r --filter \"./packages/*\" build",
     "perf:bundle": "tsx scripts/analyze-bundle.ts",
-    "perf:cold-start": "sh scripts/measure-cold-start.sh"
+    "perf:cold-start": "sh scripts/measure-cold-start.sh",
+    "assets:generate": "tsx store-assets/generate-assets.ts",
+    "store:screenshots": "tsx store-assets/compose-screenshots.ts"
   },
   "dependencies": {
     "@expo-google-fonts/bricolage-grotesque": "^0.4.1",

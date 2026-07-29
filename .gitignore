@@ -26,3 +26,6 @@ apps/web/.playwright/
 credentials.json
 google-play-service-account*.json
 apps/mobile/credentials/
+# T100: store-asset working dirs (real device captures, composited output)
+apps/mobile/store-assets/raw/
+apps/mobile/store-assets/out/
