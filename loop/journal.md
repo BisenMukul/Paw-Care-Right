@@ -1423,3 +1423,9 @@ Attempt 1, checker verdict **PASS** (0 HIGH, 2 MED, 5 LOW). Three-stage executio
 **Substitutions for founder review (F1/F2 in doc §6):** S1 India CGPDTM researched in place of the stale card's Algeria INAPI (Algeria still owed if it remains a launch market); S2 geographic-term risk replaces the moot "+"-handling risk. Founder to-dos F1–F6 in doc §6; final name + bundle id flagged for C3 approval.
 
 **Next:** T103 (crash-free & funnel dashboards).
+
+---
+
+## Founder resolution — F5 domain question (2026-07-29)
+
+Founder confirmed in chat: the 2026-07-19 registration of `bombaypetcompany.com` was their own. F5 marked resolved in docs/store-listing.md §6 (spec re-run green, 16/16). No UDRP/acquisition action needed. Still open: register `bombaypetcompany.app` (unregistered as of the T102 screen) and stand up `staging-api.bombaypetcompany.app` (C3 blocker).
