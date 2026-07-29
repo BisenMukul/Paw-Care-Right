@@ -118,6 +118,12 @@ export default function SettingsScreen() {
             onPress={() => router.push("/settings/notifications")}
           />
           <ListRow
+            testID="settings-feedback"
+            title={strings.feedback.title}
+            leadingIcon="chatbubble-ellipses-outline"
+            onPress={() => router.push("/feedback")}
+          />
+          <ListRow
             testID="settings-privacy"
             title={strings.settings.privacy}
             leadingIcon="shield-checkmark-outline"

@@ -13,6 +13,7 @@ import { RolesGuard } from "./common/roles.guard";
 import { THROTTLE_DEFAULT } from "./common/throttle.config";
 import { ConfigModule } from "./config/config.module";
 import { DevicesModule } from "./devices/devices.module";
+import { FeedbackModule } from "./feedback/feedback.module";
 import { HealthModule } from "./health/health.module";
 import { HealthLogsModule } from "./health-logs/health-logs.module";
 import { HouseholdsModule } from "./households/households.module";
@@ -36,6 +37,7 @@ import { WorkersModule } from "./workers/workers.module";
     HealthModule,
     AuthModule,
     DevicesModule,
+    FeedbackModule,
     HouseholdsModule,
     PetsModule,
     BreedsModule,

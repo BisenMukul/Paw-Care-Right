@@ -14,6 +14,7 @@ import {
   vetDisclaimerLine,
   type ActivityType,
   type ActivityUnit,
+  type FeedbackCategory,
   type HealthLogKind,
   type ReminderType,
 } from "@bombaypetcompany/types";
@@ -1006,5 +1007,37 @@ export const strings = {
   // sync happens beyond "when you reconnect".
   offline: {
     banner: "You're offline — changes will sync when you reconnect.",
+  },
+  // T104 in-app feedback + bug report: no "diagnos*" anywhere below -- use
+  // "app logs" / "troubleshoot", never "diagnostic logs" (CLAUDE §7,
+  // `strings-detector-lint.test.ts`'s real `scanUnsafeText`). The consent
+  // toggle governs device app-log attachment only; it carries no free text
+  // (see `src/observability/log-buffer.ts`).
+  feedback: {
+    title: "Send feedback",
+    body: "Tell us what's going on — a bug, an idea, or anything else. This isn't a substitute for veterinary care.",
+    categoryLabel: "What's this about?",
+    categories: {
+      BUG: "Something's broken",
+      IDEA: "I have an idea",
+      OTHER: "Something else",
+    } satisfies Record<FeedbackCategory, string>,
+    messageLabel: "Details",
+    messagePlaceholder: "Tell us what happened…",
+    attachLogsLabel: "Include recent app logs",
+    attachLogsHint:
+      "Helps us troubleshoot. Never includes your pet's symptoms, photos, or health details.",
+    attachImage: "Attach a screenshot",
+    imageAttached: "Screenshot attached",
+    submit: "Send feedback",
+    submitting: "Sending…",
+    success: "Thanks — your feedback was sent.",
+    errorGeneric: "We couldn't send this. Please try again.",
+    offline: "You're offline. Reconnect to send feedback.",
+    betaBanner: {
+      label: "Beta",
+      cta: "Send feedback",
+      ctaA11yLabel: "Send feedback about this beta",
+    },
   },
 } as const;

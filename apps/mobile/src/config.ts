@@ -15,6 +15,8 @@ export interface AppConfig {
   posthogHost: string;
   sentryDsn: string;
   gitSha: string;
+  /** T104 plan D6: gates the root-mounted beta banner. `false` by default -- nothing changes for non-beta builds. */
+  betaBanner: boolean;
 }
 
 export function getConfig(): AppConfig {
@@ -30,6 +32,7 @@ export function getConfig(): AppConfig {
         posthogHost?: string;
         sentryDsn?: string;
         gitSha?: string;
+        betaBanner?: boolean;
       }
     | undefined;
 
@@ -46,6 +49,7 @@ export function getConfig(): AppConfig {
     // T089: stub-safe by default (empty DSN => Sentry never inits, D5).
     sentryDsn: extra?.sentryDsn ?? "",
     gitSha: extra?.gitSha ?? "dev",
+    betaBanner: extra?.betaBanner ?? false,
   };
 }
 

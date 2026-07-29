@@ -14,8 +14,10 @@
 // OTA_UPDATES §7. The §1a release SHAPE (`bombaypetcompany@{version}+{buildId}`)
 // is preserved unchanged.
 import { baseSentryOptions, buildSentryRelease, type SentryEventLike } from "@bombaypetcompany/analytics";
+import type { FeedbackCategory } from "@bombaypetcompany/types";
 
 import { getAppVersion, getConfig } from "../config";
+import { recordLogEvent } from "./log-buffer";
 
 // Type-only reference to the native module's shape (no runtime import) —
 // the actual module is lazy-`require`d inside `initMobileSentry` below.
@@ -77,6 +79,15 @@ export function initMobileSentry(): void {
  * never initialized (empty DSN, or the native module failed to load).
  */
 export function captureError(error: unknown, context?: Record<string, unknown>): void {
+  // T104: feeds the closed-shape feedback log-buffer (D3) regardless of
+  // whether Sentry itself is initialized -- never the error's
+  // message/stack, only its bare class name.
+  recordLogEvent({
+    level: "error",
+    code: "captured_error",
+    ...(error instanceof Error && error.name ? { errorName: error.name } : {}),
+  });
+
   if (!sentryModule) {
     return;
   }
@@ -91,5 +102,43 @@ export function captureError(error: unknown, context?: Record<string, unknown>):
     });
   } catch {
     // Never let observability break the app it's trying to diagnose.
+  }
+}
+
+/**
+ * T104 plan D5: "Report -> Sentry" direction. Reads the id of the most
+ * recently captured Sentry event so a human can paste it into Sentry
+ * search -- never the raw breadcrumb content itself (T089's scrubber makes
+ * that impossible-by-design). Safe no-op (`undefined`) when Sentry was
+ * never initialized, matching this file's established idiom.
+ */
+export function getLastSentryEventId(): string | undefined {
+  if (!sentryModule) {
+    return undefined;
+  }
+  try {
+    return sentryModule.lastEventId();
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * T104 plan D5: "Sentry -> Report" direction. Adds one CONTENT-FREE
+ * breadcrumb (no `message` key at all) at submit time, so a subsequent
+ * crash's Sentry event shows "the user filed a report just before" without
+ * ever carrying free text. `scrubBreadcrumb` (T089) still runs on this
+ * breadcrumb regardless; it is written to already survive that scrub
+ * unchanged (own `category` and `data.category` are both allowlisted).
+ * Safe no-op when Sentry was never initialized.
+ */
+export function addFeedbackBreadcrumb(category: FeedbackCategory): void {
+  if (!sentryModule) {
+    return;
+  }
+  try {
+    sentryModule.addBreadcrumb({ category: "feedback", level: "info", data: { category } });
+  } catch {
+    // Never let observability break the feedback submit flow.
   }
 }

@@ -129,6 +129,11 @@ export class AccountErasureService {
       s3Keys.push(...(await this.storage.listKeys(`pets/${petId}/`)));
     }
     s3Keys.push(...(await this.storage.listKeys(`exports/${userId}/`)));
+    // T104 (plan D7): `FeedbackReport` FK-cascades from `User` (so the DB
+    // rows are removed by `tx.user.delete` below), but that cascade does not
+    // reach S3 -- a submitted screenshot's object must be erased alongside
+    // the account exactly like the export bundle above.
+    s3Keys.push(...(await this.storage.listKeys(`feedback/${userId}/`)));
 
     const deletedAuditLogs = await this.deleteAuditLogs(checkIds, threadIds);
 
@@ -181,7 +186,14 @@ export class AccountErasureService {
     const threadIds = threads.map((thread) => thread.id);
 
     const deletableKeys = await this.computeDeletableUserOnlyKeys(userId, householdId, checks);
-    const s3Keys = [...deletableKeys, ...(await this.storage.listKeys(`exports/${userId}/`))];
+    // T104 (plan D7): mirrors the FULL_HOUSEHOLD branch above -- the
+    // `feedback/<userId>/` S3 prefix is never shared with another member,
+    // so it is always safe to erase in full here too.
+    const s3Keys = [
+      ...deletableKeys,
+      ...(await this.storage.listKeys(`exports/${userId}/`)),
+      ...(await this.storage.listKeys(`feedback/${userId}/`)),
+    ];
 
     const deletedAuditLogs = await this.deleteAuditLogs(checkIds, threadIds);
 

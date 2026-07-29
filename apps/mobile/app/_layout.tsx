@@ -13,10 +13,12 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { queryClient, queryPersister } from "../src/api/query";
 import { useAuthStore } from "../src/auth/auth-store";
 import { usePurchasesInit } from "../src/billing/use-purchases-init";
+import { BetaBanner } from "../src/components/beta-banner";
 import { OfflineBanner } from "../src/components/offline-banner";
 import { UpdateGate } from "../src/components/update-gate";
 import { UpsellSheet } from "../src/components/upsell-sheet";
 import { AppErrorBoundary } from "../src/error-boundary";
+import { useShakeToReport } from "../src/feedback/use-shake-to-report";
 import { useAppFonts } from "../src/fonts/use-app-fonts";
 import { useNetworkListener } from "../src/offline/use-network-listener";
 import { useOutboxFlush } from "../src/offline/use-outbox-flush";
@@ -74,6 +76,7 @@ function AppRoot() {
   useNetworkListener();
   useOutboxFlush();
   usePurchasesInit();
+  useShakeToReport();
 
   if (status === "restoring") {
     return <View testID="auth-splash" className="flex-1 items-center justify-center bg-white" />;
@@ -83,6 +86,7 @@ function AppRoot() {
     <UpdateGate>
       <View className="flex-1">
         <OfflineBanner />
+        <BetaBanner />
         {/* T094 (T083 F8 hand-off, route-declaration verdict): declare a
             screen here ONLY when it needs non-default `options` (e.g.
             `presentation`/`gestureEnabled`) -- every other route is
@@ -112,6 +116,7 @@ function AppRoot() {
           <Stack.Screen name="paywall" options={{ presentation: "modal" }} />
           <Stack.Screen name="family" />
           <Stack.Screen name="join/[code]" />
+          <Stack.Screen name="feedback" options={{ presentation: "modal" }} />
         </Stack>
       </View>
       <UpsellSheet />

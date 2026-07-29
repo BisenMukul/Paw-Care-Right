@@ -121,7 +121,7 @@ describe("AccountErasureService", () => {
       expect(checkIdx).toBeLessThan(householdIdx);
     });
 
-    it("lists and deletes S3 keys under every pet's prefix plus the export prefix", async () => {
+    it("lists and deletes S3 keys under every pet's prefix plus the export and feedback prefixes (T104)", async () => {
       const recorder: Recorder = { order: [] };
       const listKeys = jest.fn().mockResolvedValue(["k1", "k2"]);
       const deleteObjects = jest.fn().mockResolvedValue(undefined);
@@ -133,8 +133,9 @@ describe("AccountErasureService", () => {
 
       expect(listKeys).toHaveBeenCalledWith("pets/pet-1/");
       expect(listKeys).toHaveBeenCalledWith("exports/user-1/");
-      expect(deleteObjects).toHaveBeenCalledWith(["k1", "k2", "k1", "k2"]);
-      expect(report.deletedS3Keys).toBe(4);
+      expect(listKeys).toHaveBeenCalledWith("feedback/user-1/");
+      expect(deleteObjects).toHaveBeenCalledWith(["k1", "k2", "k1", "k2", "k1", "k2"]);
+      expect(report.deletedS3Keys).toBe(6);
     });
 
     it("throws (dead-letters) when reached with an OWNER who still has live co-members", async () => {
@@ -194,6 +195,31 @@ describe("AccountErasureService", () => {
       expect(report.mode).toBe("USER_ONLY");
       expect(recorder.order).toContain("membership.deleteMany");
       expect(recorder.order).not.toContain("household.delete");
+    });
+
+    it("lists and deletes S3 keys under the export and feedback prefixes too (T104)", async () => {
+      const recorder: Recorder = { order: [] };
+      const listKeys = jest.fn().mockResolvedValue([]);
+      const deleteObjects = jest.fn().mockResolvedValue(undefined);
+      const prisma = buildMemberPrisma(recorder, {
+        symptomCheck: {
+          findMany: jest.fn().mockResolvedValue([]),
+          deleteMany: jest.fn(() => Promise.resolve({ count: 0 })),
+        },
+        chatThread: {
+          findMany: jest.fn().mockResolvedValue([]),
+          deleteMany: jest.fn(() => Promise.resolve({ count: 0 })),
+        },
+        pet: { findMany: jest.fn().mockResolvedValue([{ id: "pet-1", photoKey: null }]) },
+        healthLog: { findMany: jest.fn().mockResolvedValue([]) },
+      });
+      const storage = buildStorage({ listKeys, deleteObjects });
+      const service = new AccountErasureService(prisma, storage, buildRedis());
+
+      await service.erase("member-1");
+
+      expect(listKeys).toHaveBeenCalledWith("exports/member-1/");
+      expect(listKeys).toHaveBeenCalledWith("feedback/member-1/");
     });
 
     it("never deletes a photo key still referenced by a surviving Pet.photoKey", async () => {

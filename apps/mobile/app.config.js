@@ -72,6 +72,10 @@ const config = {
     posthogHost: process.env.EXPO_PUBLIC_POSTHOG_HOST ?? "https://us.i.posthog.com",
     // T089: stub-safe by default (empty DSN => Sentry never inits, D5).
     sentryDsn: process.env.EXPO_PUBLIC_SENTRY_DSN ?? "",
+    // T104: gates the root-mounted beta banner. `false` everywhere except a
+    // profile where the founder explicitly sets EXPO_PUBLIC_BETA=1 (e.g. the
+    // preview/beta EAS profile) -- default off so no existing build changes.
+    betaBanner: process.env.EXPO_PUBLIC_BETA === "1",
     // T099: EXPO_PUBLIC_GIT_SHA -> EAS_BUILD_GIT_COMMIT_HASH -> "dev". Without
     // this chain every EAS build reports Sentry release "...+dev" and all
     // builds collide in one release bucket (T089 §7 / OTA_UPDATES §7 make

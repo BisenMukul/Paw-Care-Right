@@ -118,6 +118,11 @@ that state for that screen (grep-checked by `state-audit-doc.test.ts`),
 | `settings/privacy.tsx` | GAP — `privacy-loading` has no test | `"a failed toggle reverts the switch and shows the error notice"` (`privacy-screen.test.tsx:74`) + `"a non-conflict failure renders the generic error notice"` (`:144`) — these cover the two mutation-error notices; the screen's own top-level `isError` branch (`privacy-error`) is itself untested | GAP — `privacy-empty` (the `!settings` branch) has no test | GAP — `privacy-offline` (no-cache branch) has no test; no offline-banner test either (unlike notifications) |
 | `push-rationale.tsx` | N/A — local `loading` state only gates the "Enable" button's own spinner prop, no screen-level branch | N/A — `usePushRegistration`'s failures are deliberately swallowed (failure-tolerant by design, per the screen's own header comment) | N/A — no data | N/A — no data, no offline dependency (push registration is best-effort) |
 | `coming-soon.tsx` | N/A — fully static placeholder | N/A — no request | N/A — no data | N/A — no data |
+| `feedback.tsx` | N/A — write-only form (no resource fetch); nothing to gate on load | `"shows the generic error notice when the mutation fails"` (`feedback-screen.test.tsx:171`) | `"an empty message disables the submit button"` (`feedback-screen.test.tsx:61`) | `"offline disables the submit button"` (`feedback-screen.test.tsx:71`) |
+
+<!-- T104 addendum: one row added post-T094 sweep for the new `feedback.tsx`
+     screen (in-app feedback + bug report). The §1 method/count above is
+     the original T094 snapshot and is left historical, not rewritten. -->
 
 ---
 
@@ -149,6 +154,7 @@ entries; **4** of those carry non-default `options`
 | `paywall` | direct (options) | itself |
 | `family` | direct | itself |
 | `join/[code]` | direct | itself |
+| `feedback` | direct (options, T104 addendum) | itself |
 
 That accounts for 14 directly-declared screens + 13 covered by the 3
 declared groups = 27 of 47. The remaining **20 screens are undeclared** —

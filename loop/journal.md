@@ -1445,3 +1445,19 @@ Attempt 1, checker verdict **PASS** (0 HIGH, 1 MED, 5 LOW/INFO).
 **AC2 note: card NOT fully closed** — "staging events visible in funnel (journal screenshot)" is [FOUNDER-5]; paste the screenshot into this journal when done. Founder to-dos F1–F6 in doc §§4,6,7.
 
 **Next:** T104 (in-app feedback + bug report).
+
+---
+
+## T104 — In-app feedback + bug report (2026-07-30)
+
+Attempt 1, checker verdict **PASS** (0 HIGH, 2 MED — F1 closed pre-commit via executor fix round, F2 honored below).
+
+**Shipped:** full-stack feedback module. API: FeedbackReport model + FeedbackCategory enum + 2 indexes (generated migration 20260729215334), feedback module (Zod in packages/types + class-validator DTOs + Swagger, presign→PUT→submit→read round trip on real postgres+MinIO), consent enforced at FOUR layers (Zod refine, service 400, e2e row-count, mobile screen test) — server-side rejection of logs-without-consent is the load-bearing gate; erasure guarantees extended (FeedbackReport in CASCADE_COVERED_MODELS, feedback/<userId>/ swept in BOTH erasure branches — mutation-proven). Mobile: closed-code 50-entry ring-buffer logger (no free-text field by type), consent toggle default OFF, feedback modal screen (picker-attached image via existing compressImage idiom, all four §6 states), beta banner + CTA (flag-gated via EXPO_PUBLIC_BETA, non-absolute, a11y), settings row, content-free Sentry breadcrumb + lastEventId link (now pinned by 7 pre-scrub shape tests vs the real scrubber — F1 closure, mutation proof RED on message-key injection, restore sha1 b76c2fdb). Zero new deps. Suites: api 110/1121, mobile 187/1530, types 26/580.
+
+**HONEST CARD-FIDELITY NOTE (checker F2 adjudication condition):** "Shake-to-report" is shipped as a documented no-op seam (shake-detector.ts + use-shake-to-report), NOT a working shake detector — no accelerometer dep exists in tree, and adding expo-sensors changes the native fingerprint (OTA_UPDATES §1), which would strand T101's beta builds off-OTA. Auto-screenshot likewise not implemented; user-attached image instead. Entry points are the beta banner CTA + settings row. **[FOUNDER @ C3]: decide D1 (authorize expo-sensors + native rebuild for real shake) and D2 (auto-screenshot) — this card is NOT full fidelity until then.**
+
+**Checker:** 4 own mutation proofs (consent default flip → 2 RED; C-M2 breadcrumb content injection → nothing RED at the time = F1, now closed; USER_ONLY sweep removal → 1 RED; Zod-refine-only neuter → 1 RED); consent bypass hunt clean (nested free-text rejected empirically: "property message should not exist"); coverage feedback.service.ts 100%/88.46%; both deviations verified forced by existing pinned gates (.env.example EXPO_PUBLIC_BETA line, state-audit rows). Accepted LOWs for future cards: permissionError string reuse, uncancelled setTimeout(router.back), consent Switch accessibilityLabel, route-declarations options pin, use-shake-to-report untested.
+
+**Founder to-dos:** EXPO_PUBLIC_BETA=1 on beta/preview EAS profile only; no admin reader UI yet (Postgres/MinIO only); privacy counsel confirm feedback reports excluded from T091 export while included in erasure; C3 items above.
+
+**Next:** T105.

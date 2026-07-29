@@ -598,8 +598,8 @@
       "attempts": 1
     },
     "T104": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 1
     },
     "T105": {
       "status": "pending",
@@ -751,10 +751,10 @@
     "surveillance-layer-corrections-v2: Write grants, fail-closed protected-paths (no python), current-task file contract, P0/no-HEAD tolerance, subshell fail-open fixes"
   ],
   "current-task": {
-    "id": "T104",
+    "id": "T105",
     "phase": 10,
     "attempts": 0,
     "state": "planning",
-    "note": "T103 done 2026-07-29 (checker PASS; AC2 screenshot remains FOUNDER-5). T104 in-app feedback + bug report next."
+    "note": "T104 done 2026-07-30 (checker PASS; shake ships as documented seam \u2014 D1/D2 founder decisions at C3). T105 next."
   }
 }

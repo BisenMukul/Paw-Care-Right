@@ -92,6 +92,7 @@ model User {
   subscription    Subscription?
   chatThreads     ChatThread[]
   accountExports  AccountExport[]
+  feedbackReports FeedbackReport[]
 
   @@index([deletionScheduledAt])
 }
@@ -469,4 +470,39 @@ model AiAuditLog {
   @@index([createdAt])
   @@index([checkId])
   @@index([threadId])
+}
+
+enum FeedbackCategory {
+  BUG
+  IDEA
+  OTHER
+}
+
+// FeedbackReport (T104 plan D4/D7/step 4): one row per `POST /v1/feedback`
+// in-app bug report. INVARIANT: `logs` is a closed, free-text-free JSON
+// shape (`FeedbackLogEntry[]`, see `packages/types/src/feedback.ts`) --
+// never an owner's symptom text, a pet's name, or a token (T089 PII
+// posture) -- and `logsConsent === false` implies `logs === []`
+// (`FeedbackService.submit` enforces this server-side; the DTO/schema
+// refine it independently, belt-and-braces). `screenshotKey` (when present)
+// points at `feedback/<userId>/<uuid>.jpg` in S3, erased alongside the row
+// by the T091 account-erasure cascade (`account-erasure.service.ts` +
+// `account-erasure-cascade-completeness.spec.ts`).
+model FeedbackReport {
+  id            String           @id @default(uuid())
+  userId        String
+  category      FeedbackCategory @default(BUG)
+  message       String
+  platform      String
+  appVersion    String
+  logsConsent   Boolean          @default(false)
+  logs          Json             @default("[]")
+  screenshotKey String?
+  sentryEventId String?
+  sentryRelease String?
+  createdAt     DateTime         @default(now())
+  user          User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([createdAt])
 }

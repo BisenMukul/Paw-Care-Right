@@ -15,7 +15,13 @@
  * wiring executes -- see `app/_layout.tsx`).
  */
 
+import { recordLogEvent } from "./observability/log-buffer";
 import { captureError } from "./observability/sentry";
+
+/** Bare error-class name only (e.g. `TypeError`) when `error` is an `Error` -- never a message/stack (T104 D3). */
+function safeErrorName(error: unknown): string | undefined {
+  return error instanceof Error ? error.name : undefined;
+}
 
 interface ErrorUtilsLike {
   getGlobalHandler(): ((error: unknown, isFatal?: boolean) => void) | undefined;
@@ -53,6 +59,14 @@ export function installStartupGuard(): void {
     // eslint-disable-next-line no-console -- JUSTIFIED: last-resort startup-crash diagnostic; fires only when the app is already going down and must reach Metro/adb logs (Sentry wiring landed T089 -- captureError below is a safe no-op when uninitialized, e.g. before `initMobileSentry()` has run)
     console.error(`[bombaypetcompany startup] ${isFatal === true ? "FATAL" : "non-fatal"} JS error:`, error);
     captureError(error, { isFatal: isFatal === true });
+    // T104: feeds the closed-shape feedback log-buffer (D3) -- never the
+    // error's message/stack, only its bare class name.
+    const errorName = safeErrorName(error);
+    recordLogEvent({
+      level: "error",
+      code: isFatal === true ? "startup_fatal" : "startup_nonfatal",
+      ...(errorName !== undefined ? { errorName } : {}),
+    });
     previousHandler?.(error, isFatal);
   });
 }

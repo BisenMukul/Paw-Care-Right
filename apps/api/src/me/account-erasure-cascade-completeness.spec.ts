@@ -51,6 +51,10 @@ const CASCADE_COVERED_MODELS = [
   "ChatMessage",
   "AccountExport",
   "AiAuditLog",
+  // T104: FK-cascades from `User` (`onDelete: Cascade`); its S3
+  // `feedback/<userId>/` screenshot prefix is erased alongside the row by
+  // `account-erasure.service.ts`'s two `listKeys` calls (mirrors `AccountExport`).
+  "FeedbackReport",
 ] as const;
 
 /**
