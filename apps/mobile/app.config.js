@@ -16,13 +16,23 @@ const {
   DEEPLINK_SCHEME,
 } = require("@bombaypetcompany/config");
 
+// T099: treats empty-string env values as absent (EAS build-server env vars
+// are sometimes unset-but-present) and prefers the caller-supplied
+// EXPO_PUBLIC_GIT_SHA over EAS's own build-server variable.
+/** @param {Array<string | undefined>} values */
+const firstNonEmpty = (...values) => values.find((v) => typeof v === "string" && v.trim() !== "") ?? "";
+
 /** @type {import('expo/config').ExpoConfig} */
 const config = {
   name: APP_DISPLAY_NAME,
   slug: APP_SLUG,
   scheme: DEEPLINK_SCHEME,
   owner: "mukbisens-team",
-  version: "0.0.0",
+  // T099: marketing/store version, hand-bumped per release train. iOS
+  // buildNumber / Android versionCode are REMOTE and auto-incremented by EAS
+  // (see eas.json `cli.appVersionSource: "remote"` + per-profile
+  // `autoIncrement: true`), so they never appear in this file.
+  version: "1.0.0",
   orientation: "portrait",
   userInterfaceStyle: "automatic",
   icon: "./assets/icon.png",
@@ -56,12 +66,22 @@ const config = {
     posthogHost: process.env.EXPO_PUBLIC_POSTHOG_HOST ?? "https://us.i.posthog.com",
     // T089: stub-safe by default (empty DSN => Sentry never inits, D5).
     sentryDsn: process.env.EXPO_PUBLIC_SENTRY_DSN ?? "",
-    gitSha: process.env.EXPO_PUBLIC_GIT_SHA ?? "dev",
-    // `eas init` will create an EAS project with slug "bombaypetcompany" (APP_SLUG)
-    // and print its projectId — add it back here as `eas: { projectId: "<uuid>" }`.
-    "eas": {
-        "projectId": "a7a52d2d-c7f4-44b0-9234-017d07bd1ced"
-      }
+    // T099: EXPO_PUBLIC_GIT_SHA -> EAS_BUILD_GIT_COMMIT_HASH -> "dev". Without
+    // this chain every EAS build reports Sentry release "...+dev" and all
+    // builds collide in one release bucket (T089 §7 / OTA_UPDATES §7 make
+    // per-build releases load-bearing). eas.json's `cli.requireCommit: true`
+    // is what makes EAS_BUILD_GIT_COMMIT_HASH meaningful.
+    gitSha:
+      firstNonEmpty(process.env.EXPO_PUBLIC_GIT_SHA, process.env.EAS_BUILD_GIT_COMMIT_HASH) || "dev",
+    // T099: this UUID points at the pre-REBRAND-1 EAS project. Renaming /
+    // re-creating the EAS project to slug "bombaypetcompany" (`eas init` /
+    // project rename in expo.dev) is a standing founder to-do; after that,
+    // paste the new server-assigned projectId here — a one-line edit, no
+    // code change. Do not invent a UUID here; do not remove this block
+    // (removing it breaks `eas update`/`eas build` project resolution).
+    eas: {
+      projectId: "a7a52d2d-c7f4-44b0-9234-017d07bd1ced",
+    },
   },
   plugins: [
     "expo-router",

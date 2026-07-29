@@ -1339,3 +1339,17 @@ Founder-directed (supersedes T099 ordering; decisions locked 2026-07-29: full sc
 **Checker LOW findings / follow-ups:** (LOW-3) README CI badge still points at github.com/BisenMukul/Paw-Care-Right — correct until the founder renames the GitHub repo; (LOW-4) chat 402 message hardcodes display name (pre-existing T097 debt, follow-up ticket). Stale-until-authorized: docs/PHASES.md T099/T102 cards, docs/OTA_UPDATES.md §7 Sentry slug, MODEL_STRATEGY/AI_PROVIDERS/LOOP_PROTOCOL/.claude/** — all hook-protected, documented exemptions. Founder to-dos renewed under new brand: GitHub repo rename + badge, EAS project rename/re-create, store consoles, T102 trademark check targets "Bombay Pet Company", dev-client rebuild (new bundle id = new native app), re-seed devices.
 
 **Next:** T099 (Phase 10) under the new brand.
+
+---
+
+## T099 — EAS build profiles + signing setup (2026-07-29)
+
+Attempt 1, checker verdict **PASS** (0 HIGH/MED, 6 LOW). First Phase 10 card under the Bombay Pet Company brand.
+
+**Shipped:** apps/mobile/eas.json finalized (cli.appVersionSource=remote, version >=16.0.0, requireCommit=true; development/preview/production profiles with channel/environment=profile-name, public-only env blocks, autoIncrement+remote credentials on preview/production, android internal submit tracks); app.config.js version 0.0.0→1.0.0 with gitSha fallback chain (EXPO_PUBLIC_GIT_SHA → EAS_BUILD_GIT_COMMIT_HASH → "dev"); .env.example +6 EXPO_PUBLIC_* dev-safe keys; .gitignore signing-material block (p8/p12/keystore/jks/mobileprovision/credentials); docs/release-runbook.md §1–§9 (build→submit→OTA, honest §8 verification status); 2 new pinned specs (eas-config 12 tests, release-runbook-doc 7 tests). Mobile suite now 175 suites / 1436 tests. eas-cli NOT added as a dependency (§2.7: npx-only evidence run — ~100MB dev/CI tool with zero gate value offline); lockfile untouched. extra.eas.projectId UUID intentionally unchanged pending founder EAS project re-create.
+
+**Checker highlights:** upgraded the AC1 proof beyond the plan — loaded @expo/eas-json (the exact library eas build uses, left in the npx cache by the evidence run) and validated all three profiles offline on both platforms, SCHEMA_EXIT=0; 7 mutation proofs, 6 RED, all restores sha1-verified; reproduced the CLI auth-boundary capture verbatim; all gates re-run green incl. forced-uncached api 1103/1103.
+
+**LOW findings/follow-ups:** runbook §8 omits three D5 risks (notably requireCommit=true refusing dirty trees — founder will hit this; document in T101/T113 window); docs/store-privacy.md:250 stale 0.0.0 release example (ticket); §3 profile-table drift not guarded by the doc spec (accepted, plan-specified). Founder to-dos (runbook §9): EAS project re-create → new projectId, EXPO_TOKEN + real `eas build --profile preview` confirmation, GitHub var APP_VERSION=1.0.0, EAS env vars for RC/PostHog/Sentry keys, API hostnames confirmation, Apple/Play consoles + eas credentials, C3 bundle-id re-confirmation after T102.
+
+**Next:** T100 (app icon, splash & store screenshot kit).
