@@ -60,10 +60,15 @@ describe("Billing — RC webhook fuzz (e2e)", () => {
     return id;
   }
 
+  // T098 docket 1 (loop/reviews/T097.review.md §7): scoped to this fixture's
+  // own rows -- a global count() picks up rows written by unrelated e2e
+  // specs sharing the same live DB, which made these before/after
+  // comparisons order- and concurrency-dependent. `in: []` yields 0, the
+  // correct baseline before any owner context/event exists.
   async function countRows(): Promise<{ processed: number; subscriptions: number }> {
     const [processed, subscriptions] = await Promise.all([
-      prisma.processedWebhookEvent.count(),
-      prisma.subscription.count(),
+      prisma.processedWebhookEvent.count({ where: { eventId: { in: eventIds } } }),
+      prisma.subscription.count({ where: { rcAppUserId: { in: userIds } } }),
     ]);
     return { processed, subscriptions };
   }

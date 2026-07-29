@@ -204,7 +204,10 @@ describe("a11y-static-scan: every [AUTO] tag in docs/qa/a11y-script.md names a r
   const testTitles = new Set([...sweepSource.matchAll(TEST_TITLE_PATTERN)].map((m) => m[2]!));
 
   it("the script has a non-empty set of [AUTO] tags (non-vacuity)", () => {
-    expect(autoTags.length).toBeGreaterThan(0);
+    // T098 docket 6a: raised from `> 0` to the real, measured count (16, as
+    // of this task) so a doc-shrinkage regression (rows silently deleted)
+    // fails loudly instead of vacuously passing at 1.
+    expect(autoTags.length).toBeGreaterThanOrEqual(16);
   });
 
   it("a11y-sweep.test.tsx has a non-empty set of it()/describe() titles (non-vacuity)", () => {

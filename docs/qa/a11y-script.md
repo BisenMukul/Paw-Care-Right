@@ -37,7 +37,7 @@
 | 1 | Cold-launch the app (no session) | VoiceOver/TalkBack focuses the welcome screen; the paw icon is skipped (decorative) | `[DEVICE-ONLY]` | |
 | 2 | Swipe to the app title | Announces "Paw Care Right +, header" | `[AUTO: a11y-sweep › the screen title is a header]` | |
 | 3 | Continue swiping | Reading order is title → tagline → "Continue with email" → social buttons (no jump-around) | `[AUTO: a11y-sweep › reading order matches visual order]` | |
-| 4 | Swipe through every focusable element on the screen | Each one announces a role or a label — never silent | `[AUTO: a11y-sweep › every interactive element exposes a role or a label]` | |
+| 4 | Swipe through every focusable element on the screen | Each one announces a role or a label — never silent | `[AUTO: a11y-sweep › every welcome-screen interactive element exposes a role or a label]` | |
 | 5 | Double-tap "Continue with email" | Navigates to the email screen; VoiceOver/TalkBack focus lands near the top (not lost) | `[DEVICE-ONLY]` | |
 | 6 | Enter an invalid email, submit | The error text is announced automatically (live-region) | `[AUTO: a11y-sweep › email screen's invalid-email error carries accessibilityRole=alert]` | |
 | 7 | Confirm focus visibly moves to the email field after the failed submit | Focus lands on the errored field, not left on the Submit button | `[DEVICE-ONLY]` | |
@@ -92,7 +92,7 @@
 
 | Step | Action | Expected announcement | Tag | Result |
 |---|---|---|---|---|
-| 1 | Open chat with an active pet | The active-pet badge, quick-prompt chips, composer input, and send button all announce a role or a label | `[AUTO: a11y-sweep › every interactive element exposes a role or a label]` | |
+| 1 | Open chat with an active pet | The active-pet badge, quick-prompt chips, composer input, and send button all announce a role or a label | `[AUTO: a11y-sweep › every chat-screen interactive element exposes a role or a label]` | |
 | 2 | Send a message and let the assistant reply stream in | New transcript content is read as it settles, without interrupting the user mid-typing | `[DEVICE-ONLY]` | |
 | 3 | Trigger a nudge card (symptom-flagged reply) | The nudge card announces its escalation CTA before the assistant bubble is read (matches server emission order) | `[DEVICE-ONLY]` | |
 | 4 | Reach the end of the transcript | The non-dismissible `<VetDisclaimer/>` footer is always present and readable (cross-reference: presence itself is pinned by `check-result-snapshot.test.tsx`/`paywall-emergency-safety.test.tsx`, not re-asserted here) | `[DEVICE-ONLY]` | |

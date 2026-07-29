@@ -188,7 +188,7 @@ describe("a11y-sweep: welcome -> sign-in flow", () => {
     );
   });
 
-  it("every interactive element exposes a role or a label", async () => {
+  it("every welcome-screen interactive element exposes a role or a label", async () => {
     const { toJSON } = await render(<WelcomeScreen />);
 
     const pressables = findPressables(toJSON());
@@ -507,7 +507,7 @@ describe("a11y-sweep: reminders flow", () => {
 // FLOW 5: chat
 // ---------------------------------------------------------------------------
 describe("a11y-sweep: chat flow", () => {
-  it("every interactive element exposes a role or a label", async () => {
+  it("every chat-screen interactive element exposes a role or a label", async () => {
     mockedUsePets.mockReturnValue({ data: [FIXTURE_PET], isLoading: false, isError: false, refetch: jest.fn() });
 
     const { toJSON, findByTestId } = await render(<ChatScreen />);

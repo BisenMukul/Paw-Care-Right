@@ -181,6 +181,11 @@ afterEach(() => {
 
 describe("dynamic-type: home screen", () => {
   beforeEach(() => {
+    // T098 docket 2: mockImplementationOnce bodies queued by other describes
+    // survive `jest.clearAllMocks()` (it clears calls, not implementations) --
+    // `mockReset()` removes them so this describe's own implementation is the
+    // only one in force.
+    mockedGet.mockReset();
     mockedGet.mockImplementation((path: string) => {
       if (path.startsWith("/v1/pets")) {
         return Promise.resolve([PET_A]);
@@ -195,6 +200,11 @@ describe("dynamic-type: home screen", () => {
   it("chrome text caps font scaling within [1.2, 1.5]", async () => {
     const client = createTestQueryClient();
     const { toJSON } = await render(<HomeScreen />, { wrapper: makeWrapper(client) });
+    // T098 docket 2: gate on the pets-query-dependent node, not "home-header"
+    // (unconditional chrome, rendered before `useActivePet()` resolves --
+    // waiting on it does not force the loading-vs-loaded race to settle;
+    // see `loop/reviews`/journal for the reproduction).
+    await screen.findByTestId("home-open-active-pet");
 
     const nodes = maxFontSizeNodes(toJSON());
     expect(nodes.length).toBeGreaterThan(0);
@@ -208,6 +218,7 @@ describe("dynamic-type: home screen", () => {
   it("no fixed-height container wraps text", async () => {
     const client = createTestQueryClient();
     const { toJSON } = await render(<HomeScreen />, { wrapper: makeWrapper(client) });
+    await screen.findByTestId("home-open-active-pet");
 
     const allNodes = flatten(toJSON());
     expect(allNodes.length).toBeGreaterThan(10);
@@ -220,7 +231,7 @@ describe("dynamic-type: home screen", () => {
     const client = createTestQueryClient();
     await render(<HomeScreen />, { wrapper: makeWrapper(client) });
 
-    expect(screen.getByTestId("home-header")).toBeTruthy();
+    expect(await screen.findByTestId("home-header")).toBeTruthy();
   });
 });
 
@@ -235,6 +246,7 @@ describe("dynamic-type: check result screen", () => {
 
   it("chrome text caps font scaling within [1.2, 1.5]", async () => {
     const { toJSON } = await render(<CheckResultScreen />);
+    await screen.findByTestId("check-result-screen");
 
     const nodes = maxFontSizeNodes(toJSON());
     expect(nodes.length).toBeGreaterThan(0);
@@ -247,6 +259,7 @@ describe("dynamic-type: check result screen", () => {
 
   it("no fixed-height container wraps text", async () => {
     const { toJSON } = await render(<CheckResultScreen />);
+    await screen.findByTestId("check-result-screen");
 
     const allNodes = flatten(toJSON());
     expect(allNodes.length).toBeGreaterThan(10);
@@ -258,7 +271,7 @@ describe("dynamic-type: check result screen", () => {
 
     await render(<CheckResultScreen />);
 
-    expect(screen.getByTestId("check-result-screen")).toBeTruthy();
+    expect(await screen.findByTestId("check-result-screen")).toBeTruthy();
     expect(screen.getByTestId("vet-disclaimer")).toBeTruthy();
   });
 });
@@ -280,6 +293,7 @@ describe("dynamic-type: paywall screen", () => {
 
   it("chrome text caps font scaling within [1.2, 1.5]", async () => {
     const { toJSON } = await render(<PaywallScreen />);
+    await screen.findByTestId("paywall-screen");
 
     const nodes = maxFontSizeNodes(toJSON());
     expect(nodes.length).toBeGreaterThan(0);
@@ -292,6 +306,7 @@ describe("dynamic-type: paywall screen", () => {
 
   it("no fixed-height container wraps text", async () => {
     const { toJSON } = await render(<PaywallScreen />);
+    await screen.findByTestId("paywall-screen");
 
     const allNodes = flatten(toJSON());
     expect(allNodes.length).toBeGreaterThan(10);
@@ -303,13 +318,15 @@ describe("dynamic-type: paywall screen", () => {
 
     await render(<PaywallScreen />);
 
-    expect(screen.getByTestId("paywall-screen")).toBeTruthy();
+    expect(await screen.findByTestId("paywall-screen")).toBeTruthy();
     expect(screen.getByTestId("paywall-headline")).toBeTruthy();
   });
 });
 
 describe("dynamic-type: chat screen", () => {
   beforeEach(() => {
+    // T098 docket 2: same mockReset() rationale as the home describe above.
+    mockedGet.mockReset();
     mockedGet.mockImplementation((path: string) => {
       if (path.startsWith("/v1/pets")) {
         return Promise.resolve([PET_A]);

@@ -8,7 +8,8 @@
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
-    "test": "jest"
+    "test": "jest",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@pawcareright/analytics": "workspace:*",
@@ -24,6 +25,7 @@
     "@lhci/cli": "^0.14",
     "@next/eslint-plugin-next": "^15",
     "@pawcareright/ai": "workspace:*",
+    "@playwright/test": "^1",
     "@types/jest": "^29.5.14",
     "@types/node": "^22",
     "@types/react": "^19",

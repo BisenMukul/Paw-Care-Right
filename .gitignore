@@ -13,3 +13,7 @@ dump.rdb
 # T095: local lighthouse-ci reports + mobile bundle-export/analysis output
 .lighthouseci/
 apps/mobile/.perf/
+# T098: Playwright local artifacts
+apps/web/test-results/
+apps/web/playwright-report/
+apps/web/.playwright/

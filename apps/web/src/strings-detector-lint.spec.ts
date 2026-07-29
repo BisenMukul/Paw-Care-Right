@@ -79,9 +79,12 @@ const CLAIMS_POSITIVE_CONTROLS: readonly string[] = [
 // "acceptable use" prohibition clause, which legitimately names the harm it
 // forbids ("do-it-yourself sedation, do-it-yourself surgery") — rewording it
 // to dodge the `HARM_ENABLING` pattern would weaken, not strengthen, the
-// clause, and it is separately byte-pinned verbatim by
-// `apps/web/src/legal/legal-content.spec.ts`, so it cannot be reworded here
-// without also breaking that spec.
+// clause. The exact wording is byte-pinned verbatim by THIS spec's own
+// "allowlist hygiene" stale-entry check below (T097 review F1 —
+// `apps/web/src/legal/legal-content.spec.ts:196` only asserts
+// `body.toLowerCase()).toContain("cruelty")`, a substring check, not a
+// verbatim pin), so it may never be reworded here without also failing that
+// check.
 interface Exemption {
   readonly value: string;
   readonly code: string;
@@ -100,28 +103,24 @@ const EXEMPTIONS: readonly Exemption[] = [
     why:
       "This is the terms-of-service clause that PROHIBITS animal-fighting/cruelty/DIY-sedation/DIY-surgery/breeding " +
       "malpractice — it names the forbidden acts so the prohibition is unambiguous. Rewording it to avoid the " +
-      "detector's DIY+procedure-word pattern would weaken the clause's clarity, and the exact wording is separately " +
-      "byte-pinned by legal-content.spec.ts, so it may never be reworded here.",
+      "detector's DIY+procedure-word pattern would weaken the clause's clarity. The exact wording is byte-pinned by " +
+      "THIS spec's own 'allowlist hygiene' stale-entry check (T097 review F1) — legal-content.spec.ts:196 only " +
+      "asserts body.toLowerCase().toContain(\"cruelty\"), a substring check, not a verbatim pin — so it may never be " +
+      "reworded here without also failing the stale-entry check above.",
   },
 ];
 const EXPECTED_EXEMPTION_COUNT = 1;
 
-/** Strips the `path` segment of a `scanUnsafeText` finding, keeping only `CODE: excerpt`, so an exemption computed against a placeholder path still matches the same finding found at its real leaf path. */
-function stripPath(findingEntry: string): string {
-  const separatorIndex = findingEntry.indexOf(": ");
-  const rest = separatorIndex === -1 ? findingEntry : findingEntry.slice(separatorIndex + 2);
-  const secondSeparator = rest.indexOf(": ");
-  return secondSeparator === -1 ? findingEntry : `${findingEntry.slice(0, separatorIndex)}: ${rest.slice(secondSeparator + 2)}`;
-}
-
-const ALLOWLISTED_NORMALIZED_FINDINGS = new Set(
-  EXEMPTIONS.flatMap((exemption) => scanUnsafeText(exemption.value, "EXEMPT").map(stripPath)),
-);
+// T098 docket 4 (T097 review F2): keyed on the EXACT leaf value, not a
+// normalized/stripped finding excerpt — a leaf that merely *contains* an
+// exempted excerpt inside otherwise-harmful copy is a different value and is
+// therefore never exempt, so it is still scanned and still flagged.
+const EXEMPT_LEAF_VALUES: ReadonlySet<string> = new Set(EXEMPTIONS.map((exemption) => exemption.value));
 
 describe("web strings tree — AC1 detector + claims lint", () => {
   it("no strings leaf produces a detector finding", () => {
-    const findings = ALL_LEAVES.flatMap((leaf) => scanUnsafeText(leaf.value, leaf.path)).filter(
-      (findingEntry) => !ALLOWLISTED_NORMALIZED_FINDINGS.has(stripPath(findingEntry)),
+    const findings = ALL_LEAVES.filter((leaf) => !EXEMPT_LEAF_VALUES.has(leaf.value)).flatMap((leaf) =>
+      scanUnsafeText(leaf.value, leaf.path),
     );
     expect(findings).toEqual([]);
   });
@@ -184,6 +183,16 @@ describe("web strings tree — AC1 detector + claims lint", () => {
     );
   });
 
+  it("the exemption is exact-value, not excerpt-shaped (T097 review F2)", () => {
+    // A leaf that merely CONTAINS the exempted excerpt, embedded in
+    // otherwise-harmful copy, is a different value from the exemption and
+    // must not be exempt — it is still flagged by the real detector.
+    const collidingLeaf =
+      "For sedation, do-it-yourself grooming guides, ask a vet.";
+    expect(EXEMPT_LEAF_VALUES.has(collidingLeaf)).toBe(false);
+    expect(scanUnsafeText(collidingLeaf, "COLLISION-PROBE").length).toBeGreaterThan(0);
+  });
+
   it("allowlist hygiene", () => {
     expect(EXEMPTIONS.length).toBe(EXPECTED_EXEMPTION_COUNT);
     for (const exemption of EXEMPTIONS) {
@@ -192,6 +201,12 @@ describe("web strings tree — AC1 detector + claims lint", () => {
       expect(exemption.why.length).toBeGreaterThan(0);
       // Stale-entry check: every exemption must still exist verbatim in the tree.
       expect(ALL_LEAVES.some((leaf) => leaf.value === exemption.value)).toBe(true);
+      // Genuinely-needed check (T098 docket 4): an exemption that no longer
+      // trips the detector must fail — it would mean the exemption is dead
+      // weight, not a real allowlist entry.
+      const rawFindings = scanUnsafeText(exemption.value, "EXEMPT");
+      expect(rawFindings.length).toBeGreaterThan(0);
+      expect(rawFindings.some((finding) => finding.includes(exemption.code))).toBe(true);
     }
   });
 });

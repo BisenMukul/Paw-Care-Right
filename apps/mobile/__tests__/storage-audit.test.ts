@@ -101,13 +101,35 @@ describe("storage-audit: no source file references AsyncStorage", () => {
 // MMKV-persisted zustand stores: pinned set + no credential-shaped key.
 // ---------------------------------------------------------------------------
 const PERSIST_CALL_PATTERN = /createJSONStorage\(/;
-const STORE_NAME_PATTERN = /name:\s*["'`](pawcareright\.[^"'`]+)["'`]/;
+const STORE_NAME_PATTERN = /name:\s*["'`](pawcareright\.[^"'`]+)["'`]/g;
+const NAME_DECLARATION_PATTERN = /name:\s*["'`][^"'`]+["'`]/g;
+const PARTIALIZE_DECLARATION_PATTERN = /partialize:\s*\([^)]*\)\s*=>\s*\(\{[^}]*\}\)/g;
 const CREDENTIAL_SHAPED_KEY_PATTERN =
   /(access|refresh)?token|password|passwd|\botp\b|secret|api[_-]?key|credential|jwt/i;
 
 const PERSISTED_STORE_FILES = ALL_SOURCE_FILES.filter((file) =>
   PERSIST_CALL_PATTERN.test(fs.readFileSync(file, "utf8")),
 );
+
+/**
+ * T098 docket 3 (T096 review nit): every `name:` declaration AND every
+ * `partialize:` declaration in `source`, scanned with `matchAll` (not the
+ * first `match()` of each) -- a file with two persisted stores has two of
+ * each, and a credential-shaped key hiding in the *second* store's
+ * `partialize` must not be able to hide behind the first store's clean one.
+ */
+function persistedRegions(source: string): string[] {
+  const names = [...source.matchAll(NAME_DECLARATION_PATTERN)].map((match) => match[0]);
+  const partializes = [...source.matchAll(PARTIALIZE_DECLARATION_PATTERN)].map((match) => match[0]);
+  return [...names, ...partializes];
+}
+
+/** Every `pawcareright.*` persisted store name declared anywhere in `source`. */
+function persistedStoreNames(source: string): string[] {
+  return [...source.matchAll(STORE_NAME_PATTERN)]
+    .map((match) => match[1])
+    .filter((name): name is string => name !== undefined);
+}
 
 /**
  * The exact, documented list (docs/security/mobile-storage-audit.md).
@@ -130,20 +152,15 @@ describe("storage-audit: MMKV-persisted zustand stores", () => {
   });
 
   it("no credential-shaped key is persisted to unencrypted MMKV (name or partialize region)", () => {
+    // The "persisted region" is every `name:`/`partialize:` declaration in
+    // the file -- scanned with `matchAll` (via `persistedRegions()`) so a
+    // *second* persisted store in the same file (its own `name`/`partialize`
+    // pair) is scanned too, not just the first `match()` hit.
     const offenders: string[] = [];
     for (const file of PERSISTED_STORE_FILES) {
       const source = fs.readFileSync(file, "utf8");
-      // The "persisted region" is everything from the first `persist(` call
-      // to its matching `createJSONStorage(...)` options object -- in
-      // practice (and verified against every store in this repo) that is
-      // simply the `name`/`partialize` lines, which sit right next to the
-      // `storage: createJSONStorage(...)` line. Scanning the whole file's
-      // `name`/`partialize` declarations is equivalent here since none of
-      // these files define unrelated `name`/`partialize` identifiers.
-      const nameMatch = source.match(/name:\s*["'`][^"'`]+["'`]/);
-      const partializeMatch = source.match(/partialize:\s*\([^)]*\)\s*=>\s*\(\{[^}]*\}\)/);
-      const region = [nameMatch?.[0] ?? "", partializeMatch?.[0] ?? ""].join("\n");
-      if (CREDENTIAL_SHAPED_KEY_PATTERN.test(region)) {
+      const regions = persistedRegions(source);
+      if (regions.some((region) => CREDENTIAL_SHAPED_KEY_PATTERN.test(region))) {
         offenders.push(relativePath(file));
       }
     }
@@ -156,14 +173,40 @@ describe("storage-audit: MMKV-persisted zustand stores", () => {
     );
   });
 
+  it("a second persisted store in the same file is detected (T096 review nit)", () => {
+    // Synthetic two-store source, inline -- no file is planted on disk. The
+    // first store is clean; the credential-shaped key hides in the SECOND
+    // store's `partialize`, which a `match()`-based (first-hit-only) scan
+    // would never see.
+    const synthetic = `
+      const useStoreA = create(
+        persist((set) => ({ shown: false, setShown: (v) => set({ shown: v }) }), {
+          name: "pawcareright.synthetic-store-a",
+          storage: createJSONStorage(() => mmkvStorage),
+        }),
+      );
+      const useStoreB = create(
+        persist((set) => ({ refreshToken: null }), {
+          name: "pawcareright.synthetic-store-b",
+          partialize: (state) => ({ refreshToken: state.refreshToken }),
+          storage: createJSONStorage(() => mmkvStorage),
+        }),
+      );
+    `;
+
+    const names = persistedStoreNames(synthetic);
+    expect(names).toEqual(["pawcareright.synthetic-store-a", "pawcareright.synthetic-store-b"]);
+
+    const regions = persistedRegions(synthetic);
+    const partializeRegions = regions.filter((region) => region.startsWith("partialize"));
+    expect(partializeRegions).toHaveLength(1);
+    expect(CREDENTIAL_SHAPED_KEY_PATTERN.test(partializeRegions[0]!)).toBe(true);
+  });
+
   it("the set of MMKV-persisted store names is pinned and every name starts with pawcareright.", () => {
-    const names = PERSISTED_STORE_FILES.map((file) => {
-      const source = fs.readFileSync(file, "utf8");
-      const match = source.match(STORE_NAME_PATTERN);
-      return match?.[1];
-    })
-      .filter((name): name is string => Boolean(name))
-      .sort();
+    const names = PERSISTED_STORE_FILES.flatMap((file) =>
+      persistedStoreNames(fs.readFileSync(file, "utf8")),
+    ).sort();
 
     expect(names).toEqual(EXPECTED_PERSISTED_STORE_NAMES);
     for (const name of names) {

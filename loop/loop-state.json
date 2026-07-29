@@ -2,7 +2,7 @@
   "project": "Paw Care Right +",
   "version": 6,
   "status": "running",
-  "currentPhase": "P9",
+  "currentPhase": "P10",
   "phases": {
     "P0": {
       "tasks": [
@@ -574,8 +574,8 @@
       "attempts": 1
     },
     "T098": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 2
     },
     "T099": {
       "status": "pending",
@@ -700,7 +700,8 @@
       "taggedAt": "2026-07-25"
     },
     "M9": {
-      "status": "pending"
+      "status": "passed",
+      "taggedAt": "2026-07-29"
     },
     "M10": {
       "status": "pending"
@@ -750,9 +751,10 @@
     "surveillance-layer-corrections-v2: Write grants, fail-closed protected-paths (no python), current-task file contract, P0/no-HEAD tolerance, subshell fail-open fixes"
   ],
   "current-task": {
-    "id": "T098",
-    "phase": 9,
+    "id": "REBRAND-1",
+    "phase": 10,
     "attempts": 0,
-    "state": "planning"
+    "state": "planning",
+    "note": "Founder-directed full rebrand 'Paw Care Right +' -> 'Bombay Pet Company' (display name + all technical identifiers, bombaypetcompany slug family). Supersedes T099 ordering; decisions locked 2026-07-29 via founder chat."
   }
 }

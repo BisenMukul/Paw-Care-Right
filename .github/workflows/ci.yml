@@ -62,6 +62,15 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm lint
       - run: pnpm test
+      # T098: coverage gate (api services >= 80% statements, packages/ai >=
+      # 80/80/80/70). Lives in THIS job, not a new one, because (a) the api
+      # coverage run needs postgres+redis+MinIO, all already provisioned
+      # above — a second job would duplicate the whole services block (drift
+      # hazard) and double the infra; (b) it re-runs the api + ai suites
+      # instrumented, a real runtime cost accepted in exchange for that; and
+      # (c) it carries no `if:` — same as every other step here — so it is a
+      # required gate, never silently skippable.
+      - run: pnpm test:cov
       - run: pnpm build
       # T089 (plan D7): source-map upload is best-effort observability, never
       # a required gate — it only runs when a real SENTRY_AUTH_TOKEN secret is
@@ -130,6 +139,29 @@ jobs:
           # to apps/web (verified empirically), so lhci's `.lighthouseci/`
           # report directory lands there, not at the repo root.
           path: apps/web/.lighthouseci/
+          retention-days: 30
+          if-no-files-found: warn
+  # T098: Playwright web E2E smoke (landing + one toxic food page). REQUIRED
+  # gate, following the T095 web-perf-budget pattern exactly: unconditional
+  # (no `if:` at job or step level), no secret needed.
+  web-e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: 10.34.3 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      - run: pnpm i --frozen-lockfile
+      - run: pnpm --filter @pawcareright/web build
+      - run: npx playwright install --with-deps chromium
+      - run: pnpm --filter @pawcareright/web test:e2e
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ github.run_id }}
+          path: apps/web/playwright-report/
           retention-days: 30
           if-no-files-found: warn
   # T096: security gates. REQUIRED (the card's AC is a "`pnpm audit`-gated CI

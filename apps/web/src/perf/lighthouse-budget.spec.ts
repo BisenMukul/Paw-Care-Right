@@ -89,6 +89,18 @@ describe("lighthouserc does not bake in --no-sandbox", () => {
   });
 });
 
+describe("lighthouserc does not override lhci's aggregationMethod (T098 docket 5)", () => {
+  it("the config never sets aggregationMethod, so lhci's documented optimistic default is what is actually in force", () => {
+    // Pins the fact `docs/PERFORMANCE.md`'s corrected aggregation prose
+    // describes: the assertion is enforced via lhci's `optimistic` default
+    // (best-of-3 for a minScore assertion), never a committed override. If
+    // this ever needs to change, the doc and this pin must change together
+    // -- they cannot drift apart again (T095 review F5).
+    const raw = fs.readFileSync(LIGHTHOUSERC_PATH, "utf-8");
+    expect(raw).not.toMatch(/aggregationMethod/);
+  });
+});
+
 describe("CI runs the lighthouse assertion as a required, unconditional job", () => {
   const ciSource = fs.readFileSync(CI_WORKFLOW_PATH, "utf-8");
 

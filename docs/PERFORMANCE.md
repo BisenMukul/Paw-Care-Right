@@ -18,8 +18,8 @@ SEO is scoped to the whole sample"):
 | `categories:performance` | landing URL only (`matchingUrlPattern: "^https?://[^/]+/$"`) | ≥ 0.90 | `error` |
 | `categories:seo` | every collected URL (`matchingUrlPattern: ".*"`) | ≥ 0.95 | `error` |
 
-Both are backed by `numberOfRuns: 3` (median-of-3 variance protection — see
-§1.3) and enforced in three places, all of which must stay in sync:
+Both are backed by `numberOfRuns: 3` and enforced in three places, all of
+which must stay in sync:
 
 1. `apps/web/lighthouserc.json` — the actual lhci config lhci reads.
 2. The CI job `web-perf-budget` in `.github/workflows/ci.yml` — runs
@@ -39,6 +39,32 @@ Both are backed by `numberOfRuns: 3` (median-of-3 variance protection — see
    rewritten against the `assertMatrix` shape — read directly, no
    flat-`assertions` fallback, so the SEO budget cannot silently disappear if
    the matrix key is ever removed).
+
+**Aggregation semantics (T098 docket 5, correcting a T095 review advisory,
+F5 — this sentence previously said "median-of-3 variance protection", which
+was imprecise about how the assertion is actually enforced):**
+`apps/web/lighthouserc.json` does not set `aggregationMethod`, so lhci's
+default applies — `optimistic` (`@lhci/utils`'s `assertions.js:139`:
+`const {..., aggregationMethod = 'optimistic'} = options;`). For a `minScore`
+assertion, `optimistic` selects the **best** (`Math.max`) of the
+`numberOfRuns: 3` samples (`assertions.js`'s `getValueForAggregationMethod`:
+`useMin` is only true for `optimistic`+`max*` or `pessimistic`+`min*`
+assertion types — neither applies here — so the `else` branch's
+`Math.max(...values)` runs). The shipped gate is therefore honestly
+"**best-of-3** `categories:performance` ≥ 0.90 on the landing page", not a
+median. `numberOfRuns: 3` is still real variance protection, just in the
+anti-false-red direction (a single unlucky run cannot fail the gate on its
+own) rather than a median smoothing. The T095 checker's own fresh
+measurement put the landing's `computeRepresentativeRuns` value at exactly
+**0.90** — on the line — so switching to `aggregationMethod: "median"` here
+would put a required gate on a coin-flip; the only honest responses to that
+would be a real perf fix (out of scope for T098, a stabilization card) or a
+lowered threshold (forbidden by CLAUDE's "never fabricate/soften a number"
+rule). Reconciling the doc to the actual, already-shipped, more
+lenient-by-design `optimistic` behavior is the non-weakening fix (see
+`loop/reviews/T095.review.md` F5). §1.2's "median" column below is a
+different, purely informational number — lhci's own *representative-run*
+selection for reporting — and is unaffected by this correction.
 
 ### 1.1 How to run it locally
 
