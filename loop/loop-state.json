@@ -594,8 +594,8 @@
       "attempts": 1
     },
     "T103": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 1
     },
     "T104": {
       "status": "pending",
@@ -751,10 +751,10 @@
     "surveillance-layer-corrections-v2: Write grants, fail-closed protected-paths (no python), current-task file contract, P0/no-HEAD tolerance, subshell fail-open fixes"
   ],
   "current-task": {
-    "id": "T103",
+    "id": "T104",
     "phase": 10,
     "attempts": 0,
     "state": "planning",
-    "note": "T102 done 2026-07-29 (checker PASS; 2 MED orchestrator-fixed pre-commit; F5 domain flag open for founder). T103 crash-free & funnel dashboards next."
+    "note": "T103 done 2026-07-29 (checker PASS; AC2 screenshot remains FOUNDER-5). T104 in-app feedback + bug report next."
   }
 }

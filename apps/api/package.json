@@ -13,7 +13,9 @@
     "prisma:generate": "prisma generate",
     "prisma:migrate:dev": "prisma migrate dev",
     "prisma:seed": "prisma db seed",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "ops:posthog:dashboards": "tsx --tsconfig scripts/tsconfig.json scripts/provision-posthog-dashboards.ts",
+    "ops:sentry:alerts": "tsx --tsconfig scripts/tsconfig.json scripts/provision-sentry-alerts.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3",

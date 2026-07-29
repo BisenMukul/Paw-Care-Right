@@ -14,5 +14,5 @@
       "@bombaypetcompany/config/env": ["../config/dist/env/index.d.ts"]
     }
   },
-  "exclude": ["node_modules", "dist", "test", "**/*.spec.ts"]
+  "exclude": ["node_modules", "dist", "test", "scripts", "**/*.spec.ts"]
 }

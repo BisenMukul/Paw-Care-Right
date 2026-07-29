@@ -1429,3 +1429,19 @@ Attempt 1, checker verdict **PASS** (0 HIGH, 2 MED, 5 LOW). Three-stage executio
 ## Founder resolution — F5 domain question (2026-07-29)
 
 Founder confirmed in chat: the 2026-07-19 registration of `bombaypetcompany.com` was their own. F5 marked resolved in docs/store-listing.md §6 (spec re-run green, 16/16). No UDRP/acquisition action needed. Still open: register `bombaypetcompany.app` (unregistered as of the T102 screen) and stand up `staging-api.bombaypetcompany.app` (C3 blocker).
+
+---
+
+## T103 — Crash-free & funnel dashboards (2026-07-29)
+
+Attempt 1, checker verdict **PASS** (0 HIGH, 1 MED, 5 LOW/INFO).
+
+**Shipped:** packages/analytics/src/dashboards/ typed payload builders (PostHog dashboard + 3 insights: paywall funnel paywall_view→trial_start, activation trends, retention proxy; Sentry crash-free <99% warn metric alert, empty actions by design) with funnel steps typed AnalyticsEventName (compile-time drift guard) + 4 spec suites (analytics now 10 suites/72 tests); apps/api/scripts/provision-{posthog-dashboards,sentry-alerts}.ts CLIs (env-keyed, --dry-run fully offline EXIT=0, keyless refusal EXIT=2 verbatim-captured, non-2xx EXIT=3, idempotent by name); scripts/tsconfig split with R1 dist-layout pinning (dist/main.js verified direct); docs/observability-dashboards.md (gaps G1–G3 honestly documented — registry has only 3 events, no invented names; [FOUNDER-5] AC2 staging-screenshot instructions). Zero deps.
+
+**Checker:** 4 own mutation proofs — cast-escape `"app_open" as AnalyticsEventName` caught by source-parse specs (defence-in-depth confirmed); R1 exclude drop → spec RED + dist/src/main.js reproduced; MP-C/MP-D exposed weak env-var guards (F3/F4 LOW accepted). Gates all reproduced incl. forced-uncached lint + full api suite. F2 MED: payload envelope shapes plausibly drift from live PostHog/Sentry schemas (retention entity keying, InsightVizNode wrapper, funnel order field, Sentry query) — non-blocking, founder-visible 4xx worst case; orchestrator applied F2(e) fix pre-commit: doc §8 now carries the on-400 R2 mitigation (dry-run diff → reshape envelope, keep test-pinned names/threshold), analytics re-run 10/72 green. G1–G3 deviations ruled correct vs inventing events.
+
+**Incident #13 (live mutation):** checker stalled mid-MP-B with the tsconfig.build.json "scripts" exclude stripped; orchestrator caught it via git-status sweep, restored, spec 7/7 green; checker later verified restoration byte-identical vs its own backup. Atomic-invocation rule restated; checker's remaining proofs ran under trap-restore.
+
+**AC2 note: card NOT fully closed** — "staging events visible in funnel (journal screenshot)" is [FOUNDER-5]; paste the screenshot into this journal when done. Founder to-dos F1–F6 in doc §§4,6,7.
+
+**Next:** T104 (in-app feedback + bug report).

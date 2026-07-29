@@ -16,6 +16,6 @@
       "@bombaypetcompany/config/env": ["../config/src/env/index.ts"]
     }
   },
-  "include": ["src", "test"],
+  "include": ["src", "test", "scripts"],
   "exclude": ["**/*.spec.ts", "**/*.e2e-spec.ts"]
 }
