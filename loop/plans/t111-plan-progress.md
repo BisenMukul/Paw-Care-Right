@@ -1,0 +1,11 @@
+# T111 planner progress ledger
+- [x] S0 skeleton plan written
+- [x] S1 read T111 card (docs/PHASES.md:564-566) verbatim; no adjacent-card scope pulled in
+- [x] S2 apps/web structure: App Router at apps/web/app (NOT src/app), src/ = lib+specs, jest roots=<rootDir>/src, NO middleware.ts, NO auth of any kind today, playwright e2e/ dir exists (T098)
+- [x] S3 KPI data-source inventory from apps/api/prisma/schema.prisma: Device(createdAt/lastSeenAt), SymptomCheck(status CheckStatus incl FALLBACK, createdAt), Subscription(entitlement/status/expiresAt/lastEventAt, RC mirror), ProcessedWebhookEvent(eventId, processedAt ONLY — no amount/type), ReferralGrant(expiresAt)
+- [x] S4 T072/T073 RC storage read (rc-webhook.service.ts): NO revenue/amount/currency/event-type is ever persisted -> "MRR events" can only be delivered as EVENT COUNTS, never a currency figure (honesty pin, mirrors T117 D5)
+- [x] S5 AiAuditLog verified codes-only: id/surface/checkId/threadId/promptVersion/modelId/detectorFlags[]/costMicroUsd/latencyMs/status/createdAt; status is the closed union "OK"|"SAFE_FALLBACK" (ai-audit.types.ts); no content columns; @@index([createdAt]) exists
+- [x] S6 T117 idiom read: AdminTokenGuard (fail-closed on empty ADMIN_API_TOKEN, SHA-256 + timingSafeEqual), ClientVersionsController (@Public()+@UseGuards, GET only), meta-client-versions.e2e-spec.ts read-only proof (4 verbs -> 404 + before/after row snapshot) — REUSED wholesale
+- [x] S7 user-lookup semantics: emails are normalized `.trim().toLowerCase()` at every write path (auth.service:163, otp.service:84, social-auth.service:75) -> `findUnique({ where: { email } })` is index-backed and exact; BillingService.getEntitlement is reusable read-only
+- [x] S8 web guard rails found that this card MUST not break: disclaimer-placement.spec.tsx pins the exact 5-route page->view map; i18n/hardcoded-string-scan.spec.ts scans app/**/*.tsx; locale-coverage.spec.ts asserts SAFETY_PINNED_PREFIXES == complement of TRANSLATED_SECTIONS; build-output.spec.ts freshness guard; e2e-gate.spec.ts pins smoke.spec.ts to exactly 2 test( declarations; links.spec/sitemap are marketing-scoped (admin-safe)
+- [x] S9 full plan written (steps, inventory, AC->proof, gates, risks, founder delta, verbatim executor warnings)
