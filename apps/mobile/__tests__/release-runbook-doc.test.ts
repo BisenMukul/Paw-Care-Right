@@ -313,4 +313,47 @@ describe("docs/release-runbook.md (T099)", () => {
       expect(hasDuplicatedRolloutLine).toBe(false);
     });
   });
+
+  // T118 step 13: §18 content, scoped to the §18 slice ONLY via the same
+  // sliceSection/LEVEL_2_HEADING idiom as §17 above. Deliberately does NOT
+  // touch any existing assertion in this file.
+  describe("§18 OTA publish safety gates (T118)", () => {
+    const section = sliceSection(runbook, /^## 18\. /, LEVEL_2_HEADING);
+    // Markdown hard-wraps long prose across source lines; phrase assertions
+    // below match against a whitespace-normalized copy so a mid-phrase line
+    // wrap (a single space becoming a newline) can never cause a false
+    // negative here.
+    const normalizedSection = section.replace(/\s+/g, " ");
+
+    it("the §18 section exists and is non-empty", () => {
+      expect(section.length).toBeGreaterThan(0);
+    });
+
+    it("maps every OTA_UPDATES §8 rule to its enforcement", () => {
+      expect(section).toContain("§8.1");
+      expect(section).toContain("§8.2");
+      expect(section).toContain("§8.3");
+      expect(section).toContain("§8.4");
+      expect(section).toContain("PUBLISH-PROD");
+      expect(section).toContain("lint-update-message.js");
+    });
+
+    it("carries the branch-protection instruction and the safety invariant", () => {
+      expect(normalizedSection).toContain("required status checks");
+      expect(section).toContain("<VetDisclaimer/>");
+      expect(section).toMatch(/Emergency interstitial/i);
+      expect(section).toMatch(/hotline/i);
+      expect(normalizedSection).toMatch(/never made to proceed by removing a job from `needs:`/);
+    });
+
+    it("keeps the file-wide rollout-line and secret-pattern invariants", () => {
+      const hasDuplicatedRolloutLine = section
+        .split("\n")
+        .some((line) => line.includes("10%") && line.includes("50%"));
+      expect(hasDuplicatedRolloutLine).toBe(false);
+      for (const pattern of SECRET_PATTERNS) {
+        expect(pattern.test(section)).toBe(false);
+      }
+    });
+  });
 });

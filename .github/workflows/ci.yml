@@ -226,6 +226,55 @@ jobs:
           path: loop/eval-reports/*.md
           retention-days: 30
           if-no-files-found: warn
+  # T118: OTA_UPDATES §8.2 -- "No OTA may weaken Safety Policy surfaces:
+  # <VetDisclaimer/> presence snapshots ... are required-green for the
+  # publish job specifically." This is its own JOB (not a step inside
+  # `build` or inside `ai-evals`) because in GitHub Actions a *check* is a
+  # JOB: `needs:` cannot reference a step, and branch protection cannot
+  # require a step -- only a named job can be both listed in `needs:` and
+  # marked a required status check. It is deliberately UNCONDITIONAL (no
+  # job-level `if:`): a job-level `if:` would make it event-scoped, and a
+  # `needs:` target that is skipped on push-to-main would silently skip
+  # `ota-publish-preview` forever (the T116 `mobile-fingerprint` trap, in
+  # reverse -- that job is event-scoped precisely so it is NOT in `needs:`).
+  # `--ci` is load-bearing: without it, jest WRITES a missing/deleted
+  # snapshot and passes; with it, a missing snapshot fails loud instead of
+  # silently self-healing inside the gate.
+  safety-vet-disclaimer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: 10.34.3 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      - run: pnpm i --frozen-lockfile
+      - name: VetDisclaimer presence snapshots + placement inventory
+        run: |
+          set -euo pipefail
+          pnpm --filter @bombaypetcompany/mobile exec jest --ci __tests__/check-result-snapshot.test.tsx __tests__/chat-screen-snapshot.test.tsx __tests__/breed-guide-sections.test.tsx __tests__/disclaimer-placement-scan.test.ts
+  # T118: OTA_UPDATES §8.2's other named surface -- "Emergency interstitial
+  # flow tests are required-green for the publish job specifically." Same
+  # rationale as `safety-vet-disclaimer` above: a dedicated job (not a step)
+  # so it is independently nameable in `needs:` and in branch protection,
+  # deliberately unconditional for the same T116 `mobile-fingerprint`-in-
+  # reverse reason, and `--ci` for the same missing-snapshot/self-heal
+  # reason (the paywall-exclusion and check-submission-routing suites here
+  # are plain assertions rather than snapshots, but the invocation is
+  # identical to its sibling job for consistency).
+  safety-emergency-interstitial:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: 10.34.3 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      - run: pnpm i --frozen-lockfile
+      - name: Emergency interstitial flow tests
+        run: |
+          set -euo pipefail
+          pnpm --filter @bombaypetcompany/mobile exec jest --ci __tests__/emergency-interstitial.test.tsx __tests__/paywall-emergency-safety.test.tsx __tests__/check-submission.test.tsx
   # T095: web performance/SEO budgets. This job is a REQUIRED gate (the card's
   # AC is "CI budget job green"), so unlike T089's Sentry upload it is never
   # skipped. It needs no secret and no external service: Chrome is preinstalled
@@ -313,8 +362,13 @@ jobs:
   # push to main. `apps/mobile/__tests__/ota-publish-ci.test.ts` pins this
   # exemption and proves it is not abusable (every exempted job must itself
   # be genuinely event-scoped).
+  #
+  # T118: added `safety-vet-disclaimer` and `safety-emergency-interstitial`
+  # to `needs:` below -- both carry no job-level `if:` (unlike
+  # `mobile-fingerprint`), so, unlike that job, they are safe to include here
+  # and run on every push to main.
   ota-publish-preview:
-    needs: [build, ai-evals, web-perf-budget, web-e2e, security]
+    needs: [build, ai-evals, safety-vet-disclaimer, safety-emergency-interstitial, web-perf-budget, web-e2e, security]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     env:
@@ -362,7 +416,7 @@ jobs:
   # the pre-flight step below; §6 -- every production publish is immediately
   # constrained to a 10% rollout).
   ota-publish-production:
-    needs: [build, ai-evals, web-perf-budget, web-e2e, security]
+    needs: [build, ai-evals, safety-vet-disclaimer, safety-emergency-interstitial, web-perf-budget, web-e2e, security]
     if: github.event_name == 'workflow_dispatch' && inputs.confirm_production_publish != ''
     runs-on: ubuntu-latest
     env:

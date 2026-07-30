@@ -28,6 +28,7 @@ interface NodeFs {
   writeFileSync(path: string, data: string, encoding: string): void;
   mkdtempSync(prefix: string): string;
   rmSync(path: string, options: { recursive: boolean; force: boolean }): void;
+  existsSync(path: string): boolean;
 }
 interface NodePath {
   join(...parts: string[]): string;
@@ -66,6 +67,28 @@ const ciYmlSource = fs.readFileSync(CI_YML_PATH, "utf8");
 
 /** Jobs legitimately exempt from the publish jobs' `needs:` list because they are event-scoped (only ever run for a DIFFERENT trigger than the publish jobs'). */
 const EVENT_SCOPED_JOBS = ["mobile-fingerprint"] as const;
+
+/** T118: the three named required checks both publish jobs must gate on (OTA_UPDATES §8.1 ai-evals, §8.2 the two Safety Policy suites). */
+const REQUIRED_SAFETY_CHECKS = ["ai-evals", "safety-vet-disclaimer", "safety-emergency-interstitial"] as const;
+
+/** T118: the suite files each safety job must invoke, by job key (plan D5). */
+const SAFETY_SUITE_FILES: Record<string, readonly string[]> = {
+  "safety-vet-disclaimer": [
+    "__tests__/check-result-snapshot.test.tsx",
+    "__tests__/chat-screen-snapshot.test.tsx",
+    "__tests__/breed-guide-sections.test.tsx",
+    "__tests__/disclaimer-placement-scan.test.ts",
+  ],
+  "safety-emergency-interstitial": [
+    "__tests__/emergency-interstitial.test.tsx",
+    "__tests__/paywall-emergency-safety.test.tsx",
+    "__tests__/check-submission.test.tsx",
+  ],
+};
+
+/** T118 step 11: the runbook doc, read from this file too, because the doc<->CI set-equality check (T14) needs both sources in one place. */
+const RUNBOOK_PATH = path.join(REPO_ROOT, "docs", "release-runbook.md");
+const runbookSource = fs.readFileSync(RUNBOOK_PATH, "utf8");
 
 // ---- structural parsing helpers (self-contained; no import from other spec files) ----
 
@@ -635,5 +658,495 @@ describe("script-injection safety in the two new OTA publish jobs", () => {
       }
       expect(checkedAnyBody).toBe(true);
     }
+  });
+});
+
+// ============================================================================
+// T118: OTA safety gates on publish jobs
+// ============================================================================
+
+/** T118 step 8: the named step whose run body invokes each safety job's pinned jest suites. */
+const SAFETY_STEP_NAME_BY_JOB: Record<string, string> = {
+  "safety-vet-disclaimer": "VetDisclaimer presence snapshots + placement inventory",
+  "safety-emergency-interstitial": "Emergency interstitial flow tests",
+};
+
+describe("T118 — the three named safety checks gate both publish jobs (AC1)", () => {
+  const previewBlock = sliceJobBlock(ciYmlSource, "ota-publish-preview");
+  const productionBlock = sliceJobBlock(ciYmlSource, "ota-publish-production");
+
+  it("both publish jobs' needs: contain all three named safety checks", () => {
+    for (const block of [previewBlock, productionBlock]) {
+      const needs = parseNeeds(block);
+      for (const check of REQUIRED_SAFETY_CHECKS) {
+        expect(needs).toContain(check);
+      }
+    }
+  });
+
+  it("each named safety check is an actual job key in this workflow", () => {
+    const parsed = parseWorkflow(ciYmlSource);
+    for (const check of REQUIRED_SAFETY_CHECKS) {
+      expect(parsed.jobKeys).toContain(check);
+    }
+  });
+
+  it("each safety job's own run body invokes exactly its pinned suite files with --ci", () => {
+    for (const [jobKey, pinnedFiles] of Object.entries(SAFETY_SUITE_FILES)) {
+      const jobBlock = sliceJobBlock(ciYmlSource, jobKey);
+      const stepName = SAFETY_STEP_NAME_BY_JOB[jobKey]!;
+      const body = extractStepRunBody(jobBlock, stepName);
+      expect(body).not.toBeNull();
+      const bodyText = body!.join("\n");
+
+      expect(bodyText).toContain("pnpm --filter @bombaypetcompany/mobile exec jest");
+      expect(bodyText).toContain("--ci");
+      for (const file of pinnedFiles) {
+        expect(bodyText).toContain(file);
+      }
+
+      const foundFiles = [...bodyText.matchAll(/__tests__\/\S+/g)].map((m) => m[0]);
+      expect(new Set(foundFiles)).toEqual(new Set(pinnedFiles));
+    }
+  });
+
+  it("every pinned safety suite file exists on disk", () => {
+    for (const pinnedFiles of Object.values(SAFETY_SUITE_FILES)) {
+      for (const relPath of pinnedFiles) {
+        expect(fs.existsSync(path.join(MOBILE_DIR, relPath))).toBe(true);
+      }
+    }
+  });
+});
+
+/**
+ * Checker Finding 2 fix: nothing above stops a pinned suite from being
+ * gated on paper while gutted from the INSIDE (e.g. `describe.skip(...)`
+ * around its own tests) -- the suite file still exists, ci.yml still
+ * invokes it by the right path, and jest still exits 0 (skipped tests are
+ * not failures), so T1-T4 above all stay green while the actual safety
+ * assertions silently never run.
+ *
+ * `stripComments` is a deliberately simple (not a real tokenizer)
+ * block-comment/line-comment stripper: it can only make the scan MORE
+ * conservative (stripping text that happens to look like a marker inside a
+ * comment, producing a false NEGATIVE that manual review would still need
+ * to catch) -- it can never produce a false POSITIVE that blocks a
+ * legitimate suite, because it only ever REMOVES text, never invents a
+ * marker. None of the 7 pinned suite files contain a string literal with
+ * `//` or `/* ... *\/`, so this simple approach is sufficient here (verified
+ * by running the scan against all 7 real files below, non-vacuously, before
+ * this file was submitted).
+ */
+function stripComments(source: string): string {
+  return source.replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/.*$/gm, "");
+}
+
+/** Every marker that would silently disable or narrow a jest suite/test without failing the run. */
+const SKIP_ONLY_PATTERNS: RegExp[] = [
+  /\bdescribe\.skip\b/,
+  /\bit\.skip\b/,
+  /\btest\.skip\b/,
+  /\bxdescribe\b/,
+  /\bxit\b/,
+  /\bxtest\b/,
+  /\.only\s*\(/,
+];
+
+describe("T118 — pinned safety suite files carry no skip/only markers (checker Finding 2)", () => {
+  const allPinnedFiles = Object.values(SAFETY_SUITE_FILES).flat();
+
+  it("scans every one of the 7 pinned safety suite files for describe.skip/it.skip/test.skip/x*/`.only(` (comment-stripped)", () => {
+    // Non-vacuity floor: this must be scanning the FULL pinned set (4 + 3),
+    // not an accidentally-narrowed subset.
+    expect(allPinnedFiles.length).toBe(7);
+    for (const relPath of allPinnedFiles) {
+      const source = fs.readFileSync(path.join(MOBILE_DIR, relPath), "utf8");
+      const stripped = stripComments(source);
+      for (const pattern of SKIP_ONLY_PATTERNS) {
+        expect(stripped).not.toMatch(pattern);
+      }
+    }
+  });
+
+  it("the skip/only scan genuinely rejects a planted describe.skip and a planted .only( (self-test)", () => {
+    const skipFixture = 'describe.skip("temporarily disabled", () => { it("x", () => {}); });';
+    const onlyFixture = 'it.only("x", () => { expect(1).toBe(1); });';
+    const cleanFixture = 'describe("normal", () => { it("x", () => { expect(1).toBe(1); }); });';
+
+    expect(SKIP_ONLY_PATTERNS.some((pattern) => pattern.test(stripComments(skipFixture)))).toBe(true);
+    expect(SKIP_ONLY_PATTERNS.some((pattern) => pattern.test(stripComments(onlyFixture)))).toBe(true);
+    expect(SKIP_ONLY_PATTERNS.some((pattern) => pattern.test(stripComments(cleanFixture)))).toBe(false);
+  });
+
+  it("the comment stripper does not flag a mere comment MENTIONING skip/only (mutation-proof)", () => {
+    const commentOnlyFixture = [
+      "// TODO: consider describe.skip here later, and never it.only(",
+      'describe("real", () => { it("x", () => { expect(1).toBe(1); }); });',
+    ].join("\n");
+    const stripped = stripComments(commentOnlyFixture);
+    for (const pattern of SKIP_ONLY_PATTERNS) {
+      expect(stripped).not.toMatch(pattern);
+    }
+  });
+});
+
+/**
+ * Checker Finding 2 fix, part 2: a static FLOOR on the number of snapshot
+ * entries actually RECORDED (the committed `.snap` files) for the
+ * disclaimer job's three snapshot-bearing suites. This is a COMPLEMENTARY
+ * guard, not a substitute for the skip/only scan above: it protects against
+ * a `.snap` file being hand-hollowed-out directly (entries deleted from the
+ * committed snapshot file itself, bypassing the `.test.tsx` source
+ * entirely) -- something the skip/only scan cannot see, since skipping a
+ * test does not delete its already-recorded `.snap` entries and the
+ * skip/only scan only ever reads `.test.tsx`/`.test.ts` sources, never
+ * `.snap` files. Implemented as a plain count of `^exports[` lines (jest's
+ * own per-snapshot serialization marker) rather than spawning a real jest
+ * run from inside this config test -- the real jest run IS exercised, non-
+ * vacuously, by the two verbatim CI invocations proven locally (plan §6).
+ * `disclaimer-placement-scan.test.ts` is correctly excluded: it is an
+ * inventory scan, not a snapshot suite, and has no `.snap` file.
+ */
+const DISCLAIMER_SNAPSHOT_FILES = [
+  "__tests__/__snapshots__/check-result-snapshot.test.tsx.snap",
+  "__tests__/__snapshots__/chat-screen-snapshot.test.tsx.snap",
+  "__tests__/__snapshots__/breed-guide-sections.test.tsx.snap",
+] as const;
+
+const MIN_DISCLAIMER_SNAPSHOT_COUNT = 9;
+
+describe("T118 — the disclaimer job's recorded snapshot count has a floor (checker Finding 2)", () => {
+  it(`at least ${MIN_DISCLAIMER_SNAPSHOT_COUNT} snapshot entries are recorded across the disclaimer job's snapshot files`, () => {
+    let total = 0;
+    for (const relPath of DISCLAIMER_SNAPSHOT_FILES) {
+      const fullPath = path.join(MOBILE_DIR, relPath);
+      expect(fs.existsSync(fullPath)).toBe(true);
+      const content = fs.readFileSync(fullPath, "utf8");
+      const matches = content.match(/^exports\[/gm);
+      total += matches ? matches.length : 0;
+    }
+    expect(total).toBeGreaterThanOrEqual(MIN_DISCLAIMER_SNAPSHOT_COUNT);
+  });
+});
+
+describe("T118 — the safety jobs are unconditional and never skippable (plan D3)", () => {
+  it("the safety jobs carry no job-level if: (a skipped need would skip the publish forever)", () => {
+    for (const jobKey of Object.keys(SAFETY_SUITE_FILES)) {
+      const block = sliceJobBlock(ciYmlSource, jobKey);
+      expect(block).not.toMatch(/^    if:/m);
+      expect(EVENT_SCOPED_JOBS as readonly string[]).not.toContain(jobKey);
+    }
+  });
+
+  it("the safety jobs' jest step is unconditional", () => {
+    for (const jobKey of Object.keys(SAFETY_SUITE_FILES)) {
+      const jobBlock = sliceJobBlock(ciYmlSource, jobKey);
+      const stepName = SAFETY_STEP_NAME_BY_JOB[jobKey]!;
+      const stepIndex = jobBlock.indexOf(`- name: ${stepName}`);
+      expect(stepIndex).toBeGreaterThan(-1);
+      const nextStepIndex = jobBlock.indexOf("\n      - ", stepIndex + 1);
+      const stepBlock = jobBlock.slice(stepIndex, nextStepIndex === -1 ? undefined : nextStepIndex);
+      expect(stepBlock).not.toMatch(/\bif:/);
+    }
+  });
+});
+
+/**
+ * T118 step 8: slices the workflow's top-level `on:` block and returns its
+ * 2-space-indented trigger event keys, in source order. Comment lines
+ * (`  # …`) and deeper `inputs:`/input-name keys (4- and 6-space indents)
+ * are excluded by construction -- only a line matching `^  ([a-z_]+):` is
+ * collected. Walks forward from `^on:\s*$` to the next column-0 key (the
+ * next top-level workflow key, e.g. `concurrency:`).
+ */
+function parseTriggerEvents(source: string): string[] {
+  const lines = source.split("\n");
+  const onIndex = lines.findIndex((line) => /^on:\s*$/.test(line));
+  if (onIndex === -1) {
+    return [];
+  }
+  const events: string[] = [];
+  for (let i = onIndex + 1; i < lines.length; i += 1) {
+    const line = lines[i]!;
+    if (/^[a-zA-Z]/.test(line)) {
+      break;
+    }
+    const m = /^  ([a-z_]+):/.exec(line);
+    if (m) {
+      events.push(m[1]!);
+    }
+  }
+  return events;
+}
+
+/** Same forward-walk as `parseTriggerEvents`, returning the raw `on:` block text (used to double-check no forbidden trigger line exists, beyond the parsed key list). */
+function sliceOnBlock(source: string): string {
+  const lines = source.split("\n");
+  const onIndex = lines.findIndex((line) => /^on:\s*$/.test(line));
+  if (onIndex === -1) {
+    return "";
+  }
+  let end = lines.length;
+  for (let i = onIndex + 1; i < lines.length; i += 1) {
+    if (/^[a-zA-Z]/.test(lines[i]!)) {
+      end = i;
+      break;
+    }
+  }
+  return lines.slice(onIndex, end).join("\n");
+}
+
+/** Slices a single `workflow_dispatch` `inputs:` sub-key's own block (6-space key, 8-space fields), up to the next 6-space input key or EOF. */
+function sliceInputBlock(source: string, inputName: string): string {
+  const pattern = new RegExp(`^      ${inputName}:\\s*$`, "m");
+  const match = pattern.exec(source);
+  if (!match) {
+    return "";
+  }
+  const start = match.index;
+  const nextInputPattern = /^      [a-zA-Z0-9_]+:\s*$/gm;
+  nextInputPattern.lastIndex = start + 1;
+  let end = source.length;
+  let m: RegExpExecArray | null;
+  while ((m = nextInputPattern.exec(source)) !== null) {
+    if (m.index > start) {
+      end = m.index;
+      break;
+    }
+  }
+  return source.slice(start, end);
+}
+
+/**
+ * T118 step 8 (T9/T11): true only when a job block has EXACTLY one
+ * job-level `if:` line, that line's condition starts with
+ * `github.event_name == 'workflow_dispatch'`, and it contains no `||`
+ * disjunction and none of `always(`/`!cancelled(`/`success(` -- i.e. no
+ * other event or run-status can make the condition true.
+ */
+function onlyWorkflowDispatchIf(jobBlock: string): boolean {
+  const ifMatches = [...jobBlock.matchAll(/^    if: (.+)$/gm)];
+  if (ifMatches.length !== 1) {
+    return false;
+  }
+  const value = ifMatches[0]![1]!.trim();
+  if (!value.startsWith("github.event_name == 'workflow_dispatch'")) {
+    return false;
+  }
+  if (value.includes("||")) {
+    return false;
+  }
+  if (/always\(|!cancelled\(|success\(/.test(value)) {
+    return false;
+  }
+  return true;
+}
+
+const FORBIDDEN_AUTOMATED_TRIGGERS = [
+  "schedule",
+  "repository_dispatch",
+  "workflow_run",
+  "workflow_call",
+  "issue_comment",
+  "release",
+  "create",
+  "deployment",
+  "deployment_status",
+  "check_suite",
+  "status",
+  "registry_package",
+] as const;
+
+describe("T118 — production publish trigger audit (AC2)", () => {
+  it("the workflow declares exactly push, pull_request and workflow_dispatch triggers", () => {
+    expect(new Set(parseTriggerEvents(ciYmlSource))).toEqual(new Set(["push", "pull_request", "workflow_dispatch"]));
+  });
+
+  it("no automated trigger event is declared", () => {
+    const events = parseTriggerEvents(ciYmlSource);
+    for (const forbidden of FORBIDDEN_AUTOMATED_TRIGGERS) {
+      expect(events).not.toContain(forbidden);
+    }
+    const onBlock = sliceOnBlock(ciYmlSource);
+    for (const forbidden of FORBIDDEN_AUTOMATED_TRIGGERS) {
+      expect(onBlock).not.toMatch(new RegExp(`^  ${forbidden}:`, "m"));
+    }
+  });
+
+  it("only workflow_dispatch can reach ota-publish-production", () => {
+    const block = sliceJobBlock(ciYmlSource, "ota-publish-production");
+    expect(onlyWorkflowDispatchIf(block)).toBe(true);
+  });
+
+  it("the confirm_production_publish input defaults to empty and is not required", () => {
+    const inputBlock = sliceInputBlock(ciYmlSource, "confirm_production_publish");
+    expect(inputBlock.length).toBeGreaterThan(0);
+    expect(inputBlock).toContain("required: false");
+    expect(inputBlock).toContain('default: ""');
+
+    const productionBlock = sliceJobBlock(ciYmlSource, "ota-publish-production");
+    expect(productionBlock).toContain("inputs.confirm_production_publish != ''");
+  });
+
+  it("the trigger audit genuinely rejects an automated trigger and a disjunctive job if (self-test)", () => {
+    const scheduleFixture = [
+      "name: CI",
+      "on:",
+      "  push:",
+      "    branches: [main]",
+      "  pull_request:",
+      "  workflow_dispatch:",
+      "  schedule:",
+      '    - cron: "0 3 * * *"',
+      "concurrency:",
+      "  group: x",
+      "jobs:",
+      "  build:",
+      "    runs-on: ubuntu-latest",
+    ].join("\n");
+    expect(parseTriggerEvents(scheduleFixture)).toContain("schedule");
+
+    const disjunctiveFixture = [
+      "  ota-publish-production:",
+      "    needs: [build]",
+      "    if: github.event_name == 'workflow_dispatch' || github.event_name == 'push'",
+      "    runs-on: ubuntu-latest",
+    ].join("\n");
+    expect(onlyWorkflowDispatchIf(disjunctiveFixture)).toBe(false);
+
+    const cleanFixture = [
+      "  ota-publish-production:",
+      "    needs: [build]",
+      "    if: github.event_name == 'workflow_dispatch' && inputs.confirm_production_publish != ''",
+      "    runs-on: ubuntu-latest",
+    ].join("\n");
+    expect(onlyWorkflowDispatchIf(cleanFixture)).toBe(true);
+  });
+});
+
+/** T118 D6: the exact automation-surface inventory scanned for a loop-writable production-publish/dispatch trigger. A STATIC list, not a live directory scan, is deliberate (plan D5/step5 restricts this file's NodeFs interface to adding only `existsSync`; plan R5 flags this whole describe as scope beyond the card's own AC, deletable at no AC cost). */
+const AUTOMATION_SCAN_FILES = [
+  "scripts/scan-secrets.js",
+  "scripts/check-api-build.js",
+  "scripts/lint-update-message.js",
+  "apps/mobile/scripts/analyze-bundle.ts",
+  "apps/mobile/scripts/fingerprint-diff.sh",
+  "apps/mobile/scripts/internal-distribution.sh",
+  "apps/mobile/scripts/measure-cold-start.sh",
+  "apps/mobile/scripts/start-expo.ps1",
+  ".claude/hooks/block_protected_paths.sh",
+  ".claude/hooks/gate_exec.sh",
+  ".claude/hooks/gate_plan.sh",
+] as const;
+
+const FORBIDDEN_AUTOMATION_TOKENS = [
+  "gh workflow run",
+  "workflow run ",
+  "/actions/workflows/",
+  "workflow_dispatch",
+  "update --branch production",
+  "channel:rollout production",
+  "update:republish",
+] as const;
+
+function scanForForbiddenTokens(text: string): string[] {
+  return FORBIDDEN_AUTOMATION_TOKENS.filter((token) => text.includes(token));
+}
+
+describe("T118 — no loop-writable automation surface can trigger a production publish (plan D6)", () => {
+  it("no loop-writable automation surface invokes a production publish or a workflow dispatch", () => {
+    let filesScanned = 0;
+
+    for (const relPath of AUTOMATION_SCAN_FILES) {
+      const fullPath = path.join(REPO_ROOT, relPath);
+      expect(fs.existsSync(fullPath)).toBe(true);
+      const content = fs.readFileSync(fullPath, "utf8");
+      filesScanned += 1;
+      expect(scanForForbiddenTokens(content)).toEqual([]);
+    }
+
+    const rootPackageJson = JSON.parse(fs.readFileSync(path.join(REPO_ROOT, "package.json"), "utf8")) as {
+      scripts: Record<string, string>;
+    };
+    for (const value of Object.values(rootPackageJson.scripts)) {
+      filesScanned += 1;
+      expect(scanForForbiddenTokens(value)).toEqual([]);
+    }
+
+    const turboJsonContent = fs.readFileSync(path.join(REPO_ROOT, "turbo.json"), "utf8");
+    filesScanned += 1;
+    expect(scanForForbiddenTokens(turboJsonContent)).toEqual([]);
+
+    // Non-vacuity floor (D6/T114 F7 lesson): this scan must genuinely cover
+    // more than a token handful of surfaces.
+    expect(filesScanned).toBeGreaterThanOrEqual(5);
+  });
+
+  it("the automation scan genuinely flags a planted dispatch/publish command (self-test)", () => {
+    expect(
+      scanForForbiddenTokens("gh workflow run CI -f confirm_production_publish=PUBLISH-PROD").length,
+    ).toBeGreaterThan(0);
+    expect(scanForForbiddenTokens("npx eas-cli@latest update --branch production").length).toBeGreaterThan(0);
+    expect(scanForForbiddenTokens("echo hello world").length).toBe(0);
+  });
+});
+
+/** T118 step 11: the runbook's own §18 section, sliced the same way `release-runbook-doc.test.ts` slices every other numbered section (that file's own `sliceSection`/`LEVEL_2_HEADING` idiom, copied here as a self-contained local pair because this describe needs BOTH the runbook source and the CI source in one place for the doc<->CI cross-check). */
+const RUNBOOK_LEVEL_2_HEADING = /^##(?!#)\s/;
+
+function sliceRunbookSection(source: string, startLineTest: RegExp): string {
+  const lines = source.split("\n");
+  const startIndex = lines.findIndex((line) => startLineTest.test(line));
+  if (startIndex === -1) {
+    return "";
+  }
+  let endIndex = lines.length;
+  for (let i = startIndex + 1; i < lines.length; i += 1) {
+    if (RUNBOOK_LEVEL_2_HEADING.test(lines[i]!)) {
+      endIndex = i;
+      break;
+    }
+  }
+  return lines.slice(startIndex, endIndex).join("\n");
+}
+
+describe("T118 — runbook §18 cross-ref matches ci.yml (AC3)", () => {
+  const section18 = sliceRunbookSection(runbookSource, /^## 18\. /);
+
+  it("runbook §18 names exactly the three CI safety check names", () => {
+    expect(section18.length).toBeGreaterThan(0);
+    for (const check of REQUIRED_SAFETY_CHECKS) {
+      expect(section18).toContain(check);
+    }
+
+    const parsed = parseWorkflow(ciYmlSource);
+    const previewNeeds = new Set(parseNeeds(sliceJobBlock(ciYmlSource, "ota-publish-preview")));
+    const productionNeeds = new Set(parseNeeds(sliceJobBlock(ciYmlSource, "ota-publish-production")));
+
+    // Both directions: every REQUIRED_SAFETY_CHECKS name (already asserted
+    // above) is a job §18 mentions, AND every job-key-shaped token found in
+    // the §18 slice that IS a real workflow job key (excluding the two
+    // publish jobs themselves) is also present in BOTH publish jobs'
+    // needs: lists -- catches a stale/renamed name creeping into the doc
+    // that ci.yml no longer actually gates on.
+    const jobKeyTokensInSection = parsed.jobKeys.filter(
+      (key) => key !== "ota-publish-preview" && key !== "ota-publish-production" && section18.includes(key),
+    );
+    expect(jobKeyTokensInSection.length).toBeGreaterThan(0);
+    for (const key of jobKeyTokensInSection) {
+      expect(previewNeeds.has(key)).toBe(true);
+      expect(productionNeeds.has(key)).toBe(true);
+    }
+  });
+
+  it("runbook §18 points at docs/OTA_UPDATES.md §8 and does not claim to edit it", () => {
+    expect(section18).toContain("docs/OTA_UPDATES.md");
+    expect(section18).toContain("§8");
+    expect(section18).toMatch(/hook-protected/);
+    // Tolerates the markdown `**not**` emphasis around "not" (this section's
+    // own phrasing), unlike the plain "not edited here" wording used
+    // elsewhere in the doc (§7/§13).
+    expect(section18).toMatch(/not\*{0,2} edited here/);
   });
 });

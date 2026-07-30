@@ -531,3 +531,49 @@ where to look for per-update health.
 ```
 curl -s -H "x-admin-token: <admin-token>" "https://api.bombaypetcompany.app/v1/meta/client-versions?days=30"
 ```
+
+## 18. OTA publish safety gates (T118 — cross-ref: `docs/OTA_UPDATES.md` §8)
+
+`docs/OTA_UPDATES.md` §8 is the **authoritative** statement of publish safety
+rules; that file is hook-protected and is **not** edited here (same posture
+as §7's note above) — this section is the cross-reference and the
+operational mapping from each §8 rule to how it is actually enforced in this
+repo's CI.
+
+| §8 rule | Enforcement |
+|---|---|
+| §8.1 — full CI gate suite on every publish | Both `ota-publish-preview` and `ota-publish-production`'s `needs:` list every gate job in `.github/workflows/ci.yml` (`build`, `ai-evals`, the two T118 safety checks below, `web-perf-budget`, `web-e2e`, `security`) |
+| §8.2 — no OTA may weaken Safety Policy surfaces | The `safety-vet-disclaimer` check (`__tests__/check-result-snapshot.test.tsx`, `__tests__/chat-screen-snapshot.test.tsx`, `__tests__/breed-guide-sections.test.tsx`, `__tests__/disclaimer-placement-scan.test.ts`) and the `safety-emergency-interstitial` check (`__tests__/emergency-interstitial.test.tsx`, `__tests__/paywall-emergency-safety.test.tsx`, `__tests__/check-submission.test.tsx`) |
+| §8.3 — production is human-triggered only | `workflow_dispatch`-only workflow trigger set, the `PUBLISH-PROD` typed confirmation guard on `ota-publish-production`, and the trigger audit in `apps/mobile/__tests__/ota-publish-ci.test.ts` (asserts no automated trigger exists and only `workflow_dispatch` can reach the production job) |
+| §8.4 — update message convention | `scripts/lint-update-message.js`, run before every `eas update` call in both publish jobs |
+
+The three exact check names T118 pins as required (alongside `build`,
+`web-perf-budget`, `web-e2e`, `security`):
+
+- `ai-evals`
+- `safety-vet-disclaimer`
+- `safety-emergency-interstitial`
+
+**Founder action:** mark all seven of the names above as **required status checks** on `main` in GitHub → Settings → Branches. `needs:` only enforces
+ordering *within a single workflow run* — it is branch protection, a
+separate GitHub setting, that actually prevents a merge to `main` from
+landing without every one of those checks having run and passed.
+
+Local reproduction (the exact invocations `ci.yml` runs):
+
+```
+pnpm --filter @bombaypetcompany/mobile exec jest --ci __tests__/check-result-snapshot.test.tsx __tests__/chat-screen-snapshot.test.tsx __tests__/breed-guide-sections.test.tsx __tests__/disclaimer-placement-scan.test.ts
+pnpm --filter @bombaypetcompany/mobile exec jest --ci __tests__/emergency-interstitial.test.tsx __tests__/paywall-emergency-safety.test.tsx __tests__/check-submission.test.tsx
+```
+
+**Invariant:** no OTA publish may weaken `<VetDisclaimer/>` presence, the
+Emergency interstitial flow, or region hotline data; if either safety check
+above is red the publish does not proceed — and it is never made to proceed
+by removing a job from `needs:`, by `--force`, or by re-recording a
+snapshot.
+
+The autonomous loop may publish to `preview` at milestone gates but **never**
+to `production` (§8.3) — no loop-writable script in this repo may dispatch
+the `CI` workflow or invoke a production `eas` publish command, which a
+config test in `apps/mobile/__tests__/ota-publish-ci.test.ts` scans for and
+pins.

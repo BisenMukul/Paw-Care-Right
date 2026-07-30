@@ -1578,3 +1578,25 @@ Attempt 1, checker verdict **PASS** (0 HIGH/MED, 4 LOW).
 **[FOUNDER] also:** set ADMIN_API_TOKEN (long random) in deployed API envs; first real `eas channel:rollout`/`update:republish` run per runbook §17; accept/reject D5 freshness (rejection = follow-up card for per-launch reporting).
 
 **Next:** T118 (OTA safety gates on publish jobs) — the FINAL Phase 10 card before M10/C3. Fold in: T117-F3 one-line JIT payload pin.
+
+---
+
+## T118 — OTA safety gates on publish jobs (2026-07-30)
+
+Attempt 1, checker verdict **PASS** (0 HIGH; 1 MED closed pre-commit; 2 LOW accepted). The FINAL Phase 10 card.
+
+**Shipped:** two new unconditional CI jobs — safety-vet-disclaimer (check-result/chat/breed snapshot suites + T097 placement scan; 22 tests/9 real snapshots) and safety-emergency-interstitial (interstitial ordering/ack-gating/hotline/fail-upward/kill-switch + paywall exclusion + redFlag entry; 48 tests) — added to BOTH publish jobs' needs alongside the already-wired ai-evals = the card's three named required checks; prod trigger audit (exactly push/PR/dispatch declared, only dispatch reaches prod, single non-disjunctive if:, checker-proven to catch workflow_call insertion); D6 loop-forbidden automation scan; runbook §18 rule-by-rule cross-ref AT the hook-protected OTA_UPDATES §8 (never edited) under both-direction doc↔CI equality; T117-F3 JIT payload pin (PII-shaped field → RED). MED closure: comment-stripping no-skip/no-only scan over all 7 pinned suites + a ≥9 snapshot floor over the committed .snap files (complementary guards — source gutting AND snapshot hollowing both caught). 13 executor + checker mutation proofs across the card, incl. file-substitution and rule-row deletions all RED. Suites: mobile 202/1772 (ota-publish-ci 40 tests), api untouched.
+
+**Checker depth:** opened all 7 pinned suites and verified each genuinely tests its named §7 surface (real vet-disclaimer testIDs, real interstitial flows — no wrong-file pins); own PyYAML topology parse; verbatim CI invocation reproduction; forced-uncached re-runs. Accepted LOWs: D6's static 11-file list (new scripts escape it; the one schedule workflow, ai-evals-nightly, verified publish-free), R2 residual now largely closed by the MED fix.
+
+**[FOUNDER] items from this card:** (1) mark the seven check names (build, ai-evals, safety-vet-disclaimer, safety-emergency-interstitial, web-perf-budget, web-e2e, security) as required status checks on main in GitHub branch protection — needs: alone orders jobs but does NOT block merges; (2) confirm the loop's GitHub credentials carry no actions:write/dispatch permission; (3) on first push, confirm both safety checks appear as real check runs and ota-publish-preview still fires.
+
+---
+
+## 🚩 MILESTONE M10 — Phase 10 complete (2026-07-30)
+
+All 14 Phase 10 cards done: T099 (EAS profiles) → T100 (store assets) → T101 (internal distribution/C3 ledger) → T102 (naming screen + listing) → T103 (dashboards) → T104 (feedback) → T105 (dataset QA) → T106 (runbook + kill switches) → T113 (expo-updates/fingerprint) → T114 (update flow + deferral) → T115 (upgrade gate + tolerant schema) → T116 (publish pipeline) → T117 (release health) → T118 (safety gates). Also this phase: REBRAND-1 (Bombay Pet Company, full identifier family). Suite totals at tag: api 116/1177, mobile 202/1772, web 16/203, types 652, data 239, analytics 72, ai 634. Tag milestone/M10 LOCAL-ONLY per standing founder note. The PHASES gate line "Preview channel receives the M10 OTA publish" requires EXPO_TOKEN — not configured yet (visible skip in CI); first real preview publish lands when the founder sets the secret (runbook §9 item 20).
+
+**⛔ LOOP PAUSED AT CHECKPOINT C3 (per PHASES).** Founder gate to set checkpoints.C3.approved=true: final name + bundle ids confirmation (T102 evidence: docs/store-listing.md — Bombay Pet Company CONDITIONAL pending trademark counsel F3; fallbacks Nuzzo/Pawnest verified); store console setup (Apple + Play, loop/checkpoint-C3-notes.md §§4–5, 39 steps); legal-review markers; hotline human-verification column (docs/qa/dataset-audit.md §5 — 5 rows, all UNVERIFIED); [VET] toxin-verdict review queues; TestFlight/Play submission. Standing founder queue also open: EAS project re-create + projectId + updates.url; beta binary rebuilds (fingerprint changed at T113); EXPO_TOKEN/PROD_API_URL/ADMIN_API_TOKEN/APP_VERSION/EAS env vars; kill-switch fire drill (runbook §9 item 14); branch protection (T118); Sentry staging evidence (T117 §9.1 recipe); D5 freshness accept/reject; bombaypetcompany.app registration; staging-api DNS; 8-shot screenshot capture via /emulator-test; store-privacy stale-example ticket; FLAKE-1/FLAKE-2/unattributed-flake cards for Phase 11 planning.
+
+**Next after C3 approval:** Phase 11 (T107–T112) → M11.
