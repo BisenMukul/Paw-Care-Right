@@ -55,6 +55,13 @@ const CASCADE_COVERED_MODELS = [
   // `feedback/<userId>/` screenshot prefix is erased alongside the row by
   // `account-erasure.service.ts`'s two `listKeys` calls (mirrors `AccountExport`).
   "FeedbackReport",
+  // T108: `ReferralGrant.userId` (the RECIPIENT side) FK-cascades from
+  // `User` (`onDelete: Cascade`), so `tx.user.delete` removes every grant
+  // this user received. `counterpartyUserId`/`inviteId` are `onDelete:
+  // SetNull` -- another party's erasure nulls those columns on a SURVIVING
+  // user's row rather than deleting it (a grant, once earned, is never
+  // revoked by someone else's deletion). No S3 objects to sweep.
+  "ReferralGrant",
 ] as const;
 
 /**

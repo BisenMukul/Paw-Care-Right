@@ -22,6 +22,7 @@ import {
   cleanupUsers,
   createOwnerContext,
   createPet,
+  createReferralGrant,
   createSubscription,
   overrideCheckRunner,
   resolveJwtService,
@@ -208,6 +209,11 @@ describe("Account deletion (e2e)", () => {
         },
       });
       const accountExport = await prisma.accountExport.create({ data: { userId: ctx.user.id } });
+      // T108 AC6b: a referral grant this user RECEIVED must be erased with them.
+      const referralGrant = await createReferralGrant(prisma, {
+        userId: ctx.user.id,
+        inviteId: invite.id,
+      });
 
       const deleteRes = await ctx.authedAgent("delete", "/v1/me");
       expect(deleteRes.status).toBe(200);
@@ -237,6 +243,8 @@ describe("Account deletion (e2e)", () => {
       expect(
         await prisma.aiAuditLog.count({ where: { id: { in: [auditByCheck.id, auditByThread.id] } } }),
       ).toBe(0);
+      // T108 AC6b: the deleted user's received referral grant is gone too.
+      expect(await prisma.referralGrant.count({ where: { id: referralGrant.id } })).toBe(0);
 
       expect(await storage.objectExists(petAOriginal)).toBe(false);
       expect(await storage.objectExists(petAMain)).toBe(false);
@@ -474,6 +482,46 @@ describe("Account deletion (e2e)", () => {
         .send({ refreshToken: rawRefreshToken });
       expect(refreshRes.status).toBe(200);
     });
+  });
+
+  describe("T108 AC6b: a referral grant survives its counterparty's erasure", () => {
+    it("DELETE /me removes the caller's ReferralGrant rows; a counterparty's erasure nulls counterpartyUserId but preserves the surviving user's earned grant", async () => {
+      const recipient = await owner();
+      const counterparty = await owner();
+
+      // `recipient` earned a grant with `counterparty` as the other party --
+      // this must survive counterparty's own account deletion untouched
+      // except for the nulled FK (D11: "earned grace is never revoked by
+      // someone else's erasure").
+      const survivingGrant = await createReferralGrant(prisma, {
+        userId: recipient.user.id,
+        counterpartyUserId: counterparty.user.id,
+      });
+      // `counterparty` also received their OWN grant from this same accept --
+      // that row belongs to counterparty and must be erased along with them.
+      const counterpartyOwnGrant = await createReferralGrant(prisma, {
+        userId: counterparty.user.id,
+        counterpartyUserId: recipient.user.id,
+      });
+
+      const deleteRes = await counterparty.authedAgent("delete", "/v1/me");
+      expect(deleteRes.status).toBe(200);
+
+      await forceDueNow(counterparty.user.id);
+      await runDeletionSweep();
+
+      expect(await prisma.user.count({ where: { id: counterparty.user.id } })).toBe(0);
+      // counterparty's own received grant is erased with them.
+      expect(await prisma.referralGrant.count({ where: { id: counterpartyOwnGrant.id } })).toBe(0);
+
+      // recipient's earned grant SURVIVES, with the FK nulled (not deleted).
+      const survived = await prisma.referralGrant.findUnique({ where: { id: survivingGrant.id } });
+      expect(survived).not.toBeNull();
+      expect(survived?.counterpartyUserId).toBeNull();
+      expect(survived?.userId).toBe(recipient.user.id);
+      expect(survived?.startsAt.getTime()).toBe(survivingGrant.startsAt.getTime());
+      expect(survived?.expiresAt.getTime()).toBe(survivingGrant.expiresAt.getTime());
+    }, JOB_WAIT_TIMEOUT_MS + 15_000);
   });
 
   describe("soft delete revokes every refresh token and removes devices", () => {

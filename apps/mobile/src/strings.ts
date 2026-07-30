@@ -626,6 +626,19 @@ export const strings = {
     member: "Member",
     invite: "Invite someone",
     inviteError: "We couldn't create an invite. Please try again.",
+    // T108: share-sheet copy + explainer caption. §7-safe -- no
+    // "diagnos*"/dosing/medical claim, no earnings/money claim, no urgency
+    // language. The numbers here are pinned by `referral-doc.spec.ts`
+    // against `REFERRAL_GRANT_DAYS`/`REFERRAL_GRANT_MAX_PER_USER`. Fix round
+    // (checker F3): both strings now say "up to" -- a recipient at the
+    // lifetime cap (silent skip) or already covered by an own/family
+    // subscription (D9) may see no visible benefit, so an unconditional
+    // promise would over-state what the invitee actually gets. This keeps
+    // the invitee-facing message consistent with the owner-facing caption,
+    // which already carried the "(up to 3 times)" qualifier.
+    shareMessage: (appName: string, link: string) =>
+      `Join my household on ${appName} so we can keep our pets' care in one place. When you join, we can each get up to 14 days of Premium. ${link}`,
+    referralCaption: "When someone joins your household, you both get up to 14 days of Premium (up to 3 times).",
     leave: "Leave household",
     leaveConfirmBody: "Leaving will move you into your own new household, separate from this one.",
     leaveGrace: "You'll lose access to this household's Premium plan as soon as you leave.",

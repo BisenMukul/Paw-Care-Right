@@ -4,12 +4,14 @@ import {
   HttpStatus,
   Inject,
   Injectable,
+  Logger,
   NotFoundException,
 } from "@nestjs/common";
 import { DEEPLINK_SCHEME } from "@bombaypetcompany/config";
 import { Prisma, type Role } from "@prisma/client";
 
 import { DEFAULT_HOUSEHOLD_NAME } from "../auth/auth.constants";
+import { ReferralGrantService } from "../billing/referral-grant.service";
 import { PrismaService } from "../prisma/prisma.service";
 import { ENTITLEMENT_RESOLVER, type EntitlementResolver } from "../quota/entitlement";
 import { generateInviteCode } from "./invite-code";
@@ -62,9 +64,12 @@ export interface LeaveHouseholdResult {
  */
 @Injectable()
 export class HouseholdsService {
+  private readonly logger = new Logger(HouseholdsService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     @Inject(ENTITLEMENT_RESOLVER) private readonly entitlementResolver: EntitlementResolver,
+    private readonly referralGrants: ReferralGrantService,
   ) {}
 
   async createInvite(householdId: string, createdById: string): Promise<CreateInviteResult> {
@@ -124,7 +129,7 @@ export class HouseholdsService {
       throw new ConflictException();
     }
 
-    return this.prisma.$transaction(async (tx) => {
+    const result = await this.prisma.$transaction(async (tx) => {
       // Single-use claim: only one concurrent caller can win this atomic
       // update. A lost race (count 0) is indistinguishable from "used" —
       // uniform 404 (plan Risk R1).
@@ -167,6 +172,28 @@ export class HouseholdsService {
 
       return { householdId: target.id, name: target.name };
     });
+
+    // T108 FIX ROUND (checker F1): referral grant issuance runs in its OWN
+    // transaction, AFTER the join above has already committed -- not inside
+    // it. This makes D6's "an abuse guard must never fail a household join"
+    // literally true: nothing this call can throw (P2002, an infra error,
+    // anything) can ever roll back a join that already committed. Logged and
+    // swallowed on failure; the accept's response is unaffected either way.
+    // Idempotency (D8) + the per-recipient race-freedom (F2) live inside
+    // `ReferralGrantService` itself (per-recipient Postgres advisory locks).
+    try {
+      await this.referralGrants.issueForAcceptedInvite({
+        inviteId: invite.id,
+        joinerUserId: userId,
+        inviterUserId: invite.createdById,
+      });
+    } catch {
+      // ids only (T089 PII discipline) -- never log the error's own message
+      // or stack, which could echo request content.
+      this.logger.error({ event: "referral_grant_issue_failed", inviteId: invite.id, joinerUserId: userId });
+    }
+
+    return result;
   }
 
   /**

@@ -145,7 +145,9 @@ export class AccountErasureService {
       // Restrict`, so this MUST precede the user delete.
       await tx.household.delete({ where: { id: householdId } });
       // Cascades Device, RefreshToken, UserNotificationPrefs, created
-      // HouseholdInvites, Subscription, AccountExport.
+      // HouseholdInvites, Subscription, AccountExport, and (T108) any
+      // ReferralGrant this user RECEIVED -- a grant given to someone else
+      // survives with counterpartyUserId set to null (onDelete: SetNull).
       await tx.user.delete({ where: { id: userId } });
     });
 
@@ -202,7 +204,9 @@ export class AccountErasureService {
       await tx.symptomCheck.deleteMany({ where: { id: { in: checkIds } } });
       await tx.membership.deleteMany({ where: { userId } });
       // Cascades Device, RefreshToken, UserNotificationPrefs, created
-      // HouseholdInvites, Subscription, AccountExport.
+      // HouseholdInvites, Subscription, AccountExport, and (T108) any
+      // ReferralGrant this user RECEIVED -- a grant given to someone else
+      // survives with counterpartyUserId set to null (onDelete: SetNull).
       await tx.user.delete({ where: { id: userId } });
     });
 

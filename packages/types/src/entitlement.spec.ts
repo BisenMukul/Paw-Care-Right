@@ -45,8 +45,25 @@ describe("billingEntitlementSchema", () => {
 });
 
 describe("entitlementSourceSchema", () => {
-  it.each(["own", "family", "none"])("accepts %p", (value) => {
+  it.each(["own", "family", "grant", "none"])("accepts %p", (value) => {
     expect(entitlementSourceSchema.parse(value)).toBe(value);
+  });
+
+  it("rejects a bad source", () => {
+    expect(entitlementSourceSchema.safeParse("premium").success).toBe(false);
+  });
+});
+
+describe("billingEntitlementSchema with source: 'grant' (T108)", () => {
+  it("parses a referral-grant entitlement payload", () => {
+    const payload = {
+      entitled: true,
+      source: "grant",
+      plan: null,
+      expiresAt: "2026-08-13T00:00:00.000Z",
+      billingIssue: false,
+    };
+    expect(billingEntitlementSchema.parse(payload)).toEqual(payload);
   });
 });
 

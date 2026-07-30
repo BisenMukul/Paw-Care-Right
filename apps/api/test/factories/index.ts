@@ -9,6 +9,7 @@ import type {
   Pet,
   Prisma,
   PrismaClient,
+  ReferralGrant,
   Role,
   Species,
   Subscription,
@@ -228,6 +229,37 @@ export async function createSubscription(
       status: args.status ?? "active",
       expiresAt: args.expiresAt ?? null,
       rawEventJson: {} as Prisma.InputJsonValue,
+    },
+  });
+}
+
+/**
+ * T108 referral factory: seeds a `ReferralGrant` row directly (bypassing the
+ * invite-accept flow so grant-math e2e cases can seed a precise history).
+ * `userId` is `onDelete: Cascade` from `User` -- `cleanupUsers`'s existing
+ * `user.deleteMany` cascade removes any row seeded here (recipient side); no
+ * cleanup-ordering change needed. `counterpartyUserId`/`inviteId` are
+ * `onDelete: SetNull`, so a row seeded with a counterparty who is cleaned up
+ * separately survives with that column nulled, not deleted.
+ */
+export async function createReferralGrant(
+  prisma: PrismaClient,
+  args: {
+    userId: string;
+    counterpartyUserId?: string;
+    inviteId?: string;
+    startsAt?: Date;
+    expiresAt?: Date;
+  },
+): Promise<ReferralGrant> {
+  const startsAt = args.startsAt ?? new Date();
+  return prisma.referralGrant.create({
+    data: {
+      userId: args.userId,
+      counterpartyUserId: args.counterpartyUserId ?? null,
+      inviteId: args.inviteId ?? null,
+      startsAt,
+      expiresAt: args.expiresAt ?? new Date(startsAt.getTime() + 14 * 24 * 60 * 60 * 1000),
     },
   });
 }

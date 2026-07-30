@@ -1622,3 +1622,17 @@ Attempt 2, checker verdict **PASS** (round-1 FAIL on 2 HIGH — both determinist
 **Carried forward:** F6 trial-length prose hardcode (advisory); F7 the bare-passthrough-provider mock pattern (4th recurrence — M11 planning refactor candidate); **the account-deletion.e2e flake now 2/2 under forced full runs (Engine is not yet connected, post-teardown BullMQ; isolated reruns clean) — NEEDS ITS OWN CARD at M11 planning alongside FLAKE-1/FLAKE-2**. Orchestrator fixed the §2 three→four count nit pre-commit (doc spec 10/10 green).
 
 **Next:** T108 (referral: invite → trial extension).
+
+---
+
+## T108 — Referral: invite → trial extension (2026-07-30)
+
+Attempt 2, checker verdict **PASS** (three-round arc: round-1 PASS-with-2-MED → fix round → round-2 FAIL on 1 doc-honesty HIGH → orchestrator-applied disclosure → confirmed PASS; all 11 AC rows green).
+
+**Shipped:** ReferralGrant model (+migration, indexed per §6, @@unique([inviteId,userId]) idempotency, SetNull counterparty FKs — another party's T091 erasure can never revoke earned grace, proven by a LIVE-psql FK mutation with zero residual drift); grants = +14d both sides as chained non-overlapping windows (startsAt = max(now, chain tip)), lifetime cap 3 received (+42d EMERGENT, no hardcoded 42), silent-skip never fails a join; entitlement precedence own > family > grant > none as a third independent input — RevenueCat NEVER read or written (checker's RC-write injection → 5 RED incl. the byte-identical e2e); **post-commit issuance design (fix round)**: issuance opens its OWN transaction after the join commits, per-recipient pg_advisory_xact_lock in sorted order (mutual-accept deadlock-free), fake P2002 swallow removed with a PROPAGATES pin — checker's forced-failure mutation produced ZERO 500s across 14 red tests (the join is structurally un-failable by grant logic) and the lock-removed concurrency e2e detects the race 3/3 deterministically; share copy "up to 14 days" both surfaces; docs/referral-grants.md under drift guard. Suites: api 120/1223, mobile 205/1790, types 655.
+
+**Round-2 HIGH (F8, doc-honesty):** the post-commit design's cost — issuance is best-effort/at-most-once; crash/timeout/swallowed-error/deadlock/second-recipient-rollback after a committed join silently loses both grants FOREVER (usedAt consumed → re-POST 404; no outbox/retry/reconciliation) — was narrated only as upside. Orchestrator applied the checker-prescribed disclosure (§1 full failure-mode block + §7 [FOUNDER] durability decision); checker verified code sha256-untouched and the drift guard green.
+
+**[FOUNDER] decisions now open in the doc §7:** issuance durability (accept best-effort for launch vs fund an outbox/reconciliation card before referral marketing); D9 defer-vs-elapse for already-paying recipients; leave/rejoin cycling cap sufficiency. **Planner cards flagged:** F5 (pre-existing: accepting an invite destroys the joiner's own Subscription row via T026 household-delete + T072 cascade — needs its own card); F9 LOW optional e2e pin.
+
+**Next:** T109 (smart review prompt).

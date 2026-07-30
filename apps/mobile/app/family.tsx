@@ -1,3 +1,4 @@
+import { APP_DISPLAY_NAME } from "@bombaypetcompany/config";
 import { useState } from "react";
 import { RefreshControl, Share, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -47,7 +48,7 @@ export default function FamilyScreen() {
     setInviteError(false);
     try {
       const invite = await createInvite.mutateAsync();
-      await Share.share({ message: invite.deepLink });
+      await Share.share({ message: strings.family.shareMessage(APP_DISPLAY_NAME, invite.deepLink) });
     } catch {
       setInviteError(true);
     }
@@ -131,6 +132,12 @@ export default function FamilyScreen() {
               {strings.family.inviteError}
             </Text>
           ) : null}
+          <Text
+            testID="family-referral-caption"
+            className="text-center text-sm text-brand-700 dark:text-ink-muted-dark font-body"
+          >
+            {strings.family.referralCaption}
+          </Text>
         </View>
       ) : (
         <View className="gap-2">

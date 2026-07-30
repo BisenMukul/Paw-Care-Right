@@ -614,8 +614,8 @@
       "attempts": 2
     },
     "T108": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 2
     },
     "T109": {
       "status": "pending",
@@ -753,10 +753,10 @@
     "surveillance-layer-corrections-v2: Write grants, fail-closed protected-paths (no python), current-task file contract, P0/no-HEAD tolerance, subshell fail-open fixes"
   ],
   "current-task": {
-    "id": "T108",
+    "id": "T109",
     "phase": 11,
     "attempts": 0,
     "state": "planning",
-    "note": "T107 done 2026-07-30 (attempt 2; mock-blindness HIGHs fixed with realistic auth-lifecycle tests). T108 referral next."
+    "note": "T108 done 2026-07-30 (attempt 2; post-commit issuance + F8 disclosure). T109 smart review prompt next. Planner cards flagged: T026/T072 joiner-Subscription cascade (F5); api teardown flake."
   }
 }

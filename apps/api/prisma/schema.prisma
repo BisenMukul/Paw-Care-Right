@@ -93,6 +93,10 @@ model User {
   chatThreads     ChatThread[]
   accountExports  AccountExport[]
   feedbackReports FeedbackReport[]
+  // T108: grants this user received, and grants this user's acceptance/invite
+  // counterparty-side triggered for someone else -- see `ReferralGrant`.
+  referralGrants      ReferralGrant[] @relation("ReferralGrantRecipient")
+  referralGrantsGiven ReferralGrant[] @relation("ReferralGrantCounterparty")
 
   @@index([deletionScheduledAt])
 }
@@ -216,6 +220,9 @@ model HouseholdInvite {
   expiresAt   DateTime
   usedAt      DateTime?
   createdAt   DateTime  @default(now())
+
+  // T108: referral grants issued off this invite's acceptance.
+  referralGrants ReferralGrant[]
 
   @@index([householdId])
   @@index([expiresAt])
@@ -370,6 +377,33 @@ model Subscription {
   household Household @relation(fields: [householdId], references: [id], onDelete: Cascade)
 
   @@index([householdId])
+}
+
+// ReferralGrant (T108 plan D1/D11): a server-side, RC-FREE referral grace
+// window. `acceptInvite` issues up to two rows synchronously (joiner +
+// inviter) inside its existing single-use-claim transaction -- see
+// `ReferralGrantService`. Nothing here ever reads, writes, or derives from
+// `Subscription` -- the AC's "RC entitlement unaffected (server-side grace
+// only)" is implemented by keeping this model and `pickEntitlement`'s grant
+// branch entirely separate from the RC webhook write path. `userId` is
+// `onDelete: Cascade` (T091 erasure: recipient rows die with the user);
+// `counterpartyUserId`/`inviteId` are `onDelete: SetNull` so ANOTHER party's
+// erasure can never revoke a grant this user already earned.
+model ReferralGrant {
+  id                String    @id @default(uuid())
+  userId            String
+  user              User      @relation("ReferralGrantRecipient", fields: [userId], references: [id], onDelete: Cascade)
+  counterpartyUserId String?
+  counterparty      User?     @relation("ReferralGrantCounterparty", fields: [counterpartyUserId], references: [id], onDelete: SetNull)
+  inviteId          String?
+  invite            HouseholdInvite? @relation(fields: [inviteId], references: [id], onDelete: SetNull)
+  startsAt          DateTime
+  expiresAt         DateTime
+  createdAt         DateTime  @default(now())
+
+  @@unique([inviteId, userId])
+  @@index([userId, expiresAt])
+  @@index([counterpartyUserId])
 }
 
 model ProcessedWebhookEvent {

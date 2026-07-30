@@ -1,6 +1,7 @@
 import { ConflictException, HttpException, NotFoundException } from "@nestjs/common";
 import { Prisma } from "@prisma/client";
 
+import type { ReferralGrantService } from "../billing/referral-grant.service";
 import type { PrismaService } from "../prisma/prisma.service";
 import type { EntitlementResolver } from "../quota/entitlement";
 import { INVITE_CODE_REGEX } from "./invite-code";
@@ -63,11 +64,17 @@ describe("HouseholdsService", () => {
     return { resolve: jest.fn().mockResolvedValue({ tier, bypassQuota: false }) };
   }
 
+  /** T108: `ReferralGrantService` double -- a mocked service, so tests that
+   *  don't assert on it can ignore it entirely (it never touches `tx`). */
+  function buildReferralGrantService(): ReferralGrantService {
+    return { issueForAcceptedInvite: jest.fn().mockResolvedValue(undefined) } as unknown as ReferralGrantService;
+  }
+
   describe("createInvite", () => {
     it("sets expiresAt to ~7 days ahead and returns a code/deepLink matching the contract", async () => {
       const create = jest.fn().mockResolvedValue(undefined);
       const prisma = buildPrisma({ householdInvite: { create } });
-      const service = new HouseholdsService(prisma, buildResolver());
+      const service = new HouseholdsService(prisma, buildResolver(), buildReferralGrantService());
 
       const before = Date.now();
       const result = await service.createInvite(householdId, createdById);
@@ -90,7 +97,7 @@ describe("HouseholdsService", () => {
       });
       const create = jest.fn().mockRejectedValueOnce(p2002).mockResolvedValueOnce(undefined);
       const prisma = buildPrisma({ householdInvite: { create } });
-      const service = new HouseholdsService(prisma, buildResolver());
+      const service = new HouseholdsService(prisma, buildResolver(), buildReferralGrantService());
 
       const result = await service.createInvite(householdId, createdById);
 
@@ -102,7 +109,7 @@ describe("HouseholdsService", () => {
       const genericError = new Error("boom");
       const create = jest.fn().mockRejectedValue(genericError);
       const prisma = buildPrisma({ householdInvite: { create } });
-      const service = new HouseholdsService(prisma, buildResolver());
+      const service = new HouseholdsService(prisma, buildResolver(), buildReferralGrantService());
 
       await expect(service.createInvite(householdId, createdById)).rejects.toThrow("boom");
       expect(create).toHaveBeenCalledTimes(1);
@@ -112,7 +119,7 @@ describe("HouseholdsService", () => {
       const create = jest.fn();
       const prisma = buildPrisma({ householdInvite: { create } });
       const resolver = buildResolver("FREE");
-      const service = new HouseholdsService(prisma, resolver);
+      const service = new HouseholdsService(prisma, resolver, buildReferralGrantService());
 
       await expect(service.createInvite(householdId, createdById)).rejects.toBeInstanceOf(HttpException);
       expect(resolver.resolve).toHaveBeenCalledWith(createdById, householdId);
@@ -122,7 +129,7 @@ describe("HouseholdsService", () => {
     it("PREMIUM → succeeds (mints an invite)", async () => {
       const create = jest.fn().mockResolvedValue(undefined);
       const prisma = buildPrisma({ householdInvite: { create } });
-      const service = new HouseholdsService(prisma, buildResolver("PREMIUM"));
+      const service = new HouseholdsService(prisma, buildResolver("PREMIUM"), buildReferralGrantService());
 
       const result = await service.createInvite(householdId, createdById);
 
@@ -136,7 +143,7 @@ describe("HouseholdsService", () => {
       const findUnique = jest.fn().mockResolvedValue(null);
       const transaction = jest.fn();
       const prisma = buildPrisma({ householdInvite: { findUnique }, transaction });
-      const service = new HouseholdsService(prisma, buildResolver());
+      const service = new HouseholdsService(prisma, buildResolver(), buildReferralGrantService());
 
       await expect(service.acceptInvite("joiner-1", code)).rejects.toBeInstanceOf(NotFoundException);
       expect(transaction).not.toHaveBeenCalled();
@@ -146,7 +153,7 @@ describe("HouseholdsService", () => {
       const findUnique = jest.fn().mockResolvedValue(buildInviteRow({ expiresAt: new Date(Date.now() - 1000) }));
       const transaction = jest.fn();
       const prisma = buildPrisma({ householdInvite: { findUnique }, transaction });
-      const service = new HouseholdsService(prisma, buildResolver());
+      const service = new HouseholdsService(prisma, buildResolver(), buildReferralGrantService());
 
       await expect(service.acceptInvite("joiner-1", code)).rejects.toBeInstanceOf(NotFoundException);
       expect(transaction).not.toHaveBeenCalled();
@@ -156,7 +163,7 @@ describe("HouseholdsService", () => {
       const findUnique = jest.fn().mockResolvedValue(buildInviteRow({ usedAt: new Date() }));
       const transaction = jest.fn();
       const prisma = buildPrisma({ householdInvite: { findUnique }, transaction });
-      const service = new HouseholdsService(prisma, buildResolver());
+      const service = new HouseholdsService(prisma, buildResolver(), buildReferralGrantService());
 
       await expect(service.acceptInvite("joiner-1", code)).rejects.toBeInstanceOf(NotFoundException);
       expect(transaction).not.toHaveBeenCalled();
@@ -171,7 +178,7 @@ describe("HouseholdsService", () => {
         membership: { findMany },
         transaction,
       });
-      const service = new HouseholdsService(prisma, buildResolver());
+      const service = new HouseholdsService(prisma, buildResolver(), buildReferralGrantService());
 
       await expect(service.acceptInvite("joiner-1", code)).rejects.toBeInstanceOf(ConflictException);
       expect(transaction).not.toHaveBeenCalled();
@@ -188,7 +195,7 @@ describe("HouseholdsService", () => {
         membership: { findMany },
         transaction,
       });
-      const service = new HouseholdsService(prisma, buildResolver());
+      const service = new HouseholdsService(prisma, buildResolver(), buildReferralGrantService());
 
       await expect(service.acceptInvite("joiner-1", code)).rejects.toBeInstanceOf(ConflictException);
       expect(transaction).not.toHaveBeenCalled();
@@ -214,13 +221,16 @@ describe("HouseholdsService", () => {
         membership: { findMany },
         transaction,
       });
-      const service = new HouseholdsService(prisma, buildResolver());
+      const referralGrantService = buildReferralGrantService();
+      const service = new HouseholdsService(prisma, buildResolver(), referralGrantService);
 
       await expect(service.acceptInvite("joiner-1", code)).rejects.toBeInstanceOf(NotFoundException);
       expect(petCount).not.toHaveBeenCalled();
+      // AC5: a lost claim race must never issue a grant.
+      expect(referralGrantService.issueForAcceptedInvite).not.toHaveBeenCalled();
     });
 
-    it("happy join-replaces (joiner is OWNER of an empty solo household): deletes old household, creates MEMBER row", async () => {
+    it("happy join-replaces (joiner is OWNER of an empty solo household): deletes old household, creates MEMBER row, issues grants", async () => {
       const findUnique = jest.fn().mockResolvedValue(buildInviteRow());
       const findMany = jest
         .fn()
@@ -243,7 +253,8 @@ describe("HouseholdsService", () => {
         membership: { findMany },
         transaction,
       });
-      const service = new HouseholdsService(prisma, buildResolver());
+      const referralGrantService = buildReferralGrantService();
+      const service = new HouseholdsService(prisma, buildResolver(), referralGrantService);
 
       const result = await service.acceptInvite("joiner-1", code);
 
@@ -252,6 +263,50 @@ describe("HouseholdsService", () => {
         data: { userId: "joiner-1", householdId, role: "MEMBER" },
       });
       expect(result).toEqual({ householdId, name: "Target Household" });
+      // AC5 / FIX ROUND (F1): issuance is called exactly once, AFTER the join
+      // transaction above has already resolved (no `tx` argument anymore --
+      // `ReferralGrantService` opens its own transaction post-commit).
+      expect(referralGrantService.issueForAcceptedInvite).toHaveBeenCalledTimes(1);
+      expect(referralGrantService.issueForAcceptedInvite).toHaveBeenCalledWith({
+        inviteId,
+        joinerUserId: "joiner-1",
+        inviterUserId: createdById,
+      });
+    });
+
+    it("FIX ROUND (F1): a grant-issuance failure is logged and swallowed -- the accept still resolves with the join result", async () => {
+      const findUnique = jest.fn().mockResolvedValue(buildInviteRow());
+      const findMany = jest
+        .fn()
+        .mockResolvedValue([{ id: "m1", userId: "joiner-1", householdId: "old-household", role: "OWNER" }]);
+      const updateMany = jest.fn().mockResolvedValue({ count: 1 });
+      const petCount = jest.fn().mockResolvedValue(0);
+      const householdFindUnique = jest.fn().mockResolvedValue({ id: householdId, name: "Target Household" });
+      const transaction = jest.fn(async (cb: (tx: unknown) => unknown) =>
+        cb({
+          householdInvite: { updateMany },
+          pet: { count: petCount },
+          household: { delete: jest.fn(), findUnique: householdFindUnique },
+          membership: { delete: jest.fn(), create: jest.fn() },
+        }),
+      );
+      const prisma = buildPrisma({
+        householdInvite: { findUnique },
+        membership: { findMany },
+        transaction,
+      });
+      const referralGrantService = {
+        issueForAcceptedInvite: jest.fn().mockRejectedValue(new Error("advisory lock infra blip")),
+      } as unknown as ReferralGrantService;
+      const service = new HouseholdsService(prisma, buildResolver(), referralGrantService);
+
+      const result = await service.acceptInvite("joiner-1", code);
+
+      // The join succeeds regardless -- D6 "an abuse guard must never fail a
+      // household join" is now literally enforced by the call-site try/catch,
+      // not just by the invite claim's own idempotency.
+      expect(result).toEqual({ householdId, name: "Target Household" });
+      expect(referralGrantService.issueForAcceptedInvite).toHaveBeenCalledTimes(1);
     });
 
     it("happy join-replaces (joiner is MEMBER elsewhere): drops only their membership row, no household delete", async () => {
@@ -278,7 +333,7 @@ describe("HouseholdsService", () => {
         membership: { findMany },
         transaction,
       });
-      const service = new HouseholdsService(prisma, buildResolver());
+      const service = new HouseholdsService(prisma, buildResolver(), buildReferralGrantService());
 
       await service.acceptInvite("joiner-1", code);
 
@@ -309,11 +364,14 @@ describe("HouseholdsService", () => {
         membership: { findMany },
         transaction,
       });
-      const service = new HouseholdsService(prisma, buildResolver());
+      const referralGrantService = buildReferralGrantService();
+      const service = new HouseholdsService(prisma, buildResolver(), referralGrantService);
 
       await expect(service.acceptInvite("joiner-1", code)).rejects.toBeInstanceOf(ConflictException);
       expect(householdDelete).not.toHaveBeenCalled();
       expect(membershipCreate).not.toHaveBeenCalled();
+      // AC5: the pets-present 409 rolls back before the grant call site.
+      expect(referralGrantService.issueForAcceptedInvite).not.toHaveBeenCalled();
     });
   });
 
@@ -332,7 +390,7 @@ describe("HouseholdsService", () => {
         }),
       );
       const prisma = buildPrisma({ membership: { findMany }, transaction });
-      const service = new HouseholdsService(prisma, buildResolver());
+      const service = new HouseholdsService(prisma, buildResolver(), buildReferralGrantService());
 
       const result = await service.leaveHousehold("joiner-1");
 
@@ -352,7 +410,7 @@ describe("HouseholdsService", () => {
         .mockResolvedValue([{ id: "m1", userId: "owner-1", householdId: "household-1", role: "OWNER" }]);
       const transaction = jest.fn();
       const prisma = buildPrisma({ membership: { findMany }, transaction });
-      const service = new HouseholdsService(prisma, buildResolver());
+      const service = new HouseholdsService(prisma, buildResolver(), buildReferralGrantService());
 
       await expect(service.leaveHousehold("owner-1")).rejects.toBeInstanceOf(ConflictException);
       expect(transaction).not.toHaveBeenCalled();
@@ -362,7 +420,7 @@ describe("HouseholdsService", () => {
       const findMany = jest.fn().mockResolvedValue([]);
       const transaction = jest.fn();
       const prisma = buildPrisma({ membership: { findMany }, transaction });
-      const service = new HouseholdsService(prisma, buildResolver());
+      const service = new HouseholdsService(prisma, buildResolver(), buildReferralGrantService());
 
       await expect(service.leaveHousehold("nowhere-1")).rejects.toBeInstanceOf(ConflictException);
       expect(transaction).not.toHaveBeenCalled();
@@ -380,7 +438,7 @@ describe("HouseholdsService", () => {
         ],
       });
       const prisma = buildPrisma({ household: { findUnique } });
-      const service = new HouseholdsService(prisma, buildResolver());
+      const service = new HouseholdsService(prisma, buildResolver(), buildReferralGrantService());
 
       const result = await service.getHouseholdMe(householdId);
 
@@ -401,7 +459,7 @@ describe("HouseholdsService", () => {
     it("household not found (defensive) → NotFoundException", async () => {
       const findUnique = jest.fn().mockResolvedValue(null);
       const prisma = buildPrisma({ household: { findUnique } });
-      const service = new HouseholdsService(prisma, buildResolver());
+      const service = new HouseholdsService(prisma, buildResolver(), buildReferralGrantService());
 
       await expect(service.getHouseholdMe(householdId)).rejects.toBeInstanceOf(NotFoundException);
     });

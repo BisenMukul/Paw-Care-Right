@@ -1,6 +1,8 @@
 import { FAMILY_PLAN_PRODUCT_ID, type BillingEntitlement } from "@bombaypetcompany/types";
 
 import { SUBSCRIPTION_GRACE_MS } from "./billing.constants";
+import type { ReferralGrantRow } from "./referral-grant.util";
+import { resolveGrantExpiry } from "./referral-grant.util";
 import { RC_WEBHOOK_STATUS } from "./rc-webhook.state";
 
 /**
@@ -53,14 +55,21 @@ function pickLatestExpiring(rows: readonly SubscriptionRow[]): SubscriptionRow {
 }
 
 /**
- * Resolves the caller's entitlement (plan decisions 4/6): precedence is
- * own > family > none. `householdSubs` is filtered down to rows whose
- * `plan` is the family product -- a household member's non-family sub
- * never entitles anyone but its own purchaser.
+ * Resolves the caller's entitlement (plan decisions 4/6; T108 D2/D1):
+ * precedence is own > family > grant > none. `householdSubs` is filtered
+ * down to rows whose `plan` is the family product -- a household member's
+ * non-family sub never entitles anyone but its own purchaser. `grants` (T108
+ * plan D1) is a THIRD, entirely independent input -- a server-side referral
+ * grace window (`ReferralGrant`) that NEVER reads, writes, or overrides a
+ * `Subscription` row: a grant only ever fills the "no `own`/`family` sub
+ * covers this moment" gap, and never changes the `expiresAt` reported for an
+ * RC-sourced entitlement. This is the literal implementation of the card's
+ * AC "RC entitlement unaffected (server-side grace only)".
  */
 export function pickEntitlement(
   own: SubscriptionRow | null,
   householdSubs: readonly SubscriptionRow[],
+  grants: readonly ReferralGrantRow[],
   now: Date,
 ): BillingEntitlement {
   if (own !== null && isSubscriptionActive(own, now)) {
@@ -86,6 +95,11 @@ export function pickEntitlement(
       expiresAt: toIsoOrNull(chosen.expiresAt),
       billingIssue: false,
     };
+  }
+
+  const grantTip = resolveGrantExpiry(grants, now);
+  if (grantTip !== null) {
+    return { entitled: true, source: "grant", plan: null, expiresAt: grantTip.toISOString(), billingIssue: false };
   }
 
   return { entitled: false, source: "none", plan: null, expiresAt: null, billingIssue: false };
