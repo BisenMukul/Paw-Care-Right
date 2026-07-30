@@ -1636,3 +1636,17 @@ Attempt 2, checker verdict **PASS** (three-round arc: round-1 PASS-with-2-MED �
 **[FOUNDER] decisions now open in the doc §7:** issuance durability (accept best-effort for launch vs fund an outbox/reconciliation card before referral marketing); D9 defer-vs-elapse for already-paying recipients; leave/rejoin cycling cap sufficiency. **Planner cards flagged:** F5 (pre-existing: accepting an invite destroys the joiner's own Subscription row via T026 household-delete + T072 cascade — needs its own card); F9 LOW optional e2e pin.
 
 **Next:** T109 (smart review prompt).
+
+---
+
+## T109 — Smart review prompt (2026-07-30)
+
+Attempt 1, checker verdict **PASS** (0 HIGH; 3 MED regression-pin gaps closed same-day via fix round; LOWs accepted).
+
+**Shipped:** pure trigger-logic module (src/review/) — positive moments = REASSURE-result-acknowledged OR every-5th-consecutive-reminder-completion (NEW client-side MMKV streak counter — no streak data existed anywhere; resets on snooze/observed MISSED); max 1/60d persisted throttle; **emergency suppression = persisted 30-day window, FAIL-CLOSED on backwards clocks (deliberately opposite of the OTA throttle — an emergency must suppress robustly)**; emergency-wins ordering; stamp-before-await integration (suppressed decisions provably cannot race to the native call); lazy no-op-safe expo-store-review wrapper (~57.0.1, card-sanctioned §2.7: Expo-maintained, releases with each SDK — NATIVE MODULE, see founder delta). Emergency recording at both surfaces: interstitial mount AND the result screen's Done for red-flag OR AI-determined EMERGENCY_NOW/VET_24H verdicts (that clause is the sole recorder for interstitial-less emergencies — now pinned). 34 tests across 4 suites incl. all suppression cases; checker ran 7 mutations + the executor 6 (13 total, all restored sha1-verified); checker ruled the no-deferral-import placement §7-ADEQUATE (result-screen fire is post-navigation synchronous; the care-tab await window residual is LOW — no AI content/disclaimer/interstitial delayed). Suites: mobile 209/1824.
+
+**MED closures (fix round, test-only — sources byte-identical, sha1-matched):** per-tier recorded-count assertions (EMERGENCY_NOW/VET_24H deletion → 2 RED); care-tab streak wiring tests ×3 (block deletion → RED); store-review lazy-require pin per the T113-F3 idiom (eager-import regression → 3 RED).
+
+**FOUNDER DELTA — cannot ship OTA:** expo-store-review changes the native fingerprint; the review prompt reaches users only via a NEW EAS build (fold into the standing T113 rebuild item — one rebuild covers both). Two founder-tunable constants pinned in code: 30d emergency window, every-5th cadence. Per-device (not per-account) state. Apple/Google note: requestReview is OS-rate-limited/non-guaranteed — our 1/60d is a floor on top.
+
+**Next:** T110 (i18n scaffold + first locales — the Phase 11 L card).
