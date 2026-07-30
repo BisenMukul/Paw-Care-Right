@@ -40,6 +40,18 @@ jest.mock("../src/api/checks-api", () => ({
   useCheck: (checkId: string) => mockUseCheck(checkId),
 }));
 
+// T106: `CheckEntryScreen` now calls `useAppConfig` (a `useQuery`); this
+// suite renders it with no `QueryClientProvider`, so the hook is mocked
+// here too (all features true -- the default, flag-on path this suite's
+// assertions already assume).
+jest.mock("../src/config/app-config-queries", () => {
+  const actual = jest.requireActual("../src/config/app-config-queries");
+  return {
+    ...actual,
+    useAppConfig: () => ({ data: actual.DEFAULT_APP_CONFIG }),
+  };
+});
+
 type JsonNode = ReturnType<RenderResult["toJSON"]>;
 
 /** Recursively searches a rendered JSON tree for a node whose `className`

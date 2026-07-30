@@ -98,6 +98,18 @@ jest.mock("../src/api/client", () => ({
 }));
 jest.mock("expo-crypto", () => ({ randomUUID: jest.fn(() => "uuid-1") }));
 
+// T106: `ChatScreen` now calls `useAppConfig` (a `useQuery`); this suite
+// renders it with no `QueryClientProvider` (unlike `chat-screen.test.tsx`),
+// so the hook is mocked here too (all features true -- the default,
+// flag-on path this suite's assertions already assume).
+jest.mock("../src/config/app-config-queries", () => {
+  const actual = jest.requireActual("../src/config/app-config-queries");
+  return {
+    ...actual,
+    useAppConfig: () => ({ data: actual.DEFAULT_APP_CONFIG }),
+  };
+});
+
 type JsonNode = ReturnType<RenderResult["toJSON"]>;
 interface NodeLike {
   type?: unknown;

@@ -454,6 +454,12 @@ export const strings = {
     recentEmpty: "Your recent checks will show up here.",
     recentSeeAll: "See all",
     offlineBanner: "You're offline — you can still start a check.",
+    // T106 kill-switch copy: no "diagnos*", no medication/dosing words,
+    // names the safe next action, no promised fix time (mirrors
+    // `paywall.unavailable`'s tone).
+    unavailableTitle: "Symptom checks are temporarily unavailable",
+    unavailableBody:
+      "Please contact your vet, or your nearest emergency vet service if this can't wait.",
     waiting: {
       title: "Looking into it…",
       body: "We're reviewing what you shared. This usually takes a few moments.",
@@ -962,6 +968,10 @@ export const strings = {
     retry: "Retry",
     noPet: "Add a pet to start chatting.",
     offlineBanner: "You're offline — reconnect to send a message.",
+    // T106 kill-switch copy: same constraints as `check.unavailable*`.
+    unavailableTitle: "Chat is temporarily unavailable",
+    unavailableBody:
+      "Please contact your vet, or your nearest emergency vet service if this can't wait.",
     empty: {
       title: "What's on your mind?",
       body: "Ask about symptoms, food safety, or everyday care. This isn't a substitute for a vet visit.",

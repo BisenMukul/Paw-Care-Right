@@ -8,12 +8,14 @@ import { configureApp } from "../src/app.setup";
 import { mintAccessToken, overrideCheckRunner, resolveJwtService } from "./factories";
 
 /**
- * `GET /v1/config` (T074 plan; grown by T079 plan). Asserts the route is
- * reachable WITHOUT an `Authorization` header (i.e. `@Public()` is actually
- * wired through the global `JwtAuthGuard`), that the body matches the
- * shared `appConfigResponseSchema` exactly (default env -> `PAYWALL_VARIANT`
- * `AUTO` + no user -> variant `"A"`), that an AUTHED call (valid Bearer
- * token) still returns a schema-valid body with a variant present (proving
+ * `GET /v1/config` (T074 plan; grown by T079 plan; grown by T106 for feature
+ * kill switches). Asserts the route is reachable WITHOUT an `Authorization`
+ * header (i.e. `@Public()` is actually wired through the global
+ * `JwtAuthGuard`), that the body matches the shared `appConfigResponseSchema`
+ * exactly (default env -> `PAYWALL_VARIANT` `AUTO` + no user -> variant
+ * `"A"`; default `FEATURE_*` env vars all `"on"` -> `features` all `true`),
+ * that an AUTHED call (valid Bearer token) still returns a schema-valid body
+ * with a variant present and `features` with three booleans (proving
  * `OptionalJwtAuthGuard` reads the user), and that a garbage/invalid token
  * still returns 200 (fail-open, never a 401 -- T079 plan Risk 5).
  */
@@ -41,6 +43,7 @@ describe("Remote config (e2e)", () => {
       paywall: { variant: "A" },
       minSupportedVersion: "0.0.0",
       hotlinePackVersion: 1,
+      features: { checks: true, chat: true, paywall: true },
     });
   });
 
@@ -53,6 +56,17 @@ describe("Remote config (e2e)", () => {
     expect(res.status).toBe(200);
     const parsed = appConfigResponseSchema.parse(res.body);
     expect(["A", "B"]).toContain(parsed.paywall.variant);
+  });
+
+  it("GET /v1/config with a valid Bearer token returns features with three booleans (T106)", async () => {
+    const jwt = resolveJwtService(app);
+    const token = mintAccessToken(jwt, "e2e-config-features-user");
+
+    const res = await request(app.getHttpServer()).get("/v1/config").set("Authorization", `Bearer ${token}`);
+
+    expect(res.status).toBe(200);
+    const parsed = appConfigResponseSchema.parse(res.body);
+    expect(parsed.features).toEqual({ checks: true, chat: true, paywall: true });
   });
 
   it("GET /v1/config with a garbage/invalid Bearer token still returns 200 (fails open, not 401)", async () => {

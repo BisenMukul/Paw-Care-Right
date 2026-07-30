@@ -27,6 +27,11 @@ export const apiEnvSchema = z.object({
   PAYWALL_VARIANT: z.enum(["A", "B", "AUTO"]).default("AUTO"),
   MIN_SUPPORTED_VERSION: z.string().default("0.0.0"),
   HOTLINE_PACK_VERSION: z.coerce.number().int().nonnegative().default(1),
+  // --- Feature kill switches (T106). z.coerce.boolean() is deliberately
+  // avoided here: it would coerce the string "false" to `true`. ---
+  FEATURE_CHECKS: z.enum(["on", "off"]).default("on"),
+  FEATURE_CHAT: z.enum(["on", "off"]).default("on"),
+  FEATURE_PAYWALL: z.enum(["on", "off"]).default("on"),
   POSTHOG_API_KEY: z.string().default(""),
   POSTHOG_HOST: z.string().url().default("https://us.i.posthog.com"),
   // --- Observability (T089). Stub-safe: empty DSN never inits Sentry. ---

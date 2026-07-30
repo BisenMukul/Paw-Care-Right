@@ -1475,3 +1475,17 @@ Attempt 1, checker verdict **PASS** (0 HIGH; F1 MED closed pre-commit via fix ro
 **[VET]/[FOUNDER] C3 queues (all honest, none pre-verified):** 5 hotline rows to verify against operator listings (bump BUNDLED_HOTLINE_PACK_VERSION on any change); 100 verdict rows for vet review (priority: the 3 queues); 45 draft guides before any wider publish; decide category-level vs per-row source attribution.
 
 **Next:** T106 (launch runbook + rollback strategy; kill switches for checks/chat).
+
+---
+
+## T106 — Launch runbook + rollback strategy (2026-07-30)
+
+Attempt 1, checker verdict **PASS** (0 HIGH; 3 MED closed pre-commit via fix round; F4–F8 LOW/INFO accepted).
+
+**Shipped:** feature kill switches — FeatureFlagsService (Redis key bombaypetcompany:flags:<key> overriding FEATURE_* env defaults, 5s cache, fail-open in both directions: first-read-fails → env default ON, Redis-error path re-attempts every call so a switch can never wedge OFF without operator action — checker-verified); @RequiresFeature guard gating EXACTLY three creation routes (checks create, chat threads, chat messages) with GET/list/followup ungated BY CONSTRUCTION (§7: red-flag payloads + deterministic escalation stay reachable — checker's guard-inversion mutation went RED on precisely those D9 protections); 503 + FEATURE_DISABLED for guard rejections only, bare 503s now SERVICE_UNAVAILABLE via explicit-code-preference in the exceptions filter (F1 fix — health-outage signals no longer mislabeled); paywall flag config-plumbed, NOT gated (card AC scope). Mobile: fail-open features in app-config (strict-schema lockstep across types/validator/cache/e2e), FeatureUnavailableNotice gating only composers/entry grids — transcripts, recent checks, VetDisclaimer, and the emergency interstitial untouched (ADD-only test + structural no-config-import argument, checker-ruled adequate). Runbook §§12–16: all 6 ARCHITECTURE containers + 9 infra rows with per-layer verify+rollback, OTA-vs-binary matrix delegating to OTA_UPDATES, 3 incident playbooks (AI-provider-down claims verified true against schema/chat statuses; bad-triage → kill switch + T090 audit query; store rejection), §14 expected-Sentry-noise note (F3), redis-cli operator commands. Drift guard parses the REAL ARCHITECTURE §2 table, now scoped to §12 table lead cells (F2 — checker's MUT-D re-run RED). Suites: api 113/1147, mobile 187/1547, types 26/587.
+
+**Deviation (approved):** live-Redis runtime-toggle e2e REJECTED by the executor's own blast-radius analysis (shared CI Redis + parallel e2e workers — a transient global kill key could flake unrelated suites); replaced with a same-instance fake-Redis TTL-boundary unit proof + founder to-do 14 (kill-switch fire drill on staging). Checker accepted the substitution.
+
+**Founder to-dos (runbook §9 items 13–16):** staging kill-switch fire drill (real redis-cli toggle + observe 503s + mobile states + recovery); C3 items unchanged.
+
+**Next:** T113 (Phase 10 order: T099–T106 done; T113–T118 remain, then M10 → C3 checkpoint).

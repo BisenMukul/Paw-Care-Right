@@ -606,8 +606,8 @@
       "attempts": 1
     },
     "T106": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 1
     },
     "T107": {
       "status": "pending",
@@ -751,10 +751,10 @@
     "surveillance-layer-corrections-v2: Write grants, fail-closed protected-paths (no python), current-task file contract, P0/no-HEAD tolerance, subshell fail-open fixes"
   ],
   "current-task": {
-    "id": "T106",
+    "id": "T113",
     "phase": 10,
     "attempts": 0,
     "state": "planning",
-    "note": "T105 done 2026-07-30 (checker PASS; C3 verification queues open for founder/vet). T106 launch runbook + kill switches next."
+    "note": "T106 done 2026-07-30 (checker PASS; kill switches live, fire drill = founder to-do 14). T113 next; T113-T118 remain before M10/C3."
   }
 }

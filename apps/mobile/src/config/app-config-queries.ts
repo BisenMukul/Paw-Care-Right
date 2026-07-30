@@ -1,4 +1,4 @@
-import { appConfigResponseSchema, type PaywallVariant } from "@bombaypetcompany/types";
+import { appConfigResponseSchema, type FeatureFlags, type PaywallVariant } from "@bombaypetcompany/types";
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";
 
 import { apiClient } from "../api/client";
@@ -9,26 +9,34 @@ export interface AppConfig {
   variant: PaywallVariant;
   minSupportedVersion: string;
   hotlinePackVersion: number;
+  features: FeatureFlags;
 }
 
 /**
- * Permissive default (T079 plan decision 5): used whenever `/v1/config` is
- * unreachable/malformed AND there is no cached last-known-good config. The
- * permissive `minSupportedVersion` ("0.0.0") means the update gate never
- * blocks anyone under this default (CLAUDE.md §7 fail-open posture).
+ * Permissive default (T079 plan decision 5; grown by T106 D10): used
+ * whenever `/v1/config` is unreachable/malformed AND there is no cached
+ * last-known-good config. The permissive `minSupportedVersion` ("0.0.0")
+ * means the update gate never blocks anyone under this default (CLAUDE.md
+ * §7 fail-open posture). `features` defaults to all `true` for the SAME
+ * reason: a client that cannot reach `/config` must not lock itself out of
+ * a symptom check or chat -- the API is the authoritative enforcement point
+ * (D6), never the client default.
  */
 export const DEFAULT_APP_CONFIG: AppConfig = {
   variant: "A",
   minSupportedVersion: "0.0.0",
   hotlinePackVersion: 1,
+  features: { checks: true, chat: true, paywall: true },
 };
 
 /**
  * `GET /v1/config`, parsed with the shared `appConfigResponseSchema` and
  * flattened to `AppConfig`. On success, writes the MMKV last-known-good
  * cache and returns the fresh config. On ANY failure -- network error,
- * offline, non-200, schema-invalid body -- returns the cached config when
- * one exists, else the safe default. Never throws.
+ * offline, non-200, schema-invalid body (e.g. a stale server missing the
+ * T106 `features` field, which the `.strict()` schema rejects) -- returns
+ * the cached config when one exists, else the safe (fail-open) default.
+ * Never throws.
  */
 export async function fetchAppConfig(): Promise<AppConfig> {
   try {
@@ -38,6 +46,7 @@ export async function fetchAppConfig(): Promise<AppConfig> {
       variant: parsed.paywall.variant,
       minSupportedVersion: parsed.minSupportedVersion,
       hotlinePackVersion: parsed.hotlinePackVersion,
+      features: parsed.features,
     };
 
     writeCachedConfig(config);

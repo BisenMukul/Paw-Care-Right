@@ -9,6 +9,7 @@ import ChatScreen from "../app/chat/index";
 import { apiClient } from "../src/api/client";
 import { usePremiumStore } from "../src/billing/premium-store";
 import { useChatStore } from "../src/chat/chat-store";
+import { DEFAULT_APP_CONFIG } from "../src/config/app-config-queries";
 import { useActivePetStore } from "../src/pets/active-pet-store";
 import { strings } from "../src/strings";
 
@@ -27,6 +28,15 @@ jest.mock("expo-router", () => ({
 jest.mock("../src/api/client", () => ({
   apiClient: { get: jest.fn(), post: jest.fn(), streamSse: jest.fn(), put: jest.fn(), patch: jest.fn(), delete: jest.fn() },
 }));
+
+// T106: `useAppConfig` is mocked so existing cases are unaffected (all
+// features true by default); the kill-switch describe block below
+// overrides it per-case.
+const mockUseAppConfig = jest.fn();
+jest.mock("../src/config/app-config-queries", () => {
+  const actual = jest.requireActual("../src/config/app-config-queries");
+  return { ...actual, useAppConfig: () => mockUseAppConfig() };
+});
 
 let mockUuidCounter = 0;
 jest.mock("expo-crypto", () => ({
@@ -122,6 +132,7 @@ beforeEach(() => {
   useActivePetStore.getState().clear();
   usePremiumStore.setState({ status: "unknown" });
   useChatStore.setState({ threadIdByPetId: {}, messagesByPetId: {} });
+  mockUseAppConfig.mockReturnValue({ data: DEFAULT_APP_CONFIG });
   mockedGet.mockImplementation((path: string) => {
     if (path.startsWith("/v1/pets")) {
       return Promise.resolve([PET_A]);
@@ -538,5 +549,29 @@ describe("chat screen -- FINDING-4 distinct copy for a non-transport error state
     expect(screen.queryByTestId("chat-stream-dropped")).toBeNull();
     expect(screen.queryByText(strings.chat.dropped.title)).toBeNull();
     expect(screen.getByTestId("chat-retry")).toBeTruthy();
+  });
+});
+
+describe("chat screen -- T106 chat kill switch", () => {
+  it("renders the unavailable notice and keeps the disclaimer when chat is killed", async () => {
+    mockUseAppConfig.mockReturnValue({
+      data: { ...DEFAULT_APP_CONFIG, features: { ...DEFAULT_APP_CONFIG.features, chat: false } },
+    });
+
+    await renderWithPetLoaded();
+
+    expect(screen.getByTestId("chat-unavailable")).toHaveTextContent(strings.chat.unavailableTitle, {
+      exact: false,
+    });
+    expect(screen.queryByTestId("chat-composer-input")).toBeNull();
+    expect(screen.queryByTestId("chat-quick-prompt-food")).toBeNull();
+    expect(screen.getByTestId("vet-disclaimer")).toBeTruthy();
+  });
+
+  it("flag on ⇒ composer present, notice absent", async () => {
+    await renderWithPetLoaded();
+
+    expect(screen.getByTestId("chat-composer-input")).toBeTruthy();
+    expect(screen.queryByTestId("chat-unavailable")).toBeNull();
   });
 });

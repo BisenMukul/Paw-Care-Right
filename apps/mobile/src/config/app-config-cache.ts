@@ -1,4 +1,4 @@
-import { PAYWALL_VARIANTS } from "@bombaypetcompany/types";
+import { FEATURE_KEYS, PAYWALL_VARIANTS } from "@bombaypetcompany/types";
 
 import { createSafeStorage } from "../storage/safe-storage";
 import type { AppConfig } from "./app-config-queries";
@@ -24,7 +24,23 @@ const CACHE_KEY = "bombaypetcompany.app-config-cache";
  * dependency (only consumed indirectly via already-built schemas exported
  * from `@bombaypetcompany/types`); this keeps the "no new dependencies" rule
  * intact while still re-validating every field the same schema would.
+ *
+ * T106: also requires `features` to be an object with exactly the three
+ * documented boolean flags. A LEGACY cached blob written before T106 (no
+ * `features` key at all) is treated as "no cache" (`null`) -- the caller
+ * then falls back to `DEFAULT_APP_CONFIG`, which is fail-open (D10), so a
+ * pre-T106 cache can never silently disable a feature nor silently enable
+ * one either; it is simply discarded and re-fetched.
  */
+function isValidFeatureFlags(value: unknown): value is AppConfig["features"] {
+  if (typeof value !== "object" || value === null) {
+    return false;
+  }
+
+  const candidate = value as Record<string, unknown>;
+  return FEATURE_KEYS.every((key) => typeof candidate[key] === "boolean");
+}
+
 function isValidAppConfig(value: unknown): value is AppConfig {
   if (typeof value !== "object" || value === null) {
     return false;
@@ -41,7 +57,8 @@ function isValidAppConfig(value: unknown): value is AppConfig {
     typeof minSupportedVersion === "string" &&
     typeof hotlinePackVersion === "number" &&
     Number.isInteger(hotlinePackVersion) &&
-    hotlinePackVersion >= 0
+    hotlinePackVersion >= 0 &&
+    isValidFeatureFlags(candidate.features)
   );
 }
 

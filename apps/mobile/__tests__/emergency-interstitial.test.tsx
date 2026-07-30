@@ -31,6 +31,20 @@ jest.mock("expo-linking", () => ({
   openURL: jest.fn(),
 }));
 
+// T106 D9: this screen carries NO dependency on `useAppConfig`/the `checks`
+// kill switch by design (killing `checks` must never hide the Emergency
+// interstitial) -- mocked here (default all-features-true) purely so the
+// new regression case below can simulate `checks: false` explicitly and
+// still assert the hotline content renders unchanged.
+const mockUseAppConfig = jest.fn(() => ({
+  data: { variant: "A", minSupportedVersion: "0.0.0", hotlinePackVersion: 1, features: { checks: true, chat: true, paywall: true } },
+}));
+
+jest.mock("../src/config/app-config-queries", () => {
+  const actual = jest.requireActual("../src/config/app-config-queries");
+  return { ...actual, useAppConfig: () => mockUseAppConfig() };
+});
+
 function aiResult(): TriageResult {
   return {
     urgency: "EMERGENCY_NOW",
@@ -278,5 +292,21 @@ describe("emergency interstitial — ZERO-DIFF (no dark: anywhere, plan decision
     expect(root.props.className).toContain("bg-red-700");
     expect(root.props.className).not.toContain("bg-surface-page");
     expect(root.props.className).not.toContain("bg-brand-50");
+  });
+});
+
+describe("emergency interstitial — T106 D9: still reachable with the checks kill switch off", () => {
+  it("still renders hotlines when the checks kill switch is off", async () => {
+    mockUseAppConfig.mockReturnValue({
+      data: { variant: "A", minSupportedVersion: "0.0.0", hotlinePackVersion: 1, features: { checks: false, chat: true, paywall: true } },
+    });
+    mockUseCheck.mockReturnValue({ data: checkWith("gdv-suspected", false) });
+    mockGetDeviceRegionCode.mockReturnValue("US");
+
+    await render(<EmergencyInterstitialScreen />);
+
+    expect(screen.getByTestId("emergency-hotline-name").props.children).toContain("ASPCA");
+    expect(screen.getByTestId("emergency-hotline-number").props.children).toBe("(888) 426-4435");
+    expect(screen.getByTestId("emergency-title")).toBeTruthy();
   });
 });

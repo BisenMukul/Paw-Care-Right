@@ -20,10 +20,12 @@ import { NudgeCard } from "../../src/components/chat/nudge-card";
 import { QuickPrompts } from "../../src/components/chat/quick-prompts";
 import { TypingIndicator } from "../../src/components/chat/typing-indicator";
 import { EmptyState } from "../../src/components/empty-state";
+import { FeatureUnavailableNotice } from "../../src/components/feature-unavailable-notice";
 import { PrimaryButton } from "../../src/components/primary-button";
 import { SecondaryButton } from "../../src/components/secondary-button";
 import { Skeleton } from "../../src/components/skeleton";
 import { VetDisclaimer } from "../../src/components/vet-disclaimer";
+import { useAppConfig } from "../../src/config/app-config-queries";
 import { useLayoutBucket } from "../../src/hooks/use-layout-bucket";
 import { useNavBack } from "../../src/hooks/use-nav-back";
 import { useActivePet } from "../../src/pets/use-active-pet";
@@ -52,6 +54,15 @@ export default function ChatScreen() {
   const isOffline = useIsOffline();
   const premiumStatus = usePremiumStore((state) => state.status);
   const chat = useChatStream(pet?.id);
+  // T106 D8/D10: `initialData` on `useAppConfig` means `appConfig` is
+  // effectively never `undefined` in practice (the `?? true` below is the
+  // fail-open default for the theoretical pre-first-render tick, mirroring
+  // `UpdateGate`'s `config?.… ?? DEFAULT_APP_CONFIG…` idiom). A killed
+  // `chat` flag replaces ONLY the composer + quick prompts (below) -- the
+  // transcript and the persistent `<VetDisclaimer/>` footer are untouched;
+  // the premium/`blocked402` logic is untouched too.
+  const { data: appConfig } = useAppConfig();
+  const chatEnabled = appConfig?.features.chat ?? true;
   const [draft, setDraft] = useState("");
   // Design-system §7.9: on `wide` (>=768dp) the reading column caps at
   // `max-w-2xl self-center` (this is a text-heavy reading screen, same
@@ -182,10 +193,14 @@ export default function ChatScreen() {
                   <Text className="text-center text-base text-brand-700 dark:text-ink-muted-dark font-body">
                     {strings.chat.empty.body}
                   </Text>
-                  <Text className="text-sm font-semibold text-brand-700 dark:text-ink-muted-dark font-body-semibold">
-                    {strings.chat.quickPromptsHeading}
-                  </Text>
-                  <QuickPrompts onSelect={handleQuickPrompt} />
+                  {chatEnabled ? (
+                    <>
+                      <Text className="text-sm font-semibold text-brand-700 dark:text-ink-muted-dark font-body-semibold">
+                        {strings.chat.quickPromptsHeading}
+                      </Text>
+                      <QuickPrompts onSelect={handleQuickPrompt} />
+                    </>
+                  ) : null}
                 </View>
               ) : (
                 chat.messages.map(renderMessage)
@@ -237,7 +252,15 @@ export default function ChatScreen() {
               </View>
             )
           ) : null}
-          <ChatComposer value={draft} onChangeText={setDraft} onSend={handleSend} disabled={composerDisabled} />
+          {chatEnabled ? (
+            <ChatComposer value={draft} onChangeText={setDraft} onSend={handleSend} disabled={composerDisabled} />
+          ) : (
+            <FeatureUnavailableNotice
+              testID="chat-unavailable"
+              title={strings.chat.unavailableTitle}
+              body={strings.chat.unavailableBody}
+            />
+          )}
           <VetDisclaimer />
         </View>
       </KeyboardAvoidingView>

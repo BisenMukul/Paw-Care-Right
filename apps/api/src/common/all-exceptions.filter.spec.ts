@@ -1,5 +1,5 @@
 import type { ArgumentsHost, HttpException } from "@nestjs/common";
-import { ConflictException, NotFoundException } from "@nestjs/common";
+import { ConflictException, NotFoundException, ServiceUnavailableException } from "@nestjs/common";
 
 import { captureApiException } from "../observability/sentry";
 
@@ -51,6 +51,66 @@ describe("AllExceptionsFilter", () => {
         code: "CONFLICT",
         message: "already exists",
         requestId: "req-123",
+      },
+    });
+  });
+
+  it("maps a 503 ServiceUnavailableException carrying an explicit code: FEATURE_DISABLED (T106 kill-switch shape) and copies the requestId", () => {
+    const filter = new AllExceptionsFilter();
+    const { host, status, json } = buildHost("req-503");
+
+    filter.catch(
+      new ServiceUnavailableException({
+        code: "FEATURE_DISABLED",
+        message: "This feature is temporarily unavailable.",
+      }) as HttpException,
+      host,
+    );
+
+    expect(status).toHaveBeenCalledWith(503);
+    expect(json).toHaveBeenCalledWith({
+      error: {
+        code: "FEATURE_DISABLED",
+        message: "This feature is temporarily unavailable.",
+        requestId: "req-503",
+      },
+    });
+  });
+
+  it("maps a PLAIN 503 ServiceUnavailableException (no explicit code, e.g. health.service.ts's dependency check) to SERVICE_UNAVAILABLE, NOT FEATURE_DISABLED (T106 F1 fix)", () => {
+    const filter = new AllExceptionsFilter();
+    const { host, status, json } = buildHost("req-503-health");
+
+    filter.catch(new ServiceUnavailableException("Dependency health check failed.") as HttpException, host);
+
+    expect(status).toHaveBeenCalledWith(503);
+    expect(json).toHaveBeenCalledWith({
+      error: {
+        code: "SERVICE_UNAVAILABLE",
+        message: "Dependency health check failed.",
+        requestId: "req-503-health",
+      },
+    });
+  });
+
+  it("ignores a response `code` that is not a valid ErrorCode (falls back to STATUS_TO_CODE)", () => {
+    const filter = new AllExceptionsFilter();
+    const { host, status, json } = buildHost("req-503-bad-code");
+
+    filter.catch(
+      new ServiceUnavailableException({
+        code: "NOT_A_REAL_CODE",
+        message: "still service unavailable",
+      }) as HttpException,
+      host,
+    );
+
+    expect(status).toHaveBeenCalledWith(503);
+    expect(json).toHaveBeenCalledWith({
+      error: {
+        code: "SERVICE_UNAVAILABLE",
+        message: "still service unavailable",
+        requestId: "req-503-bad-code",
       },
     });
   });

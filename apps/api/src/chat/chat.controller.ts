@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Post, Res } from "@nestjs/common";
+import { Body, Controller, Param, Post, Res, UseGuards } from "@nestjs/common";
 import { Throttle } from "@nestjs/throttler";
 import {
   ApiBadRequestResponse,
@@ -6,6 +6,7 @@ import {
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiPaymentRequiredResponse,
+  ApiServiceUnavailableResponse,
   ApiTags,
   ApiTooManyRequestsResponse,
   ApiUnauthorizedResponse,
@@ -16,6 +17,8 @@ import { CurrentUser } from "../auth/auth.decorators";
 import type { HouseholdScope } from "../common/authenticated-request";
 import { CurrentHousehold, HouseholdFromMembership } from "../common/household-scope.decorators";
 import { THROTTLE_AI_WRITE } from "../common/throttle.config";
+import { FeatureFlagGuard } from "../remote-config/feature-flag.guard";
+import { RequiresFeature } from "../remote-config/feature-flag.decorators";
 import { ChatService, type ChatThreadResponse } from "./chat.service";
 import { CreateThreadDto } from "./dto/create-thread.dto";
 import { SendMessageDto } from "./dto/send-message.dto";
@@ -29,10 +32,18 @@ import { SseWriter } from "./sse-writer";
  * SSE header is written, so `AllExceptionsFilter` still produces the
  * standard JSON error envelope for those; the controller never returns a
  * value on that route.
+ *
+ * T106 D5: `@RequiresFeature("chat")` is applied at CLASS level — BOTH
+ * routes on this controller are gated (unlike `ChecksController`, chat has
+ * no "already-produced result" or escalation-only surface to protect). The
+ * guard runs BEFORE any SSE header is written, so `AllExceptionsFilter`
+ * still emits the standard JSON error envelope on `sendMessage` too.
  */
 @ApiTags("chat")
 @Controller("chat")
 @HouseholdFromMembership()
+@UseGuards(FeatureFlagGuard)
+@RequiresFeature("chat")
 @ApiUnauthorizedResponse({ description: "Missing or invalid access token." })
 export class ChatController {
   constructor(private readonly chatService: ChatService) {}
@@ -43,6 +54,7 @@ export class ChatController {
   @ApiPaymentRequiredResponse({ description: "Ask Bombay Pet Company chat is a premium feature." })
   @ApiNotFoundResponse({ description: "No resolved household for the caller, or the pet does not exist in it." })
   @ApiTooManyRequestsResponse({ description: "Rate limit exceeded (20/min/IP)." })
+  @ApiServiceUnavailableResponse({ description: "Chat is temporarily disabled (kill switch)." })
   createThread(
     @CurrentHousehold() scope: HouseholdScope,
     @CurrentUser() user: { userId: string },
@@ -58,6 +70,7 @@ export class ChatController {
   @ApiNotFoundResponse({ description: "No resolved household for the caller, or the thread does not exist in it." })
   @ApiBadRequestResponse({ description: "Invalid message payload." })
   @ApiTooManyRequestsResponse({ description: "Rate limit exceeded (20/min/IP)." })
+  @ApiServiceUnavailableResponse({ description: "Chat is temporarily disabled (kill switch)." })
   async sendMessage(
     @CurrentHousehold() scope: HouseholdScope,
     @CurrentUser() user: { userId: string },

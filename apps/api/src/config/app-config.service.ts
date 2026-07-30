@@ -83,6 +83,22 @@ export class AppConfigService {
     return this.env.HOTLINE_PACK_VERSION;
   }
 
+  /** T106: env default for the `checks` kill switch — the Redis override in
+   * `FeatureFlagsService` takes precedence when present. */
+  get featureChecksDefault(): boolean {
+    return this.env.FEATURE_CHECKS === "on";
+  }
+
+  /** T106: env default for the `chat` kill switch. */
+  get featureChatDefault(): boolean {
+    return this.env.FEATURE_CHAT === "on";
+  }
+
+  /** T106: env default for the `paywall` flag (plumbed, not enforced — D7). */
+  get featurePaywallDefault(): boolean {
+    return this.env.FEATURE_PAYWALL === "on";
+  }
+
   get posthogApiKey(): string {
     return this.env.POSTHOG_API_KEY;
   }

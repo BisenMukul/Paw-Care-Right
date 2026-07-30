@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Headers, HttpCode, Param, Post, Query } from "@nestjs/common";
+import { Body, Controller, Get, Headers, HttpCode, Param, Post, Query, UseGuards } from "@nestjs/common";
 import { SkipThrottle } from "@nestjs/throttler";
 import {
   ApiBadRequestResponse,
@@ -7,6 +7,7 @@ import {
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiPaymentRequiredResponse,
+  ApiServiceUnavailableResponse,
   ApiTags,
   ApiUnauthorizedResponse,
 } from "@nestjs/swagger";
@@ -14,6 +15,8 @@ import {
 import type { HouseholdScope } from "../common/authenticated-request";
 import { CurrentUser } from "../auth/auth.decorators";
 import { CurrentHousehold, HouseholdFromMembership } from "../common/household-scope.decorators";
+import { FeatureFlagGuard } from "../remote-config/feature-flag.guard";
+import { RequiresFeature } from "../remote-config/feature-flag.decorators";
 import type { CheckListResponse, CheckResponse } from "./checks.service";
 import { ChecksService } from "./checks.service";
 import { CreateCheckDto } from "./dto/create-check.dto";
@@ -27,10 +30,21 @@ import { ListChecksQueryDto } from "./dto/list-checks-query.dto";
  * paths (no controller-level prefix) because `GET /checks/:id` is not
  * nested under `pets/:petId`. Not `@Public()` — the global `JwtAuthGuard`
  * applies.
+ *
+ * T106 D5 (safety-critical scoping — CLAUDE.md §7): `FeatureFlagGuard` is
+ * registered at CLASS level (so it applies whenever `@RequiresFeature` is
+ * present) but `@RequiresFeature("checks")` is placed on `create` ONLY.
+ * `list`/`findOne`/`submitFollowUp` are DELIBERATELY left ungated:
+ * `findOne`/`list` serve already-produced results, including the `redFlag`
+ * Emergency-interstitial payload (§7 rule 4 — it must stay readable even
+ * with `checks` killed), and `submitFollowUp` is deterministic and
+ * escalation-only (`raiseUrgency`, never lowers) — killing it would remove
+ * an upward-fail path, violating §7 rule 5.
  */
 @ApiTags("checks")
 @Controller()
 @HouseholdFromMembership()
+@UseGuards(FeatureFlagGuard)
 @ApiUnauthorizedResponse({ description: "Missing or invalid access token." })
 export class ChecksController {
   constructor(private readonly checksService: ChecksService) {}
@@ -46,11 +60,13 @@ export class ChecksController {
   // (`JwtAuthGuard`), per-user metered by `QuotaService` (402), and the
   // alert-only hourly anomaly counter (`AnomalyService`).
   @SkipThrottle()
+  @RequiresFeature("checks")
   @Post("pets/:petId/checks")
   @ApiCreatedResponse({ description: "The created (or, on an idempotent replay, existing) symptom check." })
   @ApiBadRequestResponse({ description: "Invalid intake payload." })
   @ApiPaymentRequiredResponse({ description: "Free-tier symptom-check quota exceeded." })
   @ApiNotFoundResponse({ description: "No resolved household for the caller, or the pet does not exist in it." })
+  @ApiServiceUnavailableResponse({ description: "Symptom checks are temporarily disabled (kill switch)." })
   create(
     @CurrentHousehold() scope: HouseholdScope,
     @CurrentUser() user: { userId: string },

@@ -12,8 +12,13 @@ describe("app-config-cache", () => {
     expect(readCachedConfig()).toBeNull();
   });
 
-  it("write then read round-trips the config", () => {
-    const config: AppConfig = { variant: "B", minSupportedVersion: "1.2.3", hotlinePackVersion: 4 };
+  it("write then read round-trips the config, including features (T106)", () => {
+    const config: AppConfig = {
+      variant: "B",
+      minSupportedVersion: "1.2.3",
+      hotlinePackVersion: 4,
+      features: { checks: false, chat: true, paywall: true },
+    };
 
     writeCachedConfig(config);
 
@@ -29,7 +34,40 @@ describe("app-config-cache", () => {
 
   it("returns null when the stored JSON is valid but schema-invalid", () => {
     const mmkv = createMMKV();
-    mmkv.set(CACHE_KEY, JSON.stringify({ variant: "Z", minSupportedVersion: 5, hotlinePackVersion: -1 }));
+    mmkv.set(
+      CACHE_KEY,
+      JSON.stringify({
+        variant: "Z",
+        minSupportedVersion: 5,
+        hotlinePackVersion: -1,
+        features: { checks: true, chat: true, paywall: true },
+      }),
+    );
+
+    expect(readCachedConfig()).toBeNull();
+  });
+
+  it("returns null for a legacy blob missing `features` entirely (T106 — treated as no cache, fail-open)", () => {
+    const mmkv = createMMKV();
+    mmkv.set(
+      CACHE_KEY,
+      JSON.stringify({ variant: "B", minSupportedVersion: "1.2.3", hotlinePackVersion: 4 }),
+    );
+
+    expect(readCachedConfig()).toBeNull();
+  });
+
+  it("returns null when a feature flag is non-boolean (T106)", () => {
+    const mmkv = createMMKV();
+    mmkv.set(
+      CACHE_KEY,
+      JSON.stringify({
+        variant: "B",
+        minSupportedVersion: "1.2.3",
+        hotlinePackVersion: 4,
+        features: { checks: "on", chat: true, paywall: true },
+      }),
+    );
 
     expect(readCachedConfig()).toBeNull();
   });
