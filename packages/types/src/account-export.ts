@@ -142,12 +142,18 @@ const exportSubscriptionSchema = z
   })
   .strict();
 
-/** NEVER `expoPushToken` (plan D4/R5 — device push credential is never exported). */
+/**
+ * NEVER `expoPushToken` (plan D4/R5 — device push credential is never
+ * exported). `appVersion`/`otaUpdateId` added by T117 (F10) — user-linked
+ * machine version identifiers only, no PII (docs/store-privacy.md §2).
+ */
 const exportDeviceSchema = z
   .object({
     platform: z.string(),
     lastSeenAt: z.string().datetime(),
     createdAt: z.string().datetime(),
+    appVersion: z.string().nullable(),
+    otaUpdateId: z.string().nullable(),
   })
   .strict();
 

@@ -8,22 +8,41 @@
 // jest environment), and jest never needs to load the native module at
 // all when SENTRY_DSN is empty (the default).
 //
-// D2: the release's `+{buildId}` slot is filled with the build-time git sha
-// (`EXPO_PUBLIC_GIT_SHA`, default `"dev"`) because `expo-updates` does not
-// exist yet (T113) — T117 owns swapping this slot to `Updates.updateId` per
-// OTA_UPDATES §7. The §1a release SHAPE (`bombaypetcompany@{version}+{buildId}`)
-// is preserved unchanged.
+// T117: this file now owns the `+{buildId}` slot via `currentSentryRelease()`
+// below (D1) — `readOtaInfo().updateId` when a real OTA update is running,
+// falling back to the build-time git sha (`EXPO_PUBLIC_GIT_SHA`, default
+// `"dev"`) for an embedded/Expo-Go launch (`updateId === null`), since a
+// release of `bombaypetcompany@1.0.0+null` would be worse than the gitSha
+// fallback. `apps/mobile/app/feedback.tsx` reads the SAME function (F2) so
+// the two release call sites can never drift apart. The §1a release SHAPE
+// (`bombaypetcompany@{version}+{buildId}`) is preserved unchanged —
+// `buildSentryRelease` itself is untouched.
 import { baseSentryOptions, buildSentryRelease, type SentryEventLike } from "@bombaypetcompany/analytics";
 import type { FeedbackCategory } from "@bombaypetcompany/types";
 
 import { getAppVersion, getConfig } from "../config";
 import { recordLogEvent } from "./log-buffer";
+import { readOtaInfo } from "./ota-info";
 
 // Type-only reference to the native module's shape (no runtime import) —
 // the actual module is lazy-`require`d inside `initMobileSentry` below.
 type SentryModule = typeof import("@sentry/react-native");
 
 let sentryModule: SentryModule | undefined;
+
+/**
+ * T117 D1: the single release-naming function every mobile call site must
+ * use (F2 — `apps/mobile/app/feedback.tsx` reads this too, so the two call
+ * sites can never disagree about what release an event is tagged with).
+ * `readOtaInfo()` never throws (T113); its `updateId` fills the `+{buildId}`
+ * slot when a real OTA update is running, otherwise the build-time git sha
+ * (`config.gitSha`) is the fallback — see the file header comment.
+ */
+export function currentSentryRelease(): string {
+  const config = getConfig();
+  const { updateId } = readOtaInfo();
+  return buildSentryRelease(getAppVersion(), updateId ?? config.gitSha);
+}
 
 /**
  * Stub-safe by default (plan D5, POSTHOG pattern): an empty `sentryDsn`
@@ -48,7 +67,7 @@ export function initMobileSentry(): void {
     const options = baseSentryOptions({
       dsn: config.sentryDsn,
       environment: __DEV__ ? "development" : "production",
-      release: buildSentryRelease(getAppVersion(), config.gitSha),
+      release: currentSentryRelease(),
     });
 
     type NativeBeforeSend = NonNullable<Parameters<SentryModule["init"]>[0]["beforeSend"]>;
@@ -68,6 +87,18 @@ export function initMobileSentry(): void {
 
     Sentry.init({ ...options, beforeSend, beforeBreadcrumb });
     sentryModule = Sentry;
+
+    // T117 step 2: boot tags (OTA_UPDATES §7 — "Updates.updateId and channel
+    // set as tags at boot"). Machine ids only, no PII, no user-facing
+    // string. Never throws (whole function is try/catch-wrapped end to
+    // end); a Sentry SDK without `setTag` (a stub fixture in a test) would
+    // throw here and fall into the outer catch, which is why this stays
+    // inside the same try block rather than a separate best-effort wrapper.
+    const otaInfo = readOtaInfo();
+    Sentry.setTag("updateId", otaInfo.updateId ?? "embedded");
+    Sentry.setTag("channel", otaInfo.channel ?? "unknown");
+    Sentry.setTag("runtimeVersion", otaInfo.runtimeVersion ?? "unknown");
+    Sentry.setTag("isEmbeddedLaunch", String(otaInfo.isEmbeddedLaunch));
   } catch {
     sentryModule = undefined;
   }

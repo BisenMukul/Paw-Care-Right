@@ -133,7 +133,14 @@ describe("AccountExportService.build", () => {
         findMany: jest
           .fn()
           .mockResolvedValue([
-            { platform: "ios", lastSeenAt: NOW, createdAt: NOW, expoPushToken: "ExponentPushToken[xxx]" },
+            {
+              platform: "ios",
+              lastSeenAt: NOW,
+              createdAt: NOW,
+              appVersion: "1.2.3",
+              otaUpdateId: null,
+              expoPushToken: "ExponentPushToken[xxx]",
+            },
           ]),
       },
       subscription: {

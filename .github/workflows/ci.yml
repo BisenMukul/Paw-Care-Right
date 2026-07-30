@@ -442,9 +442,9 @@ jobs:
               const raw = fs.readFileSync(process.env.GITHUB_WORKSPACE + '/eas-update.json', 'utf8');
               const parsed = JSON.parse(raw);
               const first = Array.isArray(parsed) ? parsed[0] : parsed;
-              console.log((first && (first.id || first.group)) || '');
+              process.stdout.write(((first && (first.id || first.group)) || '') + '\n');
             } catch (e) {
-              console.log('');
+              process.stdout.write('\n');
             }
           " 2>/dev/null || echo "")"
           {

@@ -1,5 +1,4 @@
 import { useIsOffline } from "@bombaypetcompany/api-client";
-import { buildSentryRelease } from "@bombaypetcompany/analytics";
 import { FEEDBACK_CATEGORIES, type FeedbackCategory, type SubmitFeedbackInput } from "@bombaypetcompany/types";
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
@@ -12,9 +11,9 @@ import { PrimaryButton } from "../src/components/primary-button";
 import { ScreenScaffold } from "../src/components/screen-scaffold";
 import { TextField } from "../src/components/text-field";
 import { useNavBack } from "../src/hooks/use-nav-back";
-import { getAppVersion, getConfig } from "../src/config";
+import { getAppVersion } from "../src/config";
 import { getLogEntries } from "../src/observability/log-buffer";
-import { addFeedbackBreadcrumb, getLastSentryEventId } from "../src/observability/sentry";
+import { addFeedbackBreadcrumb, currentSentryRelease, getLastSentryEventId } from "../src/observability/sentry";
 import { compressImage } from "../src/pets/compress-image";
 import { strings } from "../src/strings";
 
@@ -87,7 +86,6 @@ export default function FeedbackScreen() {
     addFeedbackBreadcrumb(category);
 
     const sentryEventId = getLastSentryEventId();
-    const config = getConfig();
 
     const input: SubmitFeedbackInput = {
       category,
@@ -98,7 +96,10 @@ export default function FeedbackScreen() {
       ...(attachLogsConsent ? { logs: [...getLogEntries()] } : {}),
       ...(screenshotKey !== undefined ? { screenshotKey } : {}),
       ...(sentryEventId !== undefined ? { sentryEventId } : {}),
-      sentryRelease: buildSentryRelease(getAppVersion(), config.gitSha),
+      // T117 F2: reads the SAME release-naming function `sentry.ts` tags
+      // its events with, so this id never drifts from what a founder would
+      // actually find in Sentry search.
+      sentryRelease: currentSentryRelease(),
     };
 
     submitFeedback.mutate(input, {

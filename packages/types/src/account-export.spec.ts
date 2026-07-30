@@ -97,7 +97,7 @@ function buildValidBundle(): Record<string, unknown> {
     ],
     notificationPrefs: { disabledTypes: [], quietHours: null },
     subscription: { entitlement: "PREMIUM", plan: "bombaypetcompany_monthly", status: "active", expiresAt: null },
-    devices: [{ platform: "ios", lastSeenAt: NOW, createdAt: NOW }],
+    devices: [{ platform: "ios", lastSeenAt: NOW, createdAt: NOW, appVersion: "1.2.3", otaUpdateId: null }],
     photos: [{ key: "pets/pet-1/main/x.jpg", downloadUrl: "https://minio.example/pets/pet-1/main/x.jpg" }],
   };
 }

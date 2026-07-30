@@ -4,6 +4,7 @@
 // anything under `apps/mobile/__mocks__/`).
 const mockInit = jest.fn();
 const mockCaptureException = jest.fn();
+const mockSetTag = jest.fn();
 const mockWithScope = jest.fn((callback: (scope: { setContext: jest.Mock }) => void) => {
   callback({ setContext: jest.fn() });
 });
@@ -12,6 +13,7 @@ jest.mock("@sentry/react-native", () => ({
   init: mockInit,
   captureException: mockCaptureException,
   withScope: mockWithScope,
+  setTag: mockSetTag,
 }));
 
 jest.mock("../src/config", () => ({
@@ -19,10 +21,27 @@ jest.mock("../src/config", () => ({
   getAppVersion: jest.fn(() => "1.2.3"),
 }));
 
+// T117: `sentry.ts` now reads `readOtaInfo()` for both the release's
+// `+{updateId}` slot and the boot tags. Defaults to the all-absent shape
+// (mirrors the real `readOtaInfo`'s fallback) so pre-existing tests that
+// never touch OTA state keep behaving exactly as before; individual tests
+// below override with `mockReturnValueOnce`.
+const mockReadOtaInfo = jest.fn(() => ({
+  isEnabled: false,
+  updateId: null as string | null,
+  channel: null as string | null,
+  runtimeVersion: null as string | null,
+  isEmbeddedLaunch: true,
+}));
+
+jest.mock("../src/observability/ota-info", () => ({
+  readOtaInfo: () => mockReadOtaInfo(),
+}));
+
 import { scrubSentryEvent } from "@bombaypetcompany/analytics";
 
 import { getConfig } from "../src/config";
-import { captureError, initMobileSentry } from "../src/observability/sentry";
+import { captureError, currentSentryRelease, initMobileSentry } from "../src/observability/sentry";
 
 const mockGetConfig = getConfig as jest.Mock;
 
@@ -92,5 +111,89 @@ describe("captureError — after init", () => {
 
     expect(mockWithScope).toHaveBeenCalledTimes(1);
     expect(mockCaptureException).toHaveBeenCalledWith(error);
+  });
+});
+
+// T117 D1/step 4: `currentSentryRelease()` is the single function both this
+// file's `initMobileSentry` and `apps/mobile/app/feedback.tsx` read.
+describe("currentSentryRelease", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("uses the OTA updateId when present", () => {
+    mockGetConfig.mockReturnValue({ sentryDsn: "", gitSha: "abc1234" });
+    mockReadOtaInfo.mockReturnValueOnce({
+      isEnabled: true,
+      updateId: "update-xyz",
+      channel: "production",
+      runtimeVersion: "1.0.0",
+      isEmbeddedLaunch: false,
+    });
+
+    expect(currentSentryRelease()).toBe("bombaypetcompany@1.2.3+update-xyz");
+  });
+
+  it("falls back to gitSha when updateId is null", () => {
+    mockGetConfig.mockReturnValue({ sentryDsn: "", gitSha: "abc1234" });
+    mockReadOtaInfo.mockReturnValueOnce({
+      isEnabled: false,
+      updateId: null,
+      channel: null,
+      runtimeVersion: null,
+      isEmbeddedLaunch: true,
+    });
+
+    expect(currentSentryRelease()).toBe("bombaypetcompany@1.2.3+abc1234");
+  });
+});
+
+describe("initMobileSentry — boot tags (T117 step 2)", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("sets updateId/channel/runtimeVersion/isEmbeddedLaunch tags at boot", () => {
+    mockGetConfig.mockReturnValue({ sentryDsn: "https://pub@o0.ingest.example/0", gitSha: "abc1234" });
+    mockReadOtaInfo.mockReturnValue({
+      isEnabled: true,
+      updateId: "update-xyz",
+      channel: "production",
+      runtimeVersion: "1.0.0",
+      isEmbeddedLaunch: false,
+    });
+
+    initMobileSentry();
+
+    expect(mockSetTag).toHaveBeenCalledWith("updateId", "update-xyz");
+    expect(mockSetTag).toHaveBeenCalledWith("channel", "production");
+    expect(mockSetTag).toHaveBeenCalledWith("runtimeVersion", "1.0.0");
+    expect(mockSetTag).toHaveBeenCalledWith("isEmbeddedLaunch", "false");
+  });
+
+  it("falls back to embedded/unknown tag values when OTA info is all-absent", () => {
+    mockGetConfig.mockReturnValue({ sentryDsn: "https://pub@o0.ingest.example/0", gitSha: "abc1234" });
+    mockReadOtaInfo.mockReturnValue({
+      isEnabled: false,
+      updateId: null,
+      channel: null,
+      runtimeVersion: null,
+      isEmbeddedLaunch: true,
+    });
+
+    initMobileSentry();
+
+    expect(mockSetTag).toHaveBeenCalledWith("updateId", "embedded");
+    expect(mockSetTag).toHaveBeenCalledWith("channel", "unknown");
+    expect(mockSetTag).toHaveBeenCalledWith("runtimeVersion", "unknown");
+    expect(mockSetTag).toHaveBeenCalledWith("isEmbeddedLaunch", "true");
+  });
+
+  it("sets no tag when the DSN is empty (stub-safe path never inits)", () => {
+    mockGetConfig.mockReturnValue({ sentryDsn: "", gitSha: "abc1234" });
+
+    initMobileSentry();
+
+    expect(mockSetTag).not.toHaveBeenCalled();
   });
 });

@@ -269,6 +269,11 @@ export class AccountExportService {
         platform: device.platform,
         lastSeenAt: device.lastSeenAt.toISOString(),
         createdAt: device.createdAt.toISOString(),
+        // T117 F10: user-linked machine version identifiers, no PII — added
+        // to the export mapping alongside the two new nullable `Device`
+        // columns (docs/store-privacy.md §2).
+        appVersion: device.appVersion,
+        otaUpdateId: device.otaUpdateId,
       })),
       photos,
     };

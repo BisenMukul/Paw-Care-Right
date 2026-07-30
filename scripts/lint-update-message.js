@@ -123,8 +123,15 @@ function deriveUpdateMessage(commitSubject) {
     working = working.slice(0, criticalSuffixMatch.index);
   }
 
-  // Strip a leading conventional-commit prefix, e.g. "feat(ota)!: ".
-  const conventionalMatch = /^\w+(\([^)]*\))?!?:\s*/.exec(working);
+  // Strip a leading conventional-commit prefix, e.g. "feat(ota)!: " -- but
+  // ONLY when the subject is not ALREADY in `Txxx/Mx: ` convention form
+  // (T117 F11-2): the conventional-prefix regex's `\w+` also matches a bare
+  // task/milestone id (e.g. "T116: rollback runbook"), so stripping
+  // unconditionally would consume the id itself and leave no id for
+  // `idPattern` below to find, wrongly failing derivation for an
+  // already-conforming subject.
+  const alreadyConventional = /^(T\d{3}|M\d{1,2}):\s/.test(working);
+  const conventionalMatch = alreadyConventional ? null : /^\w+(\([^)]*\))?!?:\s*/.exec(working);
   const afterConventional = conventionalMatch ? working.slice(conventionalMatch[0].length) : working;
 
   const idPattern = /\b(T\d{3}|M\d{1,2})\b/;

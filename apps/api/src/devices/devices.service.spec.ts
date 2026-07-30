@@ -112,4 +112,50 @@ describe("DevicesService", () => {
       update: { userId, platform, lastSeenAt: expect.any(Date) },
     });
   });
+
+  // T117 step 22: appVersion/otaUpdateId persist on both branches; an
+  // absent field never appears in either payload (leaves the stored value
+  // untouched on update, per the service's doc comment).
+  it("persists appVersion/otaUpdateId on both the create and update branches when supplied", async () => {
+    const device = buildDevice();
+    const prisma = {
+      device: {
+        upsert: jest.fn().mockReturnValue("upsert-op"),
+        deleteMany: jest.fn().mockReturnValue("delete-op"),
+      },
+      $transaction: jest.fn().mockResolvedValue([device, { count: 0 }]),
+    } as unknown as PrismaService;
+    const service = new DevicesService(prisma);
+
+    await service.register(userId, { expoPushToken, platform, appVersion: "1.2.3", otaUpdateId: "update-1" });
+
+    expect(prisma.device.upsert).toHaveBeenCalledWith({
+      where: { expoPushToken },
+      create: { userId, expoPushToken, platform, appVersion: "1.2.3", otaUpdateId: "update-1" },
+      update: { userId, platform, lastSeenAt: expect.any(Date), appVersion: "1.2.3", otaUpdateId: "update-1" },
+    });
+  });
+
+  it("omits appVersion/otaUpdateId from both payloads when not supplied", async () => {
+    const device = buildDevice();
+    const prisma = {
+      device: {
+        upsert: jest.fn().mockReturnValue("upsert-op"),
+        deleteMany: jest.fn().mockReturnValue("delete-op"),
+      },
+      $transaction: jest.fn().mockResolvedValue([device, { count: 0 }]),
+    } as unknown as PrismaService;
+    const service = new DevicesService(prisma);
+
+    await service.register(userId, { expoPushToken, platform });
+
+    const call = (prisma.device.upsert as jest.Mock).mock.calls[0][0] as {
+      create: Record<string, unknown>;
+      update: Record<string, unknown>;
+    };
+    expect(call.create).not.toHaveProperty("appVersion");
+    expect(call.create).not.toHaveProperty("otaUpdateId");
+    expect(call.update).not.toHaveProperty("appVersion");
+    expect(call.update).not.toHaveProperty("otaUpdateId");
+  });
 });

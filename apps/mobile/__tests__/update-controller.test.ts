@@ -3,6 +3,7 @@ import {
   hasCriticalMarker,
   isCriticalUpdate,
   runUpdateCycle,
+  type OtaCycleEvent,
   type UpdatesApiLoader,
   type UpdatesUpdateApi,
 } from "../src/ota/update-controller";
@@ -254,5 +255,116 @@ describe("update-controller: runUpdateCycle", () => {
         criticalOtaVersion: null,
       }),
     ).resolves.toBe("disabled");
+  });
+});
+
+// T117 step 10: `onEvent` (D3) — order, props, inertness of a throwing
+// callback, and no-event outcomes. The global `expo-updates` mock at the top
+// of this file reports `updateId: "u-1"`, `channel: null` (no `channel`
+// field in that fixture) — `readOtaInfo`'s `normalizeNullableString`
+// normalises the absent field to `null`.
+describe("update-controller: onEvent (T117 D3)", () => {
+  it("fires available then downloaded in order with the right props for a non-critical update", async () => {
+    const events: OtaCycleEvent[] = [];
+    const loader = fixtureLoader({
+      isEnabled: true,
+      checkForUpdateAsync: jest.fn(async () => ({ isAvailable: true })),
+      fetchUpdateAsync: jest.fn(async () => ({ isNew: true, manifest: {} })),
+    });
+
+    const outcome = await runUpdateCycle({
+      loader,
+      criticalOtaVersion: null,
+      onEvent: (event) => events.push(event),
+    });
+
+    expect(outcome).toBe("silent");
+    expect(events).toEqual([
+      { kind: "available", channel: null, currentUpdateId: "u-1" },
+      { kind: "downloaded", channel: null, currentUpdateId: "u-1", critical: false },
+    ]);
+  });
+
+  it("the downloaded event carries critical: true for a critical update", async () => {
+    const events: OtaCycleEvent[] = [];
+    const loader = fixtureLoader({
+      isEnabled: true,
+      checkForUpdateAsync: jest.fn(async () => ({ isAvailable: true })),
+      fetchUpdateAsync: jest.fn(async () => ({
+        isNew: true,
+        manifest: { extra: { updateMessage: "T117: hotfix [critical]" } },
+      })),
+    });
+
+    const outcome = await runUpdateCycle({
+      loader,
+      criticalOtaVersion: null,
+      onEvent: (event) => events.push(event),
+    });
+
+    expect(outcome).toBe("critical");
+    expect(events).toEqual([
+      { kind: "available", channel: null, currentUpdateId: "u-1" },
+      { kind: "downloaded", channel: null, currentUpdateId: "u-1", critical: true },
+    ]);
+  });
+
+  it("a throwing onEvent does not change the outcome (telemetry is inert)", async () => {
+    const onEvent = jest.fn(() => {
+      throw new Error("telemetry blew up");
+    });
+    const loader = fixtureLoader({
+      isEnabled: true,
+      checkForUpdateAsync: jest.fn(async () => ({ isAvailable: true })),
+      fetchUpdateAsync: jest.fn(async () => ({ isNew: true, manifest: {} })),
+    });
+
+    await expect(runUpdateCycle({ loader, criticalOtaVersion: null, onEvent })).resolves.toBe("silent");
+    expect(onEvent).toHaveBeenCalledTimes(2);
+  });
+
+  it("no event fires on disabled/none/error/timeout outcomes", async () => {
+    jest.useFakeTimers();
+    try {
+      const onEvent = jest.fn();
+
+      // disabled
+      await runUpdateCycle({ loader: () => null, criticalOtaVersion: null, onEvent });
+      // none
+      await runUpdateCycle({
+        loader: fixtureLoader({
+          isEnabled: true,
+          checkForUpdateAsync: jest.fn(async () => ({ isAvailable: false })),
+        }),
+        criticalOtaVersion: null,
+        onEvent,
+      });
+      // error (check rejects)
+      await runUpdateCycle({
+        loader: fixtureLoader({
+          isEnabled: true,
+          checkForUpdateAsync: jest.fn(async () => {
+            throw new Error("network down");
+          }),
+        }),
+        criticalOtaVersion: null,
+        onEvent,
+      });
+      // timeout
+      const timeoutPromise = runUpdateCycle({
+        loader: fixtureLoader({
+          isEnabled: true,
+          checkForUpdateAsync: jest.fn(() => new Promise(() => {})),
+        }),
+        criticalOtaVersion: null,
+        onEvent,
+      });
+      await jest.advanceTimersByTimeAsync(COLD_START_CHECK_BUDGET_MS);
+      await expect(timeoutPromise).resolves.toBe("timeout");
+
+      expect(onEvent).not.toHaveBeenCalled();
+    } finally {
+      jest.useRealTimers();
+    }
   });
 });

@@ -141,4 +141,9 @@ export class AppConfigService {
   get appVersion(): string {
     return this.env.APP_VERSION;
   }
+
+  /** T117: empty = the `/v1/meta/client-versions` admin aggregate is closed (D6). */
+  get adminApiToken(): string {
+    return this.env.ADMIN_API_TOKEN;
+  }
 }

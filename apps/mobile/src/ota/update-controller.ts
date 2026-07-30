@@ -144,6 +144,16 @@ export function isCriticalUpdate(args: {
 
 export type UpdateCycleOutcome = "disabled" | "timeout" | "none" | "error" | "silent" | "critical";
 
+/**
+ * T117 step 8 (D3): the two OTA telemetry moments this pure controller
+ * knows about. `runUpdateCycle` stays free of any analytics import -- the
+ * event is handed to an optional callback the caller (`use-update-flow.ts`)
+ * supplies, which is the one that actually calls `captureEvent`.
+ */
+export type OtaCycleEvent =
+  | { kind: "available"; channel: string | null; currentUpdateId: string | null }
+  | { kind: "downloaded"; channel: string | null; currentUpdateId: string | null; critical: boolean };
+
 /** Sentinel returned by the timeout race so it is distinguishable from a real check result. */
 const TIMEOUT_SENTINEL = Symbol("ota-check-timeout");
 
@@ -151,15 +161,28 @@ const TIMEOUT_SENTINEL = Symbol("ota-check-timeout");
  * Runs one check → (fetch) → critical-decision cycle. Never throws, never
  * calls `reloadAsync`. Order (§3 flowchart): disabled short-circuit → race
  * the check against `timeoutMs` → check error → not-available → fetch →
- * critical decision.
+ * critical decision. `deps.onEvent` (T117 D3), when supplied, is called
+ * exactly once for each of the "available" and "downloaded" moments that
+ * actually occur; every call is wrapped in its own try/catch so a throwing
+ * callback can never change this function's return value. The return type
+ * is UNCHANGED, so every pre-existing T114 caller/test keeps passing.
  */
 export async function runUpdateCycle(deps: {
   loader?: UpdatesApiLoader;
   criticalOtaVersion: string | null;
   timeoutMs?: number;
+  onEvent?: (event: OtaCycleEvent) => void;
 }): Promise<UpdateCycleOutcome> {
   const loader = deps.loader ?? defaultUpdatesApiLoader;
   const timeoutMs = deps.timeoutMs ?? COLD_START_CHECK_BUDGET_MS;
+
+  function emit(event: OtaCycleEvent): void {
+    try {
+      deps.onEvent?.(event);
+    } catch {
+      // Telemetry must never change the outcome of the update cycle.
+    }
+  }
 
   let api: UpdatesUpdateApi | null;
   try {
@@ -208,6 +231,9 @@ export async function runUpdateCycle(deps: {
     return "none";
   }
 
+  const { updateId: currentUpdateId, channel } = readOtaInfo();
+  emit({ kind: "available", channel, currentUpdateId });
+
   let fetched: { isNew?: boolean; manifest?: unknown };
   try {
     if (typeof api.fetchUpdateAsync !== "function") {
@@ -218,10 +244,10 @@ export async function runUpdateCycle(deps: {
     return "error";
   }
 
-  const { updateId: currentUpdateId } = readOtaInfo();
   const manifest = fetched.manifest ?? checked.manifest;
+  const critical = isCriticalUpdate({ manifest, criticalOtaVersion: deps.criticalOtaVersion, currentUpdateId });
 
-  return isCriticalUpdate({ manifest, criticalOtaVersion: deps.criticalOtaVersion, currentUpdateId })
-    ? "critical"
-    : "silent";
+  emit({ kind: "downloaded", channel, currentUpdateId, critical });
+
+  return critical ? "critical" : "silent";
 }

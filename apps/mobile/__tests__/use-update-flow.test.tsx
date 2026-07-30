@@ -2,7 +2,10 @@ import { act, renderHook, waitFor } from "@testing-library/react-native";
 import { AppState } from "react-native";
 
 import { useUpdateFlow } from "../src/hooks/use-update-flow";
+import { useAuthStore } from "../src/auth/auth-store";
 import { useUpsellStore } from "../src/billing/upsell-store";
+import { useConsentStore } from "../src/analytics/consent-store";
+import { clearPendingApplied, readPendingApplied, writePendingApplied } from "../src/ota/ota-telemetry";
 import type { UpdatesUpdateApi } from "../src/ota/update-controller";
 
 /**
@@ -11,6 +14,12 @@ import type { UpdatesUpdateApi } from "../src/ota/update-controller";
  * `AppState`. `useSegments` is mocked so each test controls the current
  * route; `useAppConfig` is mocked (mirrors `update-gate.test.tsx`) so
  * `criticalOtaVersion` is directly controllable without a QueryClient.
+ *
+ * T117 step 10 addendum: `../src/config` is mocked with a NON-empty
+ * `posthogKey` (the `analytics-consent.test.ts` idiom) so the real
+ * `createHttpTransport` -- not stub-safe-no-op'd -- actually reaches
+ * `fetch`, letting the `ota_*` telemetry describe block below assert the
+ * events reach the transport, not just that `captureEvent` was called.
  */
 let mockSegments: (string | undefined)[] = ["(tabs)"];
 
@@ -22,6 +31,20 @@ const mockUseAppConfig = jest.fn();
 
 jest.mock("../src/config/app-config-queries", () => ({
   useAppConfig: () => mockUseAppConfig(),
+}));
+
+jest.mock("../src/config", () => ({
+  getConfig: () => ({
+    apiBaseUrl: "http://localhost:3000",
+    googleClientId: "",
+    revenueCatIosKey: "stub_ios_key",
+    revenueCatAndroidKey: "stub_android_key",
+    termsUrl: "https://bombaypetcompany.app/terms",
+    privacyUrl: "https://bombaypetcompany.app/privacy",
+    posthogKey: "phc_test_key",
+    posthogHost: "https://us.i.posthog.com",
+  }),
+  getAppVersion: () => "1.0.0",
 }));
 
 // Return type is deliberately `() => UpdatesUpdateApi` (never null) here,
@@ -48,6 +71,17 @@ function silentLoader(): () => UpdatesUpdateApi {
     isEnabled: true,
     checkForUpdateAsync: jest.fn(async () => ({ isAvailable: true })),
     fetchUpdateAsync: jest.fn(async () => ({ isNew: true, manifest: {} })),
+    reloadAsync: jest.fn(async () => undefined),
+  };
+  return () => api;
+}
+
+/** No update available -- the cold-start cycle resolves to "none" and never writes/overwrites a pending-applied record. */
+function noUpdateLoader(): () => UpdatesUpdateApi {
+  const api: UpdatesUpdateApi = {
+    isEnabled: true,
+    checkForUpdateAsync: jest.fn(async () => ({ isAvailable: false })),
+    fetchUpdateAsync: jest.fn(async () => ({ isNew: false })),
     reloadAsync: jest.fn(async () => undefined),
   };
   return () => api;
@@ -246,5 +280,111 @@ describe("useUpdateFlow", () => {
     await unmount();
     expect(removeSpy).toHaveBeenCalledTimes(1);
     addEventListenerSpy.mockRestore();
+  });
+});
+
+// T117 step 10 (AC "ota events fire in mocked flow tests"): real
+// `createAnalytics` + `fetch`-spy, mirroring `analytics-consent.test.ts`.
+// The global `expo-updates` jest mock (`jest.setup.ts`) reports
+// `updateId: null`/`channel: null` throughout this file, so every event
+// below asserts against those fixed values.
+describe("useUpdateFlow — ota_* telemetry (T117)", () => {
+  let fetchSpy: jest.Mock;
+  const originalFetch = globalThis.fetch;
+
+  function capturedEvents(): { event: string; properties: Record<string, unknown> }[] {
+    return fetchSpy.mock.calls.map(([, init]: [string, RequestInit]) => {
+      const body = JSON.parse(init.body as string) as { event: string; properties: Record<string, unknown> };
+      return { event: body.event, properties: body.properties };
+    });
+  }
+
+  let addEventListenerSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    fetchSpy = jest.fn().mockResolvedValue({ ok: true });
+    globalThis.fetch = fetchSpy as unknown as typeof fetch;
+    useConsentStore.setState({ enabled: true });
+    clearPendingApplied();
+    mockSegments = ["(tabs)"];
+    mockUseAppConfig.mockReturnValue({ data: { criticalOtaVersion: null } });
+    useUpsellStore.setState({ visible: false });
+    // Mirrors the pre-existing "re-checks on foreground" test's idiom: a
+    // real `remove()` handle so implicit unmount (RTL's automatic per-test
+    // cleanup) never throws.
+    addEventListenerSpy = jest.spyOn(AppState, "addEventListener").mockImplementation(() => ({
+      remove: jest.fn(),
+    }));
+  });
+
+  afterEach(() => {
+    globalThis.fetch = originalFetch;
+    useAuthStore.setState({ user: null });
+    clearPendingApplied();
+    addEventListenerSpy.mockRestore();
+  });
+
+  it("signed-in + consent on: ota_available and ota_downloaded reach the transport with §7's property names", async () => {
+    useAuthStore.setState({ user: { id: "user-1", email: "user@example.com" } });
+    const loader = silentLoader();
+    const api = loader();
+
+    await renderHook(() => useUpdateFlow({ loader }));
+
+    await waitFor(() => {
+      expect(api.fetchUpdateAsync).toHaveBeenCalled();
+    });
+    await waitFor(() => {
+      expect(capturedEvents().some((e) => e.event === "ota_downloaded")).toBe(true);
+    });
+
+    const events = capturedEvents();
+    expect(events).toContainEqual({
+      event: "ota_available",
+      properties: { channel: null, currentUpdateId: null },
+    });
+    expect(events).toContainEqual({
+      event: "ota_downloaded",
+      properties: { channel: null, currentUpdateId: null, critical: false },
+    });
+  });
+
+  it("signed-in: a pending applied record from a prior update fires ota_applied and is then cleared", async () => {
+    useAuthStore.setState({ user: { id: "user-1", email: "user@example.com" } });
+    writePendingApplied({ fromUpdateId: "old-update-id", downloadedAtMs: 1000 });
+    // Deliberately a "no update available" loader (not `silentLoader`): a
+    // fresh "downloaded" event in the SAME cold-start cycle would write its
+    // own new pending record right after this test's applied-clear, which
+    // would defeat the "and is then cleared" assertion below for reasons
+    // unrelated to what this test is proving.
+    const loader = noUpdateLoader();
+
+    await renderHook(() => useUpdateFlow({ loader, now: () => 1500 }));
+
+    await waitFor(() => {
+      expect(capturedEvents().some((e) => e.event === "ota_applied")).toBe(true);
+    });
+
+    expect(capturedEvents()).toContainEqual({
+      event: "ota_applied",
+      properties: { updateId: null, fromUpdateId: "old-update-id", latencyMs: 500 },
+    });
+    expect(readPendingApplied()).toBeNull();
+  });
+
+  it("signed-out: ota_applied is NOT emitted and the pending record survives", async () => {
+    useAuthStore.setState({ user: null });
+    writePendingApplied({ fromUpdateId: "old-update-id", downloadedAtMs: 1000 });
+    const loader = noUpdateLoader();
+    const api = loader();
+
+    await renderHook(() => useUpdateFlow({ loader, now: () => 1500 }));
+
+    await waitFor(() => {
+      expect(api.checkForUpdateAsync).toHaveBeenCalled();
+    });
+
+    expect(capturedEvents().some((e) => e.event === "ota_applied")).toBe(false);
+    expect(readPendingApplied()).toEqual({ fromUpdateId: "old-update-id", downloadedAtMs: 1000 });
   });
 });

@@ -50,6 +50,10 @@ export const apiEnvSchema = z.object({
   SENTRY_ENVIRONMENT: z.string().optional(),
   GIT_SHA: z.string().min(1).default("dev"),
   APP_VERSION: z.string().min(1).default("0.0.0"),
+  // T117: shared-secret admin guard for `/v1/meta/client-versions`. Empty
+  // (the default) means the endpoint refuses every caller — it is never
+  // exposed by an unconfigured deployment (D6 fail-closed).
+  ADMIN_API_TOKEN: z.string().default(""),
 });
 
 export type ApiEnv = z.infer<typeof apiEnvSchema>;

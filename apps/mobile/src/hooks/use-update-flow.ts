@@ -2,14 +2,19 @@ import { useSegments } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { AppState } from "react-native";
 
+import { captureEvent } from "../analytics/analytics";
+import { useAuthStore } from "../auth/auth-store";
 import { useUpsellStore } from "../billing/upsell-store";
 import { useAppConfig } from "../config/app-config-queries";
+import { readOtaInfo } from "../observability/ota-info";
 import {
   defaultUpdatesApiLoader,
   runUpdateCycle,
+  type OtaCycleEvent,
   type UpdatesApiLoader,
 } from "../ota/update-controller";
 import { isDeferredFlow } from "../ota/update-deferral";
+import { clearPendingApplied, computeAppliedEvent, readPendingApplied, writePendingApplied } from "../ota/ota-telemetry";
 import { readLastCheckAt, shouldRecheck, writeLastCheckAt } from "../ota/update-throttle";
 
 export interface UseUpdateFlowOverrides {
@@ -64,6 +69,26 @@ export function useUpdateFlow(overrides?: UseUpdateFlowOverrides): UseUpdateFlow
   const depsRef = useRef({ loader, criticalOtaVersion, now, timeoutMs });
   depsRef.current = { loader, criticalOtaVersion, now, timeoutMs };
 
+  // T117 step 9: the OTA telemetry event callback (D3). Stays a plain
+  // function (not passed through `depsRef`) since it closes over `now` via
+  // `depsRef.current.now()` at call time, not at effect-registration time.
+  function handleOtaCycleEvent(event: OtaCycleEvent): void {
+    if (event.kind === "available") {
+      captureEvent("ota_available", { channel: event.channel, currentUpdateId: event.currentUpdateId });
+      return;
+    }
+
+    // "downloaded": emit the event AND persist a "pending applied" record
+    // (D2) so `ota_applied` can still be reported later even if the app is
+    // signed out right now.
+    captureEvent("ota_downloaded", {
+      channel: event.channel,
+      currentUpdateId: event.currentUpdateId,
+      critical: event.critical,
+    });
+    writePendingApplied({ fromUpdateId: event.currentUpdateId, downloadedAtMs: depsRef.current.now() });
+  }
+
   async function runCycle() {
     if (cycleInFlightRef.current) {
       return;
@@ -79,6 +104,7 @@ export function useUpdateFlow(overrides?: UseUpdateFlowOverrides): UseUpdateFlow
         // caller actually overrode it, rather than passing an explicit
         // `undefined` for the optional field.
         ...(currentTimeout === undefined ? {} : { timeoutMs: currentTimeout }),
+        onEvent: handleOtaCycleEvent,
       });
       if (outcome === "critical") {
         setPendingCritical(true);
@@ -87,6 +113,31 @@ export function useUpdateFlow(overrides?: UseUpdateFlowOverrides): UseUpdateFlow
       cycleInFlightRef.current = false;
     }
   }
+
+  // T117 step 9: fires the deferred `ota_applied` event (D2) once per
+  // mount, if a pending "downloaded" record exists, the app actually
+  // launched on a DIFFERENT updateId than the one it was pending from (a
+  // real apply, not just a re-check), and a user is signed in right now
+  // (`captureEvent` itself no-ops without one -- this check just avoids
+  // computing/discarding the event pointlessly). A signed-out apply leaves
+  // the record in place for the next signed-in launch to pick up.
+  useEffect(() => {
+    const { updateId: currentUpdateId } = readOtaInfo();
+    const pending = readPendingApplied();
+    const applied = computeAppliedEvent({ current: currentUpdateId, pending, nowMs: depsRef.current.now() });
+
+    if (applied === null) {
+      return;
+    }
+
+    if (useAuthStore.getState().user === null) {
+      return;
+    }
+
+    captureEvent("ota_applied", applied);
+    clearPendingApplied();
+    // Deliberately mount-only, same rationale as the cycle effects below.
+  }, []);
 
   // Cold-start cycle: fire-and-forget, exactly once per mount.
   useEffect(() => {

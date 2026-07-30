@@ -12,6 +12,13 @@ const mockWithScope = jest.fn((callback: (scope: { setContext: jest.Mock }) => v
 });
 const mockAddBreadcrumb = jest.fn();
 const mockLastEventId = jest.fn();
+// T117: `initMobileSentry` now also calls `Sentry.setTag(...)` for the four
+// boot tags (inside the SAME try/catch as `Sentry.init`) -- this mock must
+// provide it, or the real `initMobileSentry` throws on `setTag` being
+// undefined and silently falls into its outer catch (`sentryModule =
+// undefined`), which would make every test below fail for a reason
+// unrelated to what it actually tests.
+const mockSetTag = jest.fn();
 
 jest.mock("@sentry/react-native", () => ({
   init: mockInit,
@@ -19,6 +26,7 @@ jest.mock("@sentry/react-native", () => ({
   withScope: mockWithScope,
   addBreadcrumb: mockAddBreadcrumb,
   lastEventId: mockLastEventId,
+  setTag: mockSetTag,
 }));
 
 jest.mock("../src/config", () => ({

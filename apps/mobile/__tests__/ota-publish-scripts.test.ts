@@ -146,6 +146,33 @@ describe("scripts/lint-update-message.js (T116 AC4)", () => {
     expect(failedDerivation.status).not.toBe(0);
     expect(failedDerivation.stderr.length).toBeGreaterThan(0);
   });
+
+  // T117 F11-2 (T116 review carry-forward): a bare, ALREADY-conventional
+  // subject must derive to itself unchanged, not have its own id consumed
+  // by the conventional-commit-prefix strip.
+  it("derives a bare 'Txxx: summary' subject to itself unchanged (F11-2 regression pin)", () => {
+    const subject = "T" + "117" + ": " + "rollback runbook";
+    const derived = runLint(["--from-commit", subject]);
+
+    expect(derived.status).toBe(0);
+    expect(derived.stdout.trim()).toBe(subject);
+  });
+
+  it("preserves the [critical] suffix on an already-conventional milestone subject (F11-2)", () => {
+    const subject = "M" + "10" + ": " + "milestone publish " + "[critical]";
+    const derived = runLint(["--from-commit", subject]);
+
+    expect(derived.status).toBe(0);
+    expect(derived.stdout.trim()).toBe(subject);
+  });
+
+  it("still strips a real conventional-commit prefix when the subject is genuinely conventional-only (regression, both directions)", () => {
+    const subject = "feat" + "(ota)" + ": " + "T116" + " CI publish pipeline + staged rollout";
+    const derived = runLint(["--from-commit", subject]);
+
+    expect(derived.status).toBe(0);
+    expect(derived.stdout.trim()).toBe("T116: CI publish pipeline + staged rollout");
+  });
 });
 
 describe("scripts/check-api-build.js (T116 §5.3 pre-flight logic)", () => {

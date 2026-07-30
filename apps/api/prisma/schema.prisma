@@ -134,9 +134,18 @@ model Device {
   platform      String
   lastSeenAt    DateTime @default(now())
   createdAt     DateTime @default(now())
+  // T117: reported at JIT push registration only (`POST /v1/devices`), no
+  // new PII (a version string + an EAS update id) — see docs/store-privacy.md
+  // §2. Feeds the coarse `/v1/meta/client-versions` admin aggregate; an
+  // absent field leaves the previously-stored value untouched on update.
+  appVersion    String?
+  otaUpdateId   String?
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+  // T117: the only filter/group column of the `/v1/meta/client-versions`
+  // aggregate query (CLAUDE §6 "every new query pattern gets an index").
+  @@index([lastSeenAt])
 }
 
 // Per-user notification preferences (T058): per-type on/off + an optional

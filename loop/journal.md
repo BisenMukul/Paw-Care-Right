@@ -1561,3 +1561,20 @@ Attempt 1, checker verdict **PASS** (0 HIGH; 1 MED closed pre-commit; 4 LOW carr
 **Founder delta (runbook §9 items 20–22):** EXPO_TOKEN secret, PROD_API_URL var, first real production publish walkthrough.
 
 **Next:** T117 (rollback runbook + per-update release health) — NOTE its card text pins the OLD-brand Sentry release format; §1a-correct form is bombaypetcompany@{version}+{updateId} per the rebrand (stale-card exemption applies to the doc, not the implementation).
+
+---
+
+## T117 — Rollback runbook + per-update release health (2026-07-30)
+
+Attempt 1, checker verdict **PASS** (0 HIGH/MED, 4 LOW).
+
+**Shipped (release format is the §1a bombaypetcompany form — the PHASES card text is stale old-brand, exempt doc):** currentSentryRelease() single-sourcing the release string for BOTH sentry init and T104's feedback screen (mutation-pinned — an independent rebuild there previously would have silently broken the Sentry-search workflow) + 4 boot tags from T113 ota-info; ota_* PostHog events ×3 in the typed registry with fire points in the T114 update flow (real-transport mocked flow tests) and pending-applied persistence (dedupe mutation-proven; applied fires on the launch AFTER apply); store-privacy Appendix A + Device rows under both-direction set-equality; runbook §17 promotion table (checker transcribed OTA_UPDATES §6 itself — zero drifted numbers, and its threshold-number mutation went RED: the drift guard pins values, not just structure) + eas update:republish rollback procedure; /v1/meta/client-versions read-only admin aggregate over two new nullable Device columns (JIT push-registration reporting; fail-closed ADMIN_API_TOKEN guard — empty token refuses everyone; POST/PUT/PATCH/DELETE rejected; account-export extended so exports show what we store; erasure completeness unaffected). T116 LOW carry-forwards F2–F5 all closed — including the executor DISPROVING the plan's own prescribed regex by direct execution and shipping the correct lookahead (checker independently confirmed). Suites: api 116/1177, mobile 201/1750, types 652, analytics 72.
+
+**Deviations (4, all checker-endorsed):** account-export .strict() schema lockstep (3 forced files); feedback-breadcrumb mock +setTag; the regex correction; one false-premise self-test dropped with reasoning.
+
+**LOW findings:** two plan-approved boot tags beyond §7's literal list (superset); D5 freshness limitation (last-seen-day bucketing, not per-day census) disclosed everywhere but needs founder accept/reject; JIT reporter payload shape untested (forbidNonWhitelisted backstop; one-line pin → T118); AC1 recipe carried below.
+
+**[FOUNDER] AC1 staging Sentry evidence (carried verbatim from plan §9.1):** On a preview build with a real EXPO_PUBLIC_SENTRY_DSN, trigger a test exception and confirm the event's release is `bombaypetcompany@{version}+{updateId}` with updateId, channel, runtimeVersion tags present; paste the link/screenshot into loop/journal.md. Nothing in this sandbox can produce it.
+**[FOUNDER] also:** set ADMIN_API_TOKEN (long random) in deployed API envs; first real `eas channel:rollout`/`update:republish` run per runbook §17; accept/reject D5 freshness (rejection = follow-up card for per-launch reporting).
+
+**Next:** T118 (OTA safety gates on publish jobs) — the FINAL Phase 10 card before M10/C3. Fold in: T117-F3 one-line JIT payload pin.

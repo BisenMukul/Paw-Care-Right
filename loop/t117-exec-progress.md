@@ -1,0 +1,38 @@
+# T117 executor progress ledger
+
+- [x] Step 1: sentry.ts currentSentryRelease() (D1 - single function, imports readOtaInfo)
+- [x] Step 2: boot tags (updateId/channel/runtimeVersion/isEmbeddedLaunch) set inside init try/catch
+- [x] Step 3: feedback.tsx uses currentSentryRelease(); dropped unused buildSentryRelease/getConfig imports
+- [x] Step 4: sentry.test.ts (currentSentryRelease + boot tags, 5 new cases) + feedback-screen.test.tsx F2 pin; both pass in isolation
+- [x] Step 5: events.ts ota_available/ota_downloaded/ota_applied added (2-space/4-space style, >=1 prop each); store-privacy-doc.spec + posthog-insights.spec both green
+- [x] Step 6: store-privacy.md Appendix A rows + §2 Device-columns row + §3 PostHog prose updated; drift guard green
+- [x] Step 7: ota-telemetry.ts CREATE (writePendingApplied/readPendingApplied/clearPendingApplied/computeAppliedEvent); ota-telemetry.test.ts 13/13 green
+- [x] Step 8: update-controller.ts OtaCycleEvent + optional onEvent (D3, return type unchanged); emits available after isAvailable, downloaded after fetch w/ critical
+- [x] Step 9: use-update-flow.ts wires onEvent->captureEvent+writePendingApplied; mount effect fires ota_applied via computeAppliedEvent when signed-in
+- [x] Step 10: ota-telemetry.test.ts (13/13); update-controller.test.ts onEvent describe (4 new, 21/21 total); use-update-flow.test.tsx ota_* telemetry describe (3 new, real transport+fetch-spy, 15/15 total) — all green
+- [x] Step 11: schema.prisma Device.appVersion/otaUpdateId (nullable) + @@index([lastSeenAt])
+- [x] Step 12: postgres started locally (service postgresql start); migration 20260730102934_t117_device_client_version applied + committed; prisma generate run
+- [x] Step 13: packages/types/src/client-versions.ts + client-versions.spec.ts (10/10 green) + index.ts export; dist rebuilt
+- [x] Step 14: register-device.dto.ts (appVersion/otaUpdateId optional, VERSION_IDENTIFIER_REGEX) + devices.service.ts (persist both branches, exactOptionalPropertyTypes-safe conditional spread); existing devices.service.spec.ts still green (ran once, not repeated)
+- [x] Step 15: use-push-registration.ts includes appVersion + otaUpdateId (omitted when null) in POST /v1/devices body
+- [x] Step 16: client-versions.service.ts CREATE ($queryRaw with Prisma.sql bound param, schema-validated)
+- [x] Step 17: client-versions-query.dto.ts CREATE (days 1-90, default applied at controller call site)
+- [x] Step 18: admin-token.guard.ts CREATE (D6 fail-closed on empty configured token, mirrors rc-webhook.guard.ts)
+- [x] Step 19: client-versions.controller.ts + meta.module.ts CREATE; registered in app.module.ts
+- [x] Step 20: env.schema.ts ADMIN_API_TOKEN default "" + app-config.service.ts getter + .env.example entry (blank, low-entropy)
+- [x] Step 21: account-export.service.ts mapping + DEVIATION: packages/types/src/account-export.ts exportDeviceSchema (+ its spec fixture) and account-export.service.spec.ts fixture required mechanical updates (schema is .strict(), would otherwise throw on the new fields) — not in plan file inventory, flagged for checker
+- [x] Step 22: client-versions.service.spec.ts (6 cases) + admin-token.guard.spec.ts (7 cases) + meta-client-versions.e2e-spec.ts CREATE (happy/401x2/400x2/read-only) + devices.e2e-spec.ts (+4 T117 cases) + devices.service.spec.ts (+2 T117 cases) written; not yet run individually (api full suite deferred to gates per hard rule)
+- [x] Step 23: release-runbook.md §17 CREATE (promotion table one-row-per-step, rollback procedure, per-update health) appended after §16
+- [x] Step 24: release-runbook.md §7 CI-publish-pipeline sentence repointed at §17 (kept OTA_UPDATES.md cross-ref); fixed a self-introduced 10%+50% same-line drift-guard violation in §17's own prose
+- [x] Step 25: release-runbook-doc.test.ts §17 describe (6 cases via sliceSection) + heading word; 20/20 green, :236-242/:244 untouched and green
+- [x] Step 26: lint-update-message.js F11-2 fix (skip conventional-prefix strip when subject already matches ^(T\d{3}|M\d{1,2}):\s)
+- [x] Step 27: ota-publish-scripts.test.ts +3 fixtures (bare T117 id, M10+[critical] preserved, real conventional-prefix still stripped both directions); 13/13 green
+- [x] Step 28: ci.yml both console.log(x) -> process.stdout.write(String+"\n"); node -e sanity run of edited inline script confirmed identical behavior (exit 0, same stdout)
+- [x] Step 29: extractStepRunOneLiner regex — DEVIATION: plan's literal `(?!\|)` text does NOT fix the bug (verified by direct node execution: backtracking of `[ \t]*` still lets it match " |" and return "|"); used corrected `(?!\s*\|)` lookahead instead. Self-test added (block->null, one-liner->text); dropped a 3rd cross-check test after finding it relied on a false premise about extractStepRunBody's unbounded search. 21/21 green
+- [x] Step 30: PIPING_STEP_NAMES deferral comment added (D8, cites T116 Finding 5, false-positive reasoning, single piping step covered)
+- [x] Infra: postgres (service postgresql start), redis (service redis-server start), minio (sudo dockerd + docker compose up -d minio) all brought up locally for api e2e
+- [x] Mutation proof 1/3: feedback.tsx rebuilt sentryRelease independently (buildSentryRelease+getConfig().gitSha instead of currentSentryRelease()) -> feedback-screen.test.tsx RED (1 failing: F2 pin) -> restored, sha1-verified identical to pre-mutation backup -> GREEN (9/9)
+- [x] Mutation proof 2/3: dropped `ota_available` row from docs/store-privacy.md Appendix A -> store-privacy-doc.spec.ts RED (2 failing: both-direction event/property equality) -> restored, sha1-verified identical -> GREEN (5/5)
+- [x] Mutation proof 3/3: removed @UseGuards(AdminTokenGuard) from client-versions.controller.ts -> ran FULL api suite (infra now up) -> RED: exactly 2 failing (meta-client-versions e2e missing/wrong token no longer 401), 1175/1177 total passed (all other suites unaffected) -> restored, sha1-verified identical
+- [x] Lint fix: packages/types/src/client-versions.spec.ts unused `_day` destructure -> rewritten as delete row.day (eslint clean)
+- [x] Regression found+fixed during full `pnpm test` gate: pre-existing __tests__/feedback-breadcrumb.test.ts's @sentry/react-native mock lacked `setTag` -> Sentry.setTag(...) in the new boot-tag block threw -> caught by initMobileSentry's outer catch -> sentryModule left undefined -> 4 unrelated assertions failed. Fixed by adding `setTag: mockSetTag` to that file's mock (only other file mocking @sentry/react-native besides sentry.test.ts, both now have setTag). Out-of-inventory mechanical fix, flagged for checker (like account-export.ts/account-export.service.spec.ts).

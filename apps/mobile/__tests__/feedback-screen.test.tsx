@@ -16,9 +16,15 @@ jest.mock("../src/api/feedback-api", () => ({
 
 const mockAddFeedbackBreadcrumb = jest.fn();
 const mockGetLastSentryEventId = jest.fn();
+// T117 F2: `currentSentryRelease()` is the ONE function both `sentry.ts`'s
+// boot init and this screen must read -- stubbed here to a fixed, easily
+// asserted value so the "F2 cannot return" regression pin below can check
+// the submitted payload against this exact same stub output.
+const CURRENT_SENTRY_RELEASE = "bombaypetcompany@1.2.3+stub-release";
 jest.mock("../src/observability/sentry", () => ({
   addFeedbackBreadcrumb: (...args: unknown[]) => mockAddFeedbackBreadcrumb(...args),
   getLastSentryEventId: () => mockGetLastSentryEventId(),
+  currentSentryRelease: () => CURRENT_SENTRY_RELEASE,
 }));
 
 const mockGetLogEntries = jest.fn();
@@ -138,7 +144,12 @@ describe("FeedbackScreen (T104)", () => {
 
     const [payload] = mockMutate.mock.calls[0] as [Record<string, unknown>];
     expect(payload.sentryEventId).toBe("a".repeat(32));
-    expect(typeof payload.sentryRelease).toBe("string");
+    // T117 F2 regression pin: the submitted `sentryRelease` must equal
+    // `currentSentryRelease()`'s own output -- the ONE shared function, not
+    // an independently-rebuilt release string -- so this screen's release
+    // can never silently drift from what `sentry.ts` actually tags events
+    // with (the "paste this id into Sentry search" workflow T104 built).
+    expect(payload.sentryRelease).toBe(CURRENT_SENTRY_RELEASE);
   });
 
   it("selecting a category chip changes the category submitted", async () => {

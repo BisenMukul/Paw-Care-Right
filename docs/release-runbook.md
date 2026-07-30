@@ -171,8 +171,9 @@ published message carries `[critical]`.
 
 Promotion, halt and rollback: the production job's summary documents the
 `eas channel:rollout` promotion/halt commands and the `eas update:republish`
-rollback command for that specific run; see `docs/OTA_UPDATES.md` §6 for the
-promotion criteria and minimum dwell times (not restated here).
+rollback command for that specific run; the promotion criteria table and the
+full rollback procedure now live in §17 below (thresholds transcribed from
+`docs/OTA_UPDATES.md` §6).
 
 ## 8. Verification status (honest)
 
@@ -493,3 +494,40 @@ never behind a kill switch and never part of a rollback (CLAUDE.md §7).
    (c) an expedited new binary submission (§13) if it is native-code/
    permission-related. There is no fourth option — a native regression
    always needs one of these three.
+
+## 17. OTA rollback & per-update release health (T117)
+
+This closes the card's "rollback runbook + per-update release health" order:
+`eas update:republish` rollback procedure, the promotion criteria table (one
+row per rollout step — a single restated line naming both rollout
+percentages together would trip this doc's own drift guard, §7 above), and
+where to look for per-update health.
+
+### Promotion criteria (thresholds from `docs/OTA_UPDATES.md` §6 — transcribed faithfully)
+
+| Step | Minimum dwell before promoting | Gate checks | Command |
+|---|---|---|---|
+| `10%` | 12h | Sentry crash-free sessions ≥ 99.5% for the new `updateId`; API error rate + triage fallback rate flat vs. previous update; `ota_applied` adoption curve normal (no stuck-download spike) | `npx eas-cli@latest channel:rollout production --action create --branch production --percent 10 --non-interactive` |
+| `50%` | 12h | Same three gate checks as above, re-evaluated at this step | `npx eas-cli@latest channel:rollout production --action edit --percent 50 --non-interactive` |
+| `100%` | end rollout | Same three gate checks, final confirmation before ending the rollout | `npx eas-cli@latest channel:rollout production --action edit --percent 100 --non-interactive` |
+
+### Rollback procedure
+
+1. **Halt the rollout:** `npx eas-cli@latest channel:rollout production --action end --non-interactive`.
+2. **Republish the previous known-good update group:** `npx eas-cli@latest update:republish --branch production --group <previous-known-good-group-id> --non-interactive`.
+3. **Verify adoption of the republished group:** `npx eas-cli@latest update:list --branch production --non-interactive`, cross-checked against the `ota_applied` adoption curve (PostHog).
+4. **Incident entry:** record the rollback in `loop/journal.md` and `docs/qa/incidents/`.
+
+**Kill-switch-first pointer:** per §14's golden rule, a server-side kill switch (`checks`/`chat`/`paywall` via `/config`) is the INSTANT mitigation while the OTA rollback above propagates — flip it first, then work through this rollback procedure.
+
+**Invariant (mirrors §16, CLAUDE.md §7):** no rollback step above may ever disable the `<VetDisclaimer/>`, the Emergency interstitial, or hotline data — those are never behind a kill switch and never part of a rollback.
+
+### Per-update release health
+
+- **Release identity:** the Sentry release string `bombaypetcompany@{version}+{updateId}` (§5), plus four boot tags set on every mobile launch — `updateId`, `channel`, `runtimeVersion`, `isEmbeddedLaunch` (`apps/mobile/src/observability/sentry.ts`) — so crash-free sessions are measurable per OTA update, not just per binary.
+- **PostHog `ota_*` events:** `ota_available`, `ota_downloaded`, `ota_applied { updateId, fromUpdateId, latencyMs }` (`docs/OTA_UPDATES.md` §7) drive the adoption-curve gate check above.
+- **`GET /v1/meta/client-versions`** (admin-read; header `x-admin-token`, shared secret `ADMIN_API_TOKEN`) aggregates reported `{appVersion, otaUpdateId}` pairs per day over push-registered `Device` rows, for the T111 dashboard. **Limitation:** a device's reported pair is only as fresh as its last JIT push registration (`POST /v1/devices`), not a per-launch report — **PostHog `ota_applied` is the authoritative adoption curve; this endpoint is a coarse cross-check over push-registered devices only.**
+
+```
+curl -s -H "x-admin-token: <admin-token>" "https://api.bombaypetcompany.app/v1/meta/client-versions?days=30"
+```

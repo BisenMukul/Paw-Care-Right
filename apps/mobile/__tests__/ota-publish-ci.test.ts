@@ -204,6 +204,19 @@ function extractStepRunBody(source: string, stepName: string): string[] | null {
  * A single named step's run body may also be given as `run: <one-liner>`
  * (no `|` block). Returns that one-liner, or null if the step uses a `|`
  * block or was not found -- callers that need EITHER shape try this first.
+ *
+ * T117 F11-4 fix (T116 review carry-forward), EXECUTOR NOTE: the plan text
+ * for this fix reads `(?!\|)`, but that alone does NOT fix the bug --
+ * `[ \t]*` before the lookahead is a GREEDY quantifier, so on a `run: |`
+ * block it first tries consuming the one leading space, the `(?!\|)`
+ * lookahead correctly fails there (next char IS `|`), and the regex engine
+ * BACKTRACKS `[ \t]*` down to zero characters consumed; at that
+ * zero-consumed position the very next char is the space itself (not `|`),
+ * so `(?!\|)` wrongly SUCCEEDS and `(.+)$` still captures `" |"` (trims to
+ * `"|"`) -- verified by direct execution against both regexes before
+ * writing this fix. The lookahead itself must therefore also skip
+ * whitespace (`(?!\s*\|)`), so BOTH backtracking states correctly reject a
+ * block-form step.
  */
 function extractStepRunOneLiner(source: string, stepName: string): string | null {
   const nameIndex = source.indexOf(`- name: ${stepName}`);
@@ -213,7 +226,7 @@ function extractStepRunOneLiner(source: string, stepName: string): string | null
   const nextStepIndex = source.indexOf("\n      - ", nameIndex + 1);
   const searchEnd = nextStepIndex === -1 ? source.length : nextStepIndex;
   const scoped = source.slice(nameIndex, searchEnd);
-  const oneLinerMatch = /\n\s*run:\s*(?!\|)(.+)$/m.exec(scoped);
+  const oneLinerMatch = /\n[ \t]*run:[ \t]*(?!\s*\|)(.+)$/m.exec(scoped);
   return oneLinerMatch ? oneLinerMatch[1]!.trim() : null;
 }
 
@@ -301,6 +314,51 @@ describe("ci.yml structural validity (T116 AC1)", () => {
   it("every `needs:` entry names a job that exists in this workflow", () => {
     expect(structuralIssues(ciYmlSource).filter((issue) => issue.kind === "dangling-needs")).toEqual([]);
   });
+});
+
+// T117 step 29 (T116 review Finding 4 / F11-4): `extractStepRunOneLiner`
+// must return `null` for a `run: |` block step (never the literal `"|"`),
+// while still returning the real text for a genuine one-liner step.
+describe("extractStepRunOneLiner correctly distinguishes block-form from one-liner steps (T117 F11-4)", () => {
+  it("returns null for a `run: |` block step, never the literal '|'", () => {
+    const blockFixture = [
+      "jobs:",
+      "  build:",
+      "    steps:",
+      "      - name: Some block step",
+      "        run: |",
+      "          set -euo pipefail",
+      "          echo hi",
+      "      - name: next step",
+      "        run: echo done",
+    ].join("\n");
+
+    expect(extractStepRunOneLiner(blockFixture, "Some block step")).toBeNull();
+  });
+
+  it("returns the real text for a genuine one-liner step", () => {
+    const oneLinerFixture = [
+      "jobs:",
+      "  build:",
+      "    steps:",
+      "      - name: Some one-liner step",
+      '        run: node scripts/lint-update-message.js --message "hi"',
+    ].join("\n");
+
+    expect(extractStepRunOneLiner(oneLinerFixture, "Some one-liner step")).toBe(
+      'node scripts/lint-update-message.js --message "hi"',
+    );
+  });
+
+  // NOTE: a third, whole-file cross-check ("every step extractStepRunBody
+  // sees as block-form is never also seen as a one-liner") was attempted
+  // here and DROPPED -- `extractStepRunBody`'s own `nameIndex`/`run: |`
+  // search is unbounded forward past the named step (not scoped to that
+  // step's own block, see its doc comment above), so it can walk past a
+  // one-liner step and match a LATER, unrelated step's block body. That is
+  // a pre-existing quirk of `extractStepRunBody` itself (not a T117
+  // regression, and not one of T116 review's findings) — asserting against
+  // it here would pin an unrelated false premise rather than this fix.
 });
 
 describe("preview/production publish jobs are gated on the full check suite (T116 AC2)", () => {
@@ -512,6 +570,17 @@ describe("the real rollout command is pinned to --percent 10 (checker Finding 1)
 });
 
 describe("pipefail discipline (T113 F2) on every piping publish/rollout step", () => {
+  // T117 D8 (T116 review Finding 5 — DEFERRED deliberately, not silently
+  // skipped): this hardcoded 1-element list should ideally be DERIVED from
+  // the workflow text itself (every step whose run body actually pipes),
+  // but a pipe-vs-`||`-vs-echo-text heuristic risks false-positive noise in
+  // a guard (e.g. flagging a step that merely mentions "|" in an echoed
+  // string, not a real pipe). The single piping step that exists today
+  // ("Publish OTA update (production)") is covered by this list, and the
+  // "Rollout playbook" step already sets `-o pipefail` independently
+  // (verified above by "checker Finding 1"'s sibling assertions in this
+  // file). Recorded in the executor's journal entry per D8 — not attempted
+  // in this card.
   const PIPING_STEP_NAMES = ["Publish OTA update (production)"] as const;
 
   it("every publish step that pipes sets pipefail in its own run body", () => {

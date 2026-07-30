@@ -11,7 +11,11 @@ import type { Urgency } from "@bombaypetcompany/types";
  * SAFETY (CLAUDE §7 / plan "Safety statement"): properties here are ids +
  * coarse enums ONLY. Never add free text, photos, or any AI-result field
  * (`summary`/`possibleCauses`/`redFlagsToWatch`/`homeCare`/`doNot`/
- * `vetQuestions`), email, breed, or pet name.
+ * `vetQuestions`), email, breed, or pet name. T117's three `ota_*` events
+ * (OTA_UPDATES §7) are no exception: every property is a machine id
+ * (`updateId`/`fromUpdateId`/`channel`/`currentUpdateId`), a boolean, or a
+ * number (`latencyMs`) -- never a manifest/update message or any other
+ * free-text field.
  */
 export interface AnalyticsEventMap {
   first_check_completed: {
@@ -27,6 +31,20 @@ export interface AnalyticsEventMap {
   trial_start: {
     householdId: string;
     plan: string | null;
+  };
+  ota_available: {
+    channel: string | null;
+    currentUpdateId: string | null;
+  };
+  ota_downloaded: {
+    channel: string | null;
+    currentUpdateId: string | null;
+    critical: boolean;
+  };
+  ota_applied: {
+    updateId: string | null;
+    fromUpdateId: string | null;
+    latencyMs: number;
   };
 }
 

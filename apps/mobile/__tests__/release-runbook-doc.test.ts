@@ -160,6 +160,8 @@ describe("docs/release-runbook.md (T099)", () => {
       "kill switch",
       "Incident",
       "Rollback",
+      // T117 §17
+      "per-update release health",
     ];
     for (const word of requiredHeadingWords) {
       const headingPattern = new RegExp(`^## \\d+\\. .*${word}`, "m");
@@ -257,5 +259,58 @@ describe("docs/release-runbook.md (T099)", () => {
     for (const pattern of SECRET_PATTERNS) {
       expect(pattern.test(runbook)).toBe(false);
     }
+  });
+
+  // T117 step 25: §17 content, scoped to the §17 slice ONLY (reusing
+  // `sliceSection`/`LEVEL_2_HEADING`) so a stray mention elsewhere in the
+  // doc can never substitute for the real section. Deliberately does NOT
+  // touch the existing `:236-242`/`:244` assertions above (both still pass
+  // unmodified).
+  describe("§17 OTA rollback & per-update release health (T117)", () => {
+    const section = sliceSection(runbook, /^## 17\. /, LEVEL_2_HEADING);
+
+    it("the §17 section exists and is non-empty", () => {
+      expect(section.length).toBeGreaterThan(0);
+    });
+
+    it("documents the rollback procedure command and the halt action", () => {
+      expect(section).toContain("update:republish");
+      expect(section).toContain("--action end");
+    });
+
+    it("documents the promotion criteria thresholds from OTA_UPDATES §6", () => {
+      expect(section).toContain("99.5%");
+      expect(section).toContain("12h");
+    });
+
+    it("documents the ota_applied event and the client-versions endpoint", () => {
+      expect(section).toContain("ota_applied");
+      expect(section).toContain("/v1/meta/client-versions");
+      expect(section).toContain("x-admin-token");
+    });
+
+    it("has exactly one table row per rollout step (10%, 50%, 100%)", () => {
+      const tableRows = section
+        .split("\n")
+        .filter((line) => line.trim().startsWith("|") && /`?\d+%`?/.test(line));
+      const percents = ["10%", "50%", "100%"];
+      for (const percent of percents) {
+        const matchingRows = tableRows.filter((line) => line.includes(percent));
+        expect(matchingRows.length).toBe(1);
+      }
+    });
+
+    it("carries the disclaimer/Emergency-interstitial/hotline invariant sentence", () => {
+      expect(section).toContain("<VetDisclaimer/>");
+      expect(section).toMatch(/Emergency interstitial/i);
+      expect(section).toMatch(/hotline data/i);
+    });
+
+    it("the file-wide 'no 10% and 50% on one line' and Sentry-release-shape assertions above stay green against this new section too", () => {
+      const hasDuplicatedRolloutLine = section
+        .split("\n")
+        .some((line) => line.includes("10%") && line.includes("50%"));
+      expect(hasDuplicatedRolloutLine).toBe(false);
+    });
   });
 });
