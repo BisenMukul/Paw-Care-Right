@@ -119,6 +119,61 @@ Note: `docs/OTA_UPDATES.md` still uses pre-REBRAND-1 naming
 identifiers are `CLAUDE.md` §1a. That doc is hook-protected and is not
 edited here — its rebrand pass is tracked separately.
 
+### CI publish pipeline (T116)
+
+Preview auto-publish contract: every push to `main` runs the full gate
+suite, then (if `EXPO_TOKEN` is configured) `ota-publish-preview` runs
+`eas update --branch preview` with a message derived from the commit
+subject and linted by `scripts/lint-update-message.js`. Without
+`EXPO_TOKEN` the job still runs its gates and its message lint, and writes
+a "skipped — no EXPO_TOKEN" line to the job summary instead of publishing.
+
+Production procedure: dispatch the `CI` GitHub Actions workflow
+(`workflow_dispatch`) with three inputs — `confirm_production_publish` set
+to exactly `PUBLISH-PROD`, `update_message` set to a conforming message
+(see the convention below), and `api_build_id` set to the commit sha the
+production API is already running. The API **must** be deployed first
+(`docs/OTA_UPDATES.md` §5.3): the job's pre-flight step reads
+`GET /v1/health`'s `buildId` field and refuses to publish unless it exactly
+matches `api_build_id`. Leaving `confirm_production_publish` empty runs
+only the gates (a "gates-only" dispatch); any other value is refused loudly
+(`scripts/lint-update-message.js` is not involved in that refusal — it is a
+plain string-equality guard in the workflow itself).
+
+Update message convention (`scripts/lint-update-message.js`,
+`docs/OTA_UPDATES.md` §8.4): `Txxx/Mx: summary`, optionally suffixed with
+the exact lowercase `` [critical]``. Two worked examples:
+
+```
+T116: CI publish pipeline + staged rollout
+M10: milestone OTA publish [critical]
+```
+
+Check a message locally before dispatching a production publish:
+
+```
+node scripts/lint-update-message.js --message "T116: CI publish pipeline + staged rollout"
+```
+
+**The `[critical]` ruling, in plain words:** `[critical]` in a publish
+message is a human/dashboard convention only — it does **not** reach the
+app. `eas update --message` stores the message in the EAS API surface
+(dashboard, `eas update:list`), not in the served update manifest, and this
+repo deliberately does not route it into the evaluated Expo config (routing
+it via `extra.updateMessage` would make a per-publish-varying value part of
+the fingerprint input, risking a silent total OTA outage — see
+`apps/mobile/src/ota/update-controller.ts`'s doc comment on
+`hasCriticalMarker`). **To actually prompt users, set `CRITICAL_OTA_VERSION`
+to the new update id on the API and redeploy** — `/config.criticalOtaVersion`
+is the authoritative signal (`docs/OTA_UPDATES.md` §3). The production
+publish job prints this exact instruction to the job summary whenever the
+published message carries `[critical]`.
+
+Promotion, halt and rollback: the production job's summary documents the
+`eas channel:rollout` promotion/halt commands and the `eas update:republish`
+rollback command for that specific run; see `docs/OTA_UPDATES.md` §6 for the
+promotion criteria and minimum dwell times (not restated here).
+
 ## 8. Verification status (honest)
 
 No `eas` command has been executed against a real EAS project in this build
@@ -178,6 +233,9 @@ error.
 17. **Rebuild + resubmit the internal beta binaries.** T113 installs `expo-updates` and sets `runtimeVersion: {policy:'fingerprint'}`, changing the native fingerprint: builds produced before T113 can never receive an OTA update. Re-run `pnpm --filter mobile dist:internal` (preview profile) after the C3 bundle-id/display-name confirmation so one rebuild covers both changes.
 18. After the EAS project re-create (item 1), the same `EAS_PROJECT_ID` const in `apps/mobile/app.config.js` now also feeds `updates.url` — one line repoints both project resolution and the update server; nothing else to edit.
 19. Verify channel↔branch mapping once against the real project: `npx eas-cli@latest channel:list` and `npx eas-cli@latest branch:list`, then a first `npx eas-cli@latest update --branch preview --message "T113: expo-updates wiring"` from a preview-profile build; paste the output into the journal.
+20. **(T116)** Create an Expo access token and add it as a GitHub repo **secret** named `EXPO_TOKEN` — until then, `ota-publish-preview` still runs its gates and message lint and writes a "skipped — no EXPO_TOKEN" summary line instead of publishing, and `ota-publish-production` hard-fails if dispatched.
+21. **(T116)** Set the GitHub repo **variable** `PROD_API_URL` if the production API is not at `https://api.bombaypetcompany.app` (the fallback the production publish job's pre-flight step curls).
+22. **(T116)** Run the first real production publish: deploy the API, read its `buildId` from `GET /v1/health`, dispatch the `CI` workflow with `confirm_production_publish=PUBLISH-PROD`, a conforming `update_message`, and that `buildId` as `api_build_id`; confirm the real `eas channel:rollout`/`eas update:republish` flag sets on that first run and paste the result into the journal.
 
 ## 10. Store assets & screenshots (T100)
 

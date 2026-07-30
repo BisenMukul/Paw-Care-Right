@@ -1543,3 +1543,21 @@ Attempt 1, checker verdict **PASS** (0 HIGH/MED, 3 LOW/INFO). Ran through a 3× 
 **Founder delta:** 4 new api env vars (MIN/RECOMMENDED_APP_VERSION_{IOS,ANDROID}) — raise MIN only after a binary ≥ that version is live in the store; iOS store id lands at T102/C3.
 
 **Next:** T116 (OTA publish pipeline) — owes the [critical] manifest-field pinning (T114 F4).
+
+---
+
+## T116 — CI publish pipeline + staged rollout (2026-07-30)
+
+Attempt 1, checker verdict **PASS** (0 HIGH; 1 MED closed pre-commit; 4 LOW carried to T117/T118).
+
+**Shipped:** two new CI jobs — ota-publish-preview (push-to-main, needs = all five gate jobs with mobile-fingerprint deliberately excluded as the only genuinely event-scoped job — exclusion pinned and abuse-proofed; EXPO_TOKEN visible-skip) and ota-publish-production (workflow_dispatch-only, typed PUBLISH-PROD guard — checker executed 12 hostile inputs/12 refusals incl. spaces/case/substrings/newlines; §5.3 pre-flight via scripts/check-api-build.js against /v1/health's new additive buildId — fail-closed matrix incl. unreachable→exit 7; publish → channel:rollout 10% — now pinned by regex after the checker's M3 mutation (10→100 with step name intact) sailed through green, the round's one MED; promotion/halt commands into the step summary; pipefail throughout; injection-probed incl. $GITHUB_OUTPUT line-injection). scripts/lint-update-message.js (zero-dep; 17 checker probes) enforcing the §1a-correct message convention with runtime-built fixtures. **T114-F4 resolved by D3 descope:** the [critical] manifest-marker publish path is intentionally NOT implemented (populating it would route through app.config.js extra → per-publish fingerprint change → total OTA outage); /config.criticalOtaVersion is the single critical authority, client probe inert-with-comment, two pins lock the descope — checker ruled this strengthens OTA_UPDATES §5. Suites: api 113/1152, mobile 200/1712 (ota-publish specs 29 tests).
+
+**Deviation (pre-authorized, plan-anticipated):** guards.e2e-spec.ts duplicate /v1/health body assertion fixed non-hardcoded — mandatory, self-flagged.
+
+**Harness note:** four spurious mid-run system-reminders claimed external edits to files the executor was itself mutation-proving (with "don't tell the user" phrasing); executor correctly verified sha1s against its own backups each time, disregarded the instruction, and reported transparently. No actual external edits; tree-anomaly sweep clean.
+
+**Carried to T117/T118 (LOW):** message-lint conventional-prefix strip eats Txxx ids (fail-safe); first console.log-in-yaml occurrences; extractStepRunOneLiner block-scalar branch; PIPING_STEP_NAMES hardcoded list.
+
+**Founder delta (runbook §9 items 20–22):** EXPO_TOKEN secret, PROD_API_URL var, first real production publish walkthrough.
+
+**Next:** T117 (rollback runbook + per-update release health) — NOTE its card text pins the OLD-brand Sentry release format; §1a-correct form is bombaypetcompany@{version}+{updateId} per the rebrand (stale-card exemption applies to the doc, not the implementation).

@@ -15,7 +15,8 @@ export class HealthController {
   @Public()
   @Get()
   @ApiOkResponse({
-    description: "Reports service health, including Postgres and Redis connectivity.",
+    description:
+      "Reports service health, including Postgres and Redis connectivity, and the running API build id (GIT_SHA) used by the OTA production pre-flight check (docs/OTA_UPDATES.md §5.3).",
   })
   check(): Promise<HealthStatus> {
     return this.healthService.check();

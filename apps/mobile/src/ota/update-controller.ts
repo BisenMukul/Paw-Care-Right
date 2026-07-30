@@ -85,7 +85,35 @@ function candidateMarkerStrings(manifest: unknown): string[] {
   return values;
 }
 
-/** Case-insensitive search for the `[critical]` marker across the candidate manifest paths. Never throws; unreadable ⇒ `false`. */
+/**
+ * Case-insensitive search for the `[critical]` marker across the candidate
+ * manifest paths. Never throws; unreadable ⇒ `false`.
+ *
+ * T116 (plan D3, orchestrator directive / T114 review Finding 4): the
+ * manifest-marker publish path is DESCOPED. `eas update --message` stores
+ * the message in the EAS API surface (dashboard / `eas update:list`), not in
+ * the served update manifest — nothing in this repo routes it into any of
+ * `extra.updateMessage`, `extra.expoClient.extra.updateMessage`, or
+ * `metadata.updateMessage`, so this function stays inert in practice. The
+ * only way to make it live would be `app.config.js` → `extra.updateMessage
+ * = process.env.EXPO_UPDATE_MESSAGE`, which would make a per-publish-varying
+ * value part of the evaluated Expo config — and if `extra` participates in
+ * `@expo/fingerprint`'s config source (the safe default assumption, not
+ * verifiable offline), every publish would change `runtimeVersion` and no
+ * binary could ever receive an OTA update again: a total, silent OTA
+ * outage. `/config.criticalOtaVersion` is already implemented end-to-end
+ * (T114), is server-instant, and OTA_UPDATES §3 names it the
+ * belt-and-braces signal — so that redundant upside is not worth the risk.
+ * This function is kept, UNCHANGED in behaviour, because it is fail-safe
+ * (it can only ever RAISE urgency, never lower it) and free; it simply has
+ * no live input in this build. The CI message-lint step (T116,
+ * `scripts/lint-update-message.js`) enforces `[critical]` as an exact
+ * lowercase suffix so human/dashboard scanning stays unambiguous, and a
+ * pinned test (`apps/mobile/__tests__/ota-publish-ci.test.ts`) asserts no
+ * workflow step routes the message into the app config, so this descoped
+ * path cannot be silently reintroduced without a real fingerprint
+ * experiment (tracked for T117/T118, not attempted here).
+ */
 export function hasCriticalMarker(manifest: unknown): boolean {
   try {
     return candidateMarkerStrings(manifest).some((value) =>

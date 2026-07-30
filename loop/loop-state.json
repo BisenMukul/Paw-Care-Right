@@ -646,8 +646,8 @@
       "attempts": 1
     },
     "T116": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 1
     },
     "T117": {
       "status": "pending",
@@ -751,10 +751,10 @@
     "surveillance-layer-corrections-v2: Write grants, fail-closed protected-paths (no python), current-task file contract, P0/no-HEAD tolerance, subshell fail-open fixes"
   ],
   "current-task": {
-    "id": "T116",
+    "id": "T117",
     "phase": 10,
     "attempts": 0,
     "state": "planning",
-    "note": "T115 done 2026-07-30 (checker PASS; F1 resolved). T116 OTA publish pipeline next \u2014 owes T114-F4 [critical] field pinning."
+    "note": "T116 done 2026-07-30 (checker PASS; D3 descope resolved T114-F4). T117 release health next; card text has stale old-brand release format \u2014 implement \u00a71a form."
   }
 }

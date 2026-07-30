@@ -3,9 +3,46 @@ on:
   push:
     branches: [main]
   pull_request:
+  # T116: manual dispatch for the production OTA publish job (OTA_UPDATES
+  # §8.3 — production publishes are human-triggered only). Dispatching with
+  # `confirm_production_publish` left empty runs only the full gate suite;
+  # the `ota-publish-production` job itself stays skipped until a non-empty
+  # value is supplied, and it separately refuses anything that is not
+  # exactly `PUBLISH-PROD`.
+  workflow_dispatch:
+    inputs:
+      confirm_production_publish:
+        description: "Type PUBLISH-PROD exactly to publish to production; leave empty to run gates only."
+        required: false
+        default: ""
+        type: string
+      update_message:
+        description: "Update message, convention Txxx|Mx: summary [critical] — docs/OTA_UPDATES.md §8.4"
+        required: false
+        default: ""
+        type: string
+      api_build_id:
+        description: "Commit sha the production API must already be running (checked against GET /v1/health's buildId)"
+        required: false
+        default: ""
+        type: string
+# T116 (plan D1): both OTA publish jobs live in THIS workflow, not a new one
+# -- `needs:` cannot cross workflows, and the card requires the preview
+# publish to be gated on the full check suite; a separate workflow would
+# have to duplicate every gate (drift hazard) or gate on nothing.
+# T116 (plan D2): the group is now split by event name and cancellation is
+# disabled for workflow_dispatch runs. Under the OLD single
+# `ci-${{ github.ref }}` group + unconditional `cancel-in-progress: true`, a
+# push to main could cancel an in-flight manual production-publish run on
+# the same ref -- including mid-rollout, between `eas update` and
+# `eas channel:rollout`, which would leave an unconstrained (100%) update
+# live with no rollout guard. Both halves below are required: the group
+# split stops a push from targeting the dispatch run's group at all; the
+# `cancel-in-progress` expression stops a SECOND dispatch from cancelling
+# the first.
 concurrency:
-  group: ci-${{ github.ref }}
-  cancel-in-progress: true
+  group: ci-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -264,3 +301,191 @@ jobs:
         run: pnpm audit --audit-level high
       - name: Secrets scan (tracked files)
         run: node scripts/scan-secrets.js --tracked
+  # T116: preview channel auto-publishes on every push to main, AFTER the
+  # full CI gate suite (OTA_UPDATES §1: "auto-publish on push to main (CI)";
+  # §8.1: "every OTA publish passes the full CI gate suite").
+  #
+  # `mobile-fingerprint` is deliberately ABSENT from `needs:` below: that job
+  # runs `if: github.event_name == 'pull_request'` (see the `mobile-fingerprint`
+  # job above), so on a push to main it is always SKIPPED -- and in GitHub
+  # Actions, a job whose `needs:` target was skipped is itself skipped.
+  # Including it here would silently prevent this job from EVER running on a
+  # push to main. `apps/mobile/__tests__/ota-publish-ci.test.ts` pins this
+  # exemption and proves it is not abusable (every exempted job must itself
+  # be genuinely event-scoped).
+  ota-publish-preview:
+    needs: [build, ai-evals, web-perf-budget, web-e2e, security]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    env:
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: 10.34.3 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      # T116 (plan D6): unconditional -- no token needed, so the update
+      # message convention has teeth on every push to main, even in a
+      # tokenless environment (this sandbox, forks).
+      - name: Lint update message
+        id: message
+        env:
+          COMMIT_SUBJECT: ${{ github.event.head_commit.message }}
+        run: |
+          set -euo pipefail
+          MESSAGE="$(node scripts/lint-update-message.js --from-commit "$COMMIT_SUBJECT")"
+          node scripts/lint-update-message.js --message "$MESSAGE"
+          echo "message=$MESSAGE" >> "$GITHUB_OUTPUT"
+      # T116 (plan D5): a full install is only needed for the real `eas
+      # update` call, so it is gated on EXPO_TOKEN too -- tokenless runs stay
+      # cheap.
+      - if: env.EXPO_TOKEN != ''
+        run: pnpm i --frozen-lockfile
+      - name: Publish OTA update (preview)
+        if: env.EXPO_TOKEN != ''
+        working-directory: apps/mobile
+        env:
+          MESSAGE: ${{ steps.message.outputs.message }}
+        run: |
+          set -euo pipefail
+          npx --yes eas-cli@latest update --branch preview --message "$MESSAGE" --non-interactive
+      - name: Preview OTA publish skipped — no EXPO_TOKEN
+        if: env.EXPO_TOKEN == ''
+        env:
+          MESSAGE: ${{ steps.message.outputs.message }}
+        run: |
+          echo "Preview OTA publish skipped — no EXPO_TOKEN secret configured. Message that would have published: $MESSAGE" >> "$GITHUB_STEP_SUMMARY"
+  # T116: production publish is manual-dispatch ONLY (OTA_UPDATES §8.3 --
+  # human-triggered, never reachable by the autonomous loop; §5.3 -- the API
+  # must already be deployed to the commit this update expects, checked by
+  # the pre-flight step below; §6 -- every production publish is immediately
+  # constrained to a 10% rollout).
+  ota-publish-production:
+    needs: [build, ai-evals, web-perf-budget, web-e2e, security]
+    if: github.event_name == 'workflow_dispatch' && inputs.confirm_production_publish != ''
+    runs-on: ubuntu-latest
+    env:
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      # T116 (review R3 lesson, carried from T089): an UNSET repo variable
+      # renders as the empty string, not undefined -- the `|| '…'` fallback
+      # is mandatory or the pre-flight curl would hit an empty URL.
+      PROD_API_URL: ${{ vars.PROD_API_URL || 'https://api.bombaypetcompany.app' }}
+    steps:
+      # The refusal guard: a dispatch with ANYTHING other than the exact
+      # string `PUBLISH-PROD` fails loudly here, before any checkout/install/
+      # publish work happens. Strict equality, no trimming (documented in
+      # the input's own description above).
+      - name: Confirm production publish
+        env:
+          CONFIRMATION: ${{ inputs.confirm_production_publish }}
+        run: |
+          set -euo pipefail
+          if [ "${CONFIRMATION:-}" != "PUBLISH-PROD" ]; then
+            echo "refusing production publish: confirmation input must be exactly PUBLISH-PROD (got '${CONFIRMATION:-}')" >&2
+            exit 1
+          fi
+          echo "confirmed: PUBLISH-PROD" >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: 10.34.3 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      # Unconditional here (unlike preview): this job only ever runs on a
+      # confirmed dispatch, so the install cost is always warranted.
+      - run: pnpm i --frozen-lockfile
+      - name: Require EXPO_TOKEN
+        if: env.EXPO_TOKEN == ''
+        run: |
+          echo "refusing production publish: no EXPO_TOKEN secret configured" >&2
+          exit 1
+      - name: Lint update message
+        id: message
+        env:
+          MESSAGE: ${{ inputs.update_message }}
+        run: |
+          set -euo pipefail
+          node scripts/lint-update-message.js --message "$MESSAGE"
+          echo "message=$MESSAGE" >> "$GITHUB_OUTPUT"
+      # OTA_UPDATES §5.3: deploy backend first, then OTA publish -- the
+      # promote job checks GET /health includes the required API build id.
+      # Note the /v1/ prefix (app.setup.ts sets a global "v1" prefix).
+      - name: Pre-flight API build check
+        env:
+          REQUIRED_API_BUILD_ID: ${{ inputs.api_build_id }}
+        run: |
+          set -euo pipefail
+          BODY="$(curl -sS --fail-with-body --max-time 20 "$PROD_API_URL/v1/health")"
+          node scripts/check-api-build.js --body "$BODY" --expect "$REQUIRED_API_BUILD_ID"
+      # `set -o pipefail` is required here (T113 F2): the default GitHub
+      # Actions `bash -e {0}` run shell does NOT set pipefail, so
+      # `cmd | tee file` would report `tee`'s exit status (always 0),
+      # silently masking a real `eas update` failure behind a green step.
+      - name: Publish OTA update (production)
+        working-directory: apps/mobile
+        env:
+          MESSAGE: ${{ steps.message.outputs.message }}
+        run: |
+          set -o pipefail
+          npx --yes eas-cli@latest update --branch production --message "$MESSAGE" --non-interactive --json | tee "$GITHUB_WORKSPACE/eas-update.json"
+      - name: Constrain rollout to 10%
+        working-directory: apps/mobile
+        run: |
+          set -euo pipefail
+          npx --yes eas-cli@latest channel:rollout production --action create --branch production --percent 10 --non-interactive
+      - name: Rollout playbook
+        run: |
+          set -uo pipefail
+          UPDATE_ID="$(node -e "
+            try {
+              const fs = require('fs');
+              const raw = fs.readFileSync(process.env.GITHUB_WORKSPACE + '/eas-update.json', 'utf8');
+              const parsed = JSON.parse(raw);
+              const first = Array.isArray(parsed) ? parsed[0] : parsed;
+              console.log((first && (first.id || first.group)) || '');
+            } catch (e) {
+              console.log('');
+            }
+          " 2>/dev/null || echo "")"
+          {
+            echo "### OTA production publish — rollout playbook"
+            if [ -n "$UPDATE_ID" ]; then
+              echo "Published update id: $UPDATE_ID"
+            else
+              echo "Published update id could not be read automatically — check the 'Publish OTA update (production)' step's JSON output above and paste the update id here manually."
+            fi
+            echo ""
+            echo "Promotion commands (see docs/OTA_UPDATES.md §6 for criteria and minimum dwell times):"
+            echo "npx eas-cli@latest channel:rollout production --action edit --percent 50 --non-interactive"
+            echo "npx eas-cli@latest channel:rollout production --action edit --percent 100 --non-interactive"
+            echo "npx eas-cli@latest channel:rollout production --action end --non-interactive"
+            echo ""
+            echo "Halt command (stop the rollout without promoting further):"
+            echo "npx eas-cli@latest channel:rollout production --action end --non-interactive"
+            echo ""
+            echo "Rollback command (republish the previous known-good update group):"
+            echo "npx eas-cli@latest update:republish --branch production --group <previous-known-good-group-id> --non-interactive"
+          } >> "$GITHUB_STEP_SUMMARY"
+      # T116 (plan D3c): [critical] in the message is a human/dashboard
+      # convention only -- it does NOT reach the app (D3 descopes the
+      # manifest-marker publish path; see update-controller.ts's doc
+      # comment). This is the actual, authoritative follow-up.
+      - name: Critical follow-up (set /config.criticalOtaVersion)
+        if: contains(steps.message.outputs.message, '[critical]')
+        run: |
+          echo "### [critical] publish detected — mandatory follow-up" >> "$GITHUB_STEP_SUMMARY"
+          echo "A [critical] message does NOT prompt users by itself. To actually prompt users, set CRITICAL_OTA_VERSION to the new update id on the API and redeploy -- /config.criticalOtaVersion is the authoritative signal (docs/OTA_UPDATES.md §3, D3)." >> "$GITHUB_STEP_SUMMARY"
+      - name: Halt and rollback commands (failure)
+        if: failure()
+        run: |
+          {
+            echo "### Production OTA publish FAILED — halt and rollback"
+            echo "Halt command:"
+            echo "npx eas-cli@latest channel:rollout production --action end --non-interactive"
+            echo ""
+            echo "Rollback command (republish the previous known-good update group):"
+            echo "npx eas-cli@latest update:republish --branch production --group <previous-known-good-group-id> --non-interactive"
+            echo ""
+            echo "Verify what actually shipped:"
+            echo "npx eas-cli@latest update:list --branch production --non-interactive"
+          } >> "$GITHUB_STEP_SUMMARY"

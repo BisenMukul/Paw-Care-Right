@@ -33,7 +33,11 @@ describe("AppModule (e2e)", () => {
     const res = await request(app.getHttpServer()).get("/v1/health");
 
     expect(res.status).toBe(200);
-    expect(res.body).toEqual({ status: "ok", db: "ok", redis: "ok" });
+    // T116: buildId must NOT be hardcoded to "dev" here — ci.yml sets
+    // GIT_SHA: ${{ github.sha }} in the `build` job, so a literal default
+    // would pass locally and fail in CI.
+    expect(res.body).toEqual({ status: "ok", db: "ok", redis: "ok", buildId: expect.any(String) as string });
+    expect((res.body as { buildId: string }).buildId.length).toBeGreaterThan(0);
   });
 
   it("GET /v1/__test__/boom returns a NOT_FOUND error envelope with matching requestId", async () => {
