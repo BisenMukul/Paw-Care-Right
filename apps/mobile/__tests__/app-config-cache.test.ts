@@ -12,13 +12,15 @@ describe("app-config-cache", () => {
     expect(readCachedConfig()).toBeNull();
   });
 
-  it("write then read round-trips the config, including features (T106) and criticalOtaVersion (T114)", () => {
+  it("write then read round-trips the config, including features (T106), criticalOtaVersion (T114), and minAppVersion/recommendedAppVersion (T115)", () => {
     const config: AppConfig = {
       variant: "B",
       minSupportedVersion: "1.2.3",
       hotlinePackVersion: 4,
       features: { checks: false, chat: true, paywall: true },
       criticalOtaVersion: "u-critical-1",
+      minAppVersion: { ios: "2.0.0", android: "1.9.0" },
+      recommendedAppVersion: { ios: "2.5.0", android: "2.1.0" },
     };
 
     writeCachedConfig(config);
@@ -43,6 +45,8 @@ describe("app-config-cache", () => {
         hotlinePackVersion: -1,
         features: { checks: true, chat: true, paywall: true },
         criticalOtaVersion: null,
+        minAppVersion: { ios: "0.0.0", android: "0.0.0" },
+        recommendedAppVersion: { ios: "0.0.0", android: "0.0.0" },
       }),
     );
 
@@ -69,6 +73,8 @@ describe("app-config-cache", () => {
         hotlinePackVersion: 4,
         features: { checks: "on", chat: true, paywall: true },
         criticalOtaVersion: null,
+        minAppVersion: { ios: "0.0.0", android: "0.0.0" },
+        recommendedAppVersion: { ios: "0.0.0", android: "0.0.0" },
       }),
     );
 
@@ -100,6 +106,60 @@ describe("app-config-cache", () => {
         hotlinePackVersion: 4,
         features: { checks: false, chat: true, paywall: true },
         criticalOtaVersion: 5,
+        minAppVersion: { ios: "0.0.0", android: "0.0.0" },
+        recommendedAppVersion: { ios: "0.0.0", android: "0.0.0" },
+      }),
+    );
+
+    expect(readCachedConfig()).toBeNull();
+  });
+
+  it("returns null for a legacy blob missing minAppVersion/recommendedAppVersion entirely (T115 — treated as no cache, fail-open)", () => {
+    const mmkv = createMMKV();
+    mmkv.set(
+      CACHE_KEY,
+      JSON.stringify({
+        variant: "B",
+        minSupportedVersion: "1.2.3",
+        hotlinePackVersion: 4,
+        features: { checks: false, chat: true, paywall: true },
+        criticalOtaVersion: null,
+      }),
+    );
+
+    expect(readCachedConfig()).toBeNull();
+  });
+
+  it("returns null when minAppVersion is missing the android key (invalid shape)", () => {
+    const mmkv = createMMKV();
+    mmkv.set(
+      CACHE_KEY,
+      JSON.stringify({
+        variant: "B",
+        minSupportedVersion: "1.2.3",
+        hotlinePackVersion: 4,
+        features: { checks: false, chat: true, paywall: true },
+        criticalOtaVersion: null,
+        minAppVersion: { ios: "1.0.0" },
+        recommendedAppVersion: { ios: "0.0.0", android: "0.0.0" },
+      }),
+    );
+
+    expect(readCachedConfig()).toBeNull();
+  });
+
+  it("returns null when recommendedAppVersion.ios is a non-string value (invalid shape)", () => {
+    const mmkv = createMMKV();
+    mmkv.set(
+      CACHE_KEY,
+      JSON.stringify({
+        variant: "B",
+        minSupportedVersion: "1.2.3",
+        hotlinePackVersion: 4,
+        features: { checks: false, chat: true, paywall: true },
+        criticalOtaVersion: null,
+        minAppVersion: { ios: "0.0.0", android: "0.0.0" },
+        recommendedAppVersion: { ios: 5, android: "0.0.0" },
       }),
     );
 

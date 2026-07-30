@@ -1527,3 +1527,19 @@ Attempt 2, checker verdict **PASS** (round-1 FAIL on 1 HIGH — the prompt compo
 **Founder delta:** CRITICAL_OTA_VERSION env var on api deploys (set to an updateId at [critical] publish, cleared after rollout — T116 runbook).
 
 **Next:** T115 (forced/recommended binary upgrade gate) — must also address carry-forward F1.
+
+---
+
+## T115 — Forced/recommended binary upgrade gate (2026-07-30)
+
+Attempt 1, checker verdict **PASS** (0 HIGH/MED, 3 LOW/INFO). Ran through a 3× API-529 outage (checker killed thrice before starting; backoff-retry protocol held; tree verified clean each time).
+
+**Shipped:** packages/types semver util (numeric build-number comparison — checker-probed 1.0.0+2 < 1.0.0+10, malformed → null → fail-open; 38 table tests); /config minAppVersion + recommendedAppVersion per platform (4 env vars defaulting 0.0.0 = no gate, full lockstep); resolveUpgradeState decision table (15 rows, min-beats-misconfigured-recommended); blocking upgrade screen in UpdateGate (no dismiss — structurally unescapable, Stack never mounts when blocked; store deep link with iOS placeholder pending T102 store id; renders before any authenticated route — flow test on the REAL RootLayout); dismissible recommended banner (persisted dismissal, root-mounted with spec + mount assertion per T114 lesson). **Carry-forward F1 RESOLVED:** new appConfigClientSchema — ALL client /config consumption tolerant of unknown future fields (kill switches survive schema skew per OTA_UPDATES §5.4) while the server contract stays .strict(); checker probed tolerance-is-not-garbage on 10 malformed bodies (features:"yes" etc. all rejected). Suites: types 642, mobile 198/1684, api 113/1151.
+
+**Checker highlights:** ruled the T114-deferral interaction safe by tracing auth-store — "restoring" is initial-only, UpdateGate mounts once per process, so a mid-session config refresh can NEVER raise the blocking screen over an in-progress symptom check; 3 own mutation probes all RED (banner mount, >= boundary pinned in BOTH type+mobile suites, launch-snapshot laziness); F1 blast radius verified against built dist (exactly one client consumer, one call site); executor's MinIO flake attribution corroborated.
+
+**LOWs:** iOS CTA points at bombaypetcompany.app until T102 store id (harmless at 0.0.0 defaults — C3 operational precondition); Android hardware-back not explicitly pinned (structurally impossible today; refactor risk noted); banner padding cosmetic.
+
+**Founder delta:** 4 new api env vars (MIN/RECOMMENDED_APP_VERSION_{IOS,ANDROID}) — raise MIN only after a binary ≥ that version is live in the store; iOS store id lands at T102/C3.
+
+**Next:** T116 (OTA publish pipeline) — owes the [critical] manifest-field pinning (T114 F4).

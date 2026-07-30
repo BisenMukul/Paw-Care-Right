@@ -584,6 +584,15 @@ export const strings = {
     body: "A newer version is required to keep using the app. Please update from the store to continue.",
     cta: "Update now",
   },
+  upgradeBanner: {
+    // T115: dismissible min<->recommended banner. Factual and non-urgent --
+    // no "diagnos*"/medication/dose token, nothing that competes with an
+    // emergency surface, and it must NOT imply the app will stop working
+    // (that is the blocking screen's job, above).
+    body: "A newer version is available.",
+    cta: "Update",
+    dismiss: "Dismiss",
+  },
   updateReady: {
     // T114: the in-app OTA "restart prompt" (docs/OTA_UPDATES.md §3 -- exact
     // label "Update ready"). Factual copy only -- no "diagnos*"/medication/

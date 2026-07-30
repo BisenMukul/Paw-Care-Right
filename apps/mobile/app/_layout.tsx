@@ -17,6 +17,7 @@ import { BetaBanner } from "../src/components/beta-banner";
 import { OfflineBanner } from "../src/components/offline-banner";
 import { UpdateGate } from "../src/components/update-gate";
 import { UpdateReadyPrompt } from "../src/components/update-ready-prompt";
+import { UpgradeRecommendedBanner } from "../src/components/upgrade-recommended-banner";
 import { UpsellSheet } from "../src/components/upsell-sheet";
 import { AppErrorBoundary } from "../src/error-boundary";
 import { useShakeToReport } from "../src/feedback/use-shake-to-report";
@@ -88,6 +89,7 @@ function AppRoot() {
       <View className="flex-1">
         <OfflineBanner />
         <BetaBanner />
+        <UpgradeRecommendedBanner />
         {/* T094 (T083 F8 hand-off, route-declaration verdict): declare a
             screen here ONLY when it needs non-default `options` (e.g.
             `presentation`/`gestureEnabled`) -- every other route is

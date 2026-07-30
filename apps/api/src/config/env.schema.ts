@@ -30,6 +30,14 @@ export const apiEnvSchema = z.object({
   // T114: empty string = no critical OTA update; a real value is the EAS
   // `updateId` published with the `[critical]` marker (docs/OTA_UPDATES.md §3).
   CRITICAL_OTA_VERSION: z.string().default(""),
+  // --- Forced/recommended binary upgrade gate (T115). "0.0.0" = no gate on
+  // that platform (NO_GATE_VERSION, packages/types/src/config.ts). Raise
+  // MIN_APP_VERSION_* only after a binary carrying at least that version is
+  // live in the corresponding store (see the T115 plan's founder delta). ---
+  MIN_APP_VERSION_IOS: z.string().default("0.0.0"),
+  MIN_APP_VERSION_ANDROID: z.string().default("0.0.0"),
+  RECOMMENDED_APP_VERSION_IOS: z.string().default("0.0.0"),
+  RECOMMENDED_APP_VERSION_ANDROID: z.string().default("0.0.0"),
   // --- Feature kill switches (T106). z.coerce.boolean() is deliberately
   // avoided here: it would coerce the string "false" to `true`. ---
   FEATURE_CHECKS: z.enum(["on", "off"]).default("on"),

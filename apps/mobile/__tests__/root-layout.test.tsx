@@ -96,6 +96,17 @@ jest.mock("../src/components/update-ready-prompt", () => {
   const { View } = jest.requireActual<typeof import("react-native")>("react-native");
   return { UpdateReadyPrompt: () => <View testID="update-ready-prompt-stub" /> };
 });
+// T115: `<UpgradeRecommendedBanner/>` now mounts for real in `_layout.tsx`
+// and reaches `useUpgradeState()` -> `useAppConfig()` -> a real
+// `useQuery()`, the same reason `<UpdateReadyPrompt/>` above is stubbed
+// (this file pins layout STRUCTURE only). The stub carries a `testID` so a
+// mount assertion below can catch a future regression where
+// `<UpgradeRecommendedBanner/>` (or its import) is removed from
+// `_layout.tsx` entirely (T114 Finding 2 / mutation M5b precedent).
+jest.mock("../src/components/upgrade-recommended-banner", () => {
+  const { View } = jest.requireActual<typeof import("react-native")>("react-native");
+  return { UpgradeRecommendedBanner: () => <View testID="upgrade-recommended-banner-stub" /> };
+});
 
 describe("root layout startup", () => {
   beforeEach(() => {
@@ -141,6 +152,18 @@ describe("root layout startup", () => {
       expect(screen.getByTestId("router-stack")).toBeTruthy();
     });
     expect(screen.getByTestId("update-ready-prompt-stub")).toBeTruthy();
+  });
+
+  // T115 (T114 Finding 2 / mutation M5b precedent): pins that
+  // `<UpgradeRecommendedBanner/>` is actually mounted somewhere in the tree.
+  it("mounts <UpgradeRecommendedBanner/> at the root (T115)", async () => {
+    mockStatus = "signedOut";
+    render(<RootLayout />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("router-stack")).toBeTruthy();
+    });
+    expect(screen.getByTestId("upgrade-recommended-banner-stub")).toBeTruthy();
   });
 
   it("shows the readable error fallback even when the QUERY PROVIDER itself throws (boundary is outermost)", async () => {

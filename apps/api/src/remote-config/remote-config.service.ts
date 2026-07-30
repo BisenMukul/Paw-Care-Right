@@ -19,6 +19,10 @@ import { assignPaywallVariant } from "./variant-assignment";
  * be running, `null` = no critical update. Belt-and-braces signal for
  * clients that fetched before the `[critical]` publish-message marker
  * (docs/OTA_UPDATES.md §3).
+ *
+ * T115: also mirrors the per-platform `minAppVersion`/`recommendedAppVersion`
+ * gates (env-defaulted, "0.0.0" = no gate) that drive the mobile client's
+ * blocking upgrade screen / dismissible recommended-update banner.
  */
 @Injectable()
 export class RemoteConfigService {
@@ -34,6 +38,8 @@ export class RemoteConfigService {
       hotlinePackVersion: this.appConfig.hotlinePackVersion,
       features: await this.featureFlags.getAll(),
       criticalOtaVersion: this.appConfig.criticalOtaVersion,
+      minAppVersion: this.appConfig.minAppVersion,
+      recommendedAppVersion: this.appConfig.recommendedAppVersion,
     };
   }
 }

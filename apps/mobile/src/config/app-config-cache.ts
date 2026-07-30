@@ -35,6 +35,12 @@ const CACHE_KEY = "bombaypetcompany.app-config-cache";
  * T114: also requires `criticalOtaVersion` to be `null` or a string. A
  * pre-T114 cached blob (key absent entirely -- `undefined`) is discarded as
  * "no cache", the same fail-open precedent as the T106 `features` addition.
+ *
+ * T115: also requires `minAppVersion`/`recommendedAppVersion` to each be an
+ * `{ios: string, android: string}` pair. A pre-T115 cached blob (keys absent
+ * entirely) is discarded as "no cache" -- same fail-open precedent; the
+ * caller then falls back to `DEFAULT_APP_CONFIG`, whose T115 fields are
+ * "0.0.0" on both platforms (no gate).
  */
 function isValidFeatureFlags(value: unknown): value is AppConfig["features"] {
   if (typeof value !== "object" || value === null) {
@@ -43,6 +49,15 @@ function isValidFeatureFlags(value: unknown): value is AppConfig["features"] {
 
   const candidate = value as Record<string, unknown>;
   return FEATURE_KEYS.every((key) => typeof candidate[key] === "boolean");
+}
+
+function isValidPlatformAppVersions(value: unknown): value is AppConfig["minAppVersion"] {
+  if (typeof value !== "object" || value === null) {
+    return false;
+  }
+
+  const candidate = value as Record<string, unknown>;
+  return typeof candidate.ios === "string" && typeof candidate.android === "string";
 }
 
 function isValidAppConfig(value: unknown): value is AppConfig {
@@ -63,7 +78,9 @@ function isValidAppConfig(value: unknown): value is AppConfig {
     Number.isInteger(hotlinePackVersion) &&
     hotlinePackVersion >= 0 &&
     isValidFeatureFlags(candidate.features) &&
-    (candidate.criticalOtaVersion === null || typeof candidate.criticalOtaVersion === "string")
+    (candidate.criticalOtaVersion === null || typeof candidate.criticalOtaVersion === "string") &&
+    isValidPlatformAppVersions(candidate.minAppVersion) &&
+    isValidPlatformAppVersions(candidate.recommendedAppVersion)
   );
 }
 

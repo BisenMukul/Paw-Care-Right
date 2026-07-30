@@ -25,3 +25,4 @@ export * from "./config";
 export * from "./account-privacy";
 export * from "./account-export";
 export * from "./feedback";
+export * from "./semver";

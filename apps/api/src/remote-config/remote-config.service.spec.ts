@@ -1,9 +1,12 @@
+import type { PlatformAppVersions } from "@bombaypetcompany/types";
+
 import type { AppConfigService } from "../config/app-config.service";
 import type { FeatureFlagsService } from "./feature-flags.service";
 import { RemoteConfigService } from "./remote-config.service";
 import { assignPaywallVariant } from "./variant-assignment";
 
 const ALL_FEATURES_ON = { checks: true, chat: true, paywall: true };
+const NO_GATE: PlatformAppVersions = { ios: "0.0.0", android: "0.0.0" };
 
 describe("RemoteConfigService", () => {
   function buildService(overrides: {
@@ -12,12 +15,16 @@ describe("RemoteConfigService", () => {
     hotlinePackVersion?: number;
     features?: { checks: boolean; chat: boolean; paywall: boolean };
     criticalOtaVersion?: string | null;
+    minAppVersion?: PlatformAppVersions;
+    recommendedAppVersion?: PlatformAppVersions;
   }) {
     const appConfig = {
       paywallVariant: overrides.paywallVariant,
       minSupportedVersion: overrides.minSupportedVersion ?? "0.0.0",
       hotlinePackVersion: overrides.hotlinePackVersion ?? 1,
       criticalOtaVersion: overrides.criticalOtaVersion ?? null,
+      minAppVersion: overrides.minAppVersion ?? NO_GATE,
+      recommendedAppVersion: overrides.recommendedAppVersion ?? NO_GATE,
     } as unknown as AppConfigService;
     const featureFlags = {
       getAll: jest.fn().mockResolvedValue(overrides.features ?? ALL_FEATURES_ON),
@@ -35,6 +42,8 @@ describe("RemoteConfigService", () => {
       hotlinePackVersion: 1,
       features: ALL_FEATURES_ON,
       criticalOtaVersion: null,
+      minAppVersion: NO_GATE,
+      recommendedAppVersion: NO_GATE,
     });
   });
 
@@ -47,6 +56,8 @@ describe("RemoteConfigService", () => {
       hotlinePackVersion: 1,
       features: ALL_FEATURES_ON,
       criticalOtaVersion: null,
+      minAppVersion: NO_GATE,
+      recommendedAppVersion: NO_GATE,
     });
   });
 
@@ -59,6 +70,8 @@ describe("RemoteConfigService", () => {
       hotlinePackVersion: 1,
       features: ALL_FEATURES_ON,
       criticalOtaVersion: null,
+      minAppVersion: NO_GATE,
+      recommendedAppVersion: NO_GATE,
     });
   });
 
@@ -100,5 +113,16 @@ describe("RemoteConfigService", () => {
     const result = await service.getConfig();
 
     expect(result.criticalOtaVersion).toBe("u-critical-1");
+  });
+
+  it("passes per-platform minAppVersion/recommendedAppVersion through from AppConfigService (T115)", async () => {
+    const minAppVersion: PlatformAppVersions = { ios: "2.0.0", android: "1.9.0" };
+    const recommendedAppVersion: PlatformAppVersions = { ios: "2.5.0", android: "2.1.0" };
+    const service = buildService({ paywallVariant: "A", minAppVersion, recommendedAppVersion });
+
+    const result = await service.getConfig();
+
+    expect(result.minAppVersion).toEqual(minAppVersion);
+    expect(result.recommendedAppVersion).toEqual(recommendedAppVersion);
   });
 });

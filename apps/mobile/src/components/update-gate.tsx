@@ -1,14 +1,11 @@
 import { APP_DISPLAY_NAME } from "@bombaypetcompany/config";
 import * as Linking from "expo-linking";
 import type { ReactNode } from "react";
-import { useState } from "react";
 import { Platform, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { DEFAULT_APP_CONFIG, useAppConfig } from "../config/app-config-queries";
-import { getAppVersion } from "../config";
+import { useUpgradeState } from "../config/use-upgrade-state";
 import { resolveStoreUpdateUrl } from "../config/store-update-url";
-import { isUpdateRequired } from "../config/version-gate";
 import { strings } from "../strings";
 
 import { PrimaryButton } from "./primary-button";
@@ -29,31 +26,28 @@ export interface UpdateGateProps {
  * a factual "please update" prompt.
  *
  * Cold-launch-only guarantee (T080 plan decision 1): the update decision is
- * snapshotted ONCE at first mount via a lazy `useState` initializer, not
- * read reactively from `useAppConfig()` on every render. `useAppConfig`
- * shares its `["app-config"]` cache with `usePaywallConfig` (T079 decision
- * 5); a `staleTime` on this hook's own observer would NOT stop a refetch
- * driven by that other observer (or a future online/focus-refetch bridge)
- * from updating the shared cache and re-rendering this component with a
- * fresh, possibly higher, `minSupportedVersion`. Freezing the value at
- * launch guarantees a post-mount config change can NEVER raise (or drop)
- * the gate over an already-live child tree mid-session -- a fail-open,
- * §5-protective guarantee. The fresh config is honoured normally on the
- * next cold launch (new mount -> new snapshot).
+ * snapshotted ONCE at first mount (delegated to `useUpgradeState()`'s own
+ * lazy `useState` initializer, T115), not read reactively from
+ * `useAppConfig()` on every render. `useAppConfig` shares its
+ * `["app-config"]` cache with `usePaywallConfig` (T079 decision 5); a
+ * `staleTime` on this hook's own observer would NOT stop a refetch driven
+ * by that other observer (or a future online/focus-refetch bridge) from
+ * updating the shared cache and re-rendering this component with a fresh,
+ * possibly higher, gate. Freezing the value at launch guarantees a
+ * post-mount config change can NEVER raise (or drop) the gate over an
+ * already-live child tree mid-session -- a fail-open, §5-protective
+ * guarantee. The fresh config is honoured normally on the next cold launch
+ * (new mount -> new snapshot).
+ *
+ * T115: blocks ONLY on `"blocked"` (the per-platform `minAppVersion` gate
+ * OR'd with the legacy `minSupportedVersion` scalar -- see `version-gate.ts`
+ * `resolveUpgradeState`). `"recommended"` never blocks here -- that state
+ * surfaces via the separate, dismissible `<UpgradeRecommendedBanner/>`.
  */
 export function UpdateGate({ children }: UpdateGateProps) {
-  const { data: config } = useAppConfig();
-  // Lazy initializer runs exactly once, on first mount, capturing the
-  // launch-time cached-or-default config (`useAppConfig` seeds
-  // `initialData`, so `config` is never undefined even on the first
-  // render). Subsequent refetches update `config` but this snapshot is
-  // never re-read.
-  const [launchMinSupportedVersion] = useState(
-    () => config?.minSupportedVersion ?? DEFAULT_APP_CONFIG.minSupportedVersion,
-  );
-  const updateRequired = isUpdateRequired(getAppVersion(), launchMinSupportedVersion);
+  const upgradeState = useUpgradeState();
 
-  if (!updateRequired) {
+  if (upgradeState !== "blocked") {
     return <>{children}</>;
   }
 

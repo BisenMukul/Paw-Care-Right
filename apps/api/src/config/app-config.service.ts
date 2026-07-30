@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { defineEnv } from "@bombaypetcompany/config/env";
+import type { PlatformAppVersions } from "@bombaypetcompany/types";
 
 import { apiEnvSchema, type ApiEnv } from "./env.schema";
 
@@ -86,6 +87,19 @@ export class AppConfigService {
   /** T114: empty env value normalises to `null` ("no critical update"). */
   get criticalOtaVersion(): string | null {
     return this.env.CRITICAL_OTA_VERSION === "" ? null : this.env.CRITICAL_OTA_VERSION;
+  }
+
+  /** T115: per-platform minimum-version gate (default "0.0.0" on both = no gate). */
+  get minAppVersion(): PlatformAppVersions {
+    return { ios: this.env.MIN_APP_VERSION_IOS, android: this.env.MIN_APP_VERSION_ANDROID };
+  }
+
+  /** T115: per-platform recommended-version gate (default "0.0.0" on both = no gate). */
+  get recommendedAppVersion(): PlatformAppVersions {
+    return {
+      ios: this.env.RECOMMENDED_APP_VERSION_IOS,
+      android: this.env.RECOMMENDED_APP_VERSION_ANDROID,
+    };
   }
 
   /** T106: env default for the `checks` kill switch — the Redis override in

@@ -57,3 +57,48 @@ export function getConfig(): AppConfig {
 export function getAppVersion(): string {
   return Constants.expoConfig?.version ?? "0.0.0";
 }
+
+/**
+ * T115: the installed BINARY's build number (iOS `CFBundleVersion` /
+ * Android `versionCode`); `null` when unavailable (Expo Go, jest, web).
+ * Read via `Constants.platform` -- NOT `expo-application` (would be a new
+ * dependency, CLAUDE §6). iOS reports a raw string (`CFBundleVersion` can be
+ * non-numeric, e.g. a marketing-version-shaped string); Android reports a
+ * plain integer (`versionCode`). Only a NUMERIC iOS build number is
+ * meaningful here -- a non-numeric one is filtered out by the caller
+ * (`getAppVersionWithBuild`) via the shared semver util's build-metadata
+ * grammar, so this function itself does no numeric validation.
+ */
+export function getAppBuildNumber(): string | null {
+  const iosBuildNumber = Constants.platform?.ios?.buildNumber;
+
+  if (typeof iosBuildNumber === "string" && iosBuildNumber.length > 0) {
+    return iosBuildNumber;
+  }
+
+  const androidVersionCode = Constants.platform?.android?.versionCode;
+
+  if (typeof androidVersionCode === "number" && Number.isInteger(androidVersionCode) && androidVersionCode >= 0) {
+    return String(androidVersionCode);
+  }
+
+  return null;
+}
+
+/**
+ * T115: `"1.2.3+45"` when a NUMERIC build number is available, else
+ * `"1.2.3"`. A non-numeric iOS `CFBundleVersion` (e.g. `"1.2.3"`) is NOT
+ * appended -- fail-open; `compareAppVersions`/`isVersionBelow` would ignore
+ * it anyway (non-numeric build metadata is treated as absent), so appending
+ * it here would only add noise.
+ */
+export function getAppVersionWithBuild(): string {
+  const version = getAppVersion();
+  const buildNumber = getAppBuildNumber();
+
+  if (buildNumber !== null && /^\d+$/.test(buildNumber)) {
+    return `${version}+${buildNumber}`;
+  }
+
+  return version;
+}
