@@ -14,7 +14,8 @@
     "build": "tsup",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "jest"
+    "test": "jest",
+    "qa:dataset-audit": "tsup && node dist/qa/generate-dataset-audit.js"
   },
   "dependencies": {
     "zod": "^4",

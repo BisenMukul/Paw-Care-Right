@@ -1461,3 +1461,17 @@ Attempt 1, checker verdict **PASS** (0 HIGH, 2 MED — F1 closed pre-commit via 
 **Founder to-dos:** EXPO_PUBLIC_BETA=1 on beta/preview EAS profile only; no admin reader UI yet (Postgres/MinIO only); privacy counsel confirm feedback reports excluded from T091 export while included in erasure; C3 items above.
 
 **Next:** T105.
+
+---
+
+## T105 — Seed & dataset QA (2026-07-30)
+
+Attempt 1, checker verdict **PASS** (0 HIGH; F1 MED closed pre-commit via fix round; F2 LOW accepted).
+
+**Shipped:** generated-from-data audit — packages/data/src/qa/ engine (computeDatasetAudit/renderDatasetAuditDoc, deterministic top-100 toxin ordering by FOOD_VERDICT_SEVERITY desc → min desc → category index → id) + CLI + 2 spec suites; docs/qa/dataset-audit.md byte-pinned to the renderer (T9 Object.is; regeneration byte-stable, sha1 7f32856f). Counts: 233 toxins (top-100 spot-check table, every row source-attributed at category level per T035 R9), 440 breeds (358 dog/82 cat), 50 breed guides (5 reviewed ship today / 45 drafts listed by slug), 5 hotline regions. EVERY human-verification cell is UNVERIFIED via a single constant — no code path can emit VERIFIED (checker-proven: even laundering through the generator trips the T11 honesty guard). Review queues as inventories, never assertions: 5 non-food safe-at-max-severity rows, 11 dog/cat divergences, 222 no-quantityNuance rows. Zero dataset rows/flags/meta-tests touched (integrity diff empty). Data suite 231→239 tests.
+
+**Checker independence:** recomputed all counts + queue memberships + the full 100-row spot-check order from raw datasets with its own script (exact matches, rank 1 alcohol → rank 100 cigarette-butts); read all 6 source headers (T1 normalizer legitimate — JSDoc line-wrap only); 5 own mutation proofs. F1 MED (M3b: scalar counts guarded only by byte-equality, defeated by regeneration) closed same-day: 8 cross-consistency anchors engine-vs-independently-imported datasets incl. reviewed===5===published length + draft mirror; M3b re-applied → 2 RED; restores sha1-verified. F2 LOW accepted (registry⊆header direction under-claims — safe).
+
+**[VET]/[FOUNDER] C3 queues (all honest, none pre-verified):** 5 hotline rows to verify against operator listings (bump BUNDLED_HOTLINE_PACK_VERSION on any change); 100 verdict rows for vet review (priority: the 3 queues); 45 draft guides before any wider publish; decide category-level vs per-row source attribution.
+
+**Next:** T106 (launch runbook + rollback strategy; kill switches for checks/chat).
