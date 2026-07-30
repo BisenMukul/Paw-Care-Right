@@ -1600,3 +1600,9 @@ All 14 Phase 10 cards done: T099 (EAS profiles) → T100 (store assets) → T101
 **⛔ LOOP PAUSED AT CHECKPOINT C3 (per PHASES).** Founder gate to set checkpoints.C3.approved=true: final name + bundle ids confirmation (T102 evidence: docs/store-listing.md — Bombay Pet Company CONDITIONAL pending trademark counsel F3; fallbacks Nuzzo/Pawnest verified); store console setup (Apple + Play, loop/checkpoint-C3-notes.md §§4–5, 39 steps); legal-review markers; hotline human-verification column (docs/qa/dataset-audit.md §5 — 5 rows, all UNVERIFIED); [VET] toxin-verdict review queues; TestFlight/Play submission. Standing founder queue also open: EAS project re-create + projectId + updates.url; beta binary rebuilds (fingerprint changed at T113); EXPO_TOKEN/PROD_API_URL/ADMIN_API_TOKEN/APP_VERSION/EAS env vars; kill-switch fire drill (runbook §9 item 14); branch protection (T118); Sentry staging evidence (T117 §9.1 recipe); D5 freshness accept/reject; bombaypetcompany.app registration; staging-api DNS; 8-shot screenshot capture via /emulator-test; store-privacy stale-example ticket; FLAKE-1/FLAKE-2/unattributed-flake cards for Phase 11 planning.
 
 **Next after C3 approval:** Phase 11 (T107–T112) → M11.
+
+---
+
+## ⛔→✅ CHECKPOINT C3 APPROVED (2026-07-30)
+
+Founder approved C3 via chat instruction ("C3 approved"). checkpoints.C3.approved=true; currentPhase → P11. Standing operational items (store consoles, hotline/vet verification queues, EAS re-create, secrets, branch protection, beta rebuilds, fire drill, staging Sentry evidence) remain OPEN founder to-dos tracked in docs/release-runbook.md §9 and loop/checkpoint-C3-notes.md — approval unblocks the loop, it does not retroactively mark those verified. Phase 11 (T107–T112) begins at T107.

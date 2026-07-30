@@ -2,7 +2,7 @@
   "project": "Bombay Pet Company",
   "version": 6,
   "status": "running",
-  "currentPhase": "P10",
+  "currentPhase": "P11",
   "phases": {
     "P0": {
       "tasks": [
@@ -725,8 +725,9 @@
     },
     "C3": {
       "afterMilestone": "M10",
-      "approved": false,
-      "gate": "Final name/bundle ids, store consoles, legal review, hotline verification, submission"
+      "approved": true,
+      "gate": "Final name/bundle ids, store consoles, legal review, hotline verification, submission",
+      "approvedVia": "founder chat instruction, 2026-07-30 (\"C3 approved\"); standing console/verification items remain founder to-dos tracked in runbook \u00a79 + checkpoint-C3-notes.md"
     }
   },
   "slug": "bombaypetcompany",
@@ -752,10 +753,10 @@
     "surveillance-layer-corrections-v2: Write grants, fail-closed protected-paths (no python), current-task file contract, P0/no-HEAD tolerance, subshell fail-open fixes"
   ],
   "current-task": {
-    "id": "C3",
-    "phase": 10,
+    "id": "T107",
+    "phase": 11,
     "attempts": 0,
-    "state": "checkpoint-wait",
-    "note": "M10 tagged 2026-07-30. Loop PAUSED at CHECKPOINT C3 per PHASES \u2014 founder gate (name/bundle ids, store consoles, legal, hotline verification, submission). Resumes into P11 (T107) on checkpoints.C3.approved=true."
+    "state": "planning",
+    "note": "C3 approved 2026-07-30 by founder chat. Phase 11 begins at T107."
   }
 }
