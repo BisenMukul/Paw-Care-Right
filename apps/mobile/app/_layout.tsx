@@ -16,6 +16,7 @@ import { usePurchasesInit } from "../src/billing/use-purchases-init";
 import { BetaBanner } from "../src/components/beta-banner";
 import { OfflineBanner } from "../src/components/offline-banner";
 import { UpdateGate } from "../src/components/update-gate";
+import { UpdateReadyPrompt } from "../src/components/update-ready-prompt";
 import { UpsellSheet } from "../src/components/upsell-sheet";
 import { AppErrorBoundary } from "../src/error-boundary";
 import { useShakeToReport } from "../src/feedback/use-shake-to-report";
@@ -120,6 +121,7 @@ function AppRoot() {
         </Stack>
       </View>
       <UpsellSheet />
+      <UpdateReadyPrompt />
     </UpdateGate>
   );
 }

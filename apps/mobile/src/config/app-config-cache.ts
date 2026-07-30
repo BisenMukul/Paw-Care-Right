@@ -31,6 +31,10 @@ const CACHE_KEY = "bombaypetcompany.app-config-cache";
  * then falls back to `DEFAULT_APP_CONFIG`, which is fail-open (D10), so a
  * pre-T106 cache can never silently disable a feature nor silently enable
  * one either; it is simply discarded and re-fetched.
+ *
+ * T114: also requires `criticalOtaVersion` to be `null` or a string. A
+ * pre-T114 cached blob (key absent entirely -- `undefined`) is discarded as
+ * "no cache", the same fail-open precedent as the T106 `features` addition.
  */
 function isValidFeatureFlags(value: unknown): value is AppConfig["features"] {
   if (typeof value !== "object" || value === null) {
@@ -58,7 +62,8 @@ function isValidAppConfig(value: unknown): value is AppConfig {
     typeof hotlinePackVersion === "number" &&
     Number.isInteger(hotlinePackVersion) &&
     hotlinePackVersion >= 0 &&
-    isValidFeatureFlags(candidate.features)
+    isValidFeatureFlags(candidate.features) &&
+    (candidate.criticalOtaVersion === null || typeof candidate.criticalOtaVersion === "string")
   );
 }
 

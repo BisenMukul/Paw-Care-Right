@@ -14,6 +14,11 @@ import { assignPaywallVariant } from "./variant-assignment";
  * D2/D7 -- Redis-overridable, env-defaulted). No DB -- everything comes
  * from the validated env (`AppConfigService`) plus the caller's optional
  * userId (set by `OptionalJwtAuthGuard` on the controller).
+ *
+ * T114: also mirrors `criticalOtaVersion` -- the EAS `updateId` that MUST
+ * be running, `null` = no critical update. Belt-and-braces signal for
+ * clients that fetched before the `[critical]` publish-message marker
+ * (docs/OTA_UPDATES.md §3).
  */
 @Injectable()
 export class RemoteConfigService {
@@ -28,6 +33,7 @@ export class RemoteConfigService {
       minSupportedVersion: this.appConfig.minSupportedVersion,
       hotlinePackVersion: this.appConfig.hotlinePackVersion,
       features: await this.featureFlags.getAll(),
+      criticalOtaVersion: this.appConfig.criticalOtaVersion,
     };
   }
 }

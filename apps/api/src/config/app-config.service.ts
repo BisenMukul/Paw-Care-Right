@@ -83,6 +83,11 @@ export class AppConfigService {
     return this.env.HOTLINE_PACK_VERSION;
   }
 
+  /** T114: empty env value normalises to `null` ("no critical update"). */
+  get criticalOtaVersion(): string | null {
+    return this.env.CRITICAL_OTA_VERSION === "" ? null : this.env.CRITICAL_OTA_VERSION;
+  }
+
   /** T106: env default for the `checks` kill switch — the Redis override in
    * `FeatureFlagsService` takes precedence when present. */
   get featureChecksDefault(): boolean {

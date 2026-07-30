@@ -584,6 +584,21 @@ export const strings = {
     body: "A newer version is required to keep using the app. Please update from the store to continue.",
     cta: "Update now",
   },
+  updateReady: {
+    // T114: the in-app OTA "restart prompt" (docs/OTA_UPDATES.md §3 -- exact
+    // label "Update ready"). Factual copy only -- no "diagnos*"/medication/
+    // dosing tokens, no urgency wording that could compete with an emergency
+    // surface (CLAUDE.md §7). Never mentions the product name, so there is
+    // nothing here that would need `APP_DISPLAY_NAME` (unlike `updateGate`,
+    // whose title interpolates it).
+    title: "Update ready",
+    body: "A newer version has been downloaded. Restart to use it.",
+    restartCta: "Restart now",
+    laterCta: "Later",
+    a11yLabel: "Update ready. A newer version has been downloaded.",
+    restartA11yLabel: "Restart now to apply the update",
+    laterA11yLabel: "Later, keep using the current version",
+  },
   family: {
     title: "Family",
     loading: "Loading…",

@@ -83,6 +83,19 @@ jest.mock("../src/components/update-gate", () => {
   };
 });
 jest.mock("../src/components/upsell-sheet", () => ({ UpsellSheet: () => null }));
+// T114: `<UpdateReadyPrompt/>` now mounts for real in `_layout.tsx` and
+// reaches `useAppConfig()` -> a real `useQuery()`, which needs a genuine
+// QueryClient context this file's `PersistedApiQueryProvider` mock (a bare
+// passthrough View, above) deliberately does not provide -- this file pins
+// layout STRUCTURE only, mirroring the `UpsellSheet`/`UpdateGate` mocks.
+// The stub carries a `testID` (unlike `UpsellSheet`'s bare `() => null`)
+// specifically so a mount assertion below can catch a future regression
+// where `<UpdateReadyPrompt/>` (or its import) is removed from `_layout.tsx`
+// entirely -- checker mutation M5b.
+jest.mock("../src/components/update-ready-prompt", () => {
+  const { View } = jest.requireActual<typeof import("react-native")>("react-native");
+  return { UpdateReadyPrompt: () => <View testID="update-ready-prompt-stub" /> };
+});
 
 describe("root layout startup", () => {
   beforeEach(() => {
@@ -114,6 +127,20 @@ describe("root layout startup", () => {
       expect(screen.getByTestId("router-stack")).toBeTruthy();
     });
     expect(screen.getByTestId("update-gate")).toBeTruthy();
+  });
+
+  // T114 (checker Finding 2 / mutation M5b): pins that `<UpdateReadyPrompt/>`
+  // is actually mounted somewhere in the tree -- a future edit that deletes
+  // the component (or its import) from `_layout.tsx` now fails THIS
+  // assertion instead of leaving every gate green.
+  it("mounts <UpdateReadyPrompt/> at the root (T114)", async () => {
+    mockStatus = "signedOut";
+    render(<RootLayout />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("router-stack")).toBeTruthy();
+    });
+    expect(screen.getByTestId("update-ready-prompt-stub")).toBeTruthy();
   });
 
   it("shows the readable error fallback even when the QUERY PROVIDER itself throws (boundary is outermost)", async () => {

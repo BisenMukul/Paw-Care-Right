@@ -10,6 +10,8 @@ export interface AppConfig {
   minSupportedVersion: string;
   hotlinePackVersion: number;
   features: FeatureFlags;
+  /** T114: the EAS updateId that MUST be running; `null` = no critical update. */
+  criticalOtaVersion: string | null;
 }
 
 /**
@@ -21,12 +23,17 @@ export interface AppConfig {
  * reason: a client that cannot reach `/config` must not lock itself out of
  * a symptom check or chat -- the API is the authoritative enforcement point
  * (D6), never the client default.
+ *
+ * T114: `criticalOtaVersion` defaults to `null` -- the fail-safe default is
+ * "no critical update", so a client on this fallback can never be prompted
+ * to reload based on stale/missing config.
  */
 export const DEFAULT_APP_CONFIG: AppConfig = {
   variant: "A",
   minSupportedVersion: "0.0.0",
   hotlinePackVersion: 1,
   features: { checks: true, chat: true, paywall: true },
+  criticalOtaVersion: null,
 };
 
 /**
@@ -47,6 +54,7 @@ export async function fetchAppConfig(): Promise<AppConfig> {
       minSupportedVersion: parsed.minSupportedVersion,
       hotlinePackVersion: parsed.hotlinePackVersion,
       features: parsed.features,
+      criticalOtaVersion: parsed.criticalOtaVersion,
     };
 
     writeCachedConfig(config);

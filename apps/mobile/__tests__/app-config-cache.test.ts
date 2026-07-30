@@ -12,12 +12,13 @@ describe("app-config-cache", () => {
     expect(readCachedConfig()).toBeNull();
   });
 
-  it("write then read round-trips the config, including features (T106)", () => {
+  it("write then read round-trips the config, including features (T106) and criticalOtaVersion (T114)", () => {
     const config: AppConfig = {
       variant: "B",
       minSupportedVersion: "1.2.3",
       hotlinePackVersion: 4,
       features: { checks: false, chat: true, paywall: true },
+      criticalOtaVersion: "u-critical-1",
     };
 
     writeCachedConfig(config);
@@ -41,6 +42,7 @@ describe("app-config-cache", () => {
         minSupportedVersion: 5,
         hotlinePackVersion: -1,
         features: { checks: true, chat: true, paywall: true },
+        criticalOtaVersion: null,
       }),
     );
 
@@ -66,6 +68,38 @@ describe("app-config-cache", () => {
         minSupportedVersion: "1.2.3",
         hotlinePackVersion: 4,
         features: { checks: "on", chat: true, paywall: true },
+        criticalOtaVersion: null,
+      }),
+    );
+
+    expect(readCachedConfig()).toBeNull();
+  });
+
+  it("returns null for a legacy blob missing criticalOtaVersion (T114)", () => {
+    const mmkv = createMMKV();
+    mmkv.set(
+      CACHE_KEY,
+      JSON.stringify({
+        variant: "B",
+        minSupportedVersion: "1.2.3",
+        hotlinePackVersion: 4,
+        features: { checks: false, chat: true, paywall: true },
+      }),
+    );
+
+    expect(readCachedConfig()).toBeNull();
+  });
+
+  it("returns null when criticalOtaVersion is a non-string/non-null value", () => {
+    const mmkv = createMMKV();
+    mmkv.set(
+      CACHE_KEY,
+      JSON.stringify({
+        variant: "B",
+        minSupportedVersion: "1.2.3",
+        hotlinePackVersion: 4,
+        features: { checks: false, chat: true, paywall: true },
+        criticalOtaVersion: 5,
       }),
     );
 

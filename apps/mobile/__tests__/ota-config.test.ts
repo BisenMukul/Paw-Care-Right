@@ -173,10 +173,75 @@ describe("OTA config (T113)", () => {
    * `bash -e {0}` run shell has no `pipefail`, so `cmd | tee -a
    * "$GITHUB_STEP_SUMMARY"` reports `tee`'s exit status (always 0),
    * masking a real fingerprint-diff.sh failure behind a green step.
+   *
+   * T114 F7 fix: the ORIGINAL version of this test counted
+   * `/set -o pipefail/g` across the WHOLE `ci.yml` text and asserted
+   * `>= 2`. `ci.yml`'s own explanatory comment (a few lines above the two
+   * real steps, describing WHY `set -o pipefail` is needed) contains that
+   * exact string too, making the real count 3 for only 2 real steps --
+   * deleting one real `set -o pipefail` line would still leave the count at
+   * 2, and the old assertion would stay green over a real regression. This
+   * version instead parses the two named `Fingerprint diff (android|ios)`
+   * steps' OWN `run:` block bodies (not the surrounding file text) and
+   * requires a non-comment line in EACH body that is exactly
+   * `set -o pipefail` once trimmed.
    */
-  it("enables pipefail in both CI fingerprint-diff steps so a real failure cannot be masked by tee", () => {
-    const pipefailCount = (ciYmlSource.match(/set -o pipefail/g) ?? []).length;
-    expect(pipefailCount).toBeGreaterThanOrEqual(2);
+  const FINGERPRINT_STEP_NAMES = ["Fingerprint diff (android)", "Fingerprint diff (ios)"] as const;
+
+  /** Extracts the literal lines of a `- name: <stepName>` step's `run: |` block, by indentation, starting after the `run: |` line and stopping at the first line indented at or above the `run:` key itself. */
+  function extractStepRunBody(source: string, stepName: string): string[] | null {
+    const nameIndex = source.indexOf(`- name: ${stepName}`);
+    if (nameIndex === -1) {
+      return null;
+    }
+    const runKeyIndex = source.indexOf("run: |", nameIndex);
+    if (runKeyIndex === -1) {
+      return null;
+    }
+    const runLineStart = source.lastIndexOf("\n", runKeyIndex) + 1;
+    const runIndent = runKeyIndex - runLineStart;
+    const bodyStart = source.indexOf("\n", runKeyIndex) + 1;
+    const lines: string[] = [];
+    for (const line of source.slice(bodyStart).split("\n")) {
+      if (line.trim() === "") {
+        lines.push(line);
+        continue;
+      }
+      const indent = line.length - line.trimStart().length;
+      if (indent <= runIndent) {
+        break;
+      }
+      lines.push(line);
+    }
+    return lines;
+  }
+
+  it("both Fingerprint diff steps set pipefail in their own run body (not in a comment)", () => {
+    const stepsWithPipefail = FINGERPRINT_STEP_NAMES.filter((stepName) => {
+      const body = extractStepRunBody(ciYmlSource, stepName);
+      return body !== null && body.some((line) => line.trim() === "set -o pipefail");
+    });
+
+    // Non-vacuity: both named steps must actually have been found (parseable).
+    expect(
+      FINGERPRINT_STEP_NAMES.filter((stepName) => extractStepRunBody(ciYmlSource, stepName) !== null),
+    ).toEqual([...FINGERPRINT_STEP_NAMES]);
+
+    expect(stepsWithPipefail).toEqual([...FINGERPRINT_STEP_NAMES]);
+  });
+
+  it("the run-body extraction genuinely distinguishes a comment mention from a real body line (mutation-proof)", () => {
+    const withCommentOnly = `
+      - name: Fingerprint diff (android)
+        run: |
+          # set -o pipefail (mentioned in a comment only)
+          echo hi
+      - name: next step
+        run: echo done
+    `;
+    const body = extractStepRunBody(withCommentOnly, "Fingerprint diff (android)");
+    expect(body).not.toBeNull();
+    expect(body?.some((line) => line.trim() === "set -o pipefail")).toBe(false);
   });
 
   /**
@@ -215,5 +280,30 @@ describe("OTA config (T113)", () => {
     expect(result.stdout).toContain("fingerprint-diff: ordered plan");
     expect(result.stdout).not.toContain("OTA-eligible");
     expect(result.stdout).not.toContain("store binary release required");
+  });
+
+  /**
+   * T113 carry-forward F8: the script's `--)` shift-skip case (defense in
+   * depth for a forwarded literal `--`, see the script's own comment) had no
+   * test driving it -- every existing dry-run invocation omits `--` entirely.
+   * This pins BOTH halves: a forwarded `--` is tolerated (the branch is
+   * exercised, not merely present), and an actually-unknown flag is still
+   * rejected (proving the branch was not loosened into a catch-all that
+   * swallows every argument).
+   */
+  it("tolerates a forwarded `--` and still rejects unknown flags", () => {
+    const withDoubleDash = childProcess.spawnSync("sh", [FINGERPRINT_SCRIPT_PATH, "--", "--dry-run"], {
+      encoding: "utf8",
+      cwd: MOBILE_DIR,
+    });
+    expect(withDoubleDash.status).toBe(0);
+    expect(withDoubleDash.stdout).toContain("fingerprint-diff: ordered plan");
+
+    const withUnknownFlag = childProcess.spawnSync("sh", [FINGERPRINT_SCRIPT_PATH, "--nope"], {
+      encoding: "utf8",
+      cwd: MOBILE_DIR,
+    });
+    expect(withUnknownFlag.status).not.toBe(0);
+    expect(withUnknownFlag.stderr).toContain("unknown argument");
   });
 });

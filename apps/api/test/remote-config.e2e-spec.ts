@@ -18,6 +18,9 @@ import { mintAccessToken, overrideCheckRunner, resolveJwtService } from "./facto
  * with a variant present and `features` with three booleans (proving
  * `OptionalJwtAuthGuard` reads the user), and that a garbage/invalid token
  * still returns 200 (fail-open, never a 401 -- T079 plan Risk 5).
+ *
+ * T114: default env -> `CRITICAL_OTA_VERSION` "" -> `criticalOtaVersion`
+ * `null` in the body.
  */
 describe("Remote config (e2e)", () => {
   let app: INestApplication;
@@ -44,7 +47,16 @@ describe("Remote config (e2e)", () => {
       minSupportedVersion: "0.0.0",
       hotlinePackVersion: 1,
       features: { checks: true, chat: true, paywall: true },
+      criticalOtaVersion: null,
     });
+  });
+
+  it("GET /v1/config with the default env has no critical OTA update (T114)", async () => {
+    const res = await request(app.getHttpServer()).get("/v1/config");
+
+    expect(res.status).toBe(200);
+    const parsed = appConfigResponseSchema.parse(res.body);
+    expect(parsed.criticalOtaVersion).toBeNull();
   });
 
   it("GET /v1/config with a valid Bearer token returns 200 with a schema-valid body and a variant present", async () => {

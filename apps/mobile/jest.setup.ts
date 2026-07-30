@@ -81,6 +81,24 @@ jest.mock("expo-network", () => ({
   addNetworkStateListener: jest.fn(() => ({ remove: jest.fn() })),
 }));
 
+// expo-updates (T114) — the root layout now mounts `<UpdateReadyPrompt/>`,
+// which reaches this module via `update-controller.ts`'s lazy require, on
+// the render path of every existing test that renders the root layout.
+// `isEnabled: false` makes `runUpdateCycle` short-circuit to `"disabled"`,
+// so every pre-existing test stays byte-identical. `use-ota-info.test.tsx`'s
+// own per-file `jest.mock("expo-updates", ...)` still overrides this global
+// stub (per-file mocks win over `jest.setup.ts`).
+jest.mock("expo-updates", () => ({
+  isEnabled: false,
+  updateId: null,
+  channel: null,
+  runtimeVersion: null,
+  isEmbeddedLaunch: true,
+  checkForUpdateAsync: jest.fn(async () => ({ isAvailable: false })),
+  fetchUpdateAsync: jest.fn(async () => ({ isNew: false })),
+  reloadAsync: jest.fn(async () => undefined),
+}));
+
 // expo-image-picker (T024, camera fns added T046) — granted permission + a
 // single non-canceled asset by default; individual tests may override with
 // `mockResolvedValueOnce`.

@@ -11,11 +11,13 @@ describe("RemoteConfigService", () => {
     minSupportedVersion?: string;
     hotlinePackVersion?: number;
     features?: { checks: boolean; chat: boolean; paywall: boolean };
+    criticalOtaVersion?: string | null;
   }) {
     const appConfig = {
       paywallVariant: overrides.paywallVariant,
       minSupportedVersion: overrides.minSupportedVersion ?? "0.0.0",
       hotlinePackVersion: overrides.hotlinePackVersion ?? 1,
+      criticalOtaVersion: overrides.criticalOtaVersion ?? null,
     } as unknown as AppConfigService;
     const featureFlags = {
       getAll: jest.fn().mockResolvedValue(overrides.features ?? ALL_FEATURES_ON),
@@ -32,6 +34,7 @@ describe("RemoteConfigService", () => {
       minSupportedVersion: "0.0.0",
       hotlinePackVersion: 1,
       features: ALL_FEATURES_ON,
+      criticalOtaVersion: null,
     });
   });
 
@@ -43,6 +46,7 @@ describe("RemoteConfigService", () => {
       minSupportedVersion: "0.0.0",
       hotlinePackVersion: 1,
       features: ALL_FEATURES_ON,
+      criticalOtaVersion: null,
     });
   });
 
@@ -54,6 +58,7 @@ describe("RemoteConfigService", () => {
       minSupportedVersion: "0.0.0",
       hotlinePackVersion: 1,
       features: ALL_FEATURES_ON,
+      criticalOtaVersion: null,
     });
   });
 
@@ -87,5 +92,13 @@ describe("RemoteConfigService", () => {
     const result = await service.getConfig();
 
     expect(result.features).toEqual({ checks: false, chat: true, paywall: true });
+  });
+
+  it("passes criticalOtaVersion through from AppConfigService", async () => {
+    const service = buildService({ paywallVariant: "A", criticalOtaVersion: "u-critical-1" });
+
+    const result = await service.getConfig();
+
+    expect(result.criticalOtaVersion).toBe("u-critical-1");
   });
 });

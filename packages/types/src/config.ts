@@ -13,6 +13,11 @@ import { z } from "zod";
  *
  * T106: `features` are booleans only, never prose (§7 review surface) —
  * a flag can only turn a surface on/off, it can never carry copy.
+ *
+ * T114: `criticalOtaVersion` names the EAS `updateId` that MUST be running;
+ * `null` = no critical update. It is a machine id, never prose (§7 review
+ * surface) — belt-and-braces mirror of the `[critical]` publish-message
+ * marker for clients that fetched before the flag (docs/OTA_UPDATES.md §3).
  */
 export const PAYWALL_VARIANTS = ["A", "B"] as const;
 export const paywallVariantSchema = z.enum(PAYWALL_VARIANTS);
@@ -36,6 +41,7 @@ export const appConfigResponseSchema = z
     minSupportedVersion: z.string(),
     hotlinePackVersion: z.number().int().nonnegative(),
     features: featureFlagsSchema,
+    criticalOtaVersion: z.string().nullable(),
   })
   .strict();
 export type AppConfigResponse = z.infer<typeof appConfigResponseSchema>;

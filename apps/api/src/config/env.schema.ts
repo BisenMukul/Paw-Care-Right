@@ -27,6 +27,9 @@ export const apiEnvSchema = z.object({
   PAYWALL_VARIANT: z.enum(["A", "B", "AUTO"]).default("AUTO"),
   MIN_SUPPORTED_VERSION: z.string().default("0.0.0"),
   HOTLINE_PACK_VERSION: z.coerce.number().int().nonnegative().default(1),
+  // T114: empty string = no critical OTA update; a real value is the EAS
+  // `updateId` published with the `[critical]` marker (docs/OTA_UPDATES.md §3).
+  CRITICAL_OTA_VERSION: z.string().default(""),
   // --- Feature kill switches (T106). z.coerce.boolean() is deliberately
   // avoided here: it would coerce the string "false" to `true`. ---
   FEATURE_CHECKS: z.enum(["on", "off"]).default("on"),

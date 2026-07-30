@@ -50,12 +50,14 @@ describe("appConfigResponseSchema", () => {
         minSupportedVersion: "0.0.0",
         hotlinePackVersion: 1,
         features: ALL_FEATURES_ON,
+        criticalOtaVersion: null,
       }),
     ).toEqual({
       paywall: { variant: "A" },
       minSupportedVersion: "0.0.0",
       hotlinePackVersion: 1,
       features: ALL_FEATURES_ON,
+      criticalOtaVersion: null,
     });
   });
 
@@ -66,12 +68,14 @@ describe("appConfigResponseSchema", () => {
         minSupportedVersion: "1.2.3",
         hotlinePackVersion: 3,
         features: { checks: false, chat: true, paywall: true },
+        criticalOtaVersion: "u-critical-1",
       }),
     ).toEqual({
       paywall: { variant: "B" },
       minSupportedVersion: "1.2.3",
       hotlinePackVersion: 3,
       features: { checks: false, chat: true, paywall: true },
+      criticalOtaVersion: "u-critical-1",
     });
   });
 
@@ -82,6 +86,7 @@ describe("appConfigResponseSchema", () => {
         minSupportedVersion: "0.0.0",
         hotlinePackVersion: 1,
         features: ALL_FEATURES_ON,
+        criticalOtaVersion: null,
       }).success,
     ).toBe(false);
   });
@@ -92,6 +97,7 @@ describe("appConfigResponseSchema", () => {
         minSupportedVersion: "0.0.0",
         hotlinePackVersion: 1,
         features: ALL_FEATURES_ON,
+        criticalOtaVersion: null,
       }).success,
     ).toBe(false);
   });
@@ -102,6 +108,7 @@ describe("appConfigResponseSchema", () => {
         paywall: { variant: "A" },
         hotlinePackVersion: 1,
         features: ALL_FEATURES_ON,
+        criticalOtaVersion: null,
       }).success,
     ).toBe(false);
   });
@@ -112,6 +119,7 @@ describe("appConfigResponseSchema", () => {
         paywall: { variant: "A" },
         minSupportedVersion: "0.0.0",
         features: ALL_FEATURES_ON,
+        criticalOtaVersion: null,
       }).success,
     ).toBe(false);
   });
@@ -123,6 +131,7 @@ describe("appConfigResponseSchema", () => {
         minSupportedVersion: "0.0.0",
         hotlinePackVersion: 1.5,
         features: ALL_FEATURES_ON,
+        criticalOtaVersion: null,
       }).success,
     ).toBe(false);
   });
@@ -134,6 +143,7 @@ describe("appConfigResponseSchema", () => {
         minSupportedVersion: "0.0.0",
         hotlinePackVersion: -1,
         features: ALL_FEATURES_ON,
+        criticalOtaVersion: null,
       }).success,
     ).toBe(false);
   });
@@ -144,6 +154,7 @@ describe("appConfigResponseSchema", () => {
         paywall: { variant: "A" },
         minSupportedVersion: "0.0.0",
         hotlinePackVersion: 1,
+        criticalOtaVersion: null,
       }).success,
     ).toBe(false);
   });
@@ -155,6 +166,7 @@ describe("appConfigResponseSchema", () => {
         minSupportedVersion: "0.0.0",
         hotlinePackVersion: 1,
         features: { checks: "on", chat: true, paywall: true },
+        criticalOtaVersion: null,
       }).success,
     ).toBe(false);
   });
@@ -166,8 +178,41 @@ describe("appConfigResponseSchema", () => {
         minSupportedVersion: "0.0.0",
         hotlinePackVersion: 1,
         features: ALL_FEATURES_ON,
+        criticalOtaVersion: null,
         extra: true,
       }).success,
     ).toBe(false);
+  });
+
+  describe("criticalOtaVersion (T114)", () => {
+    const base = {
+      paywall: { variant: "A" as const },
+      minSupportedVersion: "0.0.0",
+      hotlinePackVersion: 1,
+      features: ALL_FEATURES_ON,
+    };
+
+    it("accepts a string updateId", () => {
+      expect(
+        appConfigResponseSchema.safeParse({ ...base, criticalOtaVersion: "u-critical-1" })
+          .success,
+      ).toBe(true);
+    });
+
+    it("accepts null", () => {
+      expect(appConfigResponseSchema.safeParse({ ...base, criticalOtaVersion: null }).success).toBe(
+        true,
+      );
+    });
+
+    it("rejects a missing criticalOtaVersion key", () => {
+      expect(appConfigResponseSchema.safeParse(base).success).toBe(false);
+    });
+
+    it("rejects a non-string/non-null value", () => {
+      expect(
+        appConfigResponseSchema.safeParse({ ...base, criticalOtaVersion: 5 }).success,
+      ).toBe(false);
+    });
   });
 });

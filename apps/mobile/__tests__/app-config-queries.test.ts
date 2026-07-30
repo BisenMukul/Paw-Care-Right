@@ -34,12 +34,17 @@ describe("fetchAppConfig — stale-cache / offline behavior", () => {
     expect(DEFAULT_APP_CONFIG.features).toEqual({ checks: true, chat: true, paywall: true });
   });
 
+  it("DEFAULT_APP_CONFIG.criticalOtaVersion is null (T114 — fail-safe default is 'no critical update')", () => {
+    expect(DEFAULT_APP_CONFIG.criticalOtaVersion).toBeNull();
+  });
+
   it("resolves the flattened server config on a valid 200 body AND writes the cache", async () => {
     mockGet.mockResolvedValue({
       paywall: { variant: "B" },
       minSupportedVersion: "1.5.0",
       hotlinePackVersion: 3,
       features: { checks: false, chat: true, paywall: true },
+      criticalOtaVersion: "u-critical-1",
     });
 
     await expect(fetchAppConfig()).resolves.toEqual({
@@ -47,6 +52,7 @@ describe("fetchAppConfig — stale-cache / offline behavior", () => {
       minSupportedVersion: "1.5.0",
       hotlinePackVersion: 3,
       features: { checks: false, chat: true, paywall: true },
+      criticalOtaVersion: "u-critical-1",
     });
   });
 
@@ -58,6 +64,7 @@ describe("fetchAppConfig — stale-cache / offline behavior", () => {
       minSupportedVersion: "1.5.0",
       hotlinePackVersion: 3,
       features: { checks: false, chat: true, paywall: true },
+      criticalOtaVersion: "u-critical-1",
     });
   });
 
@@ -69,6 +76,7 @@ describe("fetchAppConfig — stale-cache / offline behavior", () => {
       minSupportedVersion: "1.5.0",
       hotlinePackVersion: 3,
       features: { checks: false, chat: true, paywall: true },
+      criticalOtaVersion: "u-critical-1",
     });
   });
 
@@ -77,6 +85,7 @@ describe("fetchAppConfig — stale-cache / offline behavior", () => {
       paywall: { variant: "A" },
       minSupportedVersion: "0.0.0",
       hotlinePackVersion: 1,
+      criticalOtaVersion: null,
     });
 
     await expect(fetchAppConfig()).resolves.toEqual({
@@ -84,6 +93,24 @@ describe("fetchAppConfig — stale-cache / offline behavior", () => {
       minSupportedVersion: "1.5.0",
       hotlinePackVersion: 3,
       features: { checks: false, chat: true, paywall: true },
+      criticalOtaVersion: "u-critical-1",
+    });
+  });
+
+  it("a body missing `criticalOtaVersion` (pre-T114 server) is schema-invalid and falls back to the cache (T114)", async () => {
+    mockGet.mockResolvedValue({
+      paywall: { variant: "A" },
+      minSupportedVersion: "0.0.0",
+      hotlinePackVersion: 1,
+      features: { checks: true, chat: true, paywall: true },
+    });
+
+    await expect(fetchAppConfig()).resolves.toEqual({
+      variant: "B",
+      minSupportedVersion: "1.5.0",
+      hotlinePackVersion: 3,
+      features: { checks: false, chat: true, paywall: true },
+      criticalOtaVersion: "u-critical-1",
     });
   });
 });

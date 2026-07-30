@@ -25,7 +25,7 @@ export class RemoteConfigController {
   @Get()
   @ApiOkResponse({
     description:
-      "Remote client config: paywall A/B variant, min-supported-version gate, hotline pack version, and feature kill switches (T106).",
+      "Remote client config: paywall A/B variant, min-supported-version gate, hotline pack version, feature kill switches (T106), and the critical-OTA-update signal (T114, mirrors the update's [critical] marker).",
   })
   getConfig(@CurrentUser() user?: { userId: string }): Promise<AppConfigResponse> {
     return this.remoteConfigService.getConfig(user?.userId);

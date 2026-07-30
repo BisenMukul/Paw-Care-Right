@@ -1509,3 +1509,21 @@ Attempt 2, checker verdict **PASS** (round-1 FAIL on 1 HIGH + 1 MED, both fixed 
 **Founder to-dos (runbook §9 17–19):** rebuild+resubmit internal beta binaries (fingerprint changed — prior builds can never OTA); EAS re-create also feeds updates.url; one-time channel↔branch mapping verification via eas-cli.
 
 **Next:** T114 (in-app update flow + deferral guard).
+
+---
+
+## T114 — In-app update flow + deferral guard (2026-07-30)
+
+Attempt 2, checker verdict **PASS** (round-1 FAIL on 1 HIGH — the prompt component itself had zero coverage; closed test-only).
+
+**Shipped (OTA_UPDATES §3 complete, all 9 obligations mapped file:line+test):** update-controller (pure logic, injectable Updates loader, 3s cold-start race that can never block first paint — abandoned promise pre-caught, result discarded, no late-resolution prompt), background fetch, silent-apply-next-launch as the universal uncertainty resolution, critical path ([critical] duck-typed marker + /config.criticalOtaVersion full lockstep types→api→mobile with CRITICAL_OTA_VERSION env), 6h MMKV-persisted foreground throttle (boundary + backwards-clock tested), deferral guard over check/* (incl. Emergency interstitial), checks/*, paywall+checkout, (auth)/*, add-pet/*, push-rationale, upsell-visible — with critical NEVER bypassing it: prompt gated by !deferred AND the single production reloadAsync callsite re-guarded at tap time (checker grep-verified sole callsite). UpdateReadyPrompt mounted in _layout; global expo-updates jest mock; T113 carry-forwards F3/F7/F8 landed with pins. Suites: mobile 195/1642, api 113/1149, types 26/591.
+
+**Round-1 FAIL:** update-ready-prompt.tsx — the render-time enforcement point — had no test file and the layout mock left the mount unasserted: checker deleted the visibility gate AND then the whole component; every gate stayed green. Fix round: 6-test component spec (incl. a genuine end-to-end Emergency-segment case the checker probe-proved pins the hook-level gate independently) + testID mount assertion; both mutants now RED (suite-level). **Standing lesson: every root-mounted component gets its own spec + a mount assertion — sibling idiom is mandatory, not optional.**
+
+**Deviations handled:** two pre-existing test files broke as mechanical consequences of the plan's own shared-surface changes (strict-schema fixture, layout mock) — executor stopped per plan contingency, orchestrator authorized both one-liners (steps 26–27). MMKV persistence test technique swapped for the cache-file idiom after the executor proved the plan's resetModules approach tested a mock artifact.
+
+**Carried forward (MED, non-blocking, planner inputs):** F1 → T115–T118: client /config schema is .strict(), so a PRE-T114 bundle rejects the grown response body and silently loses the features kill switches (contradicts OTA_UPDATES §5.4; pre-existing since T079/T106) — must be resolved before the first production OTA; F4 → T116: the [critical] manifest-marker probe uses fields real EAS manifests likely never populate — T116 pins the actual field at publish time or drops the path. LOWs 5/6/8 + Finding 10 (retitle the mocked deferred case) noted.
+
+**Founder delta:** CRITICAL_OTA_VERSION env var on api deploys (set to an updateId at [critical] publish, cleared after rollout — T116 runbook).
+
+**Next:** T115 (forced/recommended binary upgrade gate) — must also address carry-forward F1.
