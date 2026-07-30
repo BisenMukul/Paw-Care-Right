@@ -20,6 +20,7 @@ import { UpdateReadyPrompt } from "../src/components/update-ready-prompt";
 import { UpgradeRecommendedBanner } from "../src/components/upgrade-recommended-banner";
 import { UpsellSheet } from "../src/components/upsell-sheet";
 import { AppErrorBoundary } from "../src/error-boundary";
+import { usePaywallExperimentAssignment } from "../src/experiments/use-paywall-experiment-assignment";
 import { useShakeToReport } from "../src/feedback/use-shake-to-report";
 import { useAppFonts } from "../src/fonts/use-app-fonts";
 import { useNetworkListener } from "../src/offline/use-network-listener";
@@ -78,6 +79,7 @@ function AppRoot() {
   useNetworkListener();
   useOutboxFlush();
   usePurchasesInit();
+  usePaywallExperimentAssignment();
   useShakeToReport();
 
   if (status === "restoring") {

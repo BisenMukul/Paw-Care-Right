@@ -1,4 +1,6 @@
-import type { Urgency } from "@bombaypetcompany/types";
+import type { PaywallVariant, Urgency } from "@bombaypetcompany/types";
+
+import type { PaywallExperimentKey } from "./experiments/paywall-ab";
 
 /**
  * The shared, typed PostHog event map (T078 plan decision 3 / SPEC §8).
@@ -15,7 +17,9 @@ import type { Urgency } from "@bombaypetcompany/types";
  * (OTA_UPDATES §7) are no exception: every property is a machine id
  * (`updateId`/`fromUpdateId`/`channel`/`currentUpdateId`), a boolean, or a
  * number (`latencyMs`) -- never a manifest/update message or any other
- * free-text field.
+ * free-text field. T107's two `paywall_experiment_*` events are the same:
+ * `experiment` is a fixed machine key and `variant` is a one-letter arm id
+ * -- never prose.
  */
 export interface AnalyticsEventMap {
   first_check_completed: {
@@ -27,6 +31,14 @@ export interface AnalyticsEventMap {
   paywall_view: {
     source: "onboarding" | "settings";
     householdId?: string;
+  };
+  paywall_experiment_assigned: {
+    experiment: PaywallExperimentKey;
+    variant: PaywallVariant;
+  };
+  paywall_experiment_exposed: {
+    experiment: PaywallExperimentKey;
+    variant: PaywallVariant;
   };
   trial_start: {
     householdId: string;

@@ -541,19 +541,29 @@ export const strings = {
     dismiss: "Not now",
   },
   paywall: {
-    // A/B copy variants (T074 plan decision 5): the server only ever sends
-    // the variant ID, never prose (§7 review + i18n-ready). NO health/
-    // medical claims, no "diagnos*"/drug/dose tokens in either variant.
+    // A/B copy variants (T074 plan decision 5, grown by T107): the server
+    // only ever sends the variant ID, never prose (§7 review + i18n-ready).
+    // NO health/medical claims, no "diagnos*"/drug/dose tokens in either
+    // variant. Arms differ in headline, subcopy, AND trial framing
+    // (`trialCta`/`trialCtaWithPrice`). Trial *length* is a factual detail
+    // (7 days, matching the store product) in both arms -- never a
+    // discount/urgency claim, never a health claim (CLAUDE.md §7 rules 1-2).
+    // Variant A stays byte-identical to its pre-T107 text (D5, control);
+    // only variant B's trial-framing keys are new copy.
     variants: {
       A: {
         headline: (appName: string) => `Get more from ${appName}`,
         subcopy:
           "Unlock unlimited symptom checks, faster answers, and sharing across your whole family.",
+        trialCta: "7-day free trial",
+        trialCtaWithPrice: (price: string) => `Start your 7-day free trial — then ${price}`,
       },
       B: {
         headline: (appName: string) => `${appName} Plus`,
         subcopy:
           "Go further with unlimited symptom checks, priority guidance, and a plan the whole family can share.",
+        trialCta: "Free for 7 days",
+        trialCtaWithPrice: (price: string) => `Try it free for 7 days — then ${price}`,
       },
     },
     planNames: {
@@ -563,8 +573,6 @@ export const strings = {
     },
     familyExplainer: "Share one subscription across everyone who cares for your pets.",
     annualBadge: "Best value",
-    trialCta: "7-day free trial",
-    trialCtaWithPrice: (price: string) => `Start your 7-day free trial — then ${price}`,
     subscribeCta: (price: string) => `Subscribe — ${price}`,
     restore: "Restore purchases",
     restoreNone: "We couldn't find any previous purchases.",

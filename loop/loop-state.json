@@ -610,8 +610,8 @@
       "attempts": 1
     },
     "T107": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 2
     },
     "T108": {
       "status": "pending",
@@ -753,10 +753,10 @@
     "surveillance-layer-corrections-v2: Write grants, fail-closed protected-paths (no python), current-task file contract, P0/no-HEAD tolerance, subshell fail-open fixes"
   ],
   "current-task": {
-    "id": "T107",
+    "id": "T108",
     "phase": 11,
     "attempts": 0,
     "state": "planning",
-    "note": "C3 approved 2026-07-30 by founder chat. Phase 11 begins at T107."
+    "note": "T107 done 2026-07-30 (attempt 2; mock-blindness HIGHs fixed with realistic auth-lifecycle tests). T108 referral next."
   }
 }

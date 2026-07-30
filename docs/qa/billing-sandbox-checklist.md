@@ -116,8 +116,9 @@ expiresAt: string|null, billingIssue: boolean }`.
 
 1. Using a sandbox/tester identity that has NEVER subscribed before,
    confirm the monthly card's CTA shows the trial framing
-   (`strings.paywall.trialCtaWithPrice`, e.g. "Start your 7-day free trial —
-   then $5.99"). Purchase it.
+   (`strings.paywall.variants.A.trialCtaWithPrice`, e.g. "Start your 7-day
+   free trial — then $5.99"; variant B reads "Try it free for 7 days — then
+   $5.99" — see T107, `docs/experiments/paywall-ab.md`). Purchase it.
 2. **Expected:** entitlement flips to `entitled: true` with a future
    `expiresAt` (roughly "now + 7 sandbox-compressed days" — see §4).
 3. **Server check:** the `trial_start` analytics event is emitted

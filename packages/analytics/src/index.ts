@@ -5,3 +5,4 @@ export * from "./sentry/scrub";
 export * from "./sentry/options";
 export * from "./dashboards/posthog-insights";
 export * from "./dashboards/sentry-alerts";
+export * from "./experiments/paywall-ab";

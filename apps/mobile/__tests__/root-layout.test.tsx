@@ -76,6 +76,16 @@ jest.mock("../src/auth/auth-store", () => {
 jest.mock("../src/offline/use-network-listener", () => ({ useNetworkListener: jest.fn() }));
 jest.mock("../src/offline/use-outbox-flush", () => ({ useOutboxFlush: jest.fn() }));
 jest.mock("../src/billing/use-purchases-init", () => ({ usePurchasesInit: jest.fn() }));
+// T107 mechanical consequence: `usePaywallExperimentAssignment` calls
+// `usePaywallConfig()` (real `useQuery`), which needs a real
+// `QueryClientProvider` -- this suite mocks `PersistedApiQueryProvider` down
+// to a passthrough `View` (see above), so the hook is stubbed here exactly
+// like the other side-effect hooks on this line; this suite asserts layout
+// STRUCTURE only and never exercises the paywall experiment itself (see
+// `apps/mobile/__tests__/paywall-experiment-events.test.tsx` for that).
+jest.mock("../src/experiments/use-paywall-experiment-assignment", () => ({
+  usePaywallExperimentAssignment: jest.fn(),
+}));
 jest.mock("../src/components/update-gate", () => {
   const { View } = jest.requireActual<typeof import("react-native")>("react-native");
   return {

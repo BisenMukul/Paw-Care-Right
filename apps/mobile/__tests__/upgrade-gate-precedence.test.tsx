@@ -76,6 +76,14 @@ jest.mock("../src/auth/auth-store", () => {
 jest.mock("../src/offline/use-network-listener", () => ({ useNetworkListener: jest.fn() }));
 jest.mock("../src/offline/use-outbox-flush", () => ({ useOutboxFlush: jest.fn() }));
 jest.mock("../src/billing/use-purchases-init", () => ({ usePurchasesInit: jest.fn() }));
+// T107 mechanical consequence (see `root-layout.test.tsx`'s identical
+// comment): `usePaywallExperimentAssignment` needs a real
+// `QueryClientProvider`, which this suite's mocked passthrough provider does
+// not supply -- stubbed like the other side-effect hooks, since this suite
+// only pins the `<UpdateGate>` precedence behaviour.
+jest.mock("../src/experiments/use-paywall-experiment-assignment", () => ({
+  usePaywallExperimentAssignment: jest.fn(),
+}));
 jest.mock("../src/components/upsell-sheet", () => ({ UpsellSheet: () => null }));
 jest.mock("../src/components/update-ready-prompt", () => {
   const { View } = jest.requireActual<typeof import("react-native")>("react-native");
