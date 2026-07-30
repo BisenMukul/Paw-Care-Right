@@ -19,6 +19,7 @@ import {
   type ReminderType,
 } from "@bombaypetcompany/types";
 
+import { resolveActiveStrings } from "./i18n/runtime";
 import type { ScheduleFrequency } from "./reminders/schedule-builder";
 
 // Centralized user-facing copy for apps/mobile (CLAUDE.md §6).
@@ -104,7 +105,7 @@ const ACTIVITY_UNIT_LABELS_SINGULAR: Partial<Record<ActivityUnit, string>> = {
   bowls: "bowl",
 };
 
-export const strings = {
+const enStringsTree = {
   tabs: {
     home: "Home",
     care: "Care",
@@ -1096,3 +1097,8 @@ export const strings = {
     },
   },
 } as const;
+
+export const enStrings = enStringsTree;
+export type StringsShape = typeof enStringsTree;
+/** T110: identity-returns `enStrings` while English is the only served locale (plan §2.1). */
+export const strings = resolveActiveStrings(enStringsTree);

@@ -1,0 +1,1466 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`RTL smoke (AC2) Chat renders under the ar-XB RTL pseudo-locale 1`] = `
+<RNCSafeAreaView
+  className="flex-1 bg-surface-page dark:bg-surface-page-dark"
+  edges={
+    {
+      "bottom": "off",
+      "left": "off",
+      "right": "off",
+      "top": "additive",
+    }
+  }
+  testID="chat-screen"
+>
+  <View
+    className="flex-row items-center px-2 py-2"
+    testID="app-header"
+  >
+    <View
+      accessibilityLabel="‏⟦Ḃäċķ⟧‏"
+      accessibilityRole="button"
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": undefined,
+          "expanded": undefined,
+          "selected": undefined,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      className="h-11 w-11 items-center justify-center rounded-full"
+      collapsable={false}
+      focusable={true}
+      hitSlop={
+        {
+          "bottom": 8,
+          "left": 8,
+          "right": 8,
+          "top": 8,
+        }
+      }
+      onBlur={[Function]}
+      onClick={[Function]}
+      onFocus={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={null}
+      testID="app-header-back"
+    >
+      <Text
+        allowFontScaling={false}
+        selectable={false}
+        style={
+          [
+            {
+              "color": "#1f6350",
+              "fontSize": 24,
+            },
+            undefined,
+            {
+              "fontFamily": "ionicons",
+              "fontStyle": "normal",
+              "fontWeight": "normal",
+            },
+            {},
+          ]
+        }
+      >
+        
+      </Text>
+    </View>
+    <Text
+      accessibilityRole="header"
+      className="flex-1 text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold"
+      maxFontSizeMultiplier={1.5}
+      testID="app-header-title"
+    >
+      ‏⟦Äśķ Ḃöṁḃäý Ṗéţ Ċöṁṗäñý⟧‏
+    </Text>
+  </View>
+  <View
+    className="flex-1"
+    onLayout={[Function]}
+    style={
+      {
+        "paddingBottom": 0,
+      }
+    }
+  >
+    <RCTScrollView
+      className="flex-1"
+      contentContainerClassName="gap-3 px-4 pb-4 pt-2"
+      onScroll={[Function]}
+      scrollEventThrottle={16}
+      testID="chat-transcript"
+    >
+      <View>
+        <View
+          accessibilityLabel="‏⟦Ċĥäţţîñġ äḃöüţ Ŕéx̂⟧‏"
+          className="flex-row items-center gap-2 self-start rounded-full bg-brand-50 dark:bg-surface-raised-dark px-3 py-1.5"
+          testID="chat-active-pet-badge"
+        >
+          <Text
+            allowFontScaling={false}
+            selectable={false}
+            style={
+              [
+                {
+                  "color": "#1f6350",
+                  "fontSize": 16,
+                },
+                undefined,
+                {
+                  "fontFamily": "ionicons",
+                  "fontStyle": "normal",
+                  "fontWeight": "normal",
+                },
+                {},
+              ]
+            }
+          >
+            
+          </Text>
+          <Text
+            className="text-sm font-semibold text-brand-900 dark:text-ink-dark font-body-semibold"
+          >
+            Rex
+          </Text>
+          <Text
+            className="text-xs text-brand-700 dark:text-ink-muted-dark font-body"
+          >
+            ‏⟦Ḋöġ⟧‏
+          </Text>
+        </View>
+        <Text
+          className="text-sm text-brand-700 dark:text-ink-muted-dark font-body"
+          testID="chat-subtitle"
+        >
+          ‏⟦Äśķ äḃöüţ śýṁṗţöṁś, ḟööḋ śäḟéţý, öŕ éṽéŕýḋäý ċäŕé.⟧‏
+        </Text>
+        <View
+          className="gap-2"
+          testID="chat-message-uuid-1"
+        >
+          <View
+            className="max-w-[80%] self-end rounded-2xl bg-brand-700 dark:bg-accent-dark px-4 py-3"
+            testID="chat-bubble-uuid-1"
+          >
+            <Text
+              className="text-base text-white font-body"
+            >
+              Is this normal?
+            </Text>
+          </View>
+        </View>
+        <View
+          className="gap-2"
+          testID="chat-message-uuid-2"
+        >
+          <View
+            className="max-w-[80%] self-start rounded-2xl bg-brand-50 dark:bg-surface-raised-dark px-4 py-3"
+            testID="chat-bubble-uuid-2"
+          >
+            <Text
+              className="text-base text-brand-900 dark:text-ink-dark font-body"
+            >
+              Here is some general guidance.
+            </Text>
+          </View>
+        </View>
+      </View>
+    </RCTScrollView>
+    <View
+      className="gap-3 border-t border-brand-100 dark:border-hairline-dark bg-surface-page dark:bg-surface-page-dark px-4 pb-6 pt-3"
+    >
+      <View
+        className="flex-row items-end gap-2"
+      >
+        <TextInput
+          accessibilityLabel="‏⟦Ţýṗé ýöüŕ q̈üéśţîöñ…⟧‏"
+          className="max-h-32 flex-1 rounded-lg border border-brand-100 dark:border-hairline-dark bg-white dark:bg-surface-card-dark px-4 py-3 text-base text-brand-900 dark:text-ink-dark font-body"
+          editable={true}
+          maxLength={2001}
+          multiline={true}
+          onChangeText={[Function]}
+          placeholder="‏⟦Ţýṗé ýöüŕ q̈üéśţîöñ…⟧‏"
+          placeholderTextColor="#2f8f74"
+          testID="chat-composer-input"
+          value=""
+        />
+        <View
+          accessibilityLabel="‏⟦Śéñḋ ṁéśśäġé⟧‏"
+          accessibilityRole="button"
+          accessibilityState={
+            {
+              "busy": undefined,
+              "checked": undefined,
+              "disabled": true,
+              "expanded": undefined,
+              "selected": undefined,
+            }
+          }
+          accessibilityValue={
+            {
+              "max": undefined,
+              "min": undefined,
+              "now": undefined,
+              "text": undefined,
+            }
+          }
+          accessible={true}
+          className="h-11 w-11 items-center justify-center rounded-full bg-brand-300 dark:bg-surface-raised-dark"
+          collapsable={false}
+          focusable={true}
+          onBlur={[Function]}
+          onClick={[Function]}
+          onFocus={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          style={null}
+          testID="chat-composer-send"
+        >
+          <Text
+            allowFontScaling={false}
+            selectable={false}
+            style={
+              [
+                {
+                  "color": "#ffffff",
+                  "fontSize": 20,
+                },
+                undefined,
+                {
+                  "fontFamily": "ionicons",
+                  "fontStyle": "normal",
+                  "fontWeight": "normal",
+                },
+                {},
+              ]
+            }
+          >
+            
+          </Text>
+        </View>
+      </View>
+      <View
+        accessibilityRole="text"
+        className="rounded-lg bg-brand-50 px-4 py-3"
+        testID="vet-disclaimer"
+      >
+        <Text
+          className="text-center text-sm text-brand-900"
+        >
+          ‏⟦Ḃöṁḃäý Ṗéţ Ċöṁṗäñý öḟḟéŕś ġéñéŕäŀ ṗéţ-ċäŕé ġüîḋäñċé, ñöţ ṽéţéŕîñäŕý ċäŕé öŕ ţŕéäţṁéñţ. Äŀŵäýś ċöñśüŀţ ä ŀîċéñśéḋ ṽéţéŕîñäŕîäñ.⟧‏
+        </Text>
+      </View>
+    </View>
+  </View>
+</RNCSafeAreaView>
+`;
+
+exports[`RTL smoke (AC2) Check Result renders under the ar-XB RTL pseudo-locale 1`] = `
+<RNCSafeAreaView
+  className="flex-1 bg-surface-page dark:bg-surface-page-dark"
+  edges={
+    {
+      "bottom": "additive",
+      "left": "additive",
+      "right": "additive",
+      "top": "additive",
+    }
+  }
+  testID="check-result-screen"
+>
+  <View
+    className="flex-row items-center px-2 py-2"
+    testID="app-header"
+  >
+    <View
+      accessibilityLabel="‏⟦Ḃäċķ⟧‏"
+      accessibilityRole="button"
+      accessibilityState={
+        {
+          "busy": undefined,
+          "checked": undefined,
+          "disabled": undefined,
+          "expanded": undefined,
+          "selected": undefined,
+        }
+      }
+      accessibilityValue={
+        {
+          "max": undefined,
+          "min": undefined,
+          "now": undefined,
+          "text": undefined,
+        }
+      }
+      accessible={true}
+      className="h-11 w-11 items-center justify-center rounded-full"
+      collapsable={false}
+      focusable={true}
+      hitSlop={
+        {
+          "bottom": 8,
+          "left": 8,
+          "right": 8,
+          "top": 8,
+        }
+      }
+      onBlur={[Function]}
+      onClick={[Function]}
+      onFocus={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={null}
+      testID="app-header-back"
+    >
+      <Text
+        allowFontScaling={false}
+        selectable={false}
+        style={
+          [
+            {
+              "color": "#1f6350",
+              "fontSize": 24,
+            },
+            undefined,
+            {
+              "fontFamily": "ionicons",
+              "fontStyle": "normal",
+              "fontWeight": "normal",
+            },
+            {},
+          ]
+        }
+      >
+        
+      </Text>
+    </View>
+  </View>
+  <RCTScrollView
+    className="flex-1"
+    testID="check-result-scroll"
+  >
+    <View>
+      <View
+        className="gap-6 px-4 pb-8 pt-4"
+      >
+        <View
+          testID="check-result-urgency-banner"
+        >
+          <View
+            className="items-center rounded-2xl px-4 py-3 bg-green-600"
+            testID="urgency-banner-REASSURE"
+          >
+            <Text
+              className="text-center text-lg font-bold text-white"
+            >
+              ‏⟦Ŀîķéŀý ñöţ üŕġéñţ⟧‏
+            </Text>
+          </View>
+        </View>
+        <View
+          className="rounded-2xl bg-white dark:bg-surface-card-dark p-4 shadow-md gap-2 gap-4"
+        >
+          <Text
+            className="text-base text-brand-900 dark:text-ink-dark font-body"
+            testID="check-result-summary"
+          >
+            General guidance based on the information provided.
+          </Text>
+          <View
+            className="gap-2"
+            testID="check-result-possible-causes"
+          >
+            <Text
+              accessibilityRole="header"
+              className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold"
+            >
+              ‏⟦Ŵĥäţ ţĥîś ċöüŀḋ ḃé⟧‏
+            </Text>
+            <View>
+              <Text
+                className="text-base font-semibold text-brand-900 dark:text-ink-dark font-body-semibold"
+              >
+                Mild upset stomach
+              </Text>
+              <Text
+                className="text-sm text-brand-700 dark:text-ink-muted-dark font-body"
+              >
+                Reported symptoms are consistent with this.
+              </Text>
+            </View>
+          </View>
+          <View
+            className="gap-2"
+            testID="check-result-red-flags-to-watch"
+          >
+            <Text
+              accessibilityRole="header"
+              className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold"
+            >
+              ‏⟦Ŵĥéñ ţö ġéţ ĥéŀṗ ḟäśţ⟧‏
+            </Text>
+            <Text
+              className="text-sm text-brand-700 dark:text-ink-muted-dark font-body"
+            >
+              • Repeated vomiting
+            </Text>
+            <Text
+              className="text-sm text-brand-700 dark:text-ink-muted-dark font-body"
+            >
+              • Lethargy that worsens
+            </Text>
+          </View>
+          <View
+            className="gap-2"
+            testID="check-result-home-care"
+          >
+            <Text
+              accessibilityRole="header"
+              className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold"
+            >
+              ‏⟦Ċäŕîñġ ḟöŕ ţĥéṁ äţ ĥöṁé⟧‏
+            </Text>
+            <Text
+              className="text-sm text-brand-700 dark:text-ink-muted-dark font-body"
+            >
+              • Offer small amounts of water
+            </Text>
+          </View>
+          <View
+            className="gap-2"
+            testID="check-result-do-not"
+          >
+            <Text
+              accessibilityRole="header"
+              className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold"
+            >
+              ‏⟦Ŵĥäţ ñöţ ţö ḋö⟧‏
+            </Text>
+            <Text
+              className="text-sm text-brand-700 dark:text-ink-muted-dark font-body"
+            >
+              • Do not give human medications without veterinary guidance.
+            </Text>
+          </View>
+          <View
+            className="gap-2"
+            testID="check-result-vet-questions"
+          >
+            <Text
+              accessibilityRole="header"
+              className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold"
+            >
+              ‏⟦Q̈üéśţîöñś ţö äśķ ýöüŕ ṽéţ⟧‏
+            </Text>
+            <Text
+              className="text-sm text-brand-700 dark:text-ink-muted-dark font-body"
+            >
+              • How long have symptoms been present?
+            </Text>
+          </View>
+        </View>
+        <View
+          accessibilityRole="text"
+          className="rounded-lg bg-brand-50 px-4 py-3"
+          testID="vet-disclaimer"
+        >
+          <Text
+            className="text-center text-sm text-brand-900"
+          >
+            ‏⟦Ḃöṁḃäý Ṗéţ Ċöṁṗäñý öḟḟéŕś ġéñéŕäŀ ṗéţ-ċäŕé ġüîḋäñċé, ñöţ ṽéţéŕîñäŕý ċäŕé öŕ ţŕéäţṁéñţ. Äŀŵäýś ċöñśüŀţ ä ŀîċéñśéḋ ṽéţéŕîñäŕîäñ.⟧‏
+          </Text>
+        </View>
+        <View
+          className="gap-2"
+        >
+          <View
+            accessibilityRole="button"
+            accessibilityState={
+              {
+                "busy": undefined,
+                "checked": undefined,
+                "disabled": false,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            className="flex-row items-center justify-center gap-2 rounded-lg bg-brand-700 dark:bg-accent-dark px-6 py-3"
+            collapsable={false}
+            focusable={true}
+            onBlur={[Function]}
+            onClick={[Function]}
+            onFocus={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={null}
+            testID="check-result-find-vet"
+          >
+            <Text
+              className="text-base font-semibold text-white font-body-semibold"
+            >
+              ‏⟦Ḟîñḋ ä ṽéţ ñéäŕḃý⟧‏
+            </Text>
+          </View>
+          <View
+            accessibilityRole="button"
+            accessibilityState={
+              {
+                "busy": undefined,
+                "checked": undefined,
+                "disabled": false,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            className="flex-row items-center justify-center gap-2 rounded-lg border border-brand-700 dark:border-accent-bright bg-white dark:bg-surface-card-dark px-6 py-3"
+            collapsable={false}
+            focusable={true}
+            onBlur={[Function]}
+            onClick={[Function]}
+            onFocus={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={null}
+            testID="check-result-share"
+          >
+            <Text
+              className="text-base font-semibold text-brand-700 dark:text-accent-bright font-body-semibold"
+              maxFontSizeMultiplier={1.5}
+            >
+              ‏⟦Śĥäŕé äś ţéx̂ţ⟧‏
+            </Text>
+          </View>
+          <View
+            accessibilityRole="button"
+            accessibilityState={
+              {
+                "busy": undefined,
+                "checked": undefined,
+                "disabled": false,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            className="px-4 py-3"
+            collapsable={false}
+            focusable={true}
+            hitSlop={
+              {
+                "bottom": 8,
+                "left": 8,
+                "right": 8,
+                "top": 8,
+              }
+            }
+            onBlur={[Function]}
+            onClick={[Function]}
+            onFocus={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={null}
+            testID="check-result-done"
+          >
+            <Text
+              className="text-base font-semibold text-brand-700 dark:text-accent-bright font-body-semibold"
+              maxFontSizeMultiplier={1.5}
+            >
+              ‏⟦Ḋöñé⟧‏
+            </Text>
+          </View>
+        </View>
+      </View>
+    </View>
+  </RCTScrollView>
+</RNCSafeAreaView>
+`;
+
+exports[`RTL smoke (AC2) Home tab renders under the ar-XB RTL pseudo-locale 1`] = `
+<RNCSafeAreaView
+  className="flex-1 bg-surface-page dark:bg-surface-page-dark"
+  edges={
+    {
+      "bottom": "off",
+      "left": "off",
+      "right": "off",
+      "top": "additive",
+    }
+  }
+>
+  <View
+    pointerEvents="none"
+    style={
+      {
+        "bottom": 0,
+        "left": 0,
+        "position": "absolute",
+        "right": 0,
+        "top": 0,
+      }
+    }
+    testID="home-gradient-background"
+  >
+    <View
+      colors={
+        [
+          "#F4EFE6",
+          "#ffffff",
+          "#EAE3D6",
+        ]
+      }
+      end={
+        {
+          "x": 1,
+          "y": 1,
+        }
+      }
+      start={
+        {
+          "x": 0,
+          "y": 0,
+        }
+      }
+      style={
+        {
+          "bottom": 0,
+          "left": 0,
+          "position": "absolute",
+          "right": 0,
+          "top": 0,
+        }
+      }
+    />
+    <View
+      style={
+        [
+          {
+            "bottom": 0,
+            "left": 0,
+            "position": "absolute",
+            "right": 0,
+            "top": 0,
+          },
+          {
+            "opacity": 1,
+          },
+        ]
+      }
+      testID="home-gradient-overlay"
+    >
+      <View
+        colors={
+          [
+            "#fdf8ef",
+            "#F4EFE6",
+            "#F1EBDD",
+          ]
+        }
+        end={
+          {
+            "x": 0,
+            "y": 1,
+          }
+        }
+        start={
+          {
+            "x": 1,
+            "y": 0,
+          }
+        }
+        style={
+          {
+            "bottom": 0,
+            "left": 0,
+            "position": "absolute",
+            "right": 0,
+            "top": 0,
+          }
+        }
+      />
+    </View>
+  </View>
+  <RCTScrollView
+    contentContainerClassName="gap-6 px-4 pb-8"
+    testID="home-scroll"
+  >
+    <View>
+      <View
+        className="flex-row items-center justify-between gap-3"
+        testID="home-header"
+      >
+        <View
+          className="gap-1"
+        >
+          <Text
+            accessibilityRole="header"
+            className="text-2xl font-bold text-brand-700 dark:text-ink-dark font-display"
+            maxFontSizeMultiplier={1.5}
+            testID="app-title"
+          >
+            Bombay Pet Company
+          </Text>
+          <Text
+            className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display"
+            testID="home-greeting"
+          >
+            ‏⟦Ġööḋ ṁöŕñîñġ⟧‏
+          </Text>
+        </View>
+        <View
+          accessibilityLabel="‏⟦Śéţţîñġś⟧‏"
+          accessibilityRole="button"
+          accessibilityState={
+            {
+              "busy": undefined,
+              "checked": undefined,
+              "disabled": undefined,
+              "expanded": undefined,
+              "selected": undefined,
+            }
+          }
+          accessibilityValue={
+            {
+              "max": undefined,
+              "min": undefined,
+              "now": undefined,
+              "text": undefined,
+            }
+          }
+          accessible={true}
+          className="h-10 w-10 items-center justify-center rounded-full bg-brand-50 dark:bg-surface-raised-dark"
+          collapsable={false}
+          focusable={true}
+          onBlur={[Function]}
+          onClick={[Function]}
+          onFocus={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          testID="home-settings-button"
+        >
+          <Text
+            allowFontScaling={false}
+            selectable={false}
+            style={
+              [
+                {
+                  "color": "#1f6350",
+                  "fontSize": 22,
+                },
+                undefined,
+                {
+                  "fontFamily": "ionicons",
+                  "fontStyle": "normal",
+                  "fontWeight": "normal",
+                },
+                {},
+              ]
+            }
+          >
+            
+          </Text>
+        </View>
+      </View>
+      <View
+        accessibilityRole="button"
+        accessibilityState={
+          {
+            "busy": undefined,
+            "checked": undefined,
+            "disabled": undefined,
+            "expanded": undefined,
+            "selected": undefined,
+          }
+        }
+        accessibilityValue={
+          {
+            "max": undefined,
+            "min": undefined,
+            "now": undefined,
+            "text": undefined,
+          }
+        }
+        accessible={true}
+        className="flex-row items-center gap-4 rounded-2xl bg-brand-700 dark:bg-accent-dark px-4 py-4 shadow-md"
+        collapsable={false}
+        focusable={true}
+        onBlur={[Function]}
+        onClick={[Function]}
+        onFocus={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        testID="home-open-active-pet"
+      >
+        <View
+          className="min-h-20 min-w-20 items-center justify-center rounded-2xl bg-white/20"
+          testID="home-pet-avatar"
+        >
+          <Text
+            className="text-2xl font-bold text-white font-display"
+          >
+            R
+          </Text>
+        </View>
+        <View
+          className="flex-1 gap-1"
+        >
+          <Text
+            className="text-lg font-semibold text-white font-display"
+            testID="home-pet-name"
+          >
+            Rex
+          </Text>
+          <Text
+            className="text-sm text-white/80 font-body"
+            testID="home-pet-subtitle"
+          >
+            ‏⟦Ḋöġ⟧‏ · labrador-retriever
+          </Text>
+        </View>
+        <Text
+          allowFontScaling={false}
+          selectable={false}
+          style={
+            [
+              {
+                "color": "#ffffff",
+                "fontSize": 22,
+              },
+              undefined,
+              {
+                "fontFamily": "ionicons",
+                "fontStyle": "normal",
+                "fontWeight": "normal",
+              },
+              {},
+            ]
+          }
+        >
+          
+        </Text>
+      </View>
+      <View
+        className="flex-row items-center gap-4 rounded-2xl bg-accent-dark px-4 py-4 shadow-md"
+        testID="home-care-score-card"
+      >
+        <View
+          accessibilityLabel="‏⟦Ċäŕé śċöŕé ḟöŕ Ŕéx̂⟧‏"
+          accessible={true}
+        >
+          <View
+            className="items-center justify-center"
+            style={
+              {
+                "height": 82,
+                "width": 82,
+              }
+            }
+            testID="home-care-score-ring"
+          >
+            <mock-svg
+              height={82}
+              viewBox="0 0 82 82"
+              width={82}
+            >
+              <mock-svg-circle
+                cx={41}
+                cy={41}
+                fill="none"
+                r={34}
+                stroke="rgba(255,255,255,0.3)"
+                strokeWidth={8}
+                testID="home-care-score-ring-track"
+              />
+            </mock-svg>
+            <View
+              className="absolute inset-0 items-center justify-center"
+            >
+              <Text
+                className="font-display text-2xl font-bold text-white"
+                maxFontSizeMultiplier={1.5}
+                testID="home-care-score-ring-value"
+              >
+                ‏⟦—⟧‏
+              </Text>
+            </View>
+          </View>
+        </View>
+        <View
+          className="flex-1 gap-1"
+        >
+          <Text
+            className="text-base font-semibold text-white font-body-semibold"
+          >
+            ‏⟦Ċäŕé śċöŕé⟧‏
+          </Text>
+          <Text
+            className="text-sm text-white font-body"
+          >
+            ‏⟦Ĥöŵ ċöṁṗŀéţé Ŕéx̂'ś ċäŕé ŕöüţîñé îś⟧‏
+          </Text>
+          <Text
+            className="text-sm font-semibold text-white font-body-semibold"
+            testID="home-care-score-bucket"
+          >
+            ‏⟦Śţäŕţ ŀöġġîñġ ţö ḃüîŀḋ ä ŕéċöŕḋ⟧‏
+          </Text>
+          <View
+            accessibilityRole="button"
+            accessibilityState={
+              {
+                "busy": undefined,
+                "checked": undefined,
+                "disabled": undefined,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            className="mt-1 self-start rounded-lg bg-white px-4 py-2"
+            collapsable={false}
+            focusable={true}
+            hitSlop={
+              {
+                "bottom": 8,
+                "left": 8,
+                "right": 8,
+                "top": 8,
+              }
+            }
+            onBlur={[Function]}
+            onClick={[Function]}
+            onFocus={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={null}
+            testID="home-care-score-cta"
+          >
+            <Text
+              className="text-sm font-semibold text-accent-dark font-body-semibold"
+            >
+              ‏⟦Ŕüñ ä ċĥéċķ⟧‏
+            </Text>
+          </View>
+        </View>
+      </View>
+      <View
+        className="gap-2"
+      >
+        <View
+          className="flex-row items-center justify-between"
+        >
+          <Text
+            accessibilityRole="header"
+            className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold"
+          >
+            ‏⟦Q̈üîċķ äċţîöñś⟧‏
+          </Text>
+        </View>
+        <View
+          className="flex-row flex-wrap gap-3"
+          testID="home-quick-actions"
+        >
+          <View
+            className="min-w-[45%] flex-1 basis-[45%]"
+            entering={
+              {
+                "delay": [Function],
+                "duration": [Function],
+              }
+            }
+          >
+            <View
+              accessibilityRole="button"
+              accessibilityState={
+                {
+                  "busy": undefined,
+                  "checked": undefined,
+                  "disabled": false,
+                  "expanded": undefined,
+                  "selected": undefined,
+                }
+              }
+              accessibilityValue={
+                {
+                  "max": undefined,
+                  "min": undefined,
+                  "now": undefined,
+                  "text": undefined,
+                }
+              }
+              accessible={true}
+              className="items-center gap-2 rounded-2xl bg-brand-50 dark:bg-surface-raised-dark px-4 py-5"
+              collapsable={false}
+              focusable={true}
+              onBlur={[Function]}
+              onClick={[Function]}
+              onFocus={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              testID="home-quick-action-check"
+            >
+              <Text
+                allowFontScaling={false}
+                selectable={false}
+                style={
+                  [
+                    {
+                      "color": "#1f6350",
+                      "fontSize": 26,
+                    },
+                    undefined,
+                    {
+                      "fontFamily": "ionicons",
+                      "fontStyle": "normal",
+                      "fontWeight": "normal",
+                    },
+                    {},
+                  ]
+                }
+              >
+                
+              </Text>
+              <Text
+                className="text-center text-sm font-semibold text-brand-900 dark:text-ink-dark font-body-semibold"
+              >
+                ‏⟦Śýṁṗţöṁ ċĥéċķ⟧‏
+              </Text>
+            </View>
+          </View>
+          <View
+            className="min-w-[45%] flex-1 basis-[45%]"
+            entering={
+              {
+                "delay": [Function],
+                "duration": [Function],
+              }
+            }
+          >
+            <View
+              accessibilityRole="button"
+              accessibilityState={
+                {
+                  "busy": undefined,
+                  "checked": undefined,
+                  "disabled": false,
+                  "expanded": undefined,
+                  "selected": undefined,
+                }
+              }
+              accessibilityValue={
+                {
+                  "max": undefined,
+                  "min": undefined,
+                  "now": undefined,
+                  "text": undefined,
+                }
+              }
+              accessible={true}
+              className="items-center gap-2 rounded-2xl bg-brand-50 dark:bg-surface-raised-dark px-4 py-5"
+              collapsable={false}
+              focusable={true}
+              onBlur={[Function]}
+              onClick={[Function]}
+              onFocus={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              testID="home-quick-action-weight"
+            >
+              <Text
+                allowFontScaling={false}
+                selectable={false}
+                style={
+                  [
+                    {
+                      "color": "#1f6350",
+                      "fontSize": 26,
+                    },
+                    undefined,
+                    {
+                      "fontFamily": "ionicons",
+                      "fontStyle": "normal",
+                      "fontWeight": "normal",
+                    },
+                    {},
+                  ]
+                }
+              >
+                
+              </Text>
+              <Text
+                className="text-center text-sm font-semibold text-brand-900 dark:text-ink-dark font-body-semibold"
+              >
+                ‏⟦Ŀöġ ŵéîġĥţ⟧‏
+              </Text>
+            </View>
+          </View>
+          <View
+            className="min-w-[45%] flex-1 basis-[45%]"
+            entering={
+              {
+                "delay": [Function],
+                "duration": [Function],
+              }
+            }
+          >
+            <View
+              accessibilityRole="button"
+              accessibilityState={
+                {
+                  "busy": undefined,
+                  "checked": undefined,
+                  "disabled": false,
+                  "expanded": undefined,
+                  "selected": undefined,
+                }
+              }
+              accessibilityValue={
+                {
+                  "max": undefined,
+                  "min": undefined,
+                  "now": undefined,
+                  "text": undefined,
+                }
+              }
+              accessible={true}
+              className="items-center gap-2 rounded-2xl bg-brand-50 dark:bg-surface-raised-dark px-4 py-5"
+              collapsable={false}
+              focusable={true}
+              onBlur={[Function]}
+              onClick={[Function]}
+              onFocus={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              testID="home-quick-action-activity"
+            >
+              <Text
+                allowFontScaling={false}
+                selectable={false}
+                style={
+                  [
+                    {
+                      "color": "#1f6350",
+                      "fontSize": 26,
+                    },
+                    undefined,
+                    {
+                      "fontFamily": "ionicons",
+                      "fontStyle": "normal",
+                      "fontWeight": "normal",
+                    },
+                    {},
+                  ]
+                }
+              >
+                
+              </Text>
+              <Text
+                className="text-center text-sm font-semibold text-brand-900 dark:text-ink-dark font-body-semibold"
+              >
+                ‏⟦Ŀöġ äċţîṽîţý⟧‏
+              </Text>
+            </View>
+          </View>
+          <View
+            className="min-w-[45%] flex-1 basis-[45%]"
+            entering={
+              {
+                "delay": [Function],
+                "duration": [Function],
+              }
+            }
+          >
+            <View
+              accessibilityRole="button"
+              accessibilityState={
+                {
+                  "busy": undefined,
+                  "checked": undefined,
+                  "disabled": false,
+                  "expanded": undefined,
+                  "selected": undefined,
+                }
+              }
+              accessibilityValue={
+                {
+                  "max": undefined,
+                  "min": undefined,
+                  "now": undefined,
+                  "text": undefined,
+                }
+              }
+              accessible={true}
+              className="items-center gap-2 rounded-2xl bg-brand-50 dark:bg-surface-raised-dark px-4 py-5"
+              collapsable={false}
+              focusable={true}
+              onBlur={[Function]}
+              onClick={[Function]}
+              onFocus={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              testID="home-quick-action-vet-visit"
+            >
+              <Text
+                allowFontScaling={false}
+                selectable={false}
+                style={
+                  [
+                    {
+                      "color": "#1f6350",
+                      "fontSize": 26,
+                    },
+                    undefined,
+                    {
+                      "fontFamily": "ionicons",
+                      "fontStyle": "normal",
+                      "fontWeight": "normal",
+                    },
+                    {},
+                  ]
+                }
+              >
+                
+              </Text>
+              <Text
+                className="text-center text-sm font-semibold text-brand-900 dark:text-ink-dark font-body-semibold"
+              >
+                ‏⟦Ṽéţ ṽîśîţ⟧‏
+              </Text>
+            </View>
+          </View>
+          <View
+            className="min-w-[45%] flex-1 basis-[45%]"
+            entering={
+              {
+                "delay": [Function],
+                "duration": [Function],
+              }
+            }
+          >
+            <View
+              accessibilityRole="button"
+              accessibilityState={
+                {
+                  "busy": undefined,
+                  "checked": undefined,
+                  "disabled": false,
+                  "expanded": undefined,
+                  "selected": undefined,
+                }
+              }
+              accessibilityValue={
+                {
+                  "max": undefined,
+                  "min": undefined,
+                  "now": undefined,
+                  "text": undefined,
+                }
+              }
+              accessible={true}
+              className="items-center gap-2 rounded-2xl bg-brand-50 dark:bg-surface-raised-dark px-4 py-5"
+              collapsable={false}
+              focusable={true}
+              onBlur={[Function]}
+              onClick={[Function]}
+              onFocus={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              testID="home-quick-action-chat"
+            >
+              <Text
+                allowFontScaling={false}
+                selectable={false}
+                style={
+                  [
+                    {
+                      "color": "#1f6350",
+                      "fontSize": 26,
+                    },
+                    undefined,
+                    {
+                      "fontFamily": "ionicons",
+                      "fontStyle": "normal",
+                      "fontWeight": "normal",
+                    },
+                    {},
+                  ]
+                }
+              >
+                
+              </Text>
+              <Text
+                className="text-center text-sm font-semibold text-brand-900 dark:text-ink-dark font-body-semibold"
+              >
+                ‏⟦Äśķ ä q̈üéśţîöñ⟧‏
+              </Text>
+            </View>
+          </View>
+        </View>
+      </View>
+      <View
+        className="gap-3 rounded-2xl bg-white dark:bg-surface-card-dark px-4 py-4 shadow-md"
+        testID="home-today-card"
+      >
+        <View
+          className="flex-row items-center justify-between"
+        >
+          <Text
+            className="text-base font-semibold text-brand-900 dark:text-ink-dark font-body-semibold"
+          >
+            ‏⟦Ţöḋäý⟧‏
+          </Text>
+          <View
+            accessibilityLabel="‏⟦Śéé äŀŀ⟧‏"
+            accessibilityRole="button"
+            accessibilityState={
+              {
+                "busy": undefined,
+                "checked": undefined,
+                "disabled": undefined,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            collapsable={false}
+            focusable={true}
+            onBlur={[Function]}
+            onClick={[Function]}
+            onFocus={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            testID="home-today-see-all"
+          >
+            <Text
+              className="text-sm font-semibold text-brand-700 dark:text-accent-bright font-body-semibold"
+            >
+              ‏⟦Śéé äŀŀ⟧‏
+            </Text>
+          </View>
+        </View>
+        <Text
+          className="text-center text-sm text-brand-900 dark:text-ink-dark font-body"
+          testID="home-today-empty"
+        >
+          ‏⟦Ñöţĥîñġ ḋüé ţöḋäý.⟧‏
+        </Text>
+      </View>
+    </View>
+  </RCTScrollView>
+</RNCSafeAreaView>
+`;

@@ -4,6 +4,7 @@
 // as an `appName` parameter wherever copy needs to name the product.
 import { ACCOUNT_DELETION_GRACE_DAYS, vetDisclaimerLine } from "@bombaypetcompany/types";
 
+import { resolveActiveStrings } from "./i18n/runtime";
 import { LEGAL_REVIEW_MARKER } from "./legal/legal-document";
 
 // --- T086: pinned legal placeholder tokens & contact addresses -------------
@@ -19,7 +20,7 @@ const EFFECTIVE_DATE_PLACEHOLDER = "[EFFECTIVE DATE — TO CONFIRM AT LAUNCH]";
 const PRIVACY_CONTACT_EMAIL = "privacy@bombaypetcompany.app";
 const TERMS_CONTACT_EMAIL = "legal@bombaypetcompany.app";
 
-export const strings = {
+const enStringsTree = {
   // T097 plan D2: delegates to the `@bombaypetcompany/types` SSOT so this
   // sentence cannot drift from `apps/mobile/src/strings.ts`'s copy. Byte-
   // identical to the pre-T097 literal (see `vet-disclaimer-copy.ts`).
@@ -452,3 +453,8 @@ export const strings = {
     },
   },
 } as const;
+
+export const enStrings = enStringsTree;
+export type StringsShape = typeof enStringsTree;
+/** T110: identity-returns `enStrings` while English is the only served locale (plan §2.1). */
+export const strings = resolveActiveStrings(enStringsTree);

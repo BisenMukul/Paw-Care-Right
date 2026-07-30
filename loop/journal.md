@@ -1650,3 +1650,19 @@ Attempt 1, checker verdict **PASS** (0 HIGH; 3 MED regression-pin gaps closed sa
 **FOUNDER DELTA — cannot ship OTA:** expo-store-review changes the native fingerprint; the review prompt reaches users only via a NEW EAS build (fold into the standing T113 rebuild item — one rebuild covers both). Two founder-tunable constants pinned in code: 30d emergency window, every-5th cadence. Per-device (not per-account) state. Apple/Google note: requestReview is OS-rate-limited/non-guaranteed — our 1/60d is a floor on top.
 
 **Next:** T110 (i18n scaffold + first locales — the Phase 11 L card).
+
+---
+
+## T110 — i18n scaffold + first locales (2026-07-30)
+
+Attempt 2, checker verdict **PASS** (round-1 FAIL on 2 §7 HIGHs — both cheap, one a PLAN defect faithfully executed).
+
+**Shipped (the Phase 11 L card, 31 created + 7 modified, ZERO new deps):** hand-rolled typed i18n runtime over the existing strings modules with the load-bearing IDENTITY FAST-PATH — English resolves to the same object reference, so all 183 import sites, 19 pre-existing snapshots (byte-identical, checker-verified twice), both T097 detector lints, and the frozen disclaimer pins are structurally untouched (checker's identity-clone mutation → exactly the 2 intended pins RED, nothing else — "the right shape"); locale dicts structurally pinned to the English shape; machine-translated es/pt-BR/hi (LLM-generated, labeled, checker fidelity-screened incl. placeholders) behind a HARD reviewed:false serve gate (10-input bypass probe survived; env-undefined now FAILS CLOSED to production/en after F3); §5/§7/legal keys NEVER machine-translated — safety-pinned prefix lists both apps, absent sections fall back BY REFERENCE to English (the served disclaimer survives verbatim even post-flip); ar ships no invented Arabic (ar-XB pseudolocale RTL smoke, 3 new snapshots, one real flake fixed en route); pseudo-locale leak tests (rendered mobile + resolver/source-scan web) with positive controls; date/decimal/weight tests with byte-pinned en output; docs/I18N.md. Suites: mobile 216/1930/22, web 20/262, config 85, api untouched 120/1223.
+
+**Round-1 HIGHs:** F1 — the safety scans skipped FUNCTION leaves (collectors returned [] for functions; web lacked the dose/diagnosis scan entirely, contradicting the doc) — checker's planted `administre 5mg de ibuprofeno. Este es un diagnóstico.` passed silently; fixed with the T097 fn.length idiom + web scans + function-leaf non-vacuity controls (a scan that stops invoking functions now goes RED itself). F2 — the web footer disclaimer notice was machine-translated: **a plan defect faithfully executed** (plan §2.5 declared footer translatable while its own §2 forbade §7 machine translation) — footer now safety-pinned, deleted from all dicts, byte-identity pin, doc corrected. **Planner lesson recorded: every translatable-section list must be diffed against the §7 surface inventory before the plan ships.**
+
+**Carried to the locale-flip task (whichever first sets reviewed:true):** F4 (getStrings is an exported serve-gate bypass returning unknown), F7 (formatWeight defaults "en" while formatCheckDate uses getActiveLocale — weight surface would silently stay English). F5/F6/F8 LOW/INFO accepted.
+
+**FOUNDER DELTA:** nothing ships in a new language yet; es/pt-BR/hi need native-translator + VET review before flipping reviewed:true per locale (T038's detector is English-only); ar additionally needs the NativeWind logical-property migration + forceRTL reload flow (inventoried in docs/I18N.md).
+
+**Next:** T111 (read-only admin mini-dashboard).

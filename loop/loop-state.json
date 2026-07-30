@@ -622,8 +622,8 @@
       "attempts": 1
     },
     "T110": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 2
     },
     "T111": {
       "status": "pending",
@@ -753,10 +753,10 @@
     "surveillance-layer-corrections-v2: Write grants, fail-closed protected-paths (no python), current-task file contract, P0/no-HEAD tolerance, subshell fail-open fixes"
   ],
   "current-task": {
-    "id": "T110",
+    "id": "T111",
     "phase": 11,
     "attempts": 0,
     "state": "planning",
-    "note": "T109 done 2026-07-30 (checker PASS; 3 MED pins closed). T110 i18n scaffold next (L card)."
+    "note": "T110 done 2026-07-30 (attempt 2; plan-defect lesson recorded). T111 admin mini-dashboard next; F4/F7 carry to the locale-flip task."
   }
 }

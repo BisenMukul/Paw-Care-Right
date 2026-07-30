@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { APP_DISPLAY_NAME } from "@bombaypetcompany/config";
+import { getActiveDirection, getActiveLocale } from "../src/i18n/runtime";
 import { strings } from "../src/strings";
 import { SITE_URL } from "../src/site";
 import "./globals.css";
@@ -16,7 +17,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang={getActiveLocale()} dir={getActiveDirection()}>
       <body>{children}</body>
     </html>
   );
