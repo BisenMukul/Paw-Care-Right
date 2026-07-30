@@ -107,7 +107,12 @@ Profile ↔ channel mapping: `development` → `development`, `preview` →
 npx eas-cli@latest update --branch preview --message "Txxx: summary"
 ```
 
-This command is available only after T113 installs `expo-updates`.
+T113 status: `expo-updates` is installed, `runtimeVersion` uses the
+`fingerprint` policy, and `updates.url` and `extra.eas.projectId` both derive
+from the same `EAS_PROJECT_ID` const so they can never drift. Every PR runs
+the `mobile-fingerprint` CI job, which prints the native fingerprint diff
+(base tree vs. head tree) so a fingerprint change is never a surprise
+(`apps/mobile/scripts/fingerprint-diff.sh`).
 
 Note: `docs/OTA_UPDATES.md` still uses pre-REBRAND-1 naming
 (`pawcareright@…`, "Paw Care Right +") in its examples; the binding
@@ -154,7 +159,7 @@ error.
 
 ## 9. Founder to-dos
 
-1. Create/rename the EAS project to slug `bombaypetcompany` (`eas init`), then paste the new server-assigned `projectId` into `apps/mobile/app.config.js` `extra.eas.projectId` (one-line edit).
+1. Create/rename the EAS project to slug `bombaypetcompany` (`eas init`), then paste the new server-assigned `projectId` into `apps/mobile/app.config.js` `extra.eas.projectId` (one-line edit; since T113, the same `EAS_PROJECT_ID` const also feeds `updates.url`, so this one edit repoints both).
 2. `npx eas-cli@latest login` (or set `EXPO_TOKEN` as a CI secret) and run `npx eas-cli@latest build --profile preview --platform ios --non-interactive` once — the real AC1 confirmation; paste the result into the journal.
 3. Set GitHub repo variable `APP_VERSION=1.0.0` (mirrors `app.config.js`; `ci.yml` already reads it).
 4. Create EAS environment variables per environment (`development`/`preview`/`production`): `EXPO_PUBLIC_RC_IOS_KEY`, `EXPO_PUBLIC_RC_ANDROID_KEY`, `EXPO_PUBLIC_POSTHOG_KEY`, `EXPO_PUBLIC_SENTRY_DSN`, `EXPO_PUBLIC_GOOGLE_CLIENT_ID` (+ `SENTRY_AUTH_TOKEN`, `SENTRY_ORG`, `SENTRY_PROJECT` as build secrets). Never in the repo.
@@ -170,6 +175,9 @@ error.
 14. Run a **kill-switch fire drill** on staging before launch: flip `checks` off, confirm the app shows the unavailable notice and that the emergency interstitial + hotlines are still reachable, flip it back on; paste the result into the journal.
 15. Set the production env baselines `FEATURE_CHECKS=on`, `FEATURE_CHAT=on`, `FEATURE_PAYWALL=on` (a Redis flush must not silently change intent).
 16. Record the on-call contact and the user-comms channel that §15's comms step refers to.
+17. **Rebuild + resubmit the internal beta binaries.** T113 installs `expo-updates` and sets `runtimeVersion: {policy:'fingerprint'}`, changing the native fingerprint: builds produced before T113 can never receive an OTA update. Re-run `pnpm --filter mobile dist:internal` (preview profile) after the C3 bundle-id/display-name confirmation so one rebuild covers both changes.
+18. After the EAS project re-create (item 1), the same `EAS_PROJECT_ID` const in `apps/mobile/app.config.js` now also feeds `updates.url` — one line repoints both project resolution and the update server; nothing else to edit.
+19. Verify channel↔branch mapping once against the real project: `npx eas-cli@latest channel:list` and `npx eas-cli@latest branch:list`, then a first `npx eas-cli@latest update --branch preview --message "T113: expo-updates wiring"` from a preview-profile build; paste the output into the journal.
 
 ## 10. Store assets & screenshots (T100)
 

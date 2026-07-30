@@ -1489,3 +1489,23 @@ Attempt 1, checker verdict **PASS** (0 HIGH; 3 MED closed pre-commit via fix rou
 **Founder to-dos (runbook §9 items 13–16):** staging kill-switch fire drill (real redis-cli toggle + observe 503s + mobile states + recovery); C3 items unchanged.
 
 **Next:** T113 (Phase 10 order: T099–T106 done; T113–T118 remain, then M10 → C3 checkpoint).
+
+---
+
+## T113 — expo-updates + channels + fingerprint runtime policy (2026-07-30)
+
+Attempt 2, checker verdict **PASS** (round-1 FAIL on 1 HIGH + 1 MED, both fixed and behaviorally re-verified).
+
+**Shipped:** expo-updates ~57.0.11 installed (§2.7: card-sanctioned by T113 for OTA delivery, Expo-maintained, releases with each SDK; lockfile delta = expo-updates + transitive closure only, alphabetize side-effect manually reverted); app.config.js runtimeVersion {policy:'fingerprint'} + updates block (url https://u.expo.dev/<projectId> from the shared EAS_PROJECT_ID const, fallbackToCacheTimeout:0, checkAutomatically:ON_ERROR_RECOVERY — D4 empirically vindicated by the checker via fingerprint source inspection: deferring those keys to T114 would have stranded another binary round); eas.json untouched (T099 channels already correct); useOtaInfo hook (lazy-require crash-safe, updateId/channel/runtimeVersion/isEmbeddedLaunch, 6 tests); fingerprint-diff.sh (two-tier @expo/fingerprint resolution, pinned npx fallback, hardened `--` shift-skip) + mobile-fingerprint CI job (PR-triggered, base-vs-head diff to GITHUB_STEP_SUMMARY, pipefail); ota-config.test.ts 12 pins incl. a spawnSync test driving the EXACT pnpm indirection CI uses; runbook §7/§9 items 17–19. Mobile suite 189/1565.
+
+**AC2 evidence (genuine by ordering):** baseline fingerprints captured BEFORE the install; the install itself is the native-dep change; post-install diff → "CHANGED — store binary release required" with expo-updates entries on both platforms; checker re-ran byte-reproducibly.
+
+**Round-1 FAIL (the CI-vacuity class again):** `pnpm ota:fingerprint -- --base` breaks under pnpm 10 (literal `--` forwarded, script rejects, exit 1 — CI would NEVER print a diff) and the tee pipeline masked the failure green (bash -e without pipefail). Executor had validated the script only directly, never through the pnpm indirection CI uses. **Standing lesson: always prove CI steps via the exact invocation CI runs.** Fixed both ends + pipefail + 3 new pins; mutation proof RED on reintroduction; F4 withdrawn by the checker (duplicate 0.20.5 pin is necessary — base tree may predate the script).
+
+**Carried to T114:** F3 (import-time-require pin), F7 (pipefail pin counts its own comment — ios-step deletion undetected), F8 (`--` hardening unpinned). **Infra flag:** one unattributed api-suite flake under forced full-parallel runs (shape-consistent with FLAKE-2 but NOT confirmed; standalone api green twice) — the checker recommends a dedicated flake card rather than repeated re-run-green dismissals; noted for M10 planning alongside FLAKE-1/FLAKE-2.
+
+**Process notes:** checker's initial worktree mutation approach corrected (would have tested HEAD without the diff — vacuous proofs); one stray root app.config.js from a cd'd trap self-disclosed and cleaned; lesson recorded: absolute restore paths in traps.
+
+**Founder to-dos (runbook §9 17–19):** rebuild+resubmit internal beta binaries (fingerprint changed — prior builds can never OTA); EAS re-create also feeds updates.url; one-time channel↔branch mapping verification via eas-cli.
+
+**Next:** T114 (in-app update flow + deferral guard).

@@ -88,6 +88,84 @@ jobs:
       - name: Sentry source-map upload skipped
         if: env.SENTRY_AUTH_TOKEN == ''
         run: echo "Sentry source-map upload skipped — no SENTRY_AUTH_TOKEN secret" >> "$GITHUB_STEP_SUMMARY"
+  # T113 — per-PR native fingerprint diff (OTA_UPDATES §1: "CI computes and
+  # prints the fingerprint diff on every PR so this is never a surprise").
+  # Informational by construction: it fails only if the tooling itself fails
+  # (missing --base file, tool crash), NEVER because the fingerprint changed
+  # — a changed fingerprint is a legitimate, expected event whose only
+  # consequence is that prior binaries can no longer receive an OTA update.
+  # PR-only (there is no meaningful base-tree diff on a plain push to main).
+  # Costs an extra `pnpm i --frozen-lockfile` in `base-tree`: reusing the
+  # head tree's `node_modules` for the base fingerprint would mask exactly
+  # the native-dep change this job exists to detect (autolinking depends on
+  # what's actually installed), so the base tree gets its own real install.
+  mobile-fingerprint:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: 10.34.3 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      - run: pnpm i --frozen-lockfile
+      - name: Checkout base tree
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          path: base-tree
+      - name: Install base tree
+        working-directory: base-tree
+        run: pnpm i --frozen-lockfile
+      - name: Generate base fingerprints
+        working-directory: base-tree/apps/mobile
+        run: |
+          npx --yes @expo/fingerprint@0.20.5 fingerprint:generate --platform android > "$GITHUB_WORKSPACE/base-android.json"
+          npx --yes @expo/fingerprint@0.20.5 fingerprint:generate --platform ios > "$GITHUB_WORKSPACE/base-ios.json"
+      # `set -o pipefail`: the default `bash -e {0}` run shell does NOT set
+      # pipefail, so `cmd | tee -a "$GITHUB_STEP_SUMMARY"` would report the
+      # pipeline's exit status as tee's (always 0), silently masking a real
+      # script failure behind a green step -- exactly the `|| true`-style
+      # masking `ota-config.test.ts` forbids in the script itself. pipefail
+      # makes the step's own exit status the fingerprint-diff.sh status,
+      # while a *changed* fingerprint still legitimately exits 0 (D8).
+      # No `--` before the script's own flags: `pnpm run <script> -- --flag`
+      # forwards a literal `--` on this pnpm major version, which the script
+      # (correctly) used to reject as an unknown argument -- flags are passed
+      # directly, and the script is additionally hardened to tolerate a `--`
+      # if it does appear (defense in depth for other pnpm versions).
+      - name: Fingerprint diff (android)
+        working-directory: apps/mobile
+        run: |
+          set -o pipefail
+          {
+            echo '### Fingerprint diff — android'
+            echo '```json'
+            pnpm ota:fingerprint --base "$GITHUB_WORKSPACE/base-android.json" --platform android --out-dir "$GITHUB_WORKSPACE"
+            echo '```'
+          } | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Fingerprint diff (ios)
+        working-directory: apps/mobile
+        run: |
+          set -o pipefail
+          {
+            echo '### Fingerprint diff — ios'
+            echo '```json'
+            pnpm ota:fingerprint --base "$GITHUB_WORKSPACE/base-ios.json" --platform ios --out-dir "$GITHUB_WORKSPACE"
+            echo '```'
+          } | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Upload fingerprint artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-fingerprints-${{ github.run_id }}
+          path: |
+            base-android.json
+            base-ios.json
+            current-android.json
+            current-ios.json
+          retention-days: 30
+          if-no-files-found: warn
   # AI eval gate — activated at T040. Fake provider: deterministic, keyless,
   # threshold-enforcing (packages/ai harness). Report uploaded as an artifact.
   ai-evals:

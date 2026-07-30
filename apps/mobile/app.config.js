@@ -22,6 +22,16 @@ const {
 /** @param {Array<string | undefined>} values */
 const firstNonEmpty = (...values) => values.find((v) => typeof v === "string" && v.trim() !== "") ?? "";
 
+// T099/T113: this UUID points at the pre-REBRAND-1 EAS project. Renaming /
+// re-creating the EAS project to slug "bombaypetcompany" (`eas init` /
+// project rename in expo.dev) is a standing founder to-do; after that, paste
+// the new server-assigned projectId here — a one-line edit, no code change.
+// T113: the same swap now also repoints `updates.url` below (both derive
+// from this one const so they can never drift). Do not invent a UUID here;
+// do not remove this block (removing it breaks `eas update`/`eas build`
+// project resolution).
+const EAS_PROJECT_ID = "a7a52d2d-c7f4-44b0-9234-017d07bd1ced";
+
 /** @type {import('expo/config').ExpoConfig} */
 const config = {
   name: APP_DISPLAY_NAME,
@@ -33,6 +43,25 @@ const config = {
   // (see eas.json `cli.appVersionSource: "remote"` + per-profile
   // `autoIncrement: true`), so they never appear in this file.
   version: "1.0.0",
+  // T113 (OTA_UPDATES §1): `fingerprint` derives the runtime version from a
+  // hash of the native project (config + native deps) instead of a
+  // hand-bumped string, so a build can only receive an OTA update from a
+  // published branch whose fingerprint matches exactly — installing or
+  // upgrading any native dependency (including expo-updates itself)
+  // invalidates prior builds for OTA eligibility, which is the whole point.
+  runtimeVersion: { policy: "fingerprint" },
+  // T113 (OTA_UPDATES §3): `fallbackToCacheTimeout: 0` and
+  // `checkAutomatically: "ON_ERROR_RECOVERY"` keep the cold-start update
+  // check non-blocking (no network wait before rendering the cached bundle).
+  // These two keys land in native Expo.plist/AndroidManifest.xml, so they
+  // are fingerprint input — set now rather than deferred to T114 so the
+  // fingerprint captured at T113's install does not change again when
+  // T114's JS update-flow logic ships.
+  updates: {
+    url: `https://u.expo.dev/${EAS_PROJECT_ID}`,
+    fallbackToCacheTimeout: 0,
+    checkAutomatically: "ON_ERROR_RECOVERY",
+  },
   orientation: "portrait",
   userInterfaceStyle: "automatic",
   icon: "./assets/icon.png",
@@ -83,14 +112,10 @@ const config = {
     // is what makes EAS_BUILD_GIT_COMMIT_HASH meaningful.
     gitSha:
       firstNonEmpty(process.env.EXPO_PUBLIC_GIT_SHA, process.env.EAS_BUILD_GIT_COMMIT_HASH) || "dev",
-    // T099: this UUID points at the pre-REBRAND-1 EAS project. Renaming /
-    // re-creating the EAS project to slug "bombaypetcompany" (`eas init` /
-    // project rename in expo.dev) is a standing founder to-do; after that,
-    // paste the new server-assigned projectId here — a one-line edit, no
-    // code change. Do not invent a UUID here; do not remove this block
-    // (removing it breaks `eas update`/`eas build` project resolution).
+    // T099/T113: see the EAS_PROJECT_ID const above — this reuses the same
+    // literal so projectId and updates.url can never drift.
     eas: {
-      projectId: "a7a52d2d-c7f4-44b0-9234-017d07bd1ced",
+      projectId: EAS_PROJECT_ID,
     },
   },
   plugins: [

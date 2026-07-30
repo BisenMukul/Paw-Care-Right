@@ -14,6 +14,7 @@
     "perf:bundle": "tsx scripts/analyze-bundle.ts",
     "perf:cold-start": "sh scripts/measure-cold-start.sh",
     "dist:internal": "sh scripts/internal-distribution.sh",
+    "ota:fingerprint": "sh scripts/fingerprint-diff.sh",
     "assets:generate": "tsx store-assets/generate-assets.ts",
     "store:screenshots": "tsx store-assets/compose-screenshots.ts"
   },
@@ -47,6 +48,7 @@
     "expo-router": "~57.0.6",
     "expo-secure-store": "~57.0.1",
     "expo-status-bar": "~57.0.1",
+    "expo-updates": "~57.0.11",
     "expo-web-browser": "~57.0.1",
     "nativewind": "^4.2.6",
     "react": "19.2.3",
