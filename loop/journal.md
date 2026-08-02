@@ -1682,3 +1682,27 @@ Attempt 1, checker verdict **PASS** (0 HIGH/MED; 3 LOW/INFO accepted).
 **FOUNDER DELTA:** provision real ADMIN_ALLOWED_EMAILS / ADMIN_DASHBOARD_PASSWORD / ADMIN_API_TOKEN only in deployed environments (.env.example ships empty/fail-closed); serve /admin over HTTPS only.
 
 **Next:** T112 (v1.1 backlog seeding) — the FINAL Phase 11 card before M11.
+
+---
+
+## T112 — v1.1 backlog seeding (2026-08-02)
+
+Attempt 1, checker verdict **PASS** (0 HIGH, 0 MED; 4 INFO/LOW residuals, each one a contract the plan itself declared).
+
+**Shipped (exactly 2 new files, 0 modified, 0 deps):** `docs/BACKLOG.md` — 7 sections, 32 ICE-scored rows (22 `B-` engineering deferrals, every citation journal/doc-anchored; 10 `P-` rows carrying PRODUCT_SPEC §10's own phrases verbatim in SPEC order), §1 honesty disclosure first (**zero beta feedback, zero metrics, zero observed CI runs — this backlog is seeded from engineering deferrals, checker findings and SPEC §10, not from users**), §2 explicit rubric with machine-checked arithmetic and Rule C (Confidence ≤5 on every user-behaviour row), §4 unscored founder decisions/`[VET]`/ops queues (the consolidated view of what was scattered across runbook §9, C3 notes, store-listing §6, dataset-audit §5), §5 draft Phase 12/13 grouping **for founder review, not committed** (`docs/PHASES.md` untouched), §6 safety guardrail, §7 re-score trigger. Plus `apps/mobile/__tests__/backlog-doc.test.ts` — 19-test drift/honesty guard (structure, ICE arithmetic, sort order, Rule C, §10 phrase coverage, citation shape, banned-attribution scan with positive controls).
+
+**Checker depth:** re-opened ALL 22 B-row citations (mandate required 10) plus every §1/§4 anchor — all resolve and support their claims; entry attributions cross-checked so no line/task mismatch hides; honesty independently corroborated (no signed artifact in tree, PostHog/Sentry/EXPO_TOKEN unset, zero `FeedbackReport` reader surface, zero percentages anywhere in the doc); max Confidence anywhere is 8, on the two most empirically grounded rows. Checker's own 4 mutation proofs: MP-1 Rule C surgically pinned (T-08 RED and only T-08); MP-2/MP-3 match the plan's declared T-08/T-16 limits (Rule C unenforced on B-rows; draft status presence-pinned, not tone-pinned); MP-4 stated plainly — **no drift guard can detect a fabricated citation**; that residual is closed only by the checker's full citation resolution above (same residual class the T102 review recorded). Gates, several forced-uncached: typecheck 16/16, lint 15/15, mobile 217/1949, full test 16/16, build 9/9, target spec 19/19.
+
+---
+
+## M11 — Phase 11 complete · LOOP COMPLETE (2026-08-02)
+
+**Phase 11 roll-up (6/6 PASS):** T107 paywall A/B (deterministic assignment latch, two round-1 experiment-integrity HIGHs fixed via `use-resolved-paywall-variant` + realistic auth-lifecycle tests), T108 referral grants (post-commit issuance + sorted advisory locks; F8 best-effort/at-most-once honestly documented in `docs/referral-grants.md §7`), T109 review prompt (30-day emergency suppression, fail-closed on clock rollback), T110 i18n (identity fast-path, hard `reviewed:false` serve gate, §7 copy never machine-translated), T111 read-only admin dashboard (fail-closed Basic-auth, read-only proven three ways; incident #14 contained and byte-verified), T112 backlog seeding.
+
+**Suite totals at the tag:** api 125 suites/1274 tests · mobile 217/1949 · web 26/338 · types 29/681 · ai 631/634 (3 justified skips) · data 10/239 · analytics 12/85 · config 5/85. Typecheck 16/16, lint 15/15, build 9/9.
+
+**The honest statement this tag requires: `v1-complete` means the build loop finished its 119 cards — NOT that the product has shipped, been reviewed by a veterinarian, or reached a single user.** Standing gaps at completion: no GitHub Actions run has ever been observed from this environment; no signed store artifact exists; no OTA publish has occurred (`EXPO_TOKEN` unset); PostHog/Sentry unprovisioned (dashboards `--dry-run` only); every `[VET]` cell in every verification queue is `UNVERIFIED` and no code path can emit `VERIFIED`; es/pt-BR/hi remain hard-gated behind `reviewed:false`.
+
+**The open founder queue lives in `docs/BACKLOG.md §4`** (consolidated), with detail authoritative in `docs/release-runbook.md §9` (items 1–22), `loop/checkpoint-C3-notes.md`, `docs/store-listing.md §6`, `docs/qa/dataset-audit.md §5`. The **draft Phase 12/13 grouping awaits founder review** in `docs/BACKLOG.md §5`; nothing is scheduled.
+
+Tag: `milestone/M11` (local-only per standing founder note). Loop state: `status: "v1-complete"`.

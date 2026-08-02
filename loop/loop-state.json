@@ -1,7 +1,7 @@
 {
   "project": "Bombay Pet Company",
   "version": 6,
-  "status": "running",
+  "status": "v1-complete",
   "currentPhase": "P11",
   "phases": {
     "P0": {
@@ -630,8 +630,8 @@
       "attempts": 1
     },
     "T112": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 1
     },
     "T113": {
       "status": "done",
@@ -708,7 +708,8 @@
       "taggedAt": "2026-07-30"
     },
     "M11": {
-      "status": "pending"
+      "status": "passed",
+      "taggedAt": "2026-08-02"
     }
   },
   "checkpoints": {
@@ -753,10 +754,10 @@
     "surveillance-layer-corrections-v2: Write grants, fail-closed protected-paths (no python), current-task file contract, P0/no-HEAD tolerance, subshell fail-open fixes"
   ],
   "current-task": {
-    "id": "T112",
+    "id": null,
     "phase": 11,
     "attempts": 0,
-    "state": "planning",
-    "note": "T111 done 2026-08-02 (checker PASS; incident #14 contained). T112 = FINAL P11 card before M11."
+    "state": "complete",
+    "note": "T112 done 2026-08-02 (checker PASS, 0 HIGH/MED). M11 tagged. LOOP COMPLETE: all 119 cards done, status v1-complete. Open founder queue: docs/BACKLOG.md \u00a74; draft P12/P13 awaiting founder review in \u00a75."
   }
 }
