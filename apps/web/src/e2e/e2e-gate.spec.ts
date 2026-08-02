@@ -109,9 +109,10 @@ describe("CI runs the web E2E smoke as an unconditional required job", () => {
 });
 
 describe("apps/web/e2e/smoke.spec.ts", () => {
-  it("exists and declares exactly two test( declarations (non-vacuity: cannot silently shrink to zero)", () => {
+  // T111: bumped 2 -> 3 (added the unauthenticated `/admin` -> 401 proof).
+  it("exists and declares exactly three test( declarations (non-vacuity: cannot silently shrink)", () => {
     const source = readFileSync(SMOKE_SPEC_PATH, "utf8");
     const testDeclarations = [...source.matchAll(/\btest\(\s*["'`]/g)];
-    expect(testDeclarations).toHaveLength(2);
+    expect(testDeclarations).toHaveLength(3);
   });
 });

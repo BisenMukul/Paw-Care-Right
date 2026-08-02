@@ -2,6 +2,7 @@ import { Module } from "@nestjs/common";
 import { APP_GUARD } from "@nestjs/core";
 import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 
+import { AdminModule } from "./admin/admin.module";
 import { AuthModule } from "./auth/auth.module";
 import { JwtAuthGuard } from "./auth/jwt-auth.guard";
 import { BillingModule } from "./billing/billing.module";
@@ -32,6 +33,7 @@ import { WorkersModule } from "./workers/workers.module";
 
 @Module({
   imports: [
+    AdminModule,
     ConfigModule,
     PrismaModule,
     RedisModule,

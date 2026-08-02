@@ -1666,3 +1666,19 @@ Attempt 2, checker verdict **PASS** (round-1 FAIL on 2 §7 HIGHs — both cheap,
 **FOUNDER DELTA:** nothing ships in a new language yet; es/pt-BR/hi need native-translator + VET review before flipping reviewed:true per locale (T038's detector is English-only); ar additionally needs the NativeWind logical-property migration + forceRTL reload flow (inventoried in docs/I18N.md).
 
 **Next:** T111 (read-only admin mini-dashboard).
+
+---
+
+## T111 — Read-only admin mini-dashboard (2026-08-02)
+
+Attempt 1, checker verdict **PASS** (0 HIGH/MED; 3 LOW/INFO accepted).
+
+**Shipped:** apps/web /admin (KPIs, user lookup, AiAuditLog browser) — fail-closed Basic-auth Next middleware (crypto.subtle constant-time; email allowlist trim+lowercase; missing env = everything 401; WWW-Authenticate; robots disallow) + 3 NEW read-only api admin endpoints behind the T117 AdminTokenGuard idiom (composite-index migration, DTO caps, cursor pagination with an existence pre-check — this Prisma version doesn't throw on cursor miss); STRICTLY READ-ONLY proven three ways (api static: 3×@Get, zero write verbs; runtime: mutation verbs 404 + id-scoped row snapshots; web static: no server actions/client components/NEXT_PUBLIC under admin) — checker grepped the BUILT .next/static empirically: zero admin secrets in client JS, all admin routes dynamic. R1 honesty: ProcessedWebhookEvent stores no amounts, so "MRR events" ships as labeled event COUNTS, never invented revenue. Privacy: AUDIT_SELECT === the 11 codes-only columns the model declares. Landmines resolved narrowly (disclaimer-map 3-route carve-out + §5-token-absence scan; "admin." safety-pinned in locale registry; e2e-gate 2→3 with the new 401 smoke test, Playwright 3/3). Suites: api 125/1274, web 26/338, types 29/681.
+
+**Incident #14 (live mutation, auth surface):** executor stalled mid-proof-#1 with the email-allowlist check STRIPPED from authorizeAdminRequest — the harness security warning fired correctly; orchestrator sweep caught it same-turn, restored (both halves awaited unconditionally before && — no early-return timing oracle, checker-ruled includes() timing not-a-finding), spec 14/14; checker verified the restoration byte-level and re-proved it load-bearing (removal → exactly the wrong-email test RED). **Rule restated: mutations on AUTH surfaces are single-atomic-invocation, no exceptions.**
+
+**Date-rot repair (orchestrator-authorized, out-of-inventory):** reminders.e2e hardcoded snoozeUntil literals fell behind the wall clock (deterministic failure forever, surfaced by T111's gates on 2026-08-02) — replaced with a file-local futureIso() helper, self-healing; checker verified snoozeUntil is the file's only wall-clock-constrained field. **Standing lesson: e2e fixtures never hardcode future dates.**
+
+**FOUNDER DELTA:** provision real ADMIN_ALLOWED_EMAILS / ADMIN_DASHBOARD_PASSWORD / ADMIN_API_TOKEN only in deployed environments (.env.example ships empty/fail-closed); serve /admin over HTTPS only.
+
+**Next:** T112 (v1.1 backlog seeding) — the FINAL Phase 11 card before M11.

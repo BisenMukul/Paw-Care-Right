@@ -452,6 +452,105 @@ const enStringsTree = {
       badge: "Coming soon on iOS and Android",
     },
   },
+  // T111: internal, read-only admin mini-dashboard copy. Plain operational
+  // chrome only -- no health/AI/dosing/diagnosis vocabulary, so this stays
+  // English-pinned (`SAFETY_PINNED_PREFIXES` -- `i18n/locale-registry.ts`)
+  // and never machine-translated.
+  admin: {
+    shell: {
+      heading: "Internal admin dashboard",
+      note: "Internal, read-only. Nothing on this screen can be edited.",
+      navKpis: "KPIs",
+      navUsers: "User lookup",
+      navAudit: "AI audit log",
+    },
+    kpis: {
+      heading: "Daily KPIs",
+      mrrEventsNote:
+        "Billing figures below are RevenueCat webhook event counts, not revenue -- no amount or currency is stored.",
+      installsProxyNote:
+        "\"Devices created\" is a push-registration proxy for installs; a user who never grants push notifications is never counted.",
+      unconfigured: "The admin API is not configured.",
+      error: "Could not load the KPIs right now.",
+      empty: "No activity in this window.",
+      tiersHeading: "Tier snapshot",
+      columns: {
+        day: "Day",
+        devicesCreated: "Devices created",
+        checksCreated: "Checks created",
+        checksDone: "Checks done",
+        checksFallback: "Checks fallback",
+        fallbackRate: "Fallback rate",
+        billingEventsProcessed: "Billing events processed",
+        subscriptionsUpdated: "Subscriptions updated",
+      },
+      tierLabels: {
+        totalUsers: "Total users",
+        premiumSubscriptions: "Premium subscriptions",
+        expiredOrInactiveSubscriptions: "Expired or inactive subscriptions",
+        activeReferralGrants: "Active referral grants",
+      },
+    },
+    users: {
+      heading: "User lookup",
+      emailLabel: "Email",
+      searchLabel: "Search",
+      unconfigured: "The admin API is not configured.",
+      error: "Could not complete the lookup right now.",
+      notFound: "No user found with that email.",
+      prompt: "Enter an email above to look up a user.",
+      countersHeading: "Counters",
+      entitlementHeading: "Entitlement",
+      entitlementFields: {
+        entitled: "Entitled",
+        source: "Source",
+      },
+      fields: {
+        userId: "User ID",
+        email: "Email",
+        createdAt: "Created",
+        locale: "Locale",
+        region: "Region",
+        analyticsOptOut: "Analytics opt-out",
+        deletionScheduledAt: "Deletion scheduled",
+        householdIds: "Household IDs",
+      },
+      counterLabels: {
+        pets: "Pets",
+        symptomChecksTotal: "Checks (total)",
+        symptomChecksFallback: "Checks (fallback)",
+        chatThreads: "Chat threads",
+        chatMessages: "Chat messages",
+        reminders: "Reminders",
+        healthLogs: "Health log entries",
+        devices: "Devices",
+        feedbackReports: "Feedback reports",
+        accountExports: "Account exports",
+        referralGrantsActive: "Active referral grants",
+      },
+    },
+    audit: {
+      heading: "AI audit log",
+      unconfigured: "The admin API is not configured.",
+      error: "Could not load the audit log right now.",
+      empty: "No audit entries.",
+      newestLabel: "Newest",
+      nextPageLabel: "Next page",
+      columns: {
+        id: "ID",
+        surface: "Surface",
+        checkId: "Check ID",
+        threadId: "Thread ID",
+        promptVersion: "Prompt version",
+        modelId: "Model",
+        detectorFlags: "Detector flags",
+        costMicroUsd: "Cost (micro-USD)",
+        latencyMs: "Latency (ms)",
+        status: "Status",
+        createdAt: "Created",
+      },
+    },
+  },
 } as const;
 
 export const enStrings = enStringsTree;

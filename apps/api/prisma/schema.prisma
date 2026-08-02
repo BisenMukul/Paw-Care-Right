@@ -150,6 +150,8 @@ model Device {
   // T117: the only filter/group column of the `/v1/meta/client-versions`
   // aggregate query (CLAUDE §6 "every new query pattern gets an index").
   @@index([lastSeenAt])
+  // T111: backs the admin KPI "devices created per day" bucketed aggregate.
+  @@index([createdAt])
 }
 
 // Per-user notification preferences (T058): per-type on/off + an optional
@@ -258,6 +260,8 @@ model SymptomCheck {
   @@unique([createdById, idempotencyKey])
   @@index([petId, createdAt(sort: Desc)])
   @@index([createdById])
+  // T111: backs the admin KPI "checks created/done/fallback per day" aggregate.
+  @@index([createdAt])
 }
 
 model TriageResult {
@@ -377,6 +381,8 @@ model Subscription {
   household Household @relation(fields: [householdId], references: [id], onDelete: Cascade)
 
   @@index([householdId])
+  // T111: backs the admin KPI "subscriptions updated per day" aggregate.
+  @@index([lastEventAt])
 }
 
 // ReferralGrant (T108 plan D1/D11): a server-side, RC-FREE referral grace
@@ -409,6 +415,9 @@ model ReferralGrant {
 model ProcessedWebhookEvent {
   eventId     String   @id
   processedAt DateTime @default(now())
+
+  // T111: backs the admin KPI "billing events processed per day" aggregate.
+  @@index([processedAt])
 }
 
 // ChatThread/ChatMessage (T081 -- F7 "Ask Bombay Pet Company"). A thread is a
@@ -513,6 +522,9 @@ model AiAuditLog {
   @@index([createdAt])
   @@index([checkId])
   @@index([threadId])
+  // T111: backs the admin audit browser's keyset cursor pagination
+  // (`orderBy: [{createdAt: "desc"}, {id: "desc"}]`).
+  @@index([createdAt(sort: Desc), id(sort: Desc)])
 }
 
 enum FeedbackCategory {

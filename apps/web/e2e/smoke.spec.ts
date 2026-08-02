@@ -80,3 +80,17 @@ test("a toxic food page renders the verdict hero and the emergency hotline CTA",
   });
   expect(order).toBe(true);
 });
+
+// T111 step 28: real, running-server proof that the fail-closed basic-auth
+// middleware actually guards `/admin` -- jest cannot exercise Next
+// middleware directly (no Edge/Next runtime in this repo's jest config),
+// so this is the one place that proves it end-to-end. `ADMIN_ALLOWED_EMAILS`
+// / `ADMIN_DASHBOARD_PASSWORD` are unset in this CI/dev environment, so the
+// middleware is closed regardless of what credentials a caller sends --
+// this test only needs "no credentials sent" to prove the 401 + header.
+test("GET /admin without credentials returns 401 with a WWW-Authenticate header", async ({ page }) => {
+  const response = await page.goto("/admin");
+
+  expect(response?.status()).toBe(401);
+  expect(response?.headers()["www-authenticate"]).toContain("Basic");
+});

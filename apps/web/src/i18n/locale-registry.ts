@@ -41,6 +41,10 @@ export const SAFETY_PINNED_PREFIXES: readonly string[] = [
   "legal.",
   "foodPage.",
   "footer.",
+  // T111: the internal admin mini-dashboard is operational chrome, never
+  // machine-translated -- forced into the safety-pinned complement rather
+  // than declared as a new `TRANSLATED_SECTIONS` entry.
+  "admin.",
 ];
 
 /**
