@@ -1,4 +1,4 @@
-import type { CheckResponse } from "@pawcareright/types";
+import type { CheckResponse } from "@bombaypetcompany/types";
 import { render, screen, waitFor, fireEvent } from "@testing-library/react-native";
 
 import CheckWaitingScreen from "../app/check/waiting/[checkId]";

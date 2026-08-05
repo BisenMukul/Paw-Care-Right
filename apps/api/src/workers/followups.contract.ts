@@ -5,7 +5,7 @@
  * `checks.contract.ts`. No processor is registered against this queue here
  * -- the delayed job is inert until P5 attaches a worker.
  */
-export const FOLLOWUPS_QUEUE = "pawcareright-followups";
+export const FOLLOWUPS_QUEUE = "bombaypetcompany-followups";
 
 export const FOLLOWUP_JOB_NAME = "followup-prompt";
 

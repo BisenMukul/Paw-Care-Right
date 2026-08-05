@@ -120,7 +120,7 @@ export const PREVIEW_STORE_PRODUCTS: PreviewStoreProduct[] = [
   { id: "product-6", name: "Oatmeal Pet Shampoo", tag: "Grooming", icon: "water-outline" },
 ];
 
-// Local literal union (not imported from `@pawcareright/types`) -- plan step
+// Local literal union (not imported from `@bombaypetcompany/types`) -- plan step
 // 2: "do NOT import api types that would pull store deps".
 export type PreviewAdoptSpecies = "DOG" | "CAT";
 

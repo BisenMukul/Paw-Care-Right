@@ -1,10 +1,10 @@
-import type { CompletedIntake } from "@pawcareright/types";
+import type { CompletedIntake } from "@bombaypetcompany/types";
 
 /**
  * Structurally assignable to `packages/ai`'s `VisionImage`
  * (`{ base64?: string; url?: string; mimeType: string }`) — see plan R3.
  * NOT importing `VisionImage` here keeps this task free of the
- * `@pawcareright/ai` workspace alias/tsconfig/jest-mapper cost (T043 wires
+ * `@bombaypetcompany/ai` workspace alias/tsconfig/jest-mapper cost (T043 wires
  * that when it consumes `PreparedVisionInput.images` directly).
  */
 export interface PreparedVisionImage {

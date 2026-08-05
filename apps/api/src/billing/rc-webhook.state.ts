@@ -1,4 +1,4 @@
-import { RC_WEBHOOK_EVENT_TYPES, type RcWebhookEvent } from "@pawcareright/types";
+import { RC_WEBHOOK_EVENT_TYPES, type RcWebhookEvent } from "@bombaypetcompany/types";
 
 /**
  * Audit-only status strings persisted on `Subscription.status` (T073 plan

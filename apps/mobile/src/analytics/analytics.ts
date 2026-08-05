@@ -1,4 +1,4 @@
-import { createAnalytics, createHttpTransport, type AnalyticsEventMap, type AnalyticsEventName } from "@pawcareright/analytics";
+import { createAnalytics, createHttpTransport, type AnalyticsEventMap, type AnalyticsEventName } from "@bombaypetcompany/analytics";
 
 import { useAuthStore } from "../auth/auth-store";
 import { getConfig } from "../config";

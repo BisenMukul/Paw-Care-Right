@@ -1,4 +1,4 @@
-import { allBreeds, emergencyPayloadByKey } from "@pawcareright/data";
+import { allBreeds, emergencyPayloadByKey } from "@bombaypetcompany/data";
 import {
   ACTIVITY_TYPES,
   isValidRRule,
@@ -6,7 +6,7 @@ import {
   parseIntake,
   parseTriage,
   URGENCY_TIERS,
-} from "@pawcareright/types";
+} from "@bombaypetcompany/types";
 
 import { startOfUtcDay } from "../../prisma/seed/clock";
 import { BUDDY_PET_ID, LUNA_PET_ID } from "../../prisma/seed/constants";

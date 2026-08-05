@@ -3,6 +3,7 @@ import { ActivityIndicator, Dimensions, FlatList, Modal, Pressable, Text, View }
 
 import type { PhotoViewItem } from "../api/pet-photos-api";
 import { usePhotoViewUrls } from "../api/pet-photos-api";
+import { REMOTE_IMAGE_CACHE_POLICY } from "../perf/image-cache-policy";
 import { strings } from "../strings";
 
 export interface TimelinePhotoViewerProps {
@@ -34,6 +35,7 @@ export function TimelinePhotoViewer({ visible, petId, photoKeys, initialIndex, o
           accessibilityRole="button"
           accessibilityLabel={strings.timeline.photoViewerClose}
           onPress={onClose}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           className="absolute right-4 top-12 z-10"
         >
           <Text className="text-lg font-semibold text-white">{"✕"}</Text>
@@ -63,6 +65,7 @@ export function TimelinePhotoViewer({ visible, petId, photoKeys, initialIndex, o
                   testID={`timeline-photo-viewer-image-${index}`}
                   source={{ uri: item.mainUrl }}
                   contentFit="contain"
+                  cachePolicy={REMOTE_IMAGE_CACHE_POLICY}
                   style={{ width: pageWidth, height: pageWidth }}
                 />
               </View>

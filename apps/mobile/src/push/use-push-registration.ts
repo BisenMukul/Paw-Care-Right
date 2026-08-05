@@ -3,6 +3,8 @@ import * as Notifications from "expo-notifications";
 import { Platform } from "react-native";
 
 import { apiClient } from "../api/client";
+import { getAppVersion } from "../config";
+import { readOtaInfo } from "../observability/ota-info";
 
 export type PushRegistrationResult = "granted" | "denied" | "error";
 
@@ -42,9 +44,18 @@ export function usePushRegistration(): UsePushRegistrationResult {
         projectId,
       });
 
+      // T117 step 15: reported at JIT registration only (D4/D5 — this is
+      // NOT a per-launch report; `/v1/meta/client-versions`'s Swagger and
+      // the runbook both say so). `otaUpdateId` is omitted entirely when
+      // `null` (embedded/Expo-Go launch) rather than sent as an explicit
+      // null — `RegisterDeviceDto`'s field is a plain optional string.
+      const { updateId: otaUpdateId } = readOtaInfo();
+
       await apiClient.post("/v1/devices", {
         expoPushToken,
         platform: Platform.OS,
+        appVersion: getAppVersion(),
+        ...(otaUpdateId !== null ? { otaUpdateId } : {}),
       });
 
       return "granted";

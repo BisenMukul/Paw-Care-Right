@@ -6,6 +6,7 @@ import type {
   TextGenerateOptions,
   TextProvider,
   TextResult,
+  TextStreamChunk,
   VisionGenerateOptions,
   VisionProvider,
 } from "../types";
@@ -24,6 +25,10 @@ export interface FakeTextProviderOptions {
   canned?: TextResult;
   /** Scripted sequence consumed in order, one entry per `generate()` call. */
   script?: TextResult[];
+  /** When set, `generateStream` yields these chunks in order (T081 plan decision D3). */
+  streamChunks?: string[];
+  /** When set, thrown (rejected) after `streamChunks` has been fully yielded. */
+  streamError?: Error;
 }
 
 const DEFAULT_CANNED_TEXT: TextResult = {
@@ -36,11 +41,30 @@ const DEFAULT_CANNED_TEXT: TextResult = {
 export class FakeTextProvider implements TextProvider {
   private readonly canned: TextResult;
   private readonly script: TextResult[] | undefined;
+  private readonly streamChunks: string[] | undefined;
+  private readonly streamError: Error | undefined;
   private cursor = 0;
+
+  /**
+   * `generateStream` (T081 plan decision D3) is assigned as an instance
+   * property, and ONLY when `streamChunks` is configured — so a fake built
+   * with no `streamChunks` has no `generateStream` at all (`undefined`,
+   * `typeof` !== `"function"`), exactly like a real `TextProvider` that
+   * never implemented the optional method. This lets `ChatService`'s
+   * feature-detection fallback path be exercised with a plain
+   * `new FakeTextProvider()`.
+   */
+  generateStream?: (options: TextGenerateOptions) => AsyncGenerator<TextStreamChunk>;
 
   constructor(options: FakeTextProviderOptions = {}) {
     this.canned = options.canned ?? DEFAULT_CANNED_TEXT;
     this.script = options.script;
+    this.streamChunks = options.streamChunks;
+    this.streamError = options.streamError;
+
+    if (options.streamChunks) {
+      this.generateStream = this.streamScriptedChunks.bind(this);
+    }
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -57,6 +81,17 @@ export class FakeTextProvider implements TextProvider {
     }
 
     return Promise.resolve(this.canned);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  private async *streamScriptedChunks(_options: TextGenerateOptions): AsyncGenerator<TextStreamChunk> {
+    for (const text of this.streamChunks ?? []) {
+      yield { text };
+    }
+
+    if (this.streamError) {
+      throw this.streamError;
+    }
   }
 }
 

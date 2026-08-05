@@ -12,8 +12,8 @@
  */
 
 // ---- users ----
-export const OWNER_EMAIL = "owner@pawcareright.local";
-export const FAMILY_EMAIL = "family@pawcareright.local";
+export const OWNER_EMAIL = "owner@bombaypetcompany.local";
+export const FAMILY_EMAIL = "family@bombaypetcompany.local";
 
 export const OWNER_USER_ID = "00000000-0000-4000-8000-000000000110";
 export const FAMILY_USER_ID = "00000000-0000-4000-8000-000000000111";

@@ -1,4 +1,4 @@
-# Paw Care Right + — Architecture (HLD, build-ready)
+# Bombay Pet Company — Architecture (HLD, build-ready)
 
 Companion to `PRODUCT_SPEC.md`. Where a task card and this doc disagree, journal it and follow the task card.
 

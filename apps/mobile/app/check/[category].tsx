@@ -1,5 +1,5 @@
-import { useIsOffline } from "@pawcareright/api-client";
-import { getCategoryDef } from "@pawcareright/types";
+import { useIsOffline } from "@bombaypetcompany/api-client";
+import { getCategoryDef } from "@bombaypetcompany/types";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useMemo } from "react";
 import { ActivityIndicator, Text, useColorScheme, View } from "react-native";
@@ -60,7 +60,11 @@ export default function IntakeScreen() {
   return (
     <View className="flex-1 bg-surface-page dark:bg-surface-page-dark">
       {isOffline ? (
-        <Text testID="intake-offline-banner" className="px-6 pt-2 text-center text-sm text-brand-700 dark:text-ink-muted-dark">
+        <Text
+          testID="intake-offline-banner"
+          accessibilityRole="alert"
+          className="px-6 pt-2 text-center text-sm text-brand-700 dark:text-ink-muted-dark"
+        >
           {strings.intake.offlineBanner}
         </Text>
       ) : null}
@@ -107,6 +111,24 @@ export default function IntakeScreen() {
             label={strings.check.submit.quotaUpgrade}
             onPress={() => router.push({ pathname: "/paywall", params: { source: "check-quota" } })}
           />
+        </SafeAreaView>
+      ) : null}
+
+      {submission.state === "unavailable" ? (
+        // T106 D8/step 17: FEATURE_DISABLED (a deep-linked/stale intake
+        // submit while `checks` is killed) -- deliberately NO retry
+        // affordance, retrying cannot help (the server rejects it
+        // deterministically until the kill switch is lifted).
+        <SafeAreaView
+          testID="check-submit-unavailable"
+          className="absolute inset-0 z-10 items-center justify-center gap-4 bg-surface-page dark:bg-surface-page-dark px-6"
+        >
+          <Text className="text-center text-lg font-semibold text-brand-900 dark:text-ink-dark font-body-semibold">
+            {strings.check.unavailableTitle}
+          </Text>
+          <Text className="text-center text-base text-brand-700 dark:text-ink-muted-dark">
+            {strings.check.unavailableBody}
+          </Text>
         </SafeAreaView>
       ) : null}
 

@@ -1,4 +1,4 @@
-import { SAFE_FALLBACK, type CheckResponse } from "@pawcareright/types";
+import { SAFE_FALLBACK, type CheckResponse } from "@bombaypetcompany/types";
 
 import { deriveCheckChip, formatCheckDate, getCategoryLabel } from "../src/checks/check-history";
 

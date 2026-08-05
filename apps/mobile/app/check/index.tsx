@@ -1,14 +1,18 @@
-import { useIsOffline } from "@pawcareright/api-client";
-import type { SymptomCategory } from "@pawcareright/types";
+import { useIsOffline } from "@bombaypetcompany/api-client";
+import type { SymptomCategory } from "@bombaypetcompany/types";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Pressable, RefreshControl, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useChecksList } from "../../src/api/checks-api";
 import { usePaywallOnboardingTrigger } from "../../src/billing/use-paywall-trigger";
+import { AppHeader } from "../../src/components/app-header";
 import { CategoryGrid } from "../../src/components/category-grid";
 import { CheckHistoryRow } from "../../src/components/check-history-row";
+import { FeatureUnavailableNotice } from "../../src/components/feature-unavailable-notice";
 import { Skeleton } from "../../src/components/skeleton";
+import { useAppConfig } from "../../src/config/app-config-queries";
+import { useNavBack } from "../../src/hooks/use-nav-back";
 import { strings } from "../../src/strings";
 
 /**
@@ -28,10 +32,18 @@ import { strings } from "../../src/strings";
  */
 export default function CheckEntryScreen() {
   const router = useRouter();
+  const onBack = useNavBack("/(tabs)");
   const { petId } = useLocalSearchParams<{ petId?: string }>();
   const isOffline = useIsOffline();
   const { data, isLoading, isError, refetch, isRefetching } = useChecksList(petId ?? "");
   const recent = (data?.pages[0]?.items ?? []).slice(0, 3);
+  // T106 D8/D9/D10: `initialData` on `useAppConfig` means `appConfig` is
+  // effectively never `undefined` in practice (the `?? true` fallback below
+  // is the fail-open default for the theoretical pre-first-render tick,
+  // mirroring `UpdateGate`'s `config?.… ?? DEFAULT_APP_CONFIG…` idiom) — a
+  // killed `checks` flag replaces the grid ONLY; the recent-checks section
+  // (already-produced results) stays rendered.
+  const { data: appConfig } = useAppConfig();
 
   // T074: the ONLY call site of the onboarding-paywall trigger (a
   // side-effect hook, renders nothing) -- this screen is strictly
@@ -53,6 +65,7 @@ export default function CheckEntryScreen() {
 
   return (
     <SafeAreaView testID="check-entry-screen" className="flex-1 bg-surface-page dark:bg-surface-page-dark">
+      <AppHeader title={strings.check.title} onBack={onBack} />
       <View className="gap-3 px-4 pb-4 pt-2">
         {isOffline ? (
           <Text
@@ -63,9 +76,6 @@ export default function CheckEntryScreen() {
             {strings.check.offlineBanner}
           </Text>
         ) : null}
-        <Text accessibilityRole="header" maxFontSizeMultiplier={1.5} className="text-2xl font-bold text-brand-900 dark:text-ink-dark font-display">
-          {strings.check.title}
-        </Text>
         <Text className="text-sm text-brand-700 dark:text-ink-muted-dark font-body">{strings.check.subtitle}</Text>
       </View>
       <ScrollView
@@ -76,7 +86,15 @@ export default function CheckEntryScreen() {
         }
       >
         <View className="gap-6 px-4 pb-8">
-          <CategoryGrid onSelect={handleSelect} />
+          {(appConfig?.features.checks ?? true) ? (
+            <CategoryGrid onSelect={handleSelect} />
+          ) : (
+            <FeatureUnavailableNotice
+              testID="check-unavailable"
+              title={strings.check.unavailableTitle}
+              body={strings.check.unavailableBody}
+            />
+          )}
           <View className="gap-2">
             <Text className="text-base font-semibold text-brand-900 dark:text-ink-dark font-body-semibold">
               {strings.check.recentTitle}

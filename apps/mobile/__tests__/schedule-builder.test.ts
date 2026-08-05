@@ -1,4 +1,4 @@
-import { isValidRRule } from "@pawcareright/types";
+import { isValidRRule } from "@bombaypetcompany/types";
 
 import { buildRRule, parseRRuleToScheduleConfig, type ScheduleConfig } from "../src/reminders/schedule-builder";
 
@@ -6,7 +6,7 @@ import { buildRRule, parseRRuleToScheduleConfig, type ScheduleConfig } from "../
  * T060 plan AC2: `buildRRule` outputs a valid rrule for daily/weekly/
  * monthly/every-N cases, asserted BOTH on the exact string (matching the
  * plan's grammar table verbatim) and via `isValidRRule` (imported from
- * `@pawcareright/types`, the same validator the api's DTO/service use).
+ * `@bombaypetcompany/types`, the same validator the api's DTO/service use).
  */
 describe("buildRRule (AC2)", () => {
   it.each<[string, ScheduleConfig, string]>([

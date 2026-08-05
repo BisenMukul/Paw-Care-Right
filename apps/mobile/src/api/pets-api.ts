@@ -1,4 +1,4 @@
-import type { CreatePetInput, Pet } from "@pawcareright/types";
+import type { CreatePetInput, Pet } from "@bombaypetcompany/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { apiClient } from "./client";

@@ -7,7 +7,7 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from "@nestjs/swagger";
-import type { CareTemplateSuggestions, MedicationCourseResponse } from "@pawcareright/types";
+import type { CareTemplateSuggestions, MedicationCourseResponse } from "@bombaypetcompany/types";
 
 import type { HouseholdScope } from "../common/authenticated-request";
 import { CurrentHousehold, HouseholdFromMembership } from "../common/household-scope.decorators";

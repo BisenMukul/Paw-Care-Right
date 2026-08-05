@@ -1,5 +1,5 @@
-import { ApiError, setOnline } from "@pawcareright/api-client";
-import { petIdSchema, type Pet } from "@pawcareright/types";
+import { ApiError, setOnline } from "@bombaypetcompany/api-client";
+import { petIdSchema, type Pet } from "@bombaypetcompany/types";
 import { act, fireEvent, render, screen, within } from "@testing-library/react-native";
 import { Dimensions, StyleSheet } from "react-native";
 import type { JsonElement, JsonNode } from "test-renderer";
@@ -15,12 +15,18 @@ import {
 
 // 4-state matrix + the two above-the-fold assertions (T025 plan §Tests AC1
 // and AC2). `expo-router` and `usePet` are mocked; offline is driven by the
-// REAL shared store (`setOnline`) from `@pawcareright/api-client`, reset to
+// REAL shared store (`setOnline`) from `@bombaypetcompany/api-client`, reset to
 // online in `afterEach`. RNTL v14 — every render is awaited.
 const mockPush = jest.fn();
+const mockBack = jest.fn();
+const mockReplace = jest.fn();
+const mockCanGoBack = jest.fn(() => true);
 
+// FOUNDER-UX-3 plan: `back`/`replace`/`canGoBack` added -- the loaded render
+// now composes the canon `AppHeader` (back-only), whose `onBack` resolves
+// through `useNavBack`.
 jest.mock("expo-router", () => ({
-  useRouter: () => ({ push: mockPush }),
+  useRouter: () => ({ push: mockPush, back: mockBack, replace: mockReplace, canGoBack: mockCanGoBack }),
   useLocalSearchParams: () => ({ id: "pet1" }),
 }));
 
@@ -220,6 +226,23 @@ describe("pet home screen — 4-state matrix (AC1)", () => {
 
     await fireEvent.press(screen.getByTestId("quick-action-reminders"));
     expect(mockPush).toHaveBeenCalledWith("/(tabs)/care");
+  });
+
+  // FOUNDER-UX-3 plan AC3: the loaded render carries the canon back-only
+  // `AppHeader`, prepended above `pet-home-header-region`.
+  it("[AC3] loaded: renders app-header and app-header-back", async () => {
+    mockedUsePet.mockReturnValue({
+      data: FIXTURE_PET,
+      isLoading: false,
+      isError: false,
+      isFetching: false,
+      refetch: mockRefetch,
+    });
+
+    await render(<PetHomeScreen />);
+
+    expect(screen.getByTestId("app-header")).toBeTruthy();
+    expect(screen.getByTestId("app-header-back")).toBeTruthy();
   });
 });
 

@@ -3,7 +3,7 @@ import { randomUUID } from "node:crypto";
 import type { INestApplication } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { Test } from "@nestjs/testing";
-import { errorResponseSchema } from "@pawcareright/types";
+import { errorResponseSchema } from "@bombaypetcompany/types";
 import { PrismaClient } from "@prisma/client";
 import request from "supertest";
 
@@ -67,7 +67,7 @@ describe("Billing — RC webhook (e2e)", () => {
         id: overrides.id,
         type: overrides.type,
         app_user_id: overrides.app_user_id,
-        product_id: overrides.product_id ?? "pawcareright_monthly",
+        product_id: overrides.product_id ?? "bombaypetcompany_monthly",
         expiration_at_ms: overrides.expiration_at_ms ?? Date.parse("2026-08-16T12:00:00.000Z"),
         event_timestamp_ms: overrides.event_timestamp_ms ?? Date.parse("2026-07-16T12:00:00.000Z"),
         environment: "SANDBOX",

@@ -1,6 +1,6 @@
 # AI_PROVIDERS.md — Runtime AI Provider Architecture
 
-Defines which external AI services **the Paw Care Right + product** calls at runtime, and the abstraction that keeps them swappable. This **supersedes every earlier mention of the Anthropic API as a runtime provider** (PRODUCT_SPEC, ARCHITECTURE, PHASES). The app no longer uses `ANTHROPIC_API_KEY`.
+Defines which external AI services **the Bombay Pet Company product** calls at runtime, and the abstraction that keeps them swappable. This **supersedes every earlier mention of the Anthropic API as a runtime provider** (PRODUCT_SPEC, ARCHITECTURE, PHASES). The app no longer uses `ANTHROPIC_API_KEY`.
 
 > **Scope boundary (read this first).** There are two completely separate AI concerns in this repo:
 > 1. **The build loop** — Fable/Sonnet subagents in Claude Code that *write the app's code*. Governed by `docs/MODEL_STRATEGY.md`. Unchanged by this document.

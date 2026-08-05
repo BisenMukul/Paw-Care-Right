@@ -1,6 +1,6 @@
 import { Controller, Get } from "@nestjs/common";
 import { ApiNotFoundResponse, ApiOkResponse, ApiTags, ApiUnauthorizedResponse } from "@nestjs/swagger";
-import type { BillingEntitlement } from "@pawcareright/types";
+import type { BillingEntitlement } from "@bombaypetcompany/types";
 
 import { CurrentUser } from "../auth/auth.decorators";
 import type { HouseholdScope } from "../common/authenticated-request";
@@ -21,7 +21,10 @@ export class BillingController {
 
   @Get("entitlement")
   @HouseholdFromMembership()
-  @ApiOkResponse({ description: "The caller's resolved billing entitlement (own sub, or a household family sub)." })
+  @ApiOkResponse({
+    description:
+      "The caller's resolved billing entitlement -- an own sub, a household family sub, or (T108) server-side referral grace.",
+  })
   @ApiNotFoundResponse({ description: "No resolved household for the caller." })
   getEntitlement(
     @CurrentUser() user: { userId: string },

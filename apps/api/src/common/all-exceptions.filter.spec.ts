@@ -1,10 +1,25 @@
 import type { ArgumentsHost, HttpException } from "@nestjs/common";
-import { ConflictException } from "@nestjs/common";
+import { ConflictException, NotFoundException, ServiceUnavailableException } from "@nestjs/common";
+
+import { captureApiException } from "../observability/sentry";
 
 import { AllExceptionsFilter } from "./all-exceptions.filter";
 import type { RequestWithId } from "./request-id.middleware";
 
+// T089 D8: the filter's Sentry wiring is unit-tested against a mock of our
+// own `../observability/sentry` module (never the real SDK here — that's
+// covered end to end by `observability/sentry.spec.ts`'s mock-transport
+// proof). This keeps the filter's existing behavior (T082 F1 headersSent
+// guard, error envelope) untouched and independently verifiable.
+jest.mock("../observability/sentry", () => ({
+  captureApiException: jest.fn(),
+}));
+
 describe("AllExceptionsFilter", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   function buildHost(requestId: string): {
     host: ArgumentsHost;
     status: jest.Mock;
@@ -40,6 +55,66 @@ describe("AllExceptionsFilter", () => {
     });
   });
 
+  it("maps a 503 ServiceUnavailableException carrying an explicit code: FEATURE_DISABLED (T106 kill-switch shape) and copies the requestId", () => {
+    const filter = new AllExceptionsFilter();
+    const { host, status, json } = buildHost("req-503");
+
+    filter.catch(
+      new ServiceUnavailableException({
+        code: "FEATURE_DISABLED",
+        message: "This feature is temporarily unavailable.",
+      }) as HttpException,
+      host,
+    );
+
+    expect(status).toHaveBeenCalledWith(503);
+    expect(json).toHaveBeenCalledWith({
+      error: {
+        code: "FEATURE_DISABLED",
+        message: "This feature is temporarily unavailable.",
+        requestId: "req-503",
+      },
+    });
+  });
+
+  it("maps a PLAIN 503 ServiceUnavailableException (no explicit code, e.g. health.service.ts's dependency check) to SERVICE_UNAVAILABLE, NOT FEATURE_DISABLED (T106 F1 fix)", () => {
+    const filter = new AllExceptionsFilter();
+    const { host, status, json } = buildHost("req-503-health");
+
+    filter.catch(new ServiceUnavailableException("Dependency health check failed.") as HttpException, host);
+
+    expect(status).toHaveBeenCalledWith(503);
+    expect(json).toHaveBeenCalledWith({
+      error: {
+        code: "SERVICE_UNAVAILABLE",
+        message: "Dependency health check failed.",
+        requestId: "req-503-health",
+      },
+    });
+  });
+
+  it("ignores a response `code` that is not a valid ErrorCode (falls back to STATUS_TO_CODE)", () => {
+    const filter = new AllExceptionsFilter();
+    const { host, status, json } = buildHost("req-503-bad-code");
+
+    filter.catch(
+      new ServiceUnavailableException({
+        code: "NOT_A_REAL_CODE",
+        message: "still service unavailable",
+      }) as HttpException,
+      host,
+    );
+
+    expect(status).toHaveBeenCalledWith(503);
+    expect(json).toHaveBeenCalledWith({
+      error: {
+        code: "SERVICE_UNAVAILABLE",
+        message: "still service unavailable",
+        requestId: "req-503-bad-code",
+      },
+    });
+  });
+
   it("maps a plain Error to 500 INTERNAL with a generic message", () => {
     const filter = new AllExceptionsFilter();
     const { host, status, json } = buildHost("req-456");
@@ -52,6 +127,66 @@ describe("AllExceptionsFilter", () => {
         code: "INTERNAL",
         message: expect.not.stringContaining("secret") as string,
         requestId: "req-456",
+      },
+    });
+  });
+
+  it("does not write a JSON envelope once headers are sent (T082 F1)", () => {
+    const filter = new AllExceptionsFilter();
+    const json = jest.fn();
+    const status = jest.fn().mockReturnValue({ json });
+    const end = jest.fn();
+    const request: Partial<RequestWithId> = { requestId: "req-789" };
+
+    const host = {
+      switchToHttp: () => ({
+        getResponse: () => ({ status, json, headersSent: true, writableEnded: false, end }),
+        getRequest: () => request,
+      }),
+    } as unknown as ArgumentsHost;
+
+    filter.catch(new Error("post-header persistence failure"), host);
+
+    expect(status).not.toHaveBeenCalled();
+    expect(json).not.toHaveBeenCalled();
+    expect(end).toHaveBeenCalledTimes(1);
+  });
+
+  it("a 500 is reported to Sentry with requestId only", () => {
+    const filter = new AllExceptionsFilter();
+    const { host } = buildHost("req-500");
+    const error = new Error("db exploded");
+
+    filter.catch(error, host);
+
+    expect(captureApiException).toHaveBeenCalledTimes(1);
+    expect(captureApiException).toHaveBeenCalledWith(error, "req-500");
+  });
+
+  it("a 404 is NOT reported", () => {
+    const filter = new AllExceptionsFilter();
+    const { host } = buildHost("req-404");
+
+    filter.catch(new NotFoundException("not here") as HttpException, host);
+
+    expect(captureApiException).not.toHaveBeenCalled();
+  });
+
+  it("a capture failure never breaks the response", () => {
+    (captureApiException as jest.Mock).mockImplementation(() => {
+      throw new Error("sentry sdk exploded");
+    });
+    const filter = new AllExceptionsFilter();
+    const { host, status, json } = buildHost("req-501");
+
+    filter.catch(new Error("db exploded"), host);
+
+    expect(status).toHaveBeenCalledWith(500);
+    expect(json).toHaveBeenCalledWith({
+      error: {
+        code: "INTERNAL",
+        message: expect.any(String) as string,
+        requestId: "req-501",
       },
     });
   });

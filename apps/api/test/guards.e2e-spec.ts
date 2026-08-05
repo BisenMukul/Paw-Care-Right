@@ -1,7 +1,7 @@
 import type { INestApplication } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { Test } from "@nestjs/testing";
-import { errorResponseSchema } from "@pawcareright/types";
+import { errorResponseSchema } from "@bombaypetcompany/types";
 import { PrismaClient } from "@prisma/client";
 import request from "supertest";
 
@@ -176,7 +176,10 @@ describe("Guards (e2e)", () => {
       const res = await request(app.getHttpServer()).get("/v1/health");
 
       expect(res.status).toBe(200);
-      expect(res.body).toEqual({ status: "ok", db: "ok", redis: "ok" });
+      // T116: /v1/health additionally carries a `buildId` (GIT_SHA) since the
+      // OTA production pre-flight check needs it (docs/OTA_UPDATES.md §5.3).
+      // Not hardcoded to "dev" — ci.yml sets GIT_SHA: ${{ github.sha }}.
+      expect(res.body).toEqual({ status: "ok", db: "ok", redis: "ok", buildId: expect.any(String) as string });
     });
   });
 });

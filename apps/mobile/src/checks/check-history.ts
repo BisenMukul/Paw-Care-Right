@@ -4,7 +4,10 @@ import {
   isTerminalCheckStatus,
   type CheckResponse,
   type Urgency,
-} from "@pawcareright/types";
+} from "@bombaypetcompany/types";
+
+import { formatEntryDate } from "../i18n/format";
+import { getActiveLocale } from "../i18n/runtime";
 
 /**
  * Pure check-history helpers (T050 plan). `deriveCheckChip` fails UPWARD
@@ -29,7 +32,11 @@ export function getCategoryLabel(category: string): string {
   return INTAKE_CATEGORIES.find((c) => c.id === category)?.label ?? category;
 }
 
-/** Deterministic YYYY-MM-DD (matches the app's existing date convention; locale-free). */
+/**
+ * Deterministic YYYY-MM-DD while `en` is the served locale (T110: delegates
+ * to `formatEntryDate`, which pins the exact same ISO convention for `en` —
+ * see `i18n-format.test.ts`'s "formatCheckDate output is unchanged..." case).
+ */
 export function formatCheckDate(iso: string): string {
-  return new Date(iso).toISOString().slice(0, 10);
+  return formatEntryDate(iso, getActiveLocale());
 }

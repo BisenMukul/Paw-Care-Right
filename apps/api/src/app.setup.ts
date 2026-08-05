@@ -2,7 +2,7 @@ import type { INestApplication } from "@nestjs/common";
 import { PayloadTooLargeException, ValidationPipe } from "@nestjs/common";
 import type { NestExpressApplication } from "@nestjs/platform-express";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
-import { APP_DISPLAY_NAME } from "@pawcareright/config";
+import { APP_DISPLAY_NAME } from "@bombaypetcompany/config";
 import type { NextFunction, Request, Response } from "express";
 import helmet from "helmet";
 

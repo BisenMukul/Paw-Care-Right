@@ -30,8 +30,8 @@ failures below are actually an unmet prerequisite, not a product bug.
       dashboard → Project settings → API keys (`docs/store-setup.md §7`)
       before building the dev client used for this checklist.
 - [ ] **RC dashboard configured** per `docs/store-setup.md §6`: entitlement
-      `plus` exists; all three products (`pawcareright_monthly`,
-      `pawcareright_annual`, `pawcareright_family_annual`) are registered on
+      `plus` exists; all three products (`bombaypetcompany_monthly`,
+      `bombaypetcompany_annual`, `bombaypetcompany_family_annual`) are registered on
       their store apps and attached to `plus`; offering `default` is
       published with packages `$rc_monthly` / `$rc_annual` / `family`.
 - [ ] **App Store Connect / Play Console** subscriptions are live per
@@ -96,7 +96,7 @@ expiresAt: string|null, billingIssue: boolean }`.
 ### ② Monthly purchase (sandbox) → premium flips
 
 1. On `/paywall`, tap `paywall-trial-cta` (label reads "Start your 7-day
-   free trial — then <price>") for product `pawcareright_monthly`. Complete
+   free trial — then <price>") for product `bombaypetcompany_monthly`. Complete
    the store's sandbox purchase sheet (Face ID / sandbox password prompt on
    iOS; Play's test-purchase dialog on Android).
 2. **Expected:** `testID="paywall-success"` notice appears, then the modal
@@ -109,15 +109,16 @@ expiresAt: string|null, billingIssue: boolean }`.
    settings → Webhooks, configured against `docs/store-setup.md §6`'s
    entitlement/offering setup) → a new `Subscription` row keyed on the RC
    `app_user_id` (our internal user id). `GET /v1/billing/entitlement` →
-   `{ entitled: true, source: "own", plan: "pawcareright_monthly" }`.
+   `{ entitled: true, source: "own", plan: "bombaypetcompany_monthly" }`.
 - [ ] PASS  [ ] FAIL — notes: ______________________
 
 ### ③ 7-day trial start → analytics + entitlement
 
 1. Using a sandbox/tester identity that has NEVER subscribed before,
    confirm the monthly card's CTA shows the trial framing
-   (`strings.paywall.trialCtaWithPrice`, e.g. "Start your 7-day free trial —
-   then $5.99"). Purchase it.
+   (`strings.paywall.variants.A.trialCtaWithPrice`, e.g. "Start your 7-day
+   free trial — then $5.99"; variant B reads "Try it free for 7 days — then
+   $5.99" — see T107, `docs/experiments/paywall-ab.md`). Purchase it.
 2. **Expected:** entitlement flips to `entitled: true` with a future
    `expiresAt` (roughly "now + 7 sandbox-compressed days" — see §4).
 3. **Server check:** the `trial_start` analytics event is emitted
@@ -137,7 +138,7 @@ expiresAt: string|null, billingIssue: boolean }`.
    billing): iOS → device Settings → [Apple ID] → Subscriptions; Android →
    Play Store → Profile → Payments & subscriptions → Subscriptions (or the
    `ANDROID_MANAGE_SUBSCRIPTION_URL`
-   `https://play.google.com/store/account/subscriptions?package=com.pawcareright.app`).
+   `https://play.google.com/store/account/subscriptions?package=com.bombaypetcompany.app`).
 2. **Expected:** entitlement REMAINS `entitled: true` immediately after
    cancelling — cancellation only stops auto-renewal, it does not revoke
    current access.
@@ -171,7 +172,7 @@ expiresAt: string|null, billingIssue: boolean }`.
 ### ⑥ Family plan: owner purchase → member premium; leave → revoked
 
 1. As the household owner, on `/paywall` tap `paywall-plan-family`
-   (`pawcareright_family_annual`) and complete the sandbox purchase.
+   (`bombaypetcompany_family_annual`) and complete the sandbox purchase.
 2. From Settings → `settings-family` → `app/family.tsx`, tap
    `family-invite-button` and share the generated deep link with a second
    test account; have that account open the link (`app/join/[code].tsx`)
@@ -208,7 +209,7 @@ expiresAt: string|null, billingIssue: boolean }`.
    trigger `openManageSubscription()`.
 2. **Expected:** iOS opens `https://apps.apple.com/account/subscriptions`;
    Android opens
-   `https://play.google.com/store/account/subscriptions?package=com.pawcareright.app`
+   `https://play.google.com/store/account/subscriptions?package=com.bombaypetcompany.app`
    — UNLESS RC's `managementUrl` is present on the customer info, in which
    case that URL is used instead (`manage-subscription.ts`). Confirm the
    link lands on the correct native store subscriptions surface, not a

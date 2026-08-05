@@ -5,7 +5,7 @@ import {
   type Species,
   type TriageResult,
   type Urgency,
-} from "@pawcareright/types";
+} from "@bombaypetcompany/types";
 
 /**
  * Post-rules composition (T036 — §5-critical, see plan "Post-rules

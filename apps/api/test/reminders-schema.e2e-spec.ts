@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 
-import { REMINDER_EVENT_STATUSES } from "@pawcareright/types";
+import { REMINDER_EVENT_STATUSES } from "@bombaypetcompany/types";
 
 /**
  * Introspective assertions that the T053 `add_reminders` migration applied
@@ -11,7 +11,7 @@ import { REMINDER_EVENT_STATUSES } from "@pawcareright/types";
  * setup is needed.
  *
  * The enum-label assertion imports `REMINDER_EVENT_STATUSES` from
- * `@pawcareright/types` (rather than re-hardcoding the array) so this test
+ * `@bombaypetcompany/types` (rather than re-hardcoding the array) so this test
  * also proves Prisma-enum/shared-types parity (T053 fidelity point 5) — if
  * either side drifts, this fails.
  */

@@ -3,11 +3,20 @@ import { KeyboardAvoidingView, Platform, ScrollView, Text, View, type RefreshCon
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useLayoutBucket } from "../hooks/use-layout-bucket";
+import { AppHeader } from "./app-header";
 import { AnimatedGradientBackground } from "./home/animated-gradient-background";
 
 export interface ScreenScaffoldProps {
   title?: string;
   subtitle?: string;
+  /**
+   * FOUNDER-UX-3 plan: additive-only. When supplied, an `AppHeader` renders
+   * at the top of the safe area (title moves into the bar; the in-scroll
+   * `text-2xl` title block is suppressed, but `subtitle` still renders as
+   * the first scroll child). Omitting `onBack` renders byte-identically to
+   * before this plan -- no `AppHeader`, in-scroll title exactly as-is.
+   */
+  onBack?: () => void;
   /** The home-tab-only animated gradient signature (design-system.md §2.1) — every other screen stays the calm solid `bg-surface-page` (cream, FIDELITY-2 plan). */
   gradient?: boolean;
   children: ReactNode;
@@ -43,6 +52,7 @@ const WIDE_SCAFFOLD_EXTRA = "w-full max-w-3xl self-center";
 export function ScreenScaffold({
   title,
   subtitle,
+  onBack,
   gradient = false,
   children,
   refreshControl,
@@ -54,6 +64,10 @@ export function ScreenScaffold({
   const isWide = bucket === "wide";
   const baseContentClass = contentClassName ?? DEFAULT_CONTENT_CLASS;
   const resolvedContentClass = isWide ? `${baseContentClass} ${WIDE_SCAFFOLD_EXTRA}` : baseContentClass;
+  // FOUNDER-UX-3 plan: `onBack` moves `title` into the `AppHeader` bar and
+  // suppresses this in-scroll block; `subtitle` still renders as the first
+  // scroll child either way (R7 subtitle preservation).
+  const showInScrollTitle = Boolean(title) && !onBack;
 
   const scroll = (
     <ScrollView
@@ -62,7 +76,7 @@ export function ScreenScaffold({
       contentContainerClassName={resolvedContentClass}
       {...(refreshControl ? { refreshControl } : {})}
     >
-      {title ? (
+      {showInScrollTitle ? (
         <View className="gap-1">
           <Text
             accessibilityRole="header"
@@ -75,6 +89,8 @@ export function ScreenScaffold({
             <Text className="text-sm text-brand-700 dark:text-ink-muted-dark font-body">{subtitle}</Text>
           ) : null}
         </View>
+      ) : onBack && subtitle ? (
+        <Text className="text-sm text-brand-700 dark:text-ink-muted-dark font-body">{subtitle}</Text>
       ) : null}
       {children}
     </ScrollView>
@@ -84,6 +100,7 @@ export function ScreenScaffold({
     return (
       <SafeAreaView edges={["top"]} className="flex-1 bg-surface-page dark:bg-surface-page-dark">
         {gradient ? <AnimatedGradientBackground /> : null}
+        {onBack ? <AppHeader {...(title ? { title } : {})} onBack={onBack} /> : null}
         {scroll}
       </SafeAreaView>
     );
@@ -92,6 +109,7 @@ export function ScreenScaffold({
   return (
     <SafeAreaView edges={["top"]} className="flex-1 bg-surface-page dark:bg-surface-page-dark">
       {gradient ? <AnimatedGradientBackground /> : null}
+      {onBack ? <AppHeader {...(title ? { title } : {})} onBack={onBack} /> : null}
       <KeyboardAvoidingView className="flex-1" behavior={Platform.OS === "ios" ? "padding" : undefined}>
         {scroll}
         <View

@@ -1,4 +1,4 @@
-import type { CompletedIntake } from "@pawcareright/types";
+import type { CompletedIntake } from "@bombaypetcompany/types";
 
 import { collectPhotoKeys } from "./vision.util";
 

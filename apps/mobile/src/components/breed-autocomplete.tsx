@@ -1,4 +1,4 @@
-import type { Species } from "@pawcareright/types";
+import type { Species } from "@bombaypetcompany/types";
 import { useEffect, useState } from "react";
 import { Pressable, Text, View } from "react-native";
 

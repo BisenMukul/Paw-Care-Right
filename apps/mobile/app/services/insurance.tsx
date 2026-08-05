@@ -5,6 +5,7 @@ import { Card } from "../../src/components/card";
 import { ListRow } from "../../src/components/list-row";
 import { ScreenScaffold } from "../../src/components/screen-scaffold";
 import { PreviewBanner } from "../../src/components/services/preview-banner";
+import { useNavBack } from "../../src/hooks/use-nav-back";
 import { strings } from "../../src/strings";
 
 /**
@@ -15,6 +16,7 @@ import { strings } from "../../src/strings";
 export default function ServicesInsuranceScreen() {
   const scheme = useColorScheme();
   const iconColor = scheme === "dark" ? "#2EA57C" : "#1f6350";
+  const onBack = useNavBack("/services");
 
   const benefits = [
     strings.servicesPreview.insurance.benefit1,
@@ -24,7 +26,7 @@ export default function ServicesInsuranceScreen() {
 
   return (
     <View testID="services-insurance-screen" className="flex-1">
-      <ScreenScaffold title={strings.servicesPreview.insurance.title}>
+      <ScreenScaffold title={strings.servicesPreview.insurance.title} onBack={onBack}>
         <PreviewBanner />
 
         <Card className="items-center gap-2 bg-brand-100 dark:bg-surface-raised-dark">

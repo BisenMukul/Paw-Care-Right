@@ -1,5 +1,5 @@
 {
-  "name": "pawcareright",
+  "name": "bombaypetcompany",
   "private": true,
   "packageManager": "pnpm@10.34.3",
   "engines": {
@@ -11,9 +11,21 @@
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
+    "test:cov": "turbo run test:cov",
     "test:ai-evals": "turbo run test:ai-evals"
   },
   "devDependencies": {
     "turbo": "^2.10.5"
+  },
+  "pnpm": {
+    "overrides": {
+      "fast-uri": "^3.1.4",
+      "tmp": "^0.2.7",
+      "postcss": "^8.5.23",
+      "sharp": "^0.35.3"
+    },
+    "auditConfig": {
+      "ignoreGhsas": ["GHSA-mh99-v99m-4gvg"]
+    }
   }
 }

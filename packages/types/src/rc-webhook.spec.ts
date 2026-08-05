@@ -7,7 +7,7 @@ function realisticEnvelope(overrides: Record<string, unknown> = {}): unknown {
       id: "evt_123",
       type: RC_WEBHOOK_EVENT_TYPES.INITIAL_PURCHASE,
       app_user_id: "user-1",
-      product_id: "pawcareright_monthly",
+      product_id: "bombaypetcompany_monthly",
       expiration_at_ms: 1_700_000_000_000,
       purchased_at_ms: 1_699_000_000_000,
       event_timestamp_ms: 1_699_000_000_500,
@@ -28,7 +28,7 @@ describe("rcWebhookEnvelopeSchema", () => {
     expect(parsed.event.id).toBe("evt_123");
     expect(parsed.event.type).toBe("INITIAL_PURCHASE");
     expect(parsed.event.app_user_id).toBe("user-1");
-    expect(parsed.event.product_id).toBe("pawcareright_monthly");
+    expect(parsed.event.product_id).toBe("bombaypetcompany_monthly");
     expect(parsed.event.expiration_at_ms).toBe(1_700_000_000_000);
     expect(parsed.event.environment).toBe("PRODUCTION");
   });

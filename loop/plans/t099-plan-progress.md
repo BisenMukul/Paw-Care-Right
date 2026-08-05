@@ -1,0 +1,23 @@
+# T099 planner progress (one line per step)
+
+- read CLAUDE.md (§1a naming table, §2 dep rule, §8 DoD)
+- read docs/PHASES.md lines 478-497 (T099 card verbatim; T100/T101/T102 deps noted, not planned)
+- read docs/OTA_UPDATES.md (channel model dev/preview/production, fingerprint runtime policy, publish gates; STALE BRANDING - do not edit, hook-protected)
+- read apps/mobile/app.config.js (version "0.0.0", extra.eas.projectId = OLD project uuid, no buildNumber/versionCode, Sentry plugin)
+- read apps/mobile/package.json (no eas-cli; expo ~57.0.6; jest-expo)
+- read apps/mobile/src/config.ts + observability/sentry.ts (gitSha -> buildSentryRelease)
+- read packages/analytics/src/sentry/options.spec.ts (T089 pin: bombaypetcompany@{version}+{buildId})
+- read packages/config/src/constants.ts + env/index.ts (APP_SLUG/BUNDLE_ID/defineEnv)
+- read .env.example (EXPO_PUBLIC_POSTHOG_*, EXPO_PUBLIC_SENTRY_DSN, EXPO_PUBLIC_GIT_SHA present; API_URL/RC/GOOGLE/TERMS/PRIVACY missing)
+- read .github/workflows/ci.yml (APP_VERSION vars fallback comment explicitly defers "real versioning" to T099; secrets scan step)
+- read scripts/scan-secrets.js rules + placeholder denylist
+- read apps/mobile/jest.config.js + __tests__/state-audit-doc.test.ts + image-cache-policy-scan.test.ts (house static-scan/doc-drift test idiom)
+- read docs/store-setup.md (bundle ids, RC keys stub-vs-real, EAS dev-client note)
+- read docs/store-privacy.md:250 (illustrative release string, NOT test-pinned)
+- checked node_modules: eas-cli ABSENT (no node_modules/.bin/eas); expo CLI present
+- FOUND: apps/mobile/eas.json ALREADY EXISTS (stub from T008) - task is finalize, not create
+- read .gitignore + apps/mobile/.gitignore (no signing-material ignores: *.p8/*.p12/*.keystore/credentials.json missing)
+- wrote loop/plans/T099.plan.md skeleton
+- appended: files inventory, ordered steps, eas.json target shape
+- appended: tests/AC map, commands, interfaces, out-of-scope, risks, founder to-dos, executor warnings
+- STATUS: COMPLETE

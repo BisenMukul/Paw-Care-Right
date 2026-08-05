@@ -1,6 +1,7 @@
-import { createApiClient } from "@pawcareright/api-client";
+import { createApiClient } from "@bombaypetcompany/api-client";
 
 import { useAuthStore } from "../auth/auth-store";
+import { expoSseTransport } from "../chat/expo-sse-transport";
 import { getConfig } from "../config";
 
 // BARE client — no `refreshSession`/`onSessionExpired`. The auth endpoints
@@ -23,4 +24,7 @@ export const apiClient = createApiClient({
   getAuthToken: () => useAuthStore.getState().accessToken,
   refreshSession: () => useAuthStore.getState().refreshSession(),
   onSessionExpired: () => useAuthStore.getState().sessionExpired(),
+  // T083: SSE transport for `apiClient.streamSse` (chat). `authClient` above
+  // is unchanged -- auth endpoints never stream.
+  streamTransport: expoSseTransport,
 });

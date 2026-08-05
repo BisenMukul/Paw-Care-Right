@@ -1,4 +1,4 @@
-import { VET_SUMMARY_DISCLAIMER, VET_SUMMARY_MAX_CHARS, type Urgency } from "@pawcareright/types";
+import { VET_SUMMARY_DISCLAIMER, VET_SUMMARY_MAX_CHARS, type Urgency } from "@bombaypetcompany/types";
 
 /**
  * `buildVetSummary` (T068 plan decision 6): a PURE, deterministic function
@@ -25,7 +25,7 @@ import { VET_SUMMARY_DISCLAIMER, VET_SUMMARY_MAX_CHARS, type Urgency } from "@pa
  *
  * Tier labels and section headings are local, server-only copy (no drift
  * risk -- the golden test imports this module directly); only the
- * disclaimer footer is promoted to `@pawcareright/types` (plan decision 6).
+ * disclaimer footer is promoted to `@bombaypetcompany/types` (plan decision 6).
  */
 
 export interface VetSummaryInput {

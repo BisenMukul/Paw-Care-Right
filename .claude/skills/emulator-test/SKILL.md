@@ -13,10 +13,17 @@ themes against the design reference (`docs/design/pawsaathi.dc.html` +
 ## One-time setup (the human runs these once)
 
 **macOS — iOS Simulator (preferred, official):** use the Claude Code Desktop
-app's built-in iOS Simulator pane (Xcode + a simulator runtime installed;
-docs: code.claude.com/docs/en/desktop-ios-simulator). Boot the simulator,
-open the app via Expo (`pnpm --filter mobile start`, press `i`), and drive it
-through the pane's screenshot/tap tools.
+app's built-in iOS Simulator pane (docs:
+code.claude.com/docs/en/desktop-ios-simulator). Verified requirements:
+Claude Desktop **v1.24012.0 or later** (Claude → Check for Updates), Xcode
+with the iOS platform installed (`xcodebuild -downloadPlatform iOS` if no
+simulators are listed), and a **local** session — the pane cannot attach
+from cloud/SSH sessions. The first use of each device shows a one-time
+"allow Claude to use it" consent; approve it or Claude can only watch.
+Screenshots of the device are sent to Anthropic under normal retention —
+use only the seeded demo accounts, never real ones. Boot the simulator,
+open the app via Expo (`pnpm --filter mobile start`, press `i`), and drive
+it through the pane's screenshot/tap tools.
 
 **Android AVD (macOS or Windows) — community MCP server:**
 - macOS/Linux: `claude mcp add --transport stdio mobile -- npx claude-in-mobile@latest`

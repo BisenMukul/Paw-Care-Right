@@ -1,5 +1,5 @@
-import { resolveCareTemplateForPet } from "@pawcareright/data";
-import type { ReminderType, Species } from "@pawcareright/types";
+import { resolveCareTemplateForPet } from "@bombaypetcompany/data";
+import type { ReminderType, Species } from "@bombaypetcompany/types";
 
 import { daysAgo, daysFromNow, startOfUtcDay } from "../clock";
 import { DEMO_COUNTRY, DEMO_TIMEZONE } from "../constants";

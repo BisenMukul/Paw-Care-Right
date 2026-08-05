@@ -12,9 +12,9 @@
  *
  * Prerequisites:
  *   1. `docker compose up -d` (postgres + redis + minio).
- *   2. `pnpm build` (or at least `pnpm --filter @pawcareright/ai... build`) so the
+ *   2. `pnpm build` (or at least `pnpm --filter @bombaypetcompany/ai... build`) so the
  *      workspace packages' `dist/` this script and the running API both import
- *      (`@pawcareright/ai`/`@pawcareright/types`/`@pawcareright/config` resolve to
+ *      (`@bombaypetcompany/ai`/`@bombaypetcompany/types`/`@bombaypetcompany/config` resolve to
  *      `dist/` via their `exports` map, not `src/`) are up to date.
  *   3. The API running locally with `AI_TEXT_PROVIDER=fake` (so the live
  *      `CheckRunnerProcessor` worker drains every enqueued job deterministically,
@@ -24,7 +24,7 @@
  * Env (all optional, default to the same local dev values the rest of the repo
  * uses — see `.env.example`):
  *   API_BASE_URL   default `http://localhost:3000`
- *   DATABASE_URL   default `postgresql://pawcareright:pawcareright@localhost:5432/pawcareright?schema=public`
+ *   DATABASE_URL   default `postgresql://bombaypetcompany:bombaypetcompany@localhost:5432/bombaypetcompany?schema=public`
  *   REDIS_URL      default `redis://localhost:6379`
  *   JWT_SECRET     default `dev-insecure-jwt-secret-do-not-use-in-production` (must match the running API)
  *
@@ -49,7 +49,7 @@ import { cleanupUsers, createHousehold, createPet, createUser, mintAccessToken }
 // `main.ts`'s static `Logger.log` bootstrap line).
 const logger = new Logger("checks-load-sanity");
 
-const DEFAULT_DATABASE_URL = "postgresql://pawcareright:pawcareright@localhost:5432/pawcareright?schema=public";
+const DEFAULT_DATABASE_URL = "postgresql://bombaypetcompany:bombaypetcompany@localhost:5432/bombaypetcompany?schema=public";
 // Mirrors `test/global-setup.ts`'s backfill so a standalone run (no shell
 // export, no .env) still connects with the same local-dev default the rest
 // of the repo uses.

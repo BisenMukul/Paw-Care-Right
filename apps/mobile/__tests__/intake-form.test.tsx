@@ -1,8 +1,8 @@
-import type { CategoryDef } from "@pawcareright/types";
-import { getCategoryDef } from "@pawcareright/types";
-import { fireEvent, render, screen, within } from "@testing-library/react-native";
+import type { CategoryDef } from "@bombaypetcompany/types";
+import { getCategoryDef } from "@bombaypetcompany/types";
+import { act, fireEvent, render, screen, within } from "@testing-library/react-native";
 
-import { IntakeForm } from "../src/components/intake/intake-form";
+import { AUTO_ADVANCE_MS, IntakeForm } from "../src/components/intake/intake-form";
 import { strings } from "../src/strings";
 
 // Flow tests (T045 plan AC2 + supporting flow tests). RNTL v14, every
@@ -78,6 +78,14 @@ const syntheticCategoryDef: CategoryDef = {
 };
 
 describe("IntakeForm — mutation-resistance (AC2)", () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   it("renders + collects every injected question type, including one no mobile code hardcodes", async () => {
     const onSubmit = jest.fn();
     const onExit = jest.fn();
@@ -88,10 +96,12 @@ describe("IntakeForm — mutation-resistance (AC2)", () => {
     const total = syntheticCategoryDef.questions.length + 2;
     expect(screen.getByTestId("intake-progress")).toHaveTextContent(strings.intake.stepOf(1, total));
 
-    // step 0: single s1
+    // step 0: single s1 — auto-advances after the beat, no explicit Next press
     expect(screen.getByTestId("intake-question-prompt")).toHaveTextContent("Synthetic single");
     await fireEvent.press(screen.getByTestId("intake-option-s1-a"));
-    await fireEvent.press(screen.getByTestId("intake-next"));
+    await act(async () => {
+      jest.advanceTimersByTime(AUTO_ADVANCE_MS);
+    });
 
     // step 1: multi m1 (optional — answer it anyway to prove collection)
     expect(screen.getByTestId("intake-question-prompt")).toHaveTextContent("Synthetic multi");
@@ -115,12 +125,14 @@ describe("IntakeForm — mutation-resistance (AC2)", () => {
     expect(screen.getByTestId("intake-photo-unavailable-p1")).toBeTruthy();
     await fireEvent.press(screen.getByTestId("intake-next"));
 
-    // step 5: the extra question no mobile code hardcodes
+    // step 5: the extra question no mobile code hardcodes — auto-advances
     expect(screen.getByTestId("intake-question-prompt")).toHaveTextContent(
       "Synthetic extra question",
     );
     await fireEvent.press(screen.getByTestId("intake-option-synthetic-extra-x"));
-    await fireEvent.press(screen.getByTestId("intake-next"));
+    await act(async () => {
+      jest.advanceTimersByTime(AUTO_ADVANCE_MS);
+    });
 
     // step 6: quick-pick (free-text step's index) — skip
     expect(screen.getByTestId("intake-descriptor-other-0")).toBeTruthy();
@@ -250,28 +262,220 @@ describe("IntakeForm — supporting flow tests (real category)", () => {
   });
 
   it("fails closed: a global-divergent categoryDef shows the validation error and disables submit", async () => {
-    const onSubmit = jest.fn();
+    jest.useFakeTimers();
+    try {
+      const onSubmit = jest.fn();
+      await render(
+        <IntakeForm categoryDef={syntheticCategoryDef} onExit={jest.fn()} onSubmit={onSubmit} />,
+      );
+
+      await fireEvent.press(screen.getByTestId("intake-option-s1-a"));
+      await act(async () => {
+        jest.advanceTimersByTime(AUTO_ADVANCE_MS);
+      });
+      await fireEvent.press(screen.getByTestId("intake-next")); // skip optional multi
+      await fireEvent.press(screen.getByTestId("intake-scale-sc1-2"));
+      await fireEvent.press(screen.getByTestId("intake-next"));
+      await fireEvent.changeText(screen.getByTestId("intake-duration-value-d1"), "3");
+      await fireEvent.press(screen.getByTestId("intake-duration-unit-d1-hours"));
+      await fireEvent.press(screen.getByTestId("intake-next"));
+      await fireEvent.press(screen.getByTestId("intake-next")); // skip optional photoPrompt
+      await fireEvent.press(screen.getByTestId("intake-option-synthetic-extra-x"));
+      await act(async () => {
+        jest.advanceTimersByTime(AUTO_ADVANCE_MS);
+      });
+      await fireEvent.press(screen.getByTestId("intake-next")); // skip free-text
+
+      expect(screen.getByTestId("intake-validation-error")).toBeTruthy();
+      expect(screen.getByTestId("intake-submit").props.accessibilityState.disabled).toBe(true);
+
+      await fireEvent.press(screen.getByTestId("intake-submit"));
+      expect(onSubmit).not.toHaveBeenCalled();
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+});
+
+describe("IntakeForm — single-select auto-advance (FOUNDER-UX-2)", () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  it("auto-advances a single-select and records the answer", async () => {
     await render(
-      <IntakeForm categoryDef={syntheticCategoryDef} onExit={jest.fn()} onSubmit={onSubmit} />,
+      <IntakeForm categoryDef={syntheticCategoryDef} onExit={jest.fn()} onSubmit={jest.fn()} />,
     );
 
     await fireEvent.press(screen.getByTestId("intake-option-s1-a"));
-    await fireEvent.press(screen.getByTestId("intake-next"));
-    await fireEvent.press(screen.getByTestId("intake-next")); // skip optional multi
+    await act(async () => {
+      jest.advanceTimersByTime(AUTO_ADVANCE_MS);
+    });
+
+    expect(screen.getByTestId("intake-progress")).toHaveTextContent("Step 2 of 8");
+    expect(screen.getByTestId("intake-question-prompt")).toHaveTextContent("Synthetic multi");
+
+    await fireEvent.press(screen.getByTestId("intake-back"));
+
+    expect(screen.getByTestId("intake-progress")).toHaveTextContent("Step 1 of 8");
+    expect(screen.getByTestId("intake-option-s1-a").props.accessibilityState.selected).toBe(true);
+  });
+
+  it("Back cancels a pending auto-advance", async () => {
+    const twoSingleDef: CategoryDef = {
+      id: "other",
+      label: "Two singles",
+      questions: [
+        {
+          id: "q1",
+          type: "single",
+          prompt: "Question one",
+          required: true,
+          options: [
+            { value: "a", label: "A" },
+            { value: "b", label: "B" },
+          ],
+        },
+        {
+          id: "q2",
+          type: "single",
+          prompt: "Question two",
+          required: true,
+          options: [
+            { value: "x", label: "X" },
+            { value: "y", label: "Y" },
+          ],
+        },
+      ],
+    };
+
+    await render(
+      <IntakeForm categoryDef={twoSingleDef} onExit={jest.fn()} onSubmit={jest.fn()} />,
+    );
+
+    await fireEvent.press(screen.getByTestId("intake-option-q1-a"));
+    await act(async () => {
+      jest.advanceTimersByTime(AUTO_ADVANCE_MS);
+    });
+    expect(screen.getByTestId("intake-progress")).toHaveTextContent("Step 2 of 4");
+
+    await fireEvent.press(screen.getByTestId("intake-option-q2-x"));
+    await fireEvent.press(screen.getByTestId("intake-back"));
+
+    await act(async () => {
+      jest.advanceTimersByTime(AUTO_ADVANCE_MS);
+    });
+
+    expect(screen.getByTestId("intake-progress")).toHaveTextContent("Step 1 of 4");
+    expect(screen.getByTestId("intake-option-q1-a").props.accessibilityState.selected).toBe(true);
+  });
+
+  it("clears the auto-advance timer on unmount", async () => {
+    const consoleErrorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+    try {
+      const { unmount } = await render(
+        <IntakeForm categoryDef={syntheticCategoryDef} onExit={jest.fn()} onSubmit={jest.fn()} />,
+      );
+
+      await fireEvent.press(screen.getByTestId("intake-option-s1-a"));
+      await unmount();
+
+      await act(async () => {
+        jest.advanceTimersByTime(AUTO_ADVANCE_MS);
+      });
+
+      expect(consoleErrorSpy).not.toHaveBeenCalled();
+    } finally {
+      consoleErrorSpy.mockRestore();
+    }
+  });
+
+  it("multi-select does not auto-advance", async () => {
+    await render(
+      <IntakeForm categoryDef={syntheticCategoryDef} onExit={jest.fn()} onSubmit={jest.fn()} />,
+    );
+
+    await fireEvent.press(screen.getByTestId("intake-option-s1-a"));
+    await act(async () => {
+      jest.advanceTimersByTime(AUTO_ADVANCE_MS);
+    });
+
+    await fireEvent.press(screen.getByTestId("intake-option-m1-a"));
+    await act(async () => {
+      jest.advanceTimersByTime(AUTO_ADVANCE_MS);
+    });
+
+    expect(screen.getByTestId("intake-question-prompt")).toHaveTextContent("Synthetic multi");
+    expect(screen.getByTestId("intake-progress")).toHaveTextContent("Step 2 of 8");
+  });
+
+  it("scale does not auto-advance", async () => {
+    await render(
+      <IntakeForm categoryDef={syntheticCategoryDef} onExit={jest.fn()} onSubmit={jest.fn()} />,
+    );
+
+    await fireEvent.press(screen.getByTestId("intake-option-s1-a"));
+    await act(async () => {
+      jest.advanceTimersByTime(AUTO_ADVANCE_MS);
+    });
+
+    await fireEvent.press(screen.getByTestId("intake-next")); // off multi, onto scale
+
     await fireEvent.press(screen.getByTestId("intake-scale-sc1-2"));
+    await act(async () => {
+      jest.advanceTimersByTime(AUTO_ADVANCE_MS);
+    });
+
+    expect(screen.getByTestId("intake-question-prompt")).toHaveTextContent("Synthetic scale");
+    expect(screen.getByTestId("intake-progress")).toHaveTextContent("Step 3 of 8");
+  });
+
+  it("advances instantly under reduced motion", async () => {
+    jest.requireMock("react-native-reanimated").useReducedMotion.mockReturnValue(true);
+    try {
+      await render(
+        <IntakeForm categoryDef={syntheticCategoryDef} onExit={jest.fn()} onSubmit={jest.fn()} />,
+      );
+
+      await fireEvent.press(screen.getByTestId("intake-option-s1-a"));
+
+      expect(screen.getByTestId("intake-question-prompt")).toHaveTextContent("Synthetic multi");
+      expect(screen.getByTestId("intake-progress")).toHaveTextContent("Step 2 of 8");
+    } finally {
+      jest.requireMock("react-native-reanimated").useReducedMotion.mockReturnValue(false);
+    }
+  });
+});
+
+describe("IntakeForm — thumb-zone footer (FOUNDER-UX-2)", () => {
+  it("pins the footer bar with Next on a question step", async () => {
+    await render(
+      <IntakeForm categoryDef={otherCategoryDef} onExit={jest.fn()} onSubmit={jest.fn()} />,
+    );
+
+    const footer = screen.getByTestId("intake-footer");
+    expect(within(footer).getByTestId("intake-next")).toBeTruthy();
+    expect(footer.props.className).toContain("border-t");
+  });
+
+  it("pins the footer bar with Submit on review", async () => {
+    await render(
+      <IntakeForm categoryDef={otherCategoryDef} onExit={jest.fn()} onSubmit={jest.fn()} />,
+    );
+
+    await fireEvent.changeText(screen.getByTestId("intake-duration-value-onset"), "2");
+    await fireEvent.press(screen.getByTestId("intake-duration-unit-onset-hours"));
     await fireEvent.press(screen.getByTestId("intake-next"));
-    await fireEvent.changeText(screen.getByTestId("intake-duration-value-d1"), "3");
-    await fireEvent.press(screen.getByTestId("intake-duration-unit-d1-hours"));
-    await fireEvent.press(screen.getByTestId("intake-next"));
-    await fireEvent.press(screen.getByTestId("intake-next")); // skip optional photoPrompt
-    await fireEvent.press(screen.getByTestId("intake-option-synthetic-extra-x"));
+    await fireEvent.press(screen.getByTestId("intake-scale-severity-3"));
     await fireEvent.press(screen.getByTestId("intake-next"));
     await fireEvent.press(screen.getByTestId("intake-next")); // skip free-text
 
-    expect(screen.getByTestId("intake-validation-error")).toBeTruthy();
-    expect(screen.getByTestId("intake-submit").props.accessibilityState.disabled).toBe(true);
-
-    await fireEvent.press(screen.getByTestId("intake-submit"));
-    expect(onSubmit).not.toHaveBeenCalled();
+    const footer = screen.getByTestId("intake-footer");
+    expect(within(footer).getByTestId("intake-submit")).toBeTruthy();
+    expect(footer.props.className).toContain("border-t");
   });
 });

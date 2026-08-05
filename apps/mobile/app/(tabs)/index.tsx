@@ -52,6 +52,9 @@ export default function HomeScreen() {
       router.push({ pathname: "/vet-visit/[petId]", params: { petId: pet.id } });
     }
   };
+  const goToChat = () => {
+    router.push("/chat");
+  };
 
   return (
     <ScreenScaffold gradient scrollTestID="home-scroll">
@@ -81,6 +84,7 @@ export default function HomeScreen() {
           onLogWeight={goToWeight}
           onLogActivity={goToActivity}
           onVetVisit={goToVetVisit}
+          onAskChat={goToChat}
         />
       </View>
 

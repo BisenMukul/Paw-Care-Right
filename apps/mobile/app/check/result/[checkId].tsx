@@ -1,7 +1,8 @@
-import { APP_DISPLAY_NAME } from "@pawcareright/config";
-import { isTerminalCheckStatus, SAFE_FALLBACK, type Urgency } from "@pawcareright/types";
+import { APP_DISPLAY_NAME } from "@bombaypetcompany/config";
+import { isTerminalCheckStatus, SAFE_FALLBACK, type Urgency } from "@bombaypetcompany/types";
 import * as Linking from "expo-linking";
 import { useLocalSearchParams, useRouter } from "expo-router";
+import { useEffect } from "react";
 import { ScrollView, Share, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -9,6 +10,7 @@ import { useCheck } from "../../../src/api/checks-api";
 import { buildSharePayload } from "../../../src/checks/share-payload";
 import { URGENCY_DISPLAY } from "../../../src/checks/urgency-display";
 import { buildVetSearchUrl } from "../../../src/checks/vet-search";
+import { AppHeader } from "../../../src/components/app-header";
 import { Card } from "../../../src/components/card";
 import { GhostButton } from "../../../src/components/ghost-button";
 import { PrimaryButton } from "../../../src/components/primary-button";
@@ -16,6 +18,9 @@ import { SecondaryButton } from "../../../src/components/secondary-button";
 import { Skeleton } from "../../../src/components/skeleton";
 import { VetDisclaimer } from "../../../src/components/vet-disclaimer";
 import { useLayoutBucket } from "../../../src/hooks/use-layout-bucket";
+import { useNavBack } from "../../../src/hooks/use-nav-back";
+import { maybeRequestReview } from "../../../src/review/request-review";
+import { recordEmergencySeen } from "../../../src/review/review-state";
 import { strings } from "../../../src/strings";
 
 /**
@@ -30,11 +35,27 @@ import { strings } from "../../../src/strings";
  */
 export default function CheckResultScreen() {
   const router = useRouter();
+  const onBack = useNavBack("/(tabs)/timeline");
   const { checkId } = useLocalSearchParams<{ checkId?: string }>();
   const { data, isError, refetch } = useCheck(checkId ?? "");
   const bucket = useLayoutBucket();
   const contentClassName =
     bucket === "wide" ? "gap-6 px-4 pb-8 pt-4 w-full max-w-2xl self-center" : "gap-6 px-4 pb-8 pt-4";
+
+  // T109: records an emergency sighting the moment this screen loads a
+  // check carrying a red flag or an EMERGENCY_NOW/VET_24H tier -- runs
+  // unconditionally (before any early return) so the hook order never
+  // changes across renders (rules-of-hooks), and is itself a no-op read
+  // until `data` resolves.
+  useEffect(() => {
+    if (!data) {
+      return;
+    }
+    const urgency = data.result?.urgency;
+    if (data.redFlag !== undefined || urgency === "EMERGENCY_NOW" || urgency === "VET_24H") {
+      recordEmergencySeen();
+    }
+  }, [data]);
 
   if (isError && !data) {
     return (
@@ -63,6 +84,7 @@ export default function CheckResultScreen() {
 
   const isFallback = data.status === "FALLBACK" || data.result === undefined;
   const result = data.result ?? SAFE_FALLBACK;
+  const hasRedFlag = data.redFlag !== undefined;
   const display = URGENCY_DISPLAY[result.urgency];
   const tierLabel = strings.check.result.tierLabel[result.urgency];
   const disclaimerLine = strings.check.result.disclaimer(APP_DISPLAY_NAME);
@@ -77,6 +99,15 @@ export default function CheckResultScreen() {
 
   function handleDone() {
     router.replace("/(tabs)/timeline");
+    // T109 (plan §2.6.1 structural safety argument, `use-paywall-trigger.ts`
+    // style): this call is placed AFTER navigating away from the `check`
+    // segment, fires only on the user's own explicit Done tap, and is
+    // gated on a non-fallback, non-red-flag, REASSURE-tier result -- so no
+    // §7 flow (intake, waiting, emergency interstitial, safe fallback) can
+    // ever have a review dialog interposed on it.
+    if (!isFallback && !hasRedFlag && result.urgency === "REASSURE") {
+      void maybeRequestReview("reassure-acknowledged");
+    }
   }
 
   function handleEmergencyCta() {
@@ -85,6 +116,7 @@ export default function CheckResultScreen() {
 
   return (
     <SafeAreaView testID="check-result-screen" className="flex-1 bg-surface-page dark:bg-surface-page-dark">
+      <AppHeader onBack={onBack} />
       <ScrollView testID="check-result-scroll" className="flex-1">
         <View className={contentClassName}>
           {data.redFlag !== undefined ? (
@@ -123,7 +155,10 @@ export default function CheckResultScreen() {
 
             {result.possibleCauses.length ? (
               <View testID="check-result-possible-causes" className="gap-2">
-                <Text className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold">
+                <Text
+                  accessibilityRole="header"
+                  className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold"
+                >
                   {strings.check.result.sections.possibleCauses}
                 </Text>
                 {result.possibleCauses.map((cause) => (
@@ -137,7 +172,10 @@ export default function CheckResultScreen() {
 
             {result.redFlagsToWatch.length ? (
               <View testID="check-result-red-flags-to-watch" className="gap-2">
-                <Text className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold">
+                <Text
+                  accessibilityRole="header"
+                  className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold"
+                >
                   {strings.check.result.sections.redFlagsToWatch}
                 </Text>
                 {result.redFlagsToWatch.map((item) => (
@@ -150,7 +188,10 @@ export default function CheckResultScreen() {
 
             {result.homeCare.length ? (
               <View testID="check-result-home-care" className="gap-2">
-                <Text className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold">
+                <Text
+                  accessibilityRole="header"
+                  className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold"
+                >
                   {strings.check.result.sections.homeCare}
                 </Text>
                 {result.homeCare.map((item) => (
@@ -163,7 +204,12 @@ export default function CheckResultScreen() {
 
             {result.doNot.length ? (
               <View testID="check-result-do-not" className="gap-2">
-                <Text className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold">{strings.check.result.sections.doNot}</Text>
+                <Text
+                  accessibilityRole="header"
+                  className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold"
+                >
+                  {strings.check.result.sections.doNot}
+                </Text>
                 {result.doNot.map((item) => (
                   <Text key={item} className="text-sm text-brand-700 dark:text-ink-muted-dark font-body">
                     {`• ${item}`}
@@ -174,7 +220,10 @@ export default function CheckResultScreen() {
 
             {result.vetQuestions.length ? (
               <View testID="check-result-vet-questions" className="gap-2">
-                <Text className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold">
+                <Text
+                  accessibilityRole="header"
+                  className="text-lg font-semibold text-brand-900 dark:text-ink-dark font-display-semibold"
+                >
                   {strings.check.result.sections.vetQuestions}
                 </Text>
                 {result.vetQuestions.map((item) => (

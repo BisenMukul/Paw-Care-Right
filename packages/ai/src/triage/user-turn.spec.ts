@@ -1,4 +1,4 @@
-import type { CompletedIntake } from "@pawcareright/types";
+import type { CompletedIntake } from "@bombaypetcompany/types";
 
 import type { TriagePetContext, TriagePromptInput } from "./types";
 import { buildUserTurn } from "./user-turn";

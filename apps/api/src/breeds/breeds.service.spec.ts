@@ -1,4 +1,4 @@
-import type { Breed } from "@pawcareright/data";
+import type { Breed } from "@bombaypetcompany/data";
 
 import type { RedisService } from "../redis/redis.service";
 import { BreedsService } from "./breeds.service";
@@ -75,7 +75,7 @@ describe("BreedsService", () => {
       expect(get).toHaveBeenCalledTimes(1);
       expect(set).toHaveBeenCalledTimes(1);
       const [key, value, ttl] = set.mock.calls[0] as [string, string, number];
-      expect(key).toBe("pawcareright:breeds:DOG:gsd");
+      expect(key).toBe("bombaypetcompany:breeds:DOG:gsd");
       expect(JSON.parse(value)).toEqual(results);
       expect(ttl).toBe(3600);
     });

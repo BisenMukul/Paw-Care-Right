@@ -51,7 +51,7 @@ export function ActivityRecentsRow({ recents, onPress }: ActivityRecentsRowProps
                 accessibilityRole="button"
                 accessibilityLabel={strings.activity.recentChipA11y(label)}
                 onPress={() => onPress(entry)}
-                className="rounded-full border border-brand-100 dark:border-hairline-dark bg-white dark:bg-surface-card-dark px-4 py-2.5"
+                className="min-h-[44px] justify-center rounded-full border border-brand-100 dark:border-hairline-dark bg-white dark:bg-surface-card-dark px-4 py-2.5"
               >
                 <Text className="text-sm text-brand-900 dark:text-ink-dark">{label}</Text>
               </Pressable>

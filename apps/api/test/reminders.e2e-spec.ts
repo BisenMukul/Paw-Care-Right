@@ -1,7 +1,7 @@
 import type { INestApplication } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { Test } from "@nestjs/testing";
-import { errorResponseSchema } from "@pawcareright/types";
+import { errorResponseSchema } from "@bombaypetcompany/types";
 import { PrismaClient } from "@prisma/client";
 import request from "supertest";
 
@@ -47,6 +47,17 @@ describe("Reminders (e2e)", () => {
   });
 
   const owner = (): Promise<AuthedContext> => createOwnerContext(app, prisma, jwtService, userIds);
+
+  /**
+   * Orchestrator-authorized out-of-inventory repair (T111 gate follow-up):
+   * `RemindersService.snoozeOccurrence` requires `snoozeUntil` to be
+   * strictly in the future relative to the real wall clock. A hardcoded
+   * literal date rots the instant the real clock passes it -- computed
+   * relative to `Date.now()` so this fixture can never rot again.
+   */
+  function futureIso(offsetMs: number): string {
+    return new Date(Date.now() + offsetMs).toISOString();
+  }
 
   async function createPet(ctx: AuthedContext, name = "Fido"): Promise<string> {
     const res = await ctx.authedAgent("post", "/v1/pets").send({ species: "DOG", name });
@@ -453,7 +464,7 @@ describe("Reminders (e2e)", () => {
       const reminderId = created.body.id as string;
 
       const dueAt = "2026-08-01T09:00:00.000Z";
-      const snoozeUntil = "2026-08-01T15:00:00.000Z";
+      const snoozeUntil = futureIso(6 * 60 * 60 * 1000); // 6h from now -- must be strictly future
       const snooze = await ctx
         .authedAgent("post", `/v1/reminders/${reminderId}/snooze`)
         .send({ dueAt, snoozeUntil });
@@ -498,7 +509,7 @@ describe("Reminders (e2e)", () => {
 
       const snoozeRes = await ownerB
         .authedAgent("post", `/v1/reminders/${reminderId}/snooze`)
-        .send({ dueAt: "2026-08-01T09:00:00.000Z", snoozeUntil: "2026-08-02T09:00:00.000Z" });
+        .send({ dueAt: "2026-08-01T09:00:00.000Z", snoozeUntil: futureIso(24 * 60 * 60 * 1000) }); // 1d from now -- must be strictly future
       expect(snoozeRes.status).toBe(404);
       expect(errorResponseSchema.parse(snoozeRes.body).error.code).toBe("NOT_FOUND");
     });

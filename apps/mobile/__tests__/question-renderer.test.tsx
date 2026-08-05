@@ -1,4 +1,4 @@
-import type { Answer, QuestionDef } from "@pawcareright/types";
+import type { Answer, QuestionDef } from "@bombaypetcompany/types";
 import { fireEvent, render, screen } from "@testing-library/react-native";
 import { useState } from "react";
 

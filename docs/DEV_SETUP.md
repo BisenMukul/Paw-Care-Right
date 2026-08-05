@@ -1,10 +1,10 @@
-# DEV_SETUP.md — Running & Setting Up Paw Care Right +
+# DEV_SETUP.md — Running & Setting Up Bombay Pet Company
 
 Operational runbook: install, infra, migrations, and running every server locally.
 For *what* we're building see `PRODUCT_SPEC.md`; for *how code is written* see `../CLAUDE.md`.
 
 > **Local infra assumption (current machine):** Redis 7 runs in Docker on `6379`; PostgreSQL
-> runs **natively** on `5432` (`postgres` / `root`, database `pawcareright`). Adjust the
+> runs **natively** on `5432` (`postgres` / `root`, database `bombaypetcompany`). Adjust the
 > `.env` values in §3 if your infra differs.
 
 ---
@@ -45,7 +45,7 @@ set -a; source .env; set +a
 | One app/package | `pnpm --filter <name> <script>` **from root** | `pnpm --filter api dev` |
 | Arbitrary binary in a package | `pnpm --filter <name> exec <cmd>` | `pnpm --filter api exec prisma studio` |
 
-`<name>` is `api`, `web`, or `mobile` (or the full `@pawcareright/api`, etc.). Prisma commands run
+`<name>` is `api`, `web`, or `mobile` (or the full `@bombaypetcompany/api`, etc.). Prisma commands run
 from root via `--filter api` — pnpm sets `apps/api` as the working directory, where the schema
 lives. You basically never need to `cd` into a folder.
 
@@ -74,13 +74,21 @@ pnpm --filter api prisma:seed            # seed breeds / toxins / care templates
 Ensure `.env` matches your infra:
 
 ```
-DATABASE_URL=postgresql://postgres:root@localhost:5432/pawcareright?schema=public
+DATABASE_URL=postgresql://postgres:root@localhost:5432/bombaypetcompany?schema=public
 REDIS_URL=redis://localhost:6379
 ```
 
 > Full Docker infra alternative: `docker compose up -d` brings up postgres (5432), redis (6379),
 > and minio (9000). Skip the `postgres` service if you use a native Postgres on 5432 to avoid a
 > port clash.
+
+### Optional: local secrets-scan pre-commit hook
+
+`git config core.hooksPath githooks` opts you into a local `pre-commit` hook
+that runs `node scripts/scan-secrets.js --staged` before every commit,
+catching an accidentally-staged credential before it's ever pushed. It's
+advisory only — CI's `security` job runs the same scanner over the whole
+tracked tree on every push/PR and is the authoritative gate either way.
 
 ---
 
@@ -144,8 +152,8 @@ infra and load `.env` first.
 3. **Node 20 vs required 22** → upgrade.
 4. **Redis container has no restart policy** → after a reboot, re-run `docker compose up -d redis`.
 5. **API and Web both default to :3000** → start API first; Web auto-picks 3001.
-6. **Postgres**: currently the **native** PG on 5432 (`postgres`/`root`, db `pawcareright`). The
-   Docker PG on **5433** (`pawcareright-postgres-1`) is unused in this setup — leave it or
+6. **Postgres**: currently the **native** PG on 5432 (`postgres`/`root`, db `bombaypetcompany`). The
+   Docker PG on **5433** (`bombaypetcompany-postgres-1`) is unused in this setup — leave it or
    `docker compose stop postgres`.
 7. **`dev` does not build `packages/*` → stale-`dist` errors.** The apps import each package's
    **built `dist`** (via its `exports` field), not its source. In `turbo.json`, `build`, `typecheck`,
@@ -153,8 +161,8 @@ infra and load `.env` first.
    `pnpm dev` / `pnpm --filter api dev` compiles against whatever `dist` exists. Symptoms:
 
    ```
-   error TS2305: Module '"@pawcareright/types"' has no exported member 'X'
-   error TS2307: Cannot find module '@pawcareright/analytics'
+   error TS2305: Module '"@bombaypetcompany/types"' has no exported member 'X'
+   error TS2307: Cannot find module '@bombaypetcompany/analytics'
    ```
 
    **Fix:** `pnpm build` (or `pnpm -r --filter "./packages/*" build`) from root, then restart dev.
@@ -171,7 +179,7 @@ infra and load `.env` first.
 
    **Fix:** `pnpm --filter mobile exec expo <cmd>` from root, or `cd apps/mobile` first. Example:
    `pnpm --filter mobile exec expo export --platform android --clear` → writes `apps/mobile/dist`.
-   Also note `app.config.js` does `require("@pawcareright/config")` — it loads that package's **built**
+   Also note `app.config.js` does `require("@bombaypetcompany/config")` — it loads that package's **built**
    output, so `packages/config/dist` must exist (see gotcha 7) or the config won't even load.
 9. **`pnpm build` (turbo) crashed once with exit `3221226505`** (`0xC0000409`,
    STATUS_STACK_BUFFER_OVERRUN — a native crash) and printed no task output. It was not reproducible;

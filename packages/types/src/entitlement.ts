@@ -8,9 +8,15 @@ import { z } from "zod";
  * `apps/mobile/src/billing/products.ts` (T071-owned; not edited here, so
  * this is a documented drift point, not an enforced one).
  */
-export const FAMILY_PLAN_PRODUCT_ID = "pawcareright_family_annual" as const;
+export const FAMILY_PLAN_PRODUCT_ID = "bombaypetcompany_family_annual" as const;
 
-export const entitlementSourceSchema = z.enum(["own", "family", "none"]);
+/**
+ * `"grant"` (T108 plan D1/D2): a server-side referral grace window
+ * (`ReferralGrant`) — a parallel, RC-free entitlement input. Precedence is
+ * own > family > grant > none; a grant NEVER overrides or derives from a
+ * `Subscription` row.
+ */
+export const entitlementSourceSchema = z.enum(["own", "family", "grant", "none"]);
 
 export const billingEntitlementSchema = z.object({
   entitled: z.boolean(),

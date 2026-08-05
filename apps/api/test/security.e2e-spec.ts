@@ -1,6 +1,6 @@
 import type { INestApplication } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
-import { errorResponseSchema } from "@pawcareright/types";
+import { errorResponseSchema } from "@bombaypetcompany/types";
 import request from "supertest";
 
 import { AppModule } from "../src/app.module";

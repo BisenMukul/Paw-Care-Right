@@ -9,3 +9,23 @@ coverage/
 .env
 .env.*
 !.env.example
+dump.rdb
+# T095: local lighthouse-ci reports + mobile bundle-export/analysis output
+.lighthouseci/
+apps/mobile/.perf/
+# T098: Playwright local artifacts
+apps/web/test-results/
+apps/web/playwright-report/
+apps/web/.playwright/
+# T099: signing material must never be committed
+*.p8
+*.p12
+*.mobileprovision
+*.keystore
+*.jks
+credentials.json
+google-play-service-account*.json
+apps/mobile/credentials/
+# T100: store-asset working dirs (real device captures, composited output)
+apps/mobile/store-assets/raw/
+apps/mobile/store-assets/out/

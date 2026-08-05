@@ -1,12 +1,12 @@
-import { isApiError, useIsOffline } from "@pawcareright/api-client";
-import type { CompletedIntake } from "@pawcareright/types";
+import { isApiError, useIsOffline } from "@bombaypetcompany/api-client";
+import type { CompletedIntake } from "@bombaypetcompany/types";
 import * as Crypto from "expo-crypto";
 import { useCallback, useRef, useState } from "react";
 
 import { useCreateCheck } from "../api/checks-api";
 import { extractPhotoKeys } from "./intake";
 
-export type CheckSubmissionState = "idle" | "submitting" | "offline" | "quota" | "error";
+export type CheckSubmissionState = "idle" | "submitting" | "offline" | "quota" | "unavailable" | "error";
 
 export interface UseCheckSubmissionArgs {
   petId: string | undefined;
@@ -24,8 +24,11 @@ export interface UseCheckSubmission {
  * Submit -> branch orchestration hook (T047 plan "Hook & helper specs").
  * Offline guard blocks the mutation entirely (no network call, D-safety);
  * a successful `201` branches on `redFlag` (§7 rule 4: red-flag bypasses
- * polling); `402` maps to the quota state; any other error is a plain,
- * non-fabricating retry affordance (§7 rule 5).
+ * polling); `402` maps to the quota state; `FEATURE_DISABLED` (T106 kill
+ * switch — e.g. a deep-linked/stale intake submit while `checks` is
+ * killed) maps to the `unavailable` state, which carries NO retry
+ * affordance (retrying cannot help — the server rejects it deterministically);
+ * any other error is a plain, non-fabricating retry affordance (§7 rule 5).
  */
 export function useCheckSubmission({ petId, onEmergency, onPolling }: UseCheckSubmissionArgs): UseCheckSubmission {
   const [state, setState] = useState<CheckSubmissionState>("idle");
@@ -73,6 +76,8 @@ export function useCheckSubmission({ petId, onEmergency, onPolling }: UseCheckSu
         .catch((err: unknown) => {
           if (isApiError(err) && err.code === "PAYMENT_REQUIRED") {
             setState("quota");
+          } else if (isApiError(err) && err.code === "FEATURE_DISABLED") {
+            setState("unavailable");
           } else {
             setState("error");
           }

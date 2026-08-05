@@ -1,4 +1,4 @@
-import type { RcWebhookEvent } from "@pawcareright/types";
+import type { RcWebhookEvent } from "@bombaypetcompany/types";
 
 import { computeSubscriptionUpdate, RC_WEBHOOK_STATUS, resolveEventTimestampMs } from "./rc-webhook.state";
 
@@ -9,7 +9,7 @@ function buildEvent(overrides: Partial<RcWebhookEvent> = {}): RcWebhookEvent {
     id: "evt_1",
     type: "INITIAL_PURCHASE",
     app_user_id: "user-1",
-    product_id: "pawcareright_monthly",
+    product_id: "bombaypetcompany_monthly",
     expiration_at_ms: Date.parse("2026-08-16T12:00:00.000Z"),
     purchased_at_ms: Date.parse("2026-07-16T11:00:00.000Z"),
     event_timestamp_ms: Date.parse("2026-07-16T11:00:00.000Z"),
@@ -60,13 +60,13 @@ describe("computeSubscriptionUpdate — table-driven per event type", () => {
   });
 
   it("PRODUCT_CHANGE carries the new plan (product_id)", () => {
-    const event = buildEvent({ type: "PRODUCT_CHANGE", product_id: "pawcareright_family_annual" });
+    const event = buildEvent({ type: "PRODUCT_CHANGE", product_id: "bombaypetcompany_family_annual" });
 
     const result = computeSubscriptionUpdate(event, null, RECEIVED_NOW);
 
     expect(result.action).toBe("upsert");
     if (result.action !== "upsert") throw new Error("expected upsert");
-    expect(result.data.plan).toBe("pawcareright_family_annual");
+    expect(result.data.plan).toBe("bombaypetcompany_family_annual");
   });
 
   it("CANCELLATION keeps entitlement PREMIUM (clock handles eventual expiry)", () => {

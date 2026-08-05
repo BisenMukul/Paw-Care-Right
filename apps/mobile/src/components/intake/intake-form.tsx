@@ -1,6 +1,6 @@
-import type { Answer, CategoryDef, CompletedIntake, QuestionDef } from "@pawcareright/types";
-import { parseIntake } from "@pawcareright/types";
-import { useState } from "react";
+import type { Answer, CategoryDef, CompletedIntake, QuestionDef } from "@bombaypetcompany/types";
+import { parseIntake } from "@bombaypetcompany/types";
+import { useEffect, useRef, useState } from "react";
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, TextInput, useColorScheme, View } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -28,6 +28,9 @@ function omitKey(record: Record<string, Answer>, key: string): Record<string, An
   return next;
 }
 
+/** Beat before a single-select tap auto-advances (design-system §3.1 one-shot band). */
+export const AUTO_ADVANCE_MS = 300;
+
 /**
  * Stepped, schema-driven symptom-intake flow (T045 plan §"Flow & state
  * spec"). Steps are `[...categoryDef.questions, freeText, review]`; every
@@ -49,7 +52,45 @@ export function IntakeForm({ categoryDef, onExit, onSubmit, photoUpload }: Intak
   const [extraDetail, setExtraDetail] = useState("");
   const [showFreeTextInput, setShowFreeTextInput] = useState(false);
 
+  const advanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const scrollRef = useRef<ScrollView>(null);
+
+  function clearAdvanceTimer() {
+    if (advanceTimer.current !== null) {
+      clearTimeout(advanceTimer.current);
+      advanceTimer.current = null;
+    }
+  }
+
+  useEffect(() => clearAdvanceTimer, []);
+
+  useEffect(() => {
+    scrollRef.current?.scrollTo?.({ y: 0, animated: !reduced });
+  }, [stepIndex, reduced]);
+
+  function goToStep(index: number) {
+    clearAdvanceTimer();
+    setStepIndex(index);
+  }
+
+  function goNext() {
+    goToStep(stepIndex + 1);
+  }
+
+  function scheduleAutoAdvance() {
+    clearAdvanceTimer();
+    if (reduced) {
+      setStepIndex((i) => i + 1);
+      return;
+    }
+    advanceTimer.current = setTimeout(() => {
+      advanceTimer.current = null;
+      setStepIndex((i) => i + 1);
+    }, AUTO_ADVANCE_MS);
+  }
+
   function handleBack() {
+    clearAdvanceTimer();
     if (stepIndex > 0) {
       setStepIndex(stepIndex - 1);
     } else {
@@ -97,7 +138,7 @@ export function IntakeForm({ categoryDef, onExit, onSubmit, photoUpload }: Intak
             </Text>
           </View>
 
-          <ScrollView className="flex-1">
+          <ScrollView ref={scrollRef} className="flex-1">
             <Animated.View
               key={stepIndex}
               className="gap-4 pt-4 pb-4"
@@ -107,7 +148,12 @@ export function IntakeForm({ categoryDef, onExit, onSubmit, photoUpload }: Intak
                 <QuestionRenderer
                   question={currentQuestion}
                   answer={answers[currentQuestion.id]}
-                  onChange={(answer) => handleAnswerChange(currentQuestion, answer)}
+                  onChange={(answer) => {
+                    handleAnswerChange(currentQuestion, answer);
+                    if (currentQuestion.type === "single" && answer !== undefined) {
+                      scheduleAutoAdvance();
+                    }
+                  }}
                   photoUpload={photoUpload}
                 />
               ) : null}
@@ -197,8 +243,10 @@ export function IntakeForm({ categoryDef, onExit, onSubmit, photoUpload }: Intak
                         </View>
                         <Pressable
                           testID={`intake-review-edit-${question.id}`}
+                          accessibilityRole="button"
+                          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                           onPress={() =>
-                            setStepIndex(questions.findIndex((candidateQuestion) => candidateQuestion.id === question.id))
+                            goToStep(questions.findIndex((candidateQuestion) => candidateQuestion.id === question.id))
                           }
                         >
                           <Text className="text-sm font-semibold text-brand-700 dark:text-accent-bright font-body-semibold">
@@ -220,7 +268,9 @@ export function IntakeForm({ categoryDef, onExit, onSubmit, photoUpload }: Intak
                       </View>
                       <Pressable
                         testID="intake-review-edit-freetext"
-                        onPress={() => setStepIndex(freeTextStepIndex)}
+                        accessibilityRole="button"
+                        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                        onPress={() => goToStep(freeTextStepIndex)}
                       >
                         <Text className="text-sm font-semibold text-brand-700 dark:text-accent-bright font-body-semibold">
                           {strings.intake.review.edit}
@@ -239,7 +289,10 @@ export function IntakeForm({ categoryDef, onExit, onSubmit, photoUpload }: Intak
             </Animated.View>
           </ScrollView>
 
-          <View className="flex-row items-center justify-between gap-4 pt-4">
+          <View
+            testID="intake-footer"
+            className="flex-row items-center justify-between gap-4 border-t border-brand-100 dark:border-hairline-dark pt-4"
+          >
             <GhostButton testID="intake-back" label={strings.intake.back} onPress={handleBack} />
             {isReviewStep ? (
               <PrimaryButton
@@ -257,7 +310,7 @@ export function IntakeForm({ categoryDef, onExit, onSubmit, photoUpload }: Intak
                 testID="intake-next"
                 label={strings.intake.next}
                 disabled={nextDisabled}
-                onPress={() => setStepIndex(stepIndex + 1)}
+                onPress={goNext}
               />
             )}
           </View>

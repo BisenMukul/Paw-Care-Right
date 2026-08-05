@@ -1,4 +1,4 @@
-import type { Answer, QuestionDef } from "@pawcareright/types";
+import type { Answer, QuestionDef } from "@bombaypetcompany/types";
 import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 import { useEffect, useRef, useState } from "react";
@@ -13,6 +13,7 @@ import {
   type PhotoSlot,
   type PhotoUploadEvent,
 } from "../../checks/photo-upload-machine";
+import { LOCAL_IMAGE_CACHE_POLICY } from "../../perf/image-cache-policy";
 import { compressImage } from "../../pets/compress-image";
 import { strings } from "../../strings";
 
@@ -197,6 +198,7 @@ export function PhotoPromptQuestion({ question, answer, onChange, photoUpload }:
               <Image
                 testID={`intake-photo-thumb-${question.id}-${slot.id}`}
                 source={{ uri: slot.uri }}
+                cachePolicy={LOCAL_IMAGE_CACHE_POLICY}
                 className="h-20 w-20 rounded-lg"
               />
             ) : (

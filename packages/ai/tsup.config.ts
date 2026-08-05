@@ -1,7 +1,7 @@
 import { defineConfig } from "tsup";
 
 export default defineConfig({
-  entry: ["src/index.ts", "src/evals/run.ts"],
+  entry: ["src/index.ts", "src/evals/run.ts", "src/content/generate-breed-guides.ts"],
   format: ["esm", "cjs"],
   dts: true,
   sourcemap: true,

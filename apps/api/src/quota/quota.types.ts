@@ -6,7 +6,7 @@
 
 export type EntitlementTier = "FREE" | "PREMIUM";
 
-export type QuotaMetric = "checks" | "foodLookups";
+export type QuotaMetric = "checks" | "foodLookups" | "chatMessages";
 
 export type QuotaWindow = "day" | "month" | "total";
 

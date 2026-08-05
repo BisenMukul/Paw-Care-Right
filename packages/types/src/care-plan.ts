@@ -10,8 +10,8 @@ import { speciesSchema } from "./pet";
  * instantiation body (plan decisions 1-2).
  *
  * `lifeStage`/`group` are typed as `z.string()` rather than importing
- * `@pawcareright/data`'s `LifeStage`/`ProtocolGroup` enums, deliberately —
- * `packages/data` already depends on `@pawcareright/types` (see
+ * `@bombaypetcompany/data`'s `LifeStage`/`ProtocolGroup` enums, deliberately —
+ * `packages/data` already depends on `@bombaypetcompany/types` (see
  * `packages/data/src/care-templates/schema.ts`), so importing it back here
  * would introduce a `types` <-> `data` cycle (plan Risk 5).
  */

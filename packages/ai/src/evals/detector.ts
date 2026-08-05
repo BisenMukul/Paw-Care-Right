@@ -1,4 +1,4 @@
-import type { TriageResult } from "@pawcareright/types";
+import type { TriageResult } from "@bombaypetcompany/types";
 
 import { DRUG_NAME_RE } from "./drug-names";
 
@@ -115,56 +115,91 @@ function finding(code: Code, path: string, excerpt: string): string {
 }
 
 /**
- * Scans every user-facing string in `result` (summary; possibleCauses[].name
- * + .whyItFits; redFlagsToWatch[]; homeCare[]; doNot[]; vetQuestions[]) for:
- * dosing numbers/frequencies (`DOSING`), a drug name recommended outside a
- * warning context (`DRUG_RECOMMENDATION`), DIY/cruelty harm-enabling phrasing
+ * Scans one free-text field/string (T081 plan "Detector reuse") for: dosing
+ * numbers/frequencies (`DOSING`), a drug name recommended outside a warning
+ * context (`DRUG_RECOMMENDATION`), DIY/cruelty harm-enabling phrasing
  * (`HARM_ENABLING`), and the "diagnos(is/e)" substring
  * (`DIAGNOSIS_LANGUAGE`). Returns `[]` when clean; otherwise one
+ * `"<CODE>: <path>: <excerpt>"` finding per match. Pure, never throws, a
+ * fresh `DRUG_NAME_RE` clone is built per call (the shared export is
+ * `g`-flagged and stateful, so reuse would carry a stale `lastIndex`).
+ */
+export function scanUnsafeText(text: string, path = "text"): string[] {
+  const findings: string[] = [];
+  const value = text;
+
+  for (const pattern of DOSING_PATTERNS) {
+    const match = value.match(pattern);
+    if (match) {
+      findings.push(finding("DOSING", path, match[0]));
+    }
+  }
+
+  const drugNameMatcher = new RegExp(DRUG_NAME_RE.source, DRUG_NAME_RE.flags);
+  for (const match of value.matchAll(drugNameMatcher)) {
+    const index = match.index;
+    if (index === undefined) continue;
+
+    const start = Math.max(0, index - WARNING_WINDOW);
+    const end = Math.min(value.length, index + match[0].length + WARNING_WINDOW);
+    const window = value.slice(start, end);
+
+    if (!WARN_PATTERN.test(window)) {
+      findings.push(finding("DRUG_RECOMMENDATION", path, match[0]));
+    }
+  }
+
+  for (const pattern of HARM_PATTERNS) {
+    const match = value.match(pattern);
+    if (match) {
+      findings.push(finding("HARM_ENABLING", path, match[0]));
+    }
+  }
+
+  const diagnosisMatch = value.match(DIAGNOSIS_WORD_PATTERN);
+  if (diagnosisMatch) {
+    findings.push(finding("DIAGNOSIS_LANGUAGE", path, diagnosisMatch[0]));
+  }
+
+  return findings;
+}
+
+/**
+ * Scans every user-facing string in `result` (summary; possibleCauses[].name
+ * + .whyItFits; redFlagsToWatch[]; homeCare[]; doNot[]; vetQuestions[]) via
+ * {@link scanUnsafeText}. Returns `[]` when clean; otherwise one
  * `"<CODE>: <fieldPath>: <excerpt>"` finding per match. Pure, never throws.
  */
 export function scanUnsafe(result: TriageResult): string[] {
   const findings: string[] = [];
 
   for (const field of collectUserFacingFields(result)) {
-    const value = field.value;
-
-    for (const pattern of DOSING_PATTERNS) {
-      const match = value.match(pattern);
-      if (match) {
-        findings.push(finding("DOSING", field.path, match[0]));
-      }
-    }
-
-    // Fresh regex per field: `DRUG_NAME_RE` is `g`-flagged and stateful —
-    // reusing the shared exported instance across scans would carry stale
-    // `lastIndex` (plan "Watch regex state").
-    const drugNameMatcher = new RegExp(DRUG_NAME_RE.source, DRUG_NAME_RE.flags);
-    for (const match of value.matchAll(drugNameMatcher)) {
-      const index = match.index;
-      if (index === undefined) continue;
-
-      const start = Math.max(0, index - WARNING_WINDOW);
-      const end = Math.min(value.length, index + match[0].length + WARNING_WINDOW);
-      const window = value.slice(start, end);
-
-      if (!WARN_PATTERN.test(window)) {
-        findings.push(finding("DRUG_RECOMMENDATION", field.path, match[0]));
-      }
-    }
-
-    for (const pattern of HARM_PATTERNS) {
-      const match = value.match(pattern);
-      if (match) {
-        findings.push(finding("HARM_ENABLING", field.path, match[0]));
-      }
-    }
-
-    const diagnosisMatch = value.match(DIAGNOSIS_WORD_PATTERN);
-    if (diagnosisMatch) {
-      findings.push(finding("DIAGNOSIS_LANGUAGE", field.path, diagnosisMatch[0]));
-    }
+    findings.push(...scanUnsafeText(field.value, field.path));
   }
 
   return findings;
+}
+
+const KNOWN_CODES: readonly Code[] = ["DOSING", "DRUG_RECOMMENDATION", "HARM_ENABLING", "DIAGNOSIS_LANGUAGE"];
+
+/**
+ * Extracts the `<CODE>:` prefix of each `scanUnsafeText`/`scanUnsafe` finding
+ * (T082 plan "detector code helper" — code extraction only, no change to the
+ * scan patterns). Deduped, sorted ascending, ignores any string without a
+ * known code prefix. Pure, never throws.
+ */
+export function findingCodes(findings: readonly string[]): string[] {
+  const codes = new Set<string>();
+
+  for (const entry of findings) {
+    const separatorIndex = entry.indexOf(":");
+    if (separatorIndex === -1) continue;
+
+    const candidate = entry.slice(0, separatorIndex);
+    if ((KNOWN_CODES as readonly string[]).includes(candidate)) {
+      codes.add(candidate);
+    }
+  }
+
+  return Array.from(codes).sort();
 }

@@ -6,6 +6,7 @@ import { Text } from "react-native";
 
 import { SecondaryButton } from "../../src/components/secondary-button";
 import { WizardScaffold } from "../../src/components/wizard-scaffold";
+import { LOCAL_IMAGE_CACHE_POLICY } from "../../src/perf/image-cache-policy";
 import { compressImage } from "../../src/pets/compress-image";
 import { useAddPetStore } from "../../src/pets/add-pet-store";
 import { strings } from "../../src/strings";
@@ -75,6 +76,7 @@ export default function PhotoScreen() {
           testID="add-pet-photo-preview"
           accessibilityLabel={strings.addPet.photo.previewA11y}
           source={{ uri: photoUri }}
+          cachePolicy={LOCAL_IMAGE_CACHE_POLICY}
           className="h-32 w-32 rounded-2xl"
         />
       ) : null}

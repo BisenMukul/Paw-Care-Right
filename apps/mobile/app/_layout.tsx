@@ -3,7 +3,7 @@
 // becomes a readable Metro/adb trace).
 import "../src/startup-guard";
 
-import { PersistedApiQueryProvider } from "@pawcareright/api-client";
+import { PersistedApiQueryProvider } from "@bombaypetcompany/api-client";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { useEffect } from "react";
 import { View } from "react-native";
@@ -13,13 +13,27 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { queryClient, queryPersister } from "../src/api/query";
 import { useAuthStore } from "../src/auth/auth-store";
 import { usePurchasesInit } from "../src/billing/use-purchases-init";
+import { BetaBanner } from "../src/components/beta-banner";
+import { OfflineBanner } from "../src/components/offline-banner";
 import { UpdateGate } from "../src/components/update-gate";
+import { UpdateReadyPrompt } from "../src/components/update-ready-prompt";
+import { UpgradeRecommendedBanner } from "../src/components/upgrade-recommended-banner";
 import { UpsellSheet } from "../src/components/upsell-sheet";
 import { AppErrorBoundary } from "../src/error-boundary";
+import { usePaywallExperimentAssignment } from "../src/experiments/use-paywall-experiment-assignment";
+import { useShakeToReport } from "../src/feedback/use-shake-to-report";
 import { useAppFonts } from "../src/fonts/use-app-fonts";
 import { useNetworkListener } from "../src/offline/use-network-listener";
+import { useOutboxFlush } from "../src/offline/use-outbox-flush";
+import { initMobileSentry } from "../src/observability/sentry";
 
 import "../global.css";
+
+// T089: Sentry wiring (guard imported first above — it must trap everything,
+// including a Sentry init failure; `initMobileSentry` is itself try/catch-
+// wrapped internally so it can never throw regardless of call order).
+// Stub-safe by default (D5): a no-op when EXPO_PUBLIC_SENTRY_DSN is empty.
+initMobileSentry();
 
 /**
  * Root auth gate (classic expo-router pattern, plan R2): a single effect
@@ -63,7 +77,10 @@ function AppRoot() {
 
   useAuthGate();
   useNetworkListener();
+  useOutboxFlush();
   usePurchasesInit();
+  usePaywallExperimentAssignment();
+  useShakeToReport();
 
   if (status === "restoring") {
     return <View testID="auth-splash" className="flex-1 items-center justify-center bg-white" />;
@@ -71,26 +88,44 @@ function AppRoot() {
 
   return (
     <UpdateGate>
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(auth)" />
-        <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="push-rationale" />
-        <Stack.Screen name="add-pet" options={{ presentation: "modal" }} />
-        <Stack.Screen name="pets/[id]" />
-        <Stack.Screen name="care-plan/[petId]" />
-        <Stack.Screen name="reminders/edit" options={{ presentation: "modal" }} />
-        <Stack.Screen name="check/index" />
-        <Stack.Screen name="check/[category]" />
-        <Stack.Screen name="check/waiting/[checkId]" />
-        <Stack.Screen name="check/result/[checkId]" />
-        <Stack.Screen name="check/emergency/[checkId]" options={{ gestureEnabled: false }} />
-        <Stack.Screen name="check/history/[petId]" />
-        <Stack.Screen name="checks/[id]" />
-        <Stack.Screen name="paywall" options={{ presentation: "modal" }} />
-        <Stack.Screen name="family" />
-        <Stack.Screen name="join/[code]" />
-      </Stack>
+      <View className="flex-1">
+        <OfflineBanner />
+        <BetaBanner />
+        <UpgradeRecommendedBanner />
+        {/* T094 (T083 F8 hand-off, route-declaration verdict): declare a
+            screen here ONLY when it needs non-default `options` (e.g.
+            `presentation`/`gestureEnabled`) -- every other route is
+            discovered purely from the filesystem by expo-router, so a bare
+            name-only Stack.Screen entry configures nothing. Do not add
+            no-op declarations for the sake of "completeness"; see
+            `docs/qa/state-audit.md` §3 for the full undeclared-route
+            inventory and the verdict. `route-declarations.test.ts` pins the
+            filesystem-resolution invariant and the 4 options-bearing routes
+            below (including `check/emergency/[checkId]`'s
+            `gestureEnabled: false`, a §5 surface). */}
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="(auth)" />
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="push-rationale" />
+          <Stack.Screen name="add-pet" options={{ presentation: "modal" }} />
+          <Stack.Screen name="pets/[id]" />
+          <Stack.Screen name="care-plan/[petId]" />
+          <Stack.Screen name="reminders/edit" options={{ presentation: "modal" }} />
+          <Stack.Screen name="check/index" />
+          <Stack.Screen name="check/[category]" />
+          <Stack.Screen name="check/waiting/[checkId]" />
+          <Stack.Screen name="check/result/[checkId]" />
+          <Stack.Screen name="check/emergency/[checkId]" options={{ gestureEnabled: false }} />
+          <Stack.Screen name="check/history/[petId]" />
+          <Stack.Screen name="checks/[id]" />
+          <Stack.Screen name="paywall" options={{ presentation: "modal" }} />
+          <Stack.Screen name="family" />
+          <Stack.Screen name="join/[code]" />
+          <Stack.Screen name="feedback" options={{ presentation: "modal" }} />
+        </Stack>
+      </View>
       <UpsellSheet />
+      <UpdateReadyPrompt />
     </UpdateGate>
   );
 }

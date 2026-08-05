@@ -1,4 +1,4 @@
-import { APP_DISPLAY_NAME } from "@pawcareright/config";
+import { APP_DISPLAY_NAME } from "@bombaypetcompany/config";
 
 import { strings } from "../src/strings";
 
@@ -12,7 +12,7 @@ import { strings } from "../src/strings";
  */
 describe("no-pawsaathi-branding: the codename never leaks into user-facing surfaces", () => {
   it("APP_DISPLAY_NAME is the exact locked display name, not the codename", () => {
-    expect(APP_DISPLAY_NAME).toBe("Paw Care Right +");
+    expect(APP_DISPLAY_NAME).toBe("Bombay Pet Company");
     expect(APP_DISPLAY_NAME).not.toMatch(/pawsaathi/i);
   });
 

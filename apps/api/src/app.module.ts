@@ -2,19 +2,24 @@ import { Module } from "@nestjs/common";
 import { APP_GUARD } from "@nestjs/core";
 import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 
+import { AdminModule } from "./admin/admin.module";
 import { AuthModule } from "./auth/auth.module";
 import { JwtAuthGuard } from "./auth/jwt-auth.guard";
 import { BillingModule } from "./billing/billing.module";
 import { BreedsModule } from "./breeds/breeds.module";
+import { ChatModule } from "./chat/chat.module";
 import { ChecksModule } from "./checks/checks.module";
 import { HouseholdScopeGuard } from "./common/household-scope.guard";
 import { RolesGuard } from "./common/roles.guard";
 import { THROTTLE_DEFAULT } from "./common/throttle.config";
 import { ConfigModule } from "./config/config.module";
 import { DevicesModule } from "./devices/devices.module";
+import { FeedbackModule } from "./feedback/feedback.module";
 import { HealthModule } from "./health/health.module";
 import { HealthLogsModule } from "./health-logs/health-logs.module";
 import { HouseholdsModule } from "./households/households.module";
+import { MeModule } from "./me/me.module";
+import { MetaModule } from "./meta/meta.module";
 import { NotificationPrefsModule } from "./notifications/notification-prefs.module";
 import { PetsModule } from "./pets/pets.module";
 import { PhotosModule } from "./photos/photos.module";
@@ -28,12 +33,14 @@ import { WorkersModule } from "./workers/workers.module";
 
 @Module({
   imports: [
+    AdminModule,
     ConfigModule,
     PrismaModule,
     RedisModule,
     HealthModule,
     AuthModule,
     DevicesModule,
+    FeedbackModule,
     HouseholdsModule,
     PetsModule,
     BreedsModule,
@@ -44,7 +51,10 @@ import { WorkersModule } from "./workers/workers.module";
     ChecksModule,
     RemindersModule,
     HealthLogsModule,
+    ChatModule,
     NotificationPrefsModule,
+    MeModule,
+    MetaModule,
     RemoteConfigModule,
     WorkersModule,
     ThrottlerModule.forRoot([{ name: "default", ...THROTTLE_DEFAULT }]),

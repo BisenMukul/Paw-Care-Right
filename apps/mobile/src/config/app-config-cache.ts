@@ -1,4 +1,4 @@
-import { PAYWALL_VARIANTS } from "@pawcareright/types";
+import { FEATURE_KEYS, PAYWALL_VARIANTS } from "@bombaypetcompany/types";
 
 import { createSafeStorage } from "../storage/safe-storage";
 import type { AppConfig } from "./app-config-queries";
@@ -14,7 +14,7 @@ const mmkv = createSafeStorage({
   },
 });
 
-const CACHE_KEY = "pawcareright.app-config-cache";
+const CACHE_KEY = "bombaypetcompany.app-config-cache";
 
 /**
  * Re-validated on read (plan Risk R4): a poisoned/corrupt stored value is
@@ -22,9 +22,44 @@ const CACHE_KEY = "pawcareright.app-config-cache";
  * an update gate or inject a bogus variant/version. A plain type guard --
  * NOT a `zod` schema -- because `zod` is not a direct `apps/mobile`
  * dependency (only consumed indirectly via already-built schemas exported
- * from `@pawcareright/types`); this keeps the "no new dependencies" rule
+ * from `@bombaypetcompany/types`); this keeps the "no new dependencies" rule
  * intact while still re-validating every field the same schema would.
+ *
+ * T106: also requires `features` to be an object with exactly the three
+ * documented boolean flags. A LEGACY cached blob written before T106 (no
+ * `features` key at all) is treated as "no cache" (`null`) -- the caller
+ * then falls back to `DEFAULT_APP_CONFIG`, which is fail-open (D10), so a
+ * pre-T106 cache can never silently disable a feature nor silently enable
+ * one either; it is simply discarded and re-fetched.
+ *
+ * T114: also requires `criticalOtaVersion` to be `null` or a string. A
+ * pre-T114 cached blob (key absent entirely -- `undefined`) is discarded as
+ * "no cache", the same fail-open precedent as the T106 `features` addition.
+ *
+ * T115: also requires `minAppVersion`/`recommendedAppVersion` to each be an
+ * `{ios: string, android: string}` pair. A pre-T115 cached blob (keys absent
+ * entirely) is discarded as "no cache" -- same fail-open precedent; the
+ * caller then falls back to `DEFAULT_APP_CONFIG`, whose T115 fields are
+ * "0.0.0" on both platforms (no gate).
  */
+function isValidFeatureFlags(value: unknown): value is AppConfig["features"] {
+  if (typeof value !== "object" || value === null) {
+    return false;
+  }
+
+  const candidate = value as Record<string, unknown>;
+  return FEATURE_KEYS.every((key) => typeof candidate[key] === "boolean");
+}
+
+function isValidPlatformAppVersions(value: unknown): value is AppConfig["minAppVersion"] {
+  if (typeof value !== "object" || value === null) {
+    return false;
+  }
+
+  const candidate = value as Record<string, unknown>;
+  return typeof candidate.ios === "string" && typeof candidate.android === "string";
+}
+
 function isValidAppConfig(value: unknown): value is AppConfig {
   if (typeof value !== "object" || value === null) {
     return false;
@@ -41,7 +76,11 @@ function isValidAppConfig(value: unknown): value is AppConfig {
     typeof minSupportedVersion === "string" &&
     typeof hotlinePackVersion === "number" &&
     Number.isInteger(hotlinePackVersion) &&
-    hotlinePackVersion >= 0
+    hotlinePackVersion >= 0 &&
+    isValidFeatureFlags(candidate.features) &&
+    (candidate.criticalOtaVersion === null || typeof candidate.criticalOtaVersion === "string") &&
+    isValidPlatformAppVersions(candidate.minAppVersion) &&
+    isValidPlatformAppVersions(candidate.recommendedAppVersion)
   );
 }
 

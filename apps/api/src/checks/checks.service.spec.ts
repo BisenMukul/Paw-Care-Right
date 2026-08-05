@@ -1,8 +1,9 @@
 import { BadRequestException, HttpException, NotFoundException } from "@nestjs/common";
-import { SAFE_FALLBACK, type CompletedIntake, parseIntake } from "@pawcareright/types";
+import { SAFE_FALLBACK, type CompletedIntake, parseIntake } from "@bombaypetcompany/types";
 import { Prisma } from "@prisma/client";
 import type { Queue } from "bullmq";
 
+import type { AnomalyService } from "../abuse/anomaly.service";
 import type { PetResponse } from "../pets/pets.service";
 import type { PetsService } from "../pets/pets.service";
 import type { PrismaService } from "../prisma/prisma.service";
@@ -89,7 +90,9 @@ function buildCheckRow(overrides: Partial<Record<string, unknown>> = {}) {
   };
 }
 
-function buildHarness(opts: { petFindOne?: jest.Mock; quotaConsume?: jest.Mock; resolve?: jest.Mock } = {}) {
+function buildHarness(
+  opts: { petFindOne?: jest.Mock; quotaConsume?: jest.Mock; resolve?: jest.Mock; recordCheck?: jest.Mock } = {},
+) {
   const prismaSymptomCheck = {
     findUnique: jest.fn(),
     create: jest.fn(),
@@ -111,9 +114,12 @@ function buildHarness(opts: { petFindOne?: jest.Mock; quotaConsume?: jest.Mock; 
   const add = jest.fn().mockResolvedValue(undefined);
   const queue = { add } as unknown as Queue<ChecksJobData>;
 
-  const service = new ChecksService(prisma, petsService, quotaService, entitlementResolver, queue);
+  const recordCheck = opts.recordCheck ?? jest.fn().mockResolvedValue(undefined);
+  const anomaly = { recordCheck } as unknown as AnomalyService;
 
-  return { service, prisma, prismaSymptomCheck, petsService, quotaService, entitlementResolver, queue, add };
+  const service = new ChecksService(prisma, petsService, quotaService, entitlementResolver, queue, anomaly);
+
+  return { service, prisma, prismaSymptomCheck, petsService, quotaService, entitlementResolver, queue, add, anomaly, recordCheck };
 }
 
 describe("ChecksService.create", () => {
@@ -169,6 +175,32 @@ describe("ChecksService.create", () => {
       );
       expect(result.redFlag).toEqual({ ruleId: "breathing-difficulty", payloadKey: "breathing-difficulty" });
     });
+
+    it("records the anomaly counter on the RED-FLAG path too (abuser can't hide behind red flags)", async () => {
+      const { service, prismaSymptomCheck, recordCheck } = buildHarness();
+      prismaSymptomCheck.create.mockResolvedValue(buildCheckRow({ id: "check-rf", redFlagHit: true }));
+
+      const dto: CreateCheckDto = { intake: redFlagIntake() };
+      await service.create(HOUSEHOLD_ID, USER_ID, PET_ID, dto, null);
+
+      expect(recordCheck).toHaveBeenCalledWith(USER_ID);
+    });
+
+    it("a rejecting/threshold-breaching anomaly recorder never blocks a red-flag check", async () => {
+      const recordCheck = jest.fn().mockRejectedValue(new Error("redis down"));
+      const { service, prismaSymptomCheck } = buildHarness({ recordCheck });
+      prismaSymptomCheck.create.mockResolvedValue(
+        buildCheckRow({ id: "check-rf", redFlagHit: true, redFlagRuleId: "r", redFlagPayloadKey: "r" }),
+      );
+
+      const dto: CreateCheckDto = { intake: redFlagIntake() };
+      // Even a mis-implemented/rejecting recorder (or, per the plan's
+      // mutation table, a boolean-returning variant that throws a 429) must
+      // never block this §5-critical response: `create` still resolves
+      // with `redFlag` set (no 429/500).
+      const result = await service.create(HOUSEHOLD_ID, USER_ID, PET_ID, dto, null);
+      expect(result.redFlag).toEqual({ ruleId: "r", payloadKey: "r" });
+    });
   });
 
   describe("non-red-flag path (quota)", () => {
@@ -190,6 +222,16 @@ describe("ChecksService.create", () => {
         expect.objectContaining({ jobId: "check-normal" }),
       );
       expect(result.redFlag).toBeUndefined();
+    });
+
+    it("records the anomaly counter on the quota (non-red-flag) path", async () => {
+      const { service, prismaSymptomCheck, recordCheck } = buildHarness();
+      prismaSymptomCheck.create.mockResolvedValue(buildCheckRow({ id: "check-normal-2" }));
+
+      const dto: CreateCheckDto = { intake: benignIntake() };
+      await service.create(HOUSEHOLD_ID, USER_ID, PET_ID, dto, null);
+
+      expect(recordCheck).toHaveBeenCalledWith(USER_ID);
     });
 
     it("over-quota -> 402 HttpException, no persist, no enqueue", async () => {

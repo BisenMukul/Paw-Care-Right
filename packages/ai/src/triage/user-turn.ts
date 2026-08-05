@@ -1,4 +1,4 @@
-import { getCategoryDef, type Answer, type CategoryDef, type Sex, type Species } from "@pawcareright/types";
+import { getCategoryDef, type Answer, type CategoryDef, type Sex, type Species } from "@bombaypetcompany/types";
 
 import type { TriagePetContext, TriagePromptInput } from "./types";
 

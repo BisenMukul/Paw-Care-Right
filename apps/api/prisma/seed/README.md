@@ -1,7 +1,7 @@
 # Demo seed (SEEDER-1)
 
 A deterministic, idempotent, §7-clean DEMO fixture layered on top of the
-existing `dev@pawcareright.local` dev fixture (untouched). It exercises
+existing `dev@bombaypetcompany.local` dev fixture (untouched). It exercises
 every product surface with real, varied content so the app is fully
 testable on a device: two users sharing one household, three pets with
 divergent data density, 60-day health timelines, a care plan with
@@ -23,8 +23,8 @@ fixture or anything else.
 
 | Role | Email | Household seen |
 |---|---|---|
-| Owner | `owner@pawcareright.local` | The Demo Household |
-| Family member | `family@pawcareright.local` | The Demo Household |
+| Owner | `owner@bombaypetcompany.local` | The Demo Household |
+| Family member | `family@bombaypetcompany.local` | The Demo Household |
 
 There is no password — sign-in is via a one-time email code (OTP), and in
 non-production this app logs the code to the API console instead of
@@ -33,15 +33,15 @@ sending a real email.
 ### Sign-in walkthrough (either demo user)
 
 1. In the mobile app's welcome/email screen, enter the demo user's email
-   (`owner@pawcareright.local` or `family@pawcareright.local`) and request
+   (`owner@bombaypetcompany.local` or `family@bombaypetcompany.local`) and request
    a code. This calls `POST /auth/otp/request`.
 2. Look at the API server's console/log output for a line like:
-   `OTP for owner@pawcareright.local: 123456`
+   `OTP for owner@bombaypetcompany.local: 123456`
 3. Enter that 6-digit code in the app's OTP screen. This calls
    `POST /auth/otp/verify`, which signs the user in and returns their
    session — both demo users land on the same shared household.
 
-`family@pawcareright.local` also owns a second, empty household purely so
+`family@bombaypetcompany.local` also owns a second, empty household purely so
 sign-in succeeds under the current auth invariant (a user must own at
 least one household). It has no members, no pets, and never appears on
 any screen — every data screen resolves scope from the family member's
@@ -67,7 +67,7 @@ Every seed run performs **wipe-and-recreate** of the demo subgraph only:
 2. Recreate everything from scratch with the same fixed ids.
 
 Running the seed twice in a row produces identical row counts (no
-duplicates) and never touches `dev@pawcareright.local` or any other row.
+duplicates) and never touches `dev@bombaypetcompany.local` or any other row.
 
 ## Screen -> data map
 

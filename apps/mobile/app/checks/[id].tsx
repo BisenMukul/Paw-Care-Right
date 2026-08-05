@@ -1,7 +1,7 @@
 import { Redirect, useLocalSearchParams } from "expo-router";
 
 /**
- * Deep-link alias (T050 plan): `pawcareright://checks/:id` resolves via
+ * Deep-link alias (T050 plan): `bombaypetcompany://checks/:id` resolves via
  * expo-router's file map to this route, which redirects into the existing,
  * already-§5-reviewed result screen (`/check/result/[checkId]`) — one
  * detail screen, no duplication. Native URL->route scheme resolution is

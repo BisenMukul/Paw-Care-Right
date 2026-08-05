@@ -1,4 +1,4 @@
-import type { ActivityType, ActivityUnit } from "@pawcareright/types";
+import type { ActivityType, ActivityUnit } from "@bombaypetcompany/types";
 import { create } from "zustand";
 import { createJSONStorage, persist, type StateStorage } from "zustand/middleware";
 
@@ -61,7 +61,7 @@ export const useActivityRecentsStore = create<ActivityRecentsState>()(
       },
     }),
     {
-      name: "pawcareright.activity-recents",
+      name: "bombaypetcompany.activity-recents",
       storage: createJSONStorage(() => mmkvStorage),
       partialize: (state) => ({ byPet: state.byPet }),
     },

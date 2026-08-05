@@ -1,3 +1,4 @@
+import type { ExerciseLevel, GroomingFrequency } from "@bombaypetcompany/data";
 import {
   MEDICATION_ADD_TIME_LABEL,
   MEDICATION_AGENDA_DOSE_LABEL,
@@ -10,12 +11,15 @@ import {
   MEDICATION_NAME_LABEL,
   MEDICATION_NAME_PLACEHOLDER,
   MEDICATION_SAVE_LABEL,
+  vetDisclaimerLine,
   type ActivityType,
   type ActivityUnit,
+  type FeedbackCategory,
   type HealthLogKind,
   type ReminderType,
-} from "@pawcareright/types";
+} from "@bombaypetcompany/types";
 
+import { resolveActiveStrings } from "./i18n/runtime";
 import type { ScheduleFrequency } from "./reminders/schedule-builder";
 
 // Centralized user-facing copy for apps/mobile (CLAUDE.md §6).
@@ -101,12 +105,18 @@ const ACTIVITY_UNIT_LABELS_SINGULAR: Partial<Record<ActivityUnit, string>> = {
   bowls: "bowl",
 };
 
-export const strings = {
+const enStringsTree = {
   tabs: {
     home: "Home",
     care: "Care",
     timeline: "Timeline",
     settings: "Settings",
+  },
+  // FOUNDER-UX-3 plan: the one shared back-control accessibility label used
+  // by every `AppHeader` instance across pushed screens (CLAUDE §6 -- no
+  // component hardcodes this copy).
+  nav: {
+    back: "Back",
   },
   // Home tab (founder UI overhaul): greeting/quick-actions/today-preview/
   // empty-state copy only -- labels and record-keeping nouns, no
@@ -119,6 +129,8 @@ export const strings = {
     quickActionsTitle: "Quick actions",
     quickActions: {
       symptomCheck: "Symptom check",
+      // T083: the home tab's 5th quick-action tile into the chat screen.
+      askChat: "Ask a question",
     },
     todayTitle: "Today",
     todayEmpty: "Nothing due today.",
@@ -188,6 +200,7 @@ export const strings = {
     premium: (appName: string) => `Upgrade to ${appName} Plus`,
     manage: "Manage subscription",
     services: "Services",
+    breedGuides: "Breed guides",
     familyManagedNote: "Your Premium comes from your household's family plan. Only the plan owner can manage billing.",
     restore: "Restore purchases",
     restoreSuccess: "Your purchases were restored.",
@@ -200,6 +213,8 @@ export const strings = {
     },
     analyticsLabel: "Share anonymous usage data",
     analyticsHint: "Helps us improve the app. Never includes your pet's symptoms, photos, or health details.",
+    analyticsSaveError: "We couldn't save that change. Please try again.",
+    privacy: "Privacy & data",
     signOut: "Sign out",
     signOutHint: "You can sign back in with your email any time.",
   },
@@ -440,6 +455,12 @@ export const strings = {
     recentEmpty: "Your recent checks will show up here.",
     recentSeeAll: "See all",
     offlineBanner: "You're offline — you can still start a check.",
+    // T106 kill-switch copy: no "diagnos*", no medication/dosing words,
+    // names the safe next action, no promised fix time (mirrors
+    // `paywall.unavailable`'s tone).
+    unavailableTitle: "Symptom checks are temporarily unavailable",
+    unavailableBody:
+      "Please contact your vet, or your nearest emergency vet service if this can't wait.",
     waiting: {
       title: "Looking into it…",
       body: "We're reviewing what you shared. This usually takes a few moments.",
@@ -457,8 +478,10 @@ export const strings = {
       errorRetry: "Retry",
     },
     result: {
-      disclaimer: (appName: string) =>
-        `${appName} offers general pet-care guidance, not veterinary care or treatment. Always consult a licensed veterinarian.`,
+      // T097 plan D2: delegates to the `@bombaypetcompany/types` SSOT so this
+      // sentence cannot drift from `apps/web/src/strings.ts`'s copy. Byte-
+      // identical to the pre-T097 literal (see `vet-disclaimer-copy.ts`).
+      disclaimer: vetDisclaimerLine,
       tierLabel: {
         EMERGENCY_NOW: "Emergency — see a vet now",
         VET_24H: "See a vet within 24 hours",
@@ -519,19 +542,29 @@ export const strings = {
     dismiss: "Not now",
   },
   paywall: {
-    // A/B copy variants (T074 plan decision 5): the server only ever sends
-    // the variant ID, never prose (§7 review + i18n-ready). NO health/
-    // medical claims, no "diagnos*"/drug/dose tokens in either variant.
+    // A/B copy variants (T074 plan decision 5, grown by T107): the server
+    // only ever sends the variant ID, never prose (§7 review + i18n-ready).
+    // NO health/medical claims, no "diagnos*"/drug/dose tokens in either
+    // variant. Arms differ in headline, subcopy, AND trial framing
+    // (`trialCta`/`trialCtaWithPrice`). Trial *length* is a factual detail
+    // (7 days, matching the store product) in both arms -- never a
+    // discount/urgency claim, never a health claim (CLAUDE.md §7 rules 1-2).
+    // Variant A stays byte-identical to its pre-T107 text (D5, control);
+    // only variant B's trial-framing keys are new copy.
     variants: {
       A: {
         headline: (appName: string) => `Get more from ${appName}`,
         subcopy:
           "Unlock unlimited symptom checks, faster answers, and sharing across your whole family.",
+        trialCta: "7-day free trial",
+        trialCtaWithPrice: (price: string) => `Start your 7-day free trial — then ${price}`,
       },
       B: {
         headline: (appName: string) => `${appName} Plus`,
         subcopy:
           "Go further with unlimited symptom checks, priority guidance, and a plan the whole family can share.",
+        trialCta: "Free for 7 days",
+        trialCtaWithPrice: (price: string) => `Try it free for 7 days — then ${price}`,
       },
     },
     planNames: {
@@ -541,8 +574,6 @@ export const strings = {
     },
     familyExplainer: "Share one subscription across everyone who cares for your pets.",
     annualBadge: "Best value",
-    trialCta: "7-day free trial",
-    trialCtaWithPrice: (price: string) => `Start your 7-day free trial — then ${price}`,
     subscribeCta: (price: string) => `Subscribe — ${price}`,
     restore: "Restore purchases",
     restoreNone: "We couldn't find any previous purchases.",
@@ -562,6 +593,30 @@ export const strings = {
     body: "A newer version is required to keep using the app. Please update from the store to continue.",
     cta: "Update now",
   },
+  upgradeBanner: {
+    // T115: dismissible min<->recommended banner. Factual and non-urgent --
+    // no "diagnos*"/medication/dose token, nothing that competes with an
+    // emergency surface, and it must NOT imply the app will stop working
+    // (that is the blocking screen's job, above).
+    body: "A newer version is available.",
+    cta: "Update",
+    dismiss: "Dismiss",
+  },
+  updateReady: {
+    // T114: the in-app OTA "restart prompt" (docs/OTA_UPDATES.md §3 -- exact
+    // label "Update ready"). Factual copy only -- no "diagnos*"/medication/
+    // dosing tokens, no urgency wording that could compete with an emergency
+    // surface (CLAUDE.md §7). Never mentions the product name, so there is
+    // nothing here that would need `APP_DISPLAY_NAME` (unlike `updateGate`,
+    // whose title interpolates it).
+    title: "Update ready",
+    body: "A newer version has been downloaded. Restart to use it.",
+    restartCta: "Restart now",
+    laterCta: "Later",
+    a11yLabel: "Update ready. A newer version has been downloaded.",
+    restartA11yLabel: "Restart now to apply the update",
+    laterA11yLabel: "Later, keep using the current version",
+  },
   family: {
     title: "Family",
     loading: "Loading…",
@@ -572,6 +627,19 @@ export const strings = {
     member: "Member",
     invite: "Invite someone",
     inviteError: "We couldn't create an invite. Please try again.",
+    // T108: share-sheet copy + explainer caption. §7-safe -- no
+    // "diagnos*"/dosing/medical claim, no earnings/money claim, no urgency
+    // language. The numbers here are pinned by `referral-doc.spec.ts`
+    // against `REFERRAL_GRANT_DAYS`/`REFERRAL_GRANT_MAX_PER_USER`. Fix round
+    // (checker F3): both strings now say "up to" -- a recipient at the
+    // lifetime cap (silent skip) or already covered by an own/family
+    // subscription (D9) may see no visible benefit, so an unconditional
+    // promise would over-state what the invitee actually gets. This keeps
+    // the invitee-facing message consistent with the owner-facing caption,
+    // which already carried the "(up to 3 times)" qualifier.
+    shareMessage: (appName: string, link: string) =>
+      `Join my household on ${appName} so we can keep our pets' care in one place. When you join, we can each get up to 14 days of Premium. ${link}`,
+    referralCaption: "When someone joins your household, you both get up to 14 days of Premium (up to 3 times).",
     leave: "Leave household",
     leaveConfirmBody: "Leaving will move you into your own new household, separate from this one.",
     leaveGrace: "You'll lose access to this household's Premium plan as soon as you leave.",
@@ -606,6 +674,39 @@ export const strings = {
     },
     save: "Save",
     saveError: "We couldn't save your changes. Please try again.",
+  },
+  // T091 (privacy: consent, export & deletion). Calm, honest copy per
+  // CLAUDE §7 — states exactly what's deleted, that a shared household's
+  // pets/timeline stay with the household when the caller is a member, the
+  // grace window, and the sign-in-cancels-it disclosure. No dark patterns:
+  // the export copy does NOT promise an automated email (none is shipped
+  // yet — the backend's own delivery is a dev-log link stub only), so it
+  // honestly points to the privacy contact instead of over-promising.
+  privacy: {
+    title: "Privacy & data",
+    loading: "Loading…",
+    error: "We couldn't load your privacy settings.",
+    empty: "We couldn't find your privacy settings.",
+    retry: "Retry",
+    offline: "You're offline. Reconnect to manage your data.",
+    offlineBanner: "You're offline — some actions are unavailable until you're back online.",
+    exportHeading: "Export your data",
+    exportBody: "Get a copy of your account, pets, symptom checks, health timeline and chat history.",
+    exportButton: "Export my data",
+    exportPending:
+      "We've started preparing your export. This can take a few minutes. If you don't hear back, contact us at privacy@bombaypetcompany.app.",
+    exportError: "We couldn't start your export. Please try again.",
+    deleteHeading: "Delete your account",
+    deleteButton: "Delete my account",
+    deleteConsequences:
+      "This permanently deletes your account, your pets, your symptom checks, your chat history and your reminders. If you're the only person in your household, the whole household is deleted with it. If you share your household with other people, the household, its pets and its shared timeline stay with them — only your own account and the checks and chats you created are removed.",
+    deleteGrace: (days: number) =>
+      `You have ${days} days to change your mind. Signing back in during that time cancels the deletion.`,
+    deleteConfirm: "Yes, delete my account",
+    deleteCancel: "Cancel",
+    deleteError: "We couldn't process this. Please try again.",
+    deleteConflict:
+      "You own a shared household. Ask the other members to leave (Settings → Family → Leave household), then delete your account — or email privacy@bombaypetcompany.app and we'll handle it for you.",
   },
   carePlan: {
     title: "Set up a care plan",
@@ -694,6 +795,11 @@ export const strings = {
     // sourced from the same `MEDICATION_STATIC_COPY` SSOT the detector spec
     // scans, so the tested string is byte-identical to the rendered one.
     medDoseLabel: MEDICATION_AGENDA_DOSE_LABEL,
+    // T094: the pending-sync line shown when the reminder-completion outbox
+    // is non-empty (append-only; no medical claim, no promise about WHEN
+    // sync happens beyond "when you're back online").
+    queuedBanner: (count: number): string =>
+      `${count} completed ${count === 1 ? "reminder" : "reminders"} will sync when you're back online.`,
   },
   reminderForm: {
     createTitle: "New reminder",
@@ -713,6 +819,13 @@ export const strings = {
     loading: "Loading…",
     error: "We couldn't load this reminder.",
     retry: "Retry",
+    // T093 a11y sweep: icon-only stepper labels (design-system §4 rule 2 —
+    // every icon-only control needs an accessibilityLabel). Navigational
+    // only, never a dosing/diagnostic word (CLAUDE §7 rule 2).
+    intervalDecreaseA11y: "Decrease interval",
+    intervalIncreaseA11y: "Increase interval",
+    monthDayDecreaseA11y: "Decrease day of month",
+    monthDayIncreaseA11y: "Increase day of month",
   },
   // Services hub (PAWSAATHI-4 plan, decisions 1-3; upgraded by PREVIEW-1):
   // `items`/`comingSoon`/`cardA11y`/`note` stay the informational base copy
@@ -736,6 +849,49 @@ export const strings = {
     },
     cardA11y: (title: string) => `${title}, coming soon`,
     cardA11yPreview: (title: string) => `${title}, preview`,
+  },
+  // T087 in-app breed guide reader: every word below is either navigation/
+  // section-label copy or a template built only from dataset values passed
+  // in at the call site (`title`, `provenance`) -- never a hardcoded claim
+  // about a pet, a diagnosis, a dose, or an outcome (CLAUDE §7,
+  // `breed-guide-safety.test.ts` tone scan). The condition-awareness prompts
+  // themselves are NOT here -- they render verbatim from the dataset.
+  breedGuide: {
+    title: (breedName: string) => `About ${breedName}`,
+    listTitle: "Breed guides",
+    listSubtitle: "General information for popular breeds",
+    listNote: "These guides are general breed information reviewed by our content team, not advice about your pet.",
+    sections: {
+      temperament: "Temperament",
+      exercise: "Exercise needs",
+      conditions: "Conditions to ask your vet about",
+      grooming: "Grooming",
+    },
+    conditionsIntro: "Questions worth raising at your pet's next vet visit:",
+    exerciseLevel: {
+      LOW: "Low",
+      MODERATE: "Moderate",
+      HIGH: "High",
+      VERY_HIGH: "Very high",
+    } satisfies Record<ExerciseLevel, string>,
+    groomingFrequency: {
+      DAILY: "Daily",
+      SEVERAL_TIMES_WEEKLY: "Several times a week",
+      WEEKLY: "Weekly",
+      MONTHLY: "Monthly",
+    } satisfies Record<GroomingFrequency, string>,
+    provenance: (reviewedBy: string, reviewedAt: string) => `Reviewed by ${reviewedBy} on ${reviewedAt}`,
+    notFoundTitle: "Guide not found",
+    notFoundBody: "We don't have a published guide for this breed yet.",
+    notFoundCta: "Browse breed guides",
+    emptyTitle: "No guides yet",
+    emptyBody: "Check back soon for breed guides.",
+    speciesGroup: {
+      DOG: "Dogs",
+      CAT: "Cats",
+    },
+    sectionA11y: (sectionTitle: string) => `${sectionTitle} section`,
+    rowA11y: (breedName: string) => `${breedName} breed guide`,
   },
   // PREVIEW-1 plan: the tap-through, PREVIEW-labeled service flows (vet
   // booking, salon, store, adoption, insurance) reached from the services
@@ -830,7 +986,7 @@ export const strings = {
     },
   },
   // T061 medication tracker: every value below comes from the
-  // `MEDICATION_STATIC_COPY` SSOT (`@pawcareright/types`) -- CLAUDE §7 rule
+  // `MEDICATION_STATIC_COPY` SSOT (`@bombaypetcompany/types`) -- CLAUDE §7 rule
   // 2, the med tracker RECORDS what a vet prescribed, it never suggests. Do
   // not hardcode medication copy here; add to the SSOT instead so the T038
   // detector lint test keeps scanning the exact rendered string.
@@ -846,4 +1002,103 @@ export const strings = {
     disclaimer: MEDICATION_DISCLAIMER,
     save: MEDICATION_SAVE_LABEL,
   },
+  // T083 mobile chat UI ("Ask Bombay Pet Company", F7): every string below is
+  // scanned by `chat-strings-tone.test.ts` (mirrors `craft2-strings-tone.test.ts`)
+  // for diagnosis/dosing/outcome-claim/streak-pressure language (CLAUDE §7).
+  // The disclaimer itself is NOT duplicated here -- the screen renders the
+  // existing shared `<VetDisclaimer/>` verbatim (CLAUDE §7 rule 3).
+  chat: {
+    title: (appName: string) => `Ask ${appName}`,
+    subtitle: "Ask about symptoms, food safety, or everyday care.",
+    error: "We couldn't load your pet to start this chat.",
+    retry: "Retry",
+    noPet: "Add a pet to start chatting.",
+    offlineBanner: "You're offline — reconnect to send a message.",
+    // T106 kill-switch copy: same constraints as `check.unavailable*`.
+    unavailableTitle: "Chat is temporarily unavailable",
+    unavailableBody:
+      "Please contact your vet, or your nearest emergency vet service if this can't wait.",
+    empty: {
+      title: "What's on your mind?",
+      body: "Ask about symptoms, food safety, or everyday care. This isn't a substitute for a vet visit.",
+    },
+    quickPromptsHeading: "Try asking",
+    quickPrompts: {
+      symptom: "My pet seems off today — what should I watch for?",
+      food: "Is this food safe for my pet?",
+      routine: "How do I build a good daily routine?",
+    },
+    composer: {
+      placeholder: "Type your question…",
+      sendA11y: "Send message",
+    },
+    typingA11y: "Thinking…",
+    nudge: {
+      title: "This sounds worth a closer look",
+      cta: "Start a symptom check",
+    },
+    dropped: {
+      title: "We lost the connection before finishing that answer.",
+      retry: "Retry",
+    },
+    // FINDING-4: distinct, neutral copy for a non-transport `error` state
+    // (e.g. an HTTP 500) -- the dropped copy above claims a connection was
+    // lost, which is false for a server error.
+    errorNotice: "That answer didn't finish. You can try again.",
+    // Mirrors CLAUDE §7 rule 5's exact fallback phrasing -- a real server
+    // safety decision, never a retry-silently-and-guess.
+    safeFallback: "We can't assess this reliably from what you've shared — please contact a vet.",
+    blocked: {
+      quotaTitle: "You've reached this month's chat limit",
+      quotaBody: "You can still reach a vet anytime. Your limit resets next month.",
+      upgradeTitle: (appName: string) => `${appName} chat is a premium feature`,
+      upgradeBody: "Upgrade to reach your pet's care assistant any time you have a question.",
+      upgradeCta: "See plans",
+    },
+    activePetA11y: (name: string) => `Chatting about ${name}`,
+  },
+  // T094: the global, root-mounted offline banner (append-only new
+  // top-level section). Non-dismissible chrome -- no medical claim, no
+  // "diagnosis"/"diagnose", no drug name, no dose, no promise about WHEN
+  // sync happens beyond "when you reconnect".
+  offline: {
+    banner: "You're offline — changes will sync when you reconnect.",
+  },
+  // T104 in-app feedback + bug report: no "diagnos*" anywhere below -- use
+  // "app logs" / "troubleshoot", never "diagnostic logs" (CLAUDE §7,
+  // `strings-detector-lint.test.ts`'s real `scanUnsafeText`). The consent
+  // toggle governs device app-log attachment only; it carries no free text
+  // (see `src/observability/log-buffer.ts`).
+  feedback: {
+    title: "Send feedback",
+    body: "Tell us what's going on — a bug, an idea, or anything else. This isn't a substitute for veterinary care.",
+    categoryLabel: "What's this about?",
+    categories: {
+      BUG: "Something's broken",
+      IDEA: "I have an idea",
+      OTHER: "Something else",
+    } satisfies Record<FeedbackCategory, string>,
+    messageLabel: "Details",
+    messagePlaceholder: "Tell us what happened…",
+    attachLogsLabel: "Include recent app logs",
+    attachLogsHint:
+      "Helps us troubleshoot. Never includes your pet's symptoms, photos, or health details.",
+    attachImage: "Attach a screenshot",
+    imageAttached: "Screenshot attached",
+    submit: "Send feedback",
+    submitting: "Sending…",
+    success: "Thanks — your feedback was sent.",
+    errorGeneric: "We couldn't send this. Please try again.",
+    offline: "You're offline. Reconnect to send feedback.",
+    betaBanner: {
+      label: "Beta",
+      cta: "Send feedback",
+      ctaA11yLabel: "Send feedback about this beta",
+    },
+  },
 } as const;
+
+export const enStrings = enStringsTree;
+export type StringsShape = typeof enStringsTree;
+/** T110: identity-returns `enStrings` while English is the only served locale (plan §2.1). */
+export const strings = resolveActiveStrings(enStringsTree);

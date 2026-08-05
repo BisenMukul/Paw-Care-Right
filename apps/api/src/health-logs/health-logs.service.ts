@@ -7,7 +7,7 @@ import {
   weightValueSchema,
   type HealthLogKind,
   type Urgency,
-} from "@pawcareright/types";
+} from "@bombaypetcompany/types";
 import { Prisma, type HealthLog } from "@prisma/client";
 
 import { PetsService } from "../pets/pets.service";

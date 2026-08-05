@@ -6,7 +6,7 @@ import { apiClient } from "./client";
 /**
  * Reminder CRUD hooks (T060 plan "NOTE"): kept separate from
  * `agenda-api.ts` (agenda-only). No shared Zod schema exists for the
- * `Reminder` resource in `@pawcareright/types` (only the agenda/occurrence
+ * `Reminder` resource in `@bombaypetcompany/types` (only the agenda/occurrence
  * shapes were added for T060) -- this local `Reminder` interface mirrors
  * `apps/api/src/reminders/reminders.service.ts`'s `ReminderResponse`
  * structurally, the same "service-local read type" posture already used
@@ -39,7 +39,7 @@ export interface CreateReminderInput {
 export type UpdateReminderInput = Partial<CreateReminderInput>;
 
 /**
- * T061: mirrors `createMedicationCourseInputSchema` (`@pawcareright/types`).
+ * T061: mirrors `createMedicationCourseInputSchema` (`@bombaypetcompany/types`).
  * `medNameAsEntered`/`medDoseAsEntered` are recorded EXACTLY as entered --
  * never suggested (CLAUDE §7 rule 2); `doseStartAts` are UTC instants the
  * form computes client-side, one per daily dose time.

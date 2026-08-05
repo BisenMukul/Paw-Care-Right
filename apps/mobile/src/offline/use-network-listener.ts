@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 import * as Network from "expo-network";
-import { setOnline } from "@pawcareright/api-client";
+import { setOnline } from "@bombaypetcompany/api-client";
 
 /**
  * Bridges `expo-network`'s connectivity state into the shared, platform-
- * agnostic online store (`@pawcareright/api-client`'s `setOnline`), so
+ * agnostic online store (`@bombaypetcompany/api-client`'s `setOnline`), so
  * `useIsOffline()` reflects reality without any package depending on a
  * native module. Mounted once, in the root layout.
  */

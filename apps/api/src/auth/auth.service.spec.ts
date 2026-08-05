@@ -15,9 +15,10 @@ describe("AuthService", () => {
     rotate?: jest.Mock;
     revokeFamily?: jest.Mock;
     sign?: jest.Mock;
-    user?: { id: string; email: string } | null;
+    user?: { id: string; email: string; deletionScheduledAt?: Date | null } | null;
     household?: { id: string; ownerId: string; createdAt: Date } | null;
     txUser?: unknown;
+    userUpdate?: jest.Mock;
   }) {
     const otpService = {
       generateAndStore: options.generateAndStore ?? jest.fn().mockResolvedValue("123456"),
@@ -36,9 +37,16 @@ describe("AuthService", () => {
       sign: options.sign ?? jest.fn().mockReturnValue("signed-access-token"),
     } as unknown as JwtService;
 
-    const defaultUser = { id: "user-1", email: "user@example.com" };
+    // `deletionScheduledAt: null` by default -- `issueSession`'s D2 cancel-on
+    // -sign-in read (`cancelPendingDeletionIfAny`) shares this SAME
+    // top-level `prisma.user.findUnique` mock (distinct from the
+    // transaction-scoped `txUser.findUnique` used by `provisionOrGetUser`),
+    // so every pre-existing verifyOtp/refresh test must see a non-pending
+    // user here or it would spuriously try to clear a deletion.
+    const defaultUser = { id: "user-1", email: "user@example.com", deletionScheduledAt: null };
     const userValue = "user" in options ? options.user : defaultUser;
     const userFindUnique = jest.fn().mockResolvedValue(userValue);
+    const userUpdate = options.userUpdate ?? jest.fn().mockResolvedValue({});
 
     const defaultHousehold = { id: "household-1", ownerId: "user-1", createdAt: new Date() };
     const householdValue = "household" in options ? options.household : defaultHousehold;
@@ -52,7 +60,7 @@ describe("AuthService", () => {
     const txMembership = { create: jest.fn() };
 
     const prisma = {
-      user: { findUnique: userFindUnique },
+      user: { findUnique: userFindUnique, update: userUpdate },
       household: { findFirst: householdFindFirst },
       $transaction: jest.fn(async (callback: (tx: unknown) => unknown) =>
         callback({ user: txUser, household: txHousehold, membership: txMembership }),
@@ -63,7 +71,19 @@ describe("AuthService", () => {
 
     const service = new AuthService(otpService, refreshTokenService, jwtService, prisma, otpTransport);
 
-    return { service, otpService, refreshTokenService, jwtService, prisma, otpTransport, txUser, txHousehold, txMembership };
+    return {
+      service,
+      otpService,
+      refreshTokenService,
+      jwtService,
+      prisma,
+      otpTransport,
+      txUser,
+      txHousehold,
+      txMembership,
+      userFindUnique,
+      userUpdate,
+    };
   }
 
   describe("requestOtp", () => {
@@ -131,6 +151,39 @@ describe("AuthService", () => {
       await expect(service.verifyOtp("existing@example.com", "123456")).rejects.toBeInstanceOf(
         InternalServerErrorException,
       );
+    });
+  });
+
+  describe("issueSession — D2 sign-in cancels a pending deletion (T091 plan step 31)", () => {
+    it("a sign-in for a user with a pending deletion clears it and logs ids-only", async () => {
+      const { service, txUser, txHousehold, userFindUnique, userUpdate } = buildService({
+        user: { id: "existing-user", email: "existing@example.com", deletionScheduledAt: new Date("2026-08-24T00:00:00.000Z") },
+      });
+      txUser.findUnique.mockResolvedValue({ id: "existing-user", email: "existing@example.com" });
+      txHousehold.findFirst.mockResolvedValue({ id: "existing-household" });
+
+      await service.verifyOtp("existing@example.com", "123456");
+
+      expect(userFindUnique).toHaveBeenCalledWith({
+        where: { id: "existing-user" },
+        select: { deletionScheduledAt: true },
+      });
+      expect(userUpdate).toHaveBeenCalledWith({
+        where: { id: "existing-user" },
+        data: { deletionScheduledAt: null },
+      });
+    });
+
+    it("a normal sign-in (no pending deletion) issues NO extra write", async () => {
+      const { service, txUser, txHousehold, userUpdate } = buildService({
+        user: { id: "existing-user", email: "existing@example.com", deletionScheduledAt: null },
+      });
+      txUser.findUnique.mockResolvedValue({ id: "existing-user", email: "existing@example.com" });
+      txHousehold.findFirst.mockResolvedValue({ id: "existing-household" });
+
+      await service.verifyOtp("existing@example.com", "123456");
+
+      expect(userUpdate).not.toHaveBeenCalled();
     });
   });
 

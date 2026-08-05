@@ -42,7 +42,7 @@ export const useActivePetStore = create<ActivePetState>()(
       },
     }),
     {
-      name: "pawcareright.active-pet",
+      name: "bombaypetcompany.active-pet",
       storage: createJSONStorage(() => mmkvStorage),
       partialize: (state) => ({ activePetId: state.activePetId }),
     },

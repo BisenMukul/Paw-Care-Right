@@ -16,8 +16,8 @@ import RootLayout from "../app/_layout";
 
 const mockReplace = jest.fn();
 
-jest.mock("@pawcareright/api-client", () => {
-  const actual = jest.requireActual("@pawcareright/api-client");
+jest.mock("@bombaypetcompany/api-client", () => {
+  const actual = jest.requireActual("@bombaypetcompany/api-client");
   const { View } = jest.requireActual<typeof import("react-native")>("react-native");
   return {
     ...actual,
@@ -61,6 +61,14 @@ jest.mock("../src/auth/auth-store", () => {
 
 jest.mock("../src/offline/use-network-listener", () => ({ useNetworkListener: jest.fn() }));
 jest.mock("../src/billing/use-purchases-init", () => ({ usePurchasesInit: jest.fn() }));
+// T107 mechanical consequence (see `root-layout.test.tsx`'s identical
+// comment): `usePaywallExperimentAssignment` needs a real
+// `QueryClientProvider`, which this suite's mocked passthrough provider does
+// not supply -- stubbed like the other side-effect hooks, since this suite
+// only pins the non-blocking-font-load behaviour.
+jest.mock("../src/experiments/use-paywall-experiment-assignment", () => ({
+  usePaywallExperimentAssignment: jest.fn(),
+}));
 jest.mock("../src/components/update-gate", () => {
   const { View } = jest.requireActual<typeof import("react-native")>("react-native");
   return {

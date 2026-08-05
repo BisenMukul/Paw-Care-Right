@@ -1,4 +1,4 @@
-import type { Pet } from "@pawcareright/types";
+import type { Pet } from "@bombaypetcompany/types";
 import { useEffect } from "react";
 
 import { usePets } from "../api/pets-api";

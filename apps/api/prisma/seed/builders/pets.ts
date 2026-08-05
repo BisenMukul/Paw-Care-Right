@@ -1,4 +1,4 @@
-import type { Species } from "@pawcareright/types";
+import type { Species } from "@bombaypetcompany/types";
 
 import { daysAgo } from "../clock";
 import { BUDDY_PET_ID, CLEO_PET_ID, DEMO_HOUSEHOLD_ID, LUNA_PET_ID } from "../constants";

@@ -212,6 +212,77 @@ exports[`pet home screen snapshots loaded 1`] = `
     }
   >
     <View
+      className="flex-row items-center px-2 py-2"
+      testID="app-header"
+    >
+      <View
+        accessibilityLabel="Back"
+        accessibilityRole="button"
+        accessibilityState={
+          {
+            "busy": undefined,
+            "checked": undefined,
+            "disabled": undefined,
+            "expanded": undefined,
+            "selected": undefined,
+          }
+        }
+        accessibilityValue={
+          {
+            "max": undefined,
+            "min": undefined,
+            "now": undefined,
+            "text": undefined,
+          }
+        }
+        accessible={true}
+        className="h-11 w-11 items-center justify-center rounded-full"
+        collapsable={false}
+        focusable={true}
+        hitSlop={
+          {
+            "bottom": 8,
+            "left": 8,
+            "right": 8,
+            "top": 8,
+          }
+        }
+        onBlur={[Function]}
+        onClick={[Function]}
+        onFocus={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={null}
+        testID="app-header-back"
+      >
+        <Text
+          allowFontScaling={false}
+          selectable={false}
+          style={
+            [
+              {
+                "color": "#1f6350",
+                "fontSize": 24,
+              },
+              undefined,
+              {
+                "fontFamily": "ionicons",
+                "fontStyle": "normal",
+                "fontWeight": "normal",
+              },
+              {},
+            ]
+          }
+        >
+          
+        </Text>
+      </View>
+    </View>
+    <View
       className="gap-3 px-6 pb-4 pt-2"
       testID="pet-home-header-region"
     >
@@ -231,6 +302,7 @@ exports[`pet home screen snapshots loaded 1`] = `
         testID="pet-home-header-card"
       >
         <Image
+          cachePolicy="memory"
           className="h-24 w-24 rounded-full"
           source={
             {
@@ -717,6 +789,98 @@ exports[`pet home screen snapshots loaded 1`] = `
                 </Text>
               </View>
             </View>
+          </View>
+          <View
+            accessibilityLabel="Labrador Retriever breed guide"
+            accessibilityRole="button"
+            accessibilityState={
+              {
+                "busy": undefined,
+                "checked": undefined,
+                "disabled": false,
+                "expanded": undefined,
+                "selected": undefined,
+              }
+            }
+            accessibilityValue={
+              {
+                "max": undefined,
+                "min": undefined,
+                "now": undefined,
+                "text": undefined,
+              }
+            }
+            accessible={true}
+            className="flex-row items-center gap-3 py-3 min-h-[56px]"
+            collapsable={false}
+            focusable={true}
+            onBlur={[Function]}
+            onClick={[Function]}
+            onFocus={[Function]}
+            onResponderGrant={[Function]}
+            onResponderMove={[Function]}
+            onResponderRelease={[Function]}
+            onResponderTerminate={[Function]}
+            onResponderTerminationRequest={[Function]}
+            onStartShouldSetResponder={[Function]}
+            style={null}
+            testID="pet-home-breed-guide"
+          >
+            <View
+              className="h-10 w-10 items-center justify-center rounded-full bg-brand-100 dark:bg-surface-raised-dark"
+            >
+              <Text
+                allowFontScaling={false}
+                selectable={false}
+                style={
+                  [
+                    {
+                      "color": "#1f6350",
+                      "fontSize": 20,
+                    },
+                    undefined,
+                    {
+                      "fontFamily": "ionicons",
+                      "fontStyle": "normal",
+                      "fontWeight": "normal",
+                    },
+                    {},
+                  ]
+                }
+              >
+                
+              </Text>
+            </View>
+            <View
+              className="flex-1"
+            >
+              <Text
+                className="text-base font-semibold text-brand-900 dark:text-ink-dark font-body-semibold"
+              >
+                About Labrador Retriever
+              </Text>
+            </View>
+            <Text
+              allowFontScaling={false}
+              selectable={false}
+              style={
+                [
+                  {
+                    "color": "#1f6350",
+                    "fontSize": 20,
+                  },
+                  undefined,
+                  {
+                    "fontFamily": "ionicons",
+                    "fontStyle": "normal",
+                    "fontWeight": "normal",
+                  },
+                  {},
+                ]
+              }
+            >
+              
+            </Text>
           </View>
         </View>
       </View>

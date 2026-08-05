@@ -49,6 +49,8 @@ describe("fetchPaywallConfig", () => {
       paywall: { variant: "B" },
       minSupportedVersion: "0.0.0",
       hotlinePackVersion: 1,
+      features: { checks: true, chat: true, paywall: true },
+      criticalOtaVersion: null,
     });
 
     await expect(fetchPaywallConfig()).resolves.toEqual({ variant: "B" });

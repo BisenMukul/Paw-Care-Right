@@ -25,7 +25,7 @@ describe("useWeightUnitStore (persistence)", () => {
     useWeightUnitStore.getState().setUnit("lb");
 
     const mmkv = createMMKV();
-    const persistedRaw = mmkv.getString("pawcareright.weight-unit");
+    const persistedRaw = mmkv.getString("bombaypetcompany.weight-unit");
     expect(persistedRaw).toBeTruthy();
     expect(persistedRaw).toContain("lb");
 
@@ -33,7 +33,7 @@ describe("useWeightUnitStore (persistence)", () => {
     expect(useWeightUnitStore.getState().override).toBe("kg");
 
     // Simulate relaunch: storage still holds the earlier "lb" snapshot.
-    mmkv.set("pawcareright.weight-unit", persistedRaw as string);
+    mmkv.set("bombaypetcompany.weight-unit", persistedRaw as string);
     await useWeightUnitStore.persist.rehydrate();
 
     expect(useWeightUnitStore.getState().override).toBe("lb");

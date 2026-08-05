@@ -5,7 +5,7 @@
  * payload carries only the ticket ids and the device each ticket targets --
  * no token, no reminder title/type (plan Safety statement).
  */
-export const PUSH_RECEIPTS_QUEUE = "pawcareright-push-receipts";
+export const PUSH_RECEIPTS_QUEUE = "bombaypetcompany-push-receipts";
 
 export const PUSH_RECEIPT_JOB_NAME = "push-receipt-check";
 

@@ -5,6 +5,7 @@ import {
   DeleteObjectCommand,
   GetObjectCommand,
   HeadObjectCommand,
+  ListObjectsV2Command,
   PutObjectCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
@@ -45,13 +46,15 @@ export class StorageService {
     return getSignedUrl(this.client, command, { expiresIn: PRESIGN_EXPIRY_SECONDS });
   }
 
-  async getPresignedGetUrl(args: { key: string }): Promise<string> {
+  async getPresignedGetUrl(args: { key: string; expiresInSeconds?: number }): Promise<string> {
     const command = new GetObjectCommand({
       Bucket: this.config.s3Bucket,
       Key: args.key,
     });
 
-    return getSignedUrl(this.client, command, { expiresIn: PRESIGN_EXPIRY_SECONDS });
+    return getSignedUrl(this.client, command, {
+      expiresIn: args.expiresInSeconds ?? PRESIGN_EXPIRY_SECONDS,
+    });
   }
 
   async getObject(key: string): Promise<Buffer> {
@@ -75,6 +78,51 @@ export class StorageService {
 
   async deleteObject(key: string): Promise<void> {
     await this.client.send(new DeleteObjectCommand({ Bucket: this.config.s3Bucket, Key: key }));
+  }
+
+  /**
+   * Lists every object key under `prefix` (T091 plan step 7), following the
+   * `ContinuationToken` across as many pages as the bucket returns. Returns
+   * `[]` (no `send` call needed beyond the first page) when the prefix has
+   * no objects — the erasure/export services (T091) need the FULL key set
+   * under a pet's or an account's S3 namespace, not just the first page.
+   */
+  async listKeys(prefix: string): Promise<string[]> {
+    const keys: string[] = [];
+    let continuationToken: string | undefined;
+
+    do {
+      const page = await this.client.send(
+        new ListObjectsV2Command({
+          Bucket: this.config.s3Bucket,
+          Prefix: prefix,
+          ...(continuationToken !== undefined ? { ContinuationToken: continuationToken } : {}),
+        }),
+      );
+
+      for (const object of page.Contents ?? []) {
+        if (object.Key !== undefined) {
+          keys.push(object.Key);
+        }
+      }
+
+      continuationToken = page.IsTruncated === true ? page.NextContinuationToken : undefined;
+    } while (continuationToken !== undefined);
+
+    return keys;
+  }
+
+  /**
+   * Deletes every key in `keys` (T091 plan step 7). No-op on an empty array
+   * — deliberately simple (a per-key `deleteObject` loop, not the batched
+   * `DeleteObjectsCommand`) so this stays idempotent by construction: a
+   * repeat call against already-deleted keys is a set of no-op deletes, not
+   * a partial-batch error to reconcile.
+   */
+  async deleteObjects(keys: readonly string[]): Promise<void> {
+    for (const key of keys) {
+      await this.deleteObject(key);
+    }
   }
 
   async objectExists(key: string): Promise<boolean> {

@@ -15,6 +15,16 @@ jest.mock("../src/analytics/analytics", () => ({
   captureEvent: (...args: unknown[]) => mockCaptureEvent(...args),
 }));
 
+// T107 mechanical consequence: `app/paywall.tsx` now also fires
+// `paywall_experiment_exposed` (via `captureExposure`) on mount, which would
+// double-count against this suite's `mockCaptureEvent`-based `paywall_view`
+// assertions above. Stubbed to a no-op -- the experiment wiring itself is
+// covered end-to-end by `paywall-experiment-events.test.tsx`; this suite
+// stays scoped to `paywall_view` only, unchanged otherwise.
+jest.mock("../src/experiments/paywall-experiment", () => ({
+  captureExposure: jest.fn(),
+}));
+
 const mockUsePaywallConfig = jest.fn();
 const mockUseOfferings = jest.fn();
 jest.mock("../src/billing/paywall-queries", () => ({

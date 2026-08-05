@@ -1,11 +1,12 @@
-import { APP_DISPLAY_NAME } from "@pawcareright/config";
+import { APP_DISPLAY_NAME } from "@bombaypetcompany/config";
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Switch, Text, View } from "react-native";
 
 import { useConsentStore } from "../../src/analytics/consent-store";
 import { useAuthStore } from "../../src/auth/auth-store";
 import { useEntitlement } from "../../src/api/billing-api";
+import { usePrivacySettings, useUpdatePrivacySettings } from "../../src/api/privacy-api";
 import { openManageSubscription } from "../../src/billing/manage-subscription";
 import { usePremiumStore } from "../../src/billing/premium-store";
 import { restorePurchases } from "../../src/billing/purchases";
@@ -23,10 +24,36 @@ export default function SettingsScreen() {
   const setStatus = usePremiumStore((state) => state.setStatus);
   const analyticsEnabled = useConsentStore((state) => state.enabled);
   const setAnalyticsEnabled = useConsentStore((state) => state.setEnabled);
+  // T091: the server is the cross-device source of truth for
+  // `analyticsOptOut` -- hydrate the local (client-emission-gating) store
+  // from it whenever it loads/changes, and PUT every local toggle to the
+  // server too (reverting the local value + showing an error notice on a
+  // failed PUT, so the two never silently diverge).
+  const { data: privacySettings } = usePrivacySettings();
+  const updatePrivacySettings = useUpdatePrivacySettings();
+  const [analyticsSaveError, setAnalyticsSaveError] = useState(false);
 
   const [restoreBusy, setRestoreBusy] = useState(false);
   const [notice, setNotice] = useState<RestoreNotice>("none");
   const [signOutBusy, setSignOutBusy] = useState(false);
+
+  useEffect(() => {
+    if (privacySettings) {
+      setAnalyticsEnabled(!privacySettings.analyticsOptOut);
+    }
+  }, [privacySettings, setAnalyticsEnabled]);
+
+  async function handleAnalyticsToggle(nextEnabled: boolean) {
+    const previous = analyticsEnabled;
+    setAnalyticsSaveError(false);
+    setAnalyticsEnabled(nextEnabled);
+    try {
+      await updatePrivacySettings.mutateAsync({ analyticsOptOut: !nextEnabled });
+    } catch {
+      setAnalyticsEnabled(previous);
+      setAnalyticsSaveError(true);
+    }
+  }
 
   /**
    * Founder report: no logout existed in the UI. Delegates to the auth
@@ -73,6 +100,12 @@ export default function SettingsScreen() {
             onPress={() => router.push("/services")}
           />
           <ListRow
+            testID="settings-breed-guides"
+            title={strings.settings.breedGuides}
+            leadingIcon="book-outline"
+            onPress={() => router.push("/breeds")}
+          />
+          <ListRow
             testID="settings-family"
             title={strings.settings.family}
             leadingIcon="people-outline"
@@ -83,6 +116,18 @@ export default function SettingsScreen() {
             title={strings.settings.notifications}
             leadingIcon="notifications-outline"
             onPress={() => router.push("/settings/notifications")}
+          />
+          <ListRow
+            testID="settings-feedback"
+            title={strings.feedback.title}
+            leadingIcon="chatbubble-ellipses-outline"
+            onPress={() => router.push("/feedback")}
+          />
+          <ListRow
+            testID="settings-privacy"
+            title={strings.settings.privacy}
+            leadingIcon="shield-checkmark-outline"
+            onPress={() => router.push("/settings/privacy")}
           />
           <ListRow
             testID="settings-premium"
@@ -126,9 +171,18 @@ export default function SettingsScreen() {
           subtitle={strings.settings.analyticsHint}
           showChevron={false}
           trailing={
-            <Switch testID="settings-analytics-toggle" value={analyticsEnabled} onValueChange={setAnalyticsEnabled} />
+            <Switch
+              testID="settings-analytics-toggle"
+              value={analyticsEnabled}
+              onValueChange={(value) => void handleAnalyticsToggle(value)}
+            />
           }
         />
+        {analyticsSaveError ? (
+          <Text testID="settings-analytics-error" className="px-4 pb-3 text-sm text-red-700 dark:text-red-400">
+            {strings.settings.analyticsSaveError}
+          </Text>
+        ) : null}
       </Card>
 
       {notice === "success" ? (

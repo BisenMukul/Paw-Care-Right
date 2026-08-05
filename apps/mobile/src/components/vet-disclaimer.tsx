@@ -1,4 +1,4 @@
-import { APP_DISPLAY_NAME } from "@pawcareright/config";
+import { APP_DISPLAY_NAME } from "@bombaypetcompany/config";
 import { Text, View } from "react-native";
 
 import { strings } from "../strings";

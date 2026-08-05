@@ -1,3 +1,4 @@
+import { APP_DISPLAY_NAME } from "@bombaypetcompany/config";
 import { useState } from "react";
 import { RefreshControl, Share, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -12,6 +13,7 @@ import { ListRow } from "../src/components/list-row";
 import { PrimaryButton } from "../src/components/primary-button";
 import { ScreenScaffold } from "../src/components/screen-scaffold";
 import { Skeleton } from "../src/components/skeleton";
+import { useNavBack } from "../src/hooks/use-nav-back";
 import { strings } from "../src/strings";
 
 /**
@@ -19,7 +21,7 @@ import { strings } from "../src/strings";
  * owner-gated "Invite someone" button that mints a fresh invite and opens
  * the native share sheet with the deep link. The invite/join deep link
  * itself comes from the API response only — nothing here hardcodes the
- * `pawcareright://` scheme (CLAUDE.md §1a).
+ * `bombaypetcompany://` scheme (CLAUDE.md §1a).
  *
  * T077: a non-owner (MEMBER) caller instead sees a "Leave household"
  * button. Pressing it opens a confirmation with a grace warning shown only
@@ -28,6 +30,7 @@ import { strings } from "../src/strings";
  * drops that access immediately (server-side, `useLeaveHousehold`).
  */
 export default function FamilyScreen() {
+  const onBack = useNavBack("/(tabs)");
   const { data: household, isLoading, isError, isRefetching, refetch } = useHouseholdMe();
   const currentUserId = useAuthStore((state) => state.user?.id ?? null);
   const createInvite = useCreateInvite();
@@ -45,7 +48,7 @@ export default function FamilyScreen() {
     setInviteError(false);
     try {
       const invite = await createInvite.mutateAsync();
-      await Share.share({ message: invite.deepLink });
+      await Share.share({ message: strings.family.shareMessage(APP_DISPLAY_NAME, invite.deepLink) });
     } catch {
       setInviteError(true);
     }
@@ -95,6 +98,7 @@ export default function FamilyScreen() {
       title={strings.family.title}
       scrollTestID="family-scroll"
       refreshControl={<RefreshControl tintColor="#1f6350" refreshing={isRefetching} onRefresh={() => void refetch()} />}
+      onBack={onBack}
     >
       <Card>
         <View testID="family-members" className="gap-1">
@@ -128,6 +132,12 @@ export default function FamilyScreen() {
               {strings.family.inviteError}
             </Text>
           ) : null}
+          <Text
+            testID="family-referral-caption"
+            className="text-center text-sm text-brand-700 dark:text-ink-muted-dark font-body"
+          >
+            {strings.family.referralCaption}
+          </Text>
         </View>
       ) : (
         <View className="gap-2">

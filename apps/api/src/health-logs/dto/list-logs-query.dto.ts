@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { HEALTH_LOG_KINDS, type HealthLogKind } from "@pawcareright/types";
+import { HEALTH_LOG_KINDS, type HealthLogKind } from "@bombaypetcompany/types";
 import { Type } from "class-transformer";
 import { IsIn, IsInt, IsOptional, IsString, Max, Min } from "class-validator";
 

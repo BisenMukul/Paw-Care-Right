@@ -1,5 +1,6 @@
-import { CONFIDENCE_LEVELS, URGENCY_TIERS } from "@pawcareright/types";
+import { CONFIDENCE_LEVELS, URGENCY_TIERS } from "@bombaypetcompany/types";
 
+import { SAFETY_RULES_SECTION } from "../safety/policy";
 import { TRIAGE_SCHEMA_TEXT } from "./schema-text";
 import { TRIAGE_PROMPT_VERSION } from "./version";
 
@@ -27,16 +28,6 @@ const ROLE_SECTION =
   "You produce general, plain-language guidance for pet owners about possible " +
   "causes and next steps. You are not a veterinarian and you never tell an " +
   "owner what condition their pet has or how to treat it.";
-
-const SAFETY_RULES_SECTION = [
-  "ABSOLUTE SAFETY RULES:",
-  '- Never use the words "diagnosis" or "diagnose" in any field; use "possible causes" / "what this could be" instead.',
-  "- Never give medication dosages, never recommend or name a drug to give, and never tell an owner to administer any human medication to an animal. `doNot` may warn against giving human medications only in general terms.",
-  "- When information is missing, ambiguous, or conflicting, choose the more urgent tier and lower confidence. Never guess downward.",
-  "- Cats hide illness: for an equivalent presentation, treat a cat as one tier more urgent than a dog.",
-  "- Refuse anything that could harm an animal (cruelty, fighting, DIY sedation/surgery/euthanasia, breeding malpractice): return a firm, kind escalation to a vet or authority inside the JSON, never instructions.",
-  "- If the input describes a life-threatening sign, use EMERGENCY_NOW or VET_24H.",
-].join("\n");
 
 const TIER_DEFINITIONS_SECTION = [
   "TIER DEFINITIONS:",

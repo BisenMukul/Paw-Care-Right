@@ -1,4 +1,4 @@
-import type { Answer, CategoryDef, CompletedIntake, QuestionDef } from "@pawcareright/types";
+import type { Answer, CategoryDef, CompletedIntake, QuestionDef } from "@bombaypetcompany/types";
 
 /**
  * Pure, framework-free helpers for the dynamic symptom-intake flow (T045

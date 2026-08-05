@@ -25,10 +25,12 @@ exports[`paywall screen — variant A renders and matches the snapshot 1`] = `
           className="gap-6 px-4 pb-8 pt-4"
         >
           <Text
+            accessibilityRole="header"
             className="text-3xl font-bold text-brand-900 dark:text-ink-dark font-display"
+            maxFontSizeMultiplier={1.5}
             testID="paywall-headline"
           >
-            Get more from Paw Care Right +
+            Get more from Bombay Pet Company
           </Text>
           <Text
             className="text-base text-brand-700 dark:text-ink-muted-dark font-body"
@@ -434,7 +436,7 @@ exports[`paywall screen — variant A renders and matches the snapshot 1`] = `
         <Text
           className="text-base font-semibold text-white font-body-semibold"
         >
-          Start your 7-day free trial — then Free for 7 days
+          Start your 7-day free trial — then $4.99/mo
         </Text>
       </View>
     </View>
@@ -467,10 +469,12 @@ exports[`paywall screen — variant B renders and matches the snapshot 1`] = `
           className="gap-6 px-4 pb-8 pt-4"
         >
           <Text
+            accessibilityRole="header"
             className="text-3xl font-bold text-brand-900 dark:text-ink-dark font-display"
+            maxFontSizeMultiplier={1.5}
             testID="paywall-headline"
           >
-            Paw Care Right + Plus
+            Bombay Pet Company Plus
           </Text>
           <Text
             className="text-base text-brand-700 dark:text-ink-muted-dark font-body"
@@ -586,7 +590,7 @@ exports[`paywall screen — variant B renders and matches the snapshot 1`] = `
                 className="text-xs text-brand-700 dark:text-ink-muted-dark font-body"
                 testID="paywall-trial-badge"
               >
-                7-day free trial
+                Free for 7 days
               </Text>
             </View>
             <View
@@ -876,7 +880,7 @@ exports[`paywall screen — variant B renders and matches the snapshot 1`] = `
         <Text
           className="text-base font-semibold text-white font-body-semibold"
         >
-          Start your 7-day free trial — then Free for 7 days
+          Try it free for 7 days — then $4.99/mo
         </Text>
       </View>
     </View>

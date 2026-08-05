@@ -1,6 +1,6 @@
 import type { Persister, PersistedClient } from "@tanstack/react-query-persist-client";
 
-const DEFAULT_PERSISTER_KEY = "pawcareright-query-cache";
+const DEFAULT_PERSISTER_KEY = "bombaypetcompany-query-cache";
 
 interface MmkvLike {
   getString(key: string): string | undefined;
@@ -53,7 +53,7 @@ export interface CreateMmkvPersisterOptions {
 /**
  * Mobile-only TanStack Query persister backed by MMKV. Not exported from the
  * package's core (`.`) entry so `react-native-mmkv` never enters the web
- * import graph — import this from `@pawcareright/api-client/mmkv-persister`.
+ * import graph — import this from `@bombaypetcompany/api-client/mmkv-persister`.
  */
 export function createMmkvPersister(options: CreateMmkvPersisterOptions = {}): Persister {
   const storage = resolveStorage(options);

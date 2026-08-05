@@ -1,5 +1,5 @@
-import { setOnline } from "@pawcareright/api-client";
-import { petIdSchema, type Pet } from "@pawcareright/types";
+import { setOnline } from "@bombaypetcompany/api-client";
+import { petIdSchema, type Pet } from "@bombaypetcompany/types";
 import { act, fireEvent, render, screen } from "@testing-library/react-native";
 
 import WeightScreen from "../app/weight/[petId]";
@@ -12,9 +12,14 @@ import { useWeightUnit } from "../src/weight/weight-unit-store";
  * `pets-api`/`health-logs-api`/`weight-unit-store` hooks and `expo-router`
  * are mocked (mirrors `care-plan-wizard.test.tsx`); offline is driven by the
  * REAL shared store (`setOnline`, mirrors `pet-home-screen.test.tsx`).
+ *
+ * FOUNDER-UX-3 plan: `useRouter` is now also mocked (necessary consequential
+ * update) since `ScreenScaffold`'s new `onBack` prop resolves through the
+ * shared `useNavBack` hook, which calls `useRouter()` at render time.
  */
 jest.mock("expo-router", () => ({
   useLocalSearchParams: () => ({ petId: "pet1" }),
+  useRouter: () => ({ back: jest.fn(), replace: jest.fn(), canGoBack: () => true }),
 }));
 
 jest.mock("../src/api/pets-api", () => ({

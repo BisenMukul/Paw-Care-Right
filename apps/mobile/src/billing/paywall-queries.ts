@@ -1,4 +1,4 @@
-import type { PaywallVariant } from "@pawcareright/types";
+import type { PaywallVariant } from "@bombaypetcompany/types";
 import { useQuery, type UseQueryResult } from "@tanstack/react-query";
 
 import { readCachedConfig } from "../config/app-config-cache";

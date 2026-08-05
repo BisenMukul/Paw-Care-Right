@@ -1,4 +1,4 @@
-import { ApiError } from "@pawcareright/api-client";
+import { ApiError } from "@bombaypetcompany/api-client";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react-native";
 
 import JoinScreen from "../app/join/[code]";
@@ -11,9 +11,14 @@ import { strings } from "../src/strings";
 // and the distinct 409 (pets-present conflict) render different copy.
 // `expo-router` and `households-api` are mocked; RNTL v14 — awaited render.
 const mockReplace = jest.fn();
+const mockBack = jest.fn();
+const mockCanGoBack = jest.fn(() => true);
 
+// FOUNDER-UX-3 plan: `back`/`canGoBack` added -- the screen now composes
+// the canon back-only `AppHeader`, whose `onBack` resolves through
+// `useNavBack("/(tabs)")`.
 jest.mock("expo-router", () => ({
-  useRouter: () => ({ replace: mockReplace }),
+  useRouter: () => ({ replace: mockReplace, back: mockBack, canGoBack: mockCanGoBack }),
   useLocalSearchParams: () => ({ code: "ABCD2345" }),
 }));
 
@@ -70,5 +75,28 @@ describe("join/[code] route", () => {
       expect(screen.getByText(strings.join.petsPresentError)).toBeTruthy();
     });
     expect(mockReplace).not.toHaveBeenCalled();
+  });
+
+  // FOUNDER-UX-3 plan AC3: the canon back-only header (no title, no new §5
+  // copy) sits at the top of this deep-link screen.
+  it("[AC3] renders app-header, back-only (no app-header-title)", async () => {
+    await render(<JoinScreen />);
+
+    expect(screen.getByTestId("app-header")).toBeTruthy();
+    expect(screen.getByTestId("app-header-back")).toBeTruthy();
+    expect(screen.queryByTestId("app-header-title")).toBeNull();
+  });
+
+  // FOUNDER-UX-3 plan AC2/R6: deep-link entries land here with no push
+  // history -- pressing back must fall back to `/(tabs)`, never a bare
+  // `router.back()` that could dead-end.
+  it("[AC2] deep-link fallback: canGoBack() false -> back press replaces to /(tabs), never calls back", async () => {
+    mockCanGoBack.mockReturnValue(false);
+
+    await render(<JoinScreen />);
+    await fireEvent.press(screen.getByTestId("app-header-back"));
+
+    expect(mockReplace).toHaveBeenCalledWith("/(tabs)");
+    expect(mockBack).not.toHaveBeenCalled();
   });
 });

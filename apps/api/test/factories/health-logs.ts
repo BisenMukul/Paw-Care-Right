@@ -1,4 +1,4 @@
-import type { HealthLogKind } from "@pawcareright/types";
+import type { HealthLogKind } from "@bombaypetcompany/types";
 import type { HealthLog, Prisma, PrismaClient, ReminderEvent } from "@prisma/client";
 
 /**

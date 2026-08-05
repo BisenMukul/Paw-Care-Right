@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import type { ActivityType } from "@pawcareright/types";
+import type { ActivityType } from "@bombaypetcompany/types";
 import { Pressable, Text, View } from "react-native";
 
 import { ACTIVITY_TYPE_CONFIG, ACTIVITY_TYPES_ORDER } from "../health-logs/activity-config";

@@ -1,4 +1,4 @@
-import type { BillingEntitlement } from "@pawcareright/types";
+import type { BillingEntitlement } from "@bombaypetcompany/types";
 import { useQuery } from "@tanstack/react-query";
 
 import { apiClient } from "./client";

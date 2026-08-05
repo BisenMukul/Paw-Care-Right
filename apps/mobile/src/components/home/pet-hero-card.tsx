@@ -1,4 +1,4 @@
-import type { Pet } from "@pawcareright/types";
+import type { Pet } from "@bombaypetcompany/types";
 import { Ionicons } from "@expo/vector-icons";
 import { Pressable, Text, View } from "react-native";
 
@@ -36,6 +36,19 @@ const SPECIES_LABEL: Record<Pet["species"], string> = {
  *
  * `testID` stays `home-open-active-pet` -- the C2 checklist + older tests
  * reference it.
+ *
+ * T098 docket 2 fix: the avatar box was `h-20 w-20` (a fixed 80x80 square)
+ * wrapping the name-initial `Text` with no font-scaling guard -- a real
+ * design-system.md §4.5 violation ("No fixed heights on text containers")
+ * that a corrected settle-gate in `dynamic-type.test.tsx` exposed. Capping
+ * the initial's `maxFontSizeMultiplier` instead was considered and rejected:
+ * `dynamic-type.test.tsx`'s `isRealText()` only exempts nodes with font
+ * scaling disabled outright (the Ionicons-ligature case), not merely
+ * font-scale-capped ones, so a capped-but-still-fixed box would still trip
+ * `fixedHeightTextContainers()` -- and rightly so, since the box would still
+ * clip an unusually wide glyph at extreme scales. `min-h-20 min-w-20` is the
+ * doc's own prescribed remedy ("min-heights + flex only"): the circle grows
+ * with the initial instead of clipping it.
  */
 export function PetHeroCard({ pet, onPress }: PetHeroCardProps) {
   const speciesLabel = SPECIES_LABEL[pet.species];
@@ -50,7 +63,7 @@ export function PetHeroCard({ pet, onPress }: PetHeroCardProps) {
     >
       <View
         testID="home-pet-avatar"
-        className="h-20 w-20 items-center justify-center rounded-2xl bg-white/20"
+        className="min-h-20 min-w-20 items-center justify-center rounded-2xl bg-white/20"
       >
         <Text className="text-2xl font-bold text-white font-display">{pet.name.charAt(0).toUpperCase()}</Text>
       </View>

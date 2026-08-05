@@ -2,7 +2,7 @@ import { getQueueToken } from "@nestjs/bullmq";
 import type { INestApplication } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { Test } from "@nestjs/testing";
-import { errorResponseSchema } from "@pawcareright/types";
+import { errorResponseSchema } from "@bombaypetcompany/types";
 import { PrismaClient } from "@prisma/client";
 import type { Job, Queue } from "bullmq";
 import { QueueEvents } from "bullmq";
@@ -91,7 +91,7 @@ describe("Photos (e2e)", () => {
       create: { width: 2000, height: 1500, channels: 3, background: { r: 10, g: 120, b: 200 } },
     })
       .jpeg()
-      .withExif({ IFD0: { Software: "pawcareright-test", Copyright: "t" } })
+      .withExif({ IFD0: { Software: "bombaypetcompany-test", Copyright: "t" } })
       .toBuffer();
   }
 

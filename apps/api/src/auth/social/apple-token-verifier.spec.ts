@@ -5,7 +5,7 @@ import type { JWK, JWTVerifyGetKey, KeyLike } from "jose";
 import type { AppConfigService } from "../../config/app-config.service";
 import { APPLE_ISSUER, AppleTokenVerifier } from "./apple-token-verifier";
 
-const TEST_CLIENT_ID = "com.pawcareright.app";
+const TEST_CLIENT_ID = "com.bombaypetcompany.app";
 const KEY_ID = "test-key-1";
 
 describe("AppleTokenVerifier", () => {

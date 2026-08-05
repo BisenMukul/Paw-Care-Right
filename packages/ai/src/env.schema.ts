@@ -1,10 +1,10 @@
 import { z } from "zod";
-import { defineEnv } from "@pawcareright/config/env";
+import { defineEnv } from "@bombaypetcompany/config/env";
 
 /**
- * Env slice for the `@pawcareright/ai` provider seam. Colocated with the
+ * Env slice for the `@bombaypetcompany/ai` provider seam. Colocated with the
  * providers it configures (mirrors apps/api's env.schema.ts pattern) rather
- * than living in `@pawcareright/config`.
+ * than living in `@bombaypetcompany/config`.
  */
 export const aiEnvSchema = z.object({
   OLLAMA_CLOUD_BASE_URL: z.string().url().default("https://ollama.com"),

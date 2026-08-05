@@ -1,6 +1,6 @@
 import { InjectQueue } from "@nestjs/bullmq";
 import { Inject, Injectable, Logger } from "@nestjs/common";
-import { APP_DISPLAY_NAME } from "@pawcareright/config";
+import { APP_DISPLAY_NAME } from "@bombaypetcompany/config";
 import type { Queue } from "bullmq";
 
 import { PrismaService } from "../prisma/prisma.service";
@@ -26,7 +26,7 @@ export const COLLAPSE_CLAIM_TTL_SECONDS = 3600;
  * spec", CLAUDE §1a Redis prefix).
  */
 export function collapseKey(userId: string, minuteEpoch: number): string {
-  return `pawcareright:push:collapse:${userId}:${minuteEpoch}`;
+  return `bombaypetcompany:push:collapse:${userId}:${minuteEpoch}`;
 }
 
 /**
@@ -44,13 +44,13 @@ interface OutgoingMessage {
 }
 
 /**
- * `PushSenderService` (T057): consumes T056's `pawcareright-push` jobs.
+ * `PushSenderService` (T057): consumes T056's `bombaypetcompany-push` jobs.
  * `sendForEvent` loads the event read-only (no `reminderEvent` write --
  * plan decision 3), collapses same-user same-minute events into one push via
  * an atomic Redis `SETNX` claim (plan "Collapse spec"), batches sends in
  * chunks of `EXPO_PUSH_CHUNK_SIZE` with per-chunk isolation, prunes devices
  * whose ticket is `DeviceNotRegistered` immediately, and defers other
- * tickets to a delayed `pawcareright-push-receipts` job. `checkReceipts`
+ * tickets to a delayed `bombaypetcompany-push-receipts` job. `checkReceipts`
  * polls that job's tickets and prunes on a `DeviceNotRegistered` receipt.
  * Never logs `expoPushToken`/reminder `title`/`type`/`medNameAsEntered` --
  * every log object is id/count-keyed only (plan Safety statement).

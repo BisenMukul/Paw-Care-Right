@@ -1,4 +1,4 @@
-import { ApiError, setOnline } from "@pawcareright/api-client";
+import { ApiError, setOnline } from "@bombaypetcompany/api-client";
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react-native";
 
 import IntakeScreen from "../app/check/[category]";
@@ -155,6 +155,37 @@ describe("check submission flow (app/check/[category])", () => {
       expect(screen.getByText(strings.check.submit.quotaTitle)).toBeTruthy();
     });
     expect(screen.getByText(strings.check.submit.quotaBody)).toBeTruthy();
+  });
+
+  it("T106: 503 (FEATURE_DISABLED) maps to the unavailable state with no retry affordance", async () => {
+    mockMutateAsync.mockRejectedValueOnce(
+      new ApiError({ code: "FEATURE_DISABLED", message: "This feature is temporarily unavailable.", httpStatus: 503, requestId: null }),
+    );
+
+    await render(<IntakeScreen />);
+    await fillAndSubmit();
+
+    await waitFor(() => {
+      expect(screen.getByTestId("check-submit-unavailable")).toBeTruthy();
+    });
+    expect(screen.getByText(strings.check.unavailableTitle)).toBeTruthy();
+    expect(screen.getByText(strings.check.unavailableBody)).toBeTruthy();
+    expect(screen.queryByTestId("check-submit-error-retry")).toBeNull();
+    expect(screen.queryByTestId("check-submit-offline-retry")).toBeNull();
+  });
+
+  it("T106 regression: a PAYMENT_REQUIRED rejection still maps to the quota state (not unavailable)", async () => {
+    mockMutateAsync.mockRejectedValueOnce(
+      new ApiError({ code: "PAYMENT_REQUIRED", message: "Quota exceeded.", httpStatus: 402, requestId: null }),
+    );
+
+    await render(<IntakeScreen />);
+    await fillAndSubmit();
+
+    await waitFor(() => {
+      expect(screen.getByTestId("check-submit-quota")).toBeTruthy();
+    });
+    expect(screen.queryByTestId("check-submit-unavailable")).toBeNull();
   });
 
   it("a generic error shows the error copy with a working retry, reusing the same Idempotency-Key", async () => {

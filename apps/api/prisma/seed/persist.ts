@@ -1,4 +1,4 @@
-import { FAMILY_PLAN_PRODUCT_ID } from "@pawcareright/types";
+import { FAMILY_PLAN_PRODUCT_ID } from "@bombaypetcompany/types";
 import type { Prisma, PrismaClient } from "@prisma/client";
 
 import { buildChecks, type DemoCheckInput } from "./builders/checks";
@@ -107,7 +107,7 @@ export function buildDemo(now: Date): DemoModel {
  * (cascades their Devices/RefreshTokens) — Users must be deleted LAST
  * because `Household.owner` is `onDelete: Restrict`. Every `deleteMany`
  * filters by a fixed demo id or the two demo emails — this NEVER touches
- * `dev@pawcareright.local` or any other non-demo row.
+ * `dev@bombaypetcompany.local` or any other non-demo row.
  */
 export async function wipeDemo(prisma: PrismaClient): Promise<void> {
   await prisma.subscription.deleteMany({ where: { rcAppUserId: { in: [OWNER_USER_ID, FAMILY_USER_ID] } } });

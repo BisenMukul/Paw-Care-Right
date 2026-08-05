@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { foodVerdictSchema } from "@pawcareright/types";
+import { foodVerdictSchema } from "@bombaypetcompany/types";
 
 import { slugSchema } from "../breeds/schema";
 

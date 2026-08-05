@@ -27,7 +27,7 @@ describe("Prisma schema constraints (e2e)", () => {
   });
 
   it("rejects a duplicate User.email", async () => {
-    const email = `test-${randomUUID()}@pawcareright.local`;
+    const email = `test-${randomUUID()}@bombaypetcompany.local`;
     const user = await prisma.user.create({ data: { email, locale: "en", region: "US" } });
 
     try {
@@ -40,7 +40,7 @@ describe("Prisma schema constraints (e2e)", () => {
   });
 
   it("rejects a duplicate Membership (userId, householdId) pair", async () => {
-    const email = `test-${randomUUID()}@pawcareright.local`;
+    const email = `test-${randomUUID()}@bombaypetcompany.local`;
     const user = await prisma.user.create({ data: { email, locale: "en", region: "US" } });
     const household = await prisma.household.create({
       data: { name: "Test Household", ownerId: user.id },
@@ -63,7 +63,7 @@ describe("Prisma schema constraints (e2e)", () => {
   });
 
   it("rejects a duplicate Device.expoPushToken", async () => {
-    const email = `test-${randomUUID()}@pawcareright.local`;
+    const email = `test-${randomUUID()}@bombaypetcompany.local`;
     const user = await prisma.user.create({ data: { email, locale: "en", region: "US" } });
     const expoPushToken = `ExponentPushToken[${randomUUID()}]`;
     const device = await prisma.device.create({

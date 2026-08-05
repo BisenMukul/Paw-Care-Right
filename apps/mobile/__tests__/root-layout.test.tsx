@@ -1,4 +1,5 @@
-import { render, screen, waitFor } from "@testing-library/react-native";
+import { setOnline } from "@bombaypetcompany/api-client";
+import { act, render, screen, waitFor } from "@testing-library/react-native";
 import React from "react";
 
 import RootLayout from "../app/_layout";
@@ -22,8 +23,8 @@ const mockReplace = jest.fn();
 // boundary sits OUTSIDE the provider.
 let mockProviderThrows = false;
 
-jest.mock("@pawcareright/api-client", () => {
-  const actual = jest.requireActual("@pawcareright/api-client");
+jest.mock("@bombaypetcompany/api-client", () => {
+  const actual = jest.requireActual("@bombaypetcompany/api-client");
   const { View } = jest.requireActual<typeof import("react-native")>("react-native");
   return {
     ...actual,
@@ -73,7 +74,18 @@ jest.mock("../src/auth/auth-store", () => {
 });
 
 jest.mock("../src/offline/use-network-listener", () => ({ useNetworkListener: jest.fn() }));
+jest.mock("../src/offline/use-outbox-flush", () => ({ useOutboxFlush: jest.fn() }));
 jest.mock("../src/billing/use-purchases-init", () => ({ usePurchasesInit: jest.fn() }));
+// T107 mechanical consequence: `usePaywallExperimentAssignment` calls
+// `usePaywallConfig()` (real `useQuery`), which needs a real
+// `QueryClientProvider` -- this suite mocks `PersistedApiQueryProvider` down
+// to a passthrough `View` (see above), so the hook is stubbed here exactly
+// like the other side-effect hooks on this line; this suite asserts layout
+// STRUCTURE only and never exercises the paywall experiment itself (see
+// `apps/mobile/__tests__/paywall-experiment-events.test.tsx` for that).
+jest.mock("../src/experiments/use-paywall-experiment-assignment", () => ({
+  usePaywallExperimentAssignment: jest.fn(),
+}));
 jest.mock("../src/components/update-gate", () => {
   const { View } = jest.requireActual<typeof import("react-native")>("react-native");
   return {
@@ -81,11 +93,41 @@ jest.mock("../src/components/update-gate", () => {
   };
 });
 jest.mock("../src/components/upsell-sheet", () => ({ UpsellSheet: () => null }));
+// T114: `<UpdateReadyPrompt/>` now mounts for real in `_layout.tsx` and
+// reaches `useAppConfig()` -> a real `useQuery()`, which needs a genuine
+// QueryClient context this file's `PersistedApiQueryProvider` mock (a bare
+// passthrough View, above) deliberately does not provide -- this file pins
+// layout STRUCTURE only, mirroring the `UpsellSheet`/`UpdateGate` mocks.
+// The stub carries a `testID` (unlike `UpsellSheet`'s bare `() => null`)
+// specifically so a mount assertion below can catch a future regression
+// where `<UpdateReadyPrompt/>` (or its import) is removed from `_layout.tsx`
+// entirely -- checker mutation M5b.
+jest.mock("../src/components/update-ready-prompt", () => {
+  const { View } = jest.requireActual<typeof import("react-native")>("react-native");
+  return { UpdateReadyPrompt: () => <View testID="update-ready-prompt-stub" /> };
+});
+// T115: `<UpgradeRecommendedBanner/>` now mounts for real in `_layout.tsx`
+// and reaches `useUpgradeState()` -> `useAppConfig()` -> a real
+// `useQuery()`, the same reason `<UpdateReadyPrompt/>` above is stubbed
+// (this file pins layout STRUCTURE only). The stub carries a `testID` so a
+// mount assertion below can catch a future regression where
+// `<UpgradeRecommendedBanner/>` (or its import) is removed from
+// `_layout.tsx` entirely (T114 Finding 2 / mutation M5b precedent).
+jest.mock("../src/components/upgrade-recommended-banner", () => {
+  const { View } = jest.requireActual<typeof import("react-native")>("react-native");
+  return { UpgradeRecommendedBanner: () => <View testID="upgrade-recommended-banner-stub" /> };
+});
 
 describe("root layout startup", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockStatus = "restoring";
+  });
+
+  afterEach(async () => {
+    await act(async () => {
+      setOnline(true);
+    });
   });
 
   it("renders the auth splash while restoring, inside a single tree", async () => {
@@ -108,6 +150,32 @@ describe("root layout startup", () => {
     expect(screen.getByTestId("update-gate")).toBeTruthy();
   });
 
+  // T114 (checker Finding 2 / mutation M5b): pins that `<UpdateReadyPrompt/>`
+  // is actually mounted somewhere in the tree -- a future edit that deletes
+  // the component (or its import) from `_layout.tsx` now fails THIS
+  // assertion instead of leaving every gate green.
+  it("mounts <UpdateReadyPrompt/> at the root (T114)", async () => {
+    mockStatus = "signedOut";
+    render(<RootLayout />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("router-stack")).toBeTruthy();
+    });
+    expect(screen.getByTestId("update-ready-prompt-stub")).toBeTruthy();
+  });
+
+  // T115 (T114 Finding 2 / mutation M5b precedent): pins that
+  // `<UpgradeRecommendedBanner/>` is actually mounted somewhere in the tree.
+  it("mounts <UpgradeRecommendedBanner/> at the root (T115)", async () => {
+    mockStatus = "signedOut";
+    render(<RootLayout />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("router-stack")).toBeTruthy();
+    });
+    expect(screen.getByTestId("upgrade-recommended-banner-stub")).toBeTruthy();
+  });
+
   it("shows the readable error fallback even when the QUERY PROVIDER itself throws (boundary is outermost)", async () => {
     jest.spyOn(console, "error").mockImplementation(() => undefined);
     mockProviderThrows = true;
@@ -123,4 +191,37 @@ describe("root layout startup", () => {
     }
   });
 
+  // T094 (plan step 7): the global offline banner + outbox-flush hook.
+  it("the global offline banner mounts above the router stack", async () => {
+    mockStatus = "signedOut";
+    await act(async () => {
+      setOnline(false);
+    });
+
+    render(<RootLayout />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("offline-banner")).toBeTruthy();
+    });
+    expect(screen.getByTestId("router-stack")).toBeTruthy();
+
+    const serialized = JSON.stringify(screen.toJSON());
+    const bannerIndex = serialized.indexOf('"offline-banner"');
+    const stackIndex = serialized.indexOf('"router-stack"');
+    expect(bannerIndex).toBeGreaterThan(-1);
+    expect(stackIndex).toBeGreaterThan(-1);
+    expect(bannerIndex).toBeLessThan(stackIndex);
+  });
+
+  it("the outbox flush hook is mounted once at the root", async () => {
+    mockStatus = "signedOut";
+    render(<RootLayout />);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("router-stack")).toBeTruthy();
+    });
+
+    const { useOutboxFlush } = jest.requireMock<{ useOutboxFlush: jest.Mock }>("../src/offline/use-outbox-flush");
+    expect(useOutboxFlush).toHaveBeenCalled();
+  });
 });

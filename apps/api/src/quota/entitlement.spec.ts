@@ -1,4 +1,4 @@
-import type { BillingEntitlement } from "@pawcareright/types";
+import type { BillingEntitlement } from "@bombaypetcompany/types";
 
 import type { BillingService } from "../billing/billing.service";
 import { BillingEntitlementResolver, entitlementFromBilling } from "./entitlement";

@@ -24,7 +24,7 @@ describe("roleSchema", () => {
 describe("createInviteResponseSchema", () => {
   const valid = {
     code: "AB3DEFGH",
-    deepLink: "pawcareright://join/AB3DEFGH",
+    deepLink: "bombaypetcompany://join/AB3DEFGH",
     expiresAt: "2024-01-08T00:00:00.000Z",
   };
 

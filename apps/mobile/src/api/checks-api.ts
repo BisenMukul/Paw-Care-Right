@@ -1,4 +1,4 @@
-import { isTerminalCheckStatus, type CheckResponse, type CompletedIntake } from "@pawcareright/types";
+import { isTerminalCheckStatus, type CheckResponse, type CompletedIntake } from "@bombaypetcompany/types";
 import type { Query } from "@tanstack/react-query";
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 

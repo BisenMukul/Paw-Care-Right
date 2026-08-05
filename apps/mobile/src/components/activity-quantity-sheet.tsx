@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import type { ActivityType, ActivityUnit } from "@pawcareright/types";
+import type { ActivityType, ActivityUnit } from "@bombaypetcompany/types";
 import { useEffect, useState } from "react";
 import { KeyboardAvoidingView, Modal, Platform, Pressable, Text, TextInput, useColorScheme, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -99,8 +99,8 @@ function UnitChipRow({
             onPress={() => onSelect(option)}
             className={
               isSelected
-                ? "rounded-full bg-brand-700 dark:bg-accent-dark px-4 py-2.5"
-                : "rounded-full border border-brand-100 dark:border-hairline-dark bg-white dark:bg-surface-card-dark px-4 py-2.5"
+                ? "min-h-[44px] justify-center rounded-full bg-brand-700 dark:bg-accent-dark px-4 py-2.5"
+                : "min-h-[44px] justify-center rounded-full border border-brand-100 dark:border-hairline-dark bg-white dark:bg-surface-card-dark px-4 py-2.5"
             }
           >
             <Text
@@ -255,14 +255,24 @@ export function ActivityQuantitySheet({
                 className="rounded-lg border border-brand-100 dark:border-hairline-dark px-4 py-3 text-base text-brand-900 dark:bg-surface-card-dark dark:text-ink-dark"
               />
 
-              <Pressable testID="activity-sheet-written-note" accessibilityRole="button" onPress={onWrittenNote}>
+              <Pressable
+                testID="activity-sheet-written-note"
+                accessibilityRole="button"
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                onPress={onWrittenNote}
+              >
                 <Text className="text-sm font-semibold text-brand-700 dark:text-accent-bright font-body-semibold">
                   {strings.activity.writtenNoteLink}
                 </Text>
               </Pressable>
 
               <View className="flex-row justify-end gap-4">
-                <Pressable testID="activity-sheet-cancel" onPress={handleClose} accessibilityRole="button">
+                <Pressable
+                  testID="activity-sheet-cancel"
+                  onPress={handleClose}
+                  accessibilityRole="button"
+                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                >
                   <Text className="text-base font-semibold text-brand-700 dark:text-accent-bright font-body-semibold">
                     {strings.activity.cancel}
                   </Text>

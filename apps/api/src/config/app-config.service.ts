@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
-import { defineEnv } from "@pawcareright/config/env";
+import { defineEnv } from "@bombaypetcompany/config/env";
+import type { PlatformAppVersions } from "@bombaypetcompany/types";
 
 import { apiEnvSchema, type ApiEnv } from "./env.schema";
 
@@ -83,11 +84,66 @@ export class AppConfigService {
     return this.env.HOTLINE_PACK_VERSION;
   }
 
+  /** T114: empty env value normalises to `null` ("no critical update"). */
+  get criticalOtaVersion(): string | null {
+    return this.env.CRITICAL_OTA_VERSION === "" ? null : this.env.CRITICAL_OTA_VERSION;
+  }
+
+  /** T115: per-platform minimum-version gate (default "0.0.0" on both = no gate). */
+  get minAppVersion(): PlatformAppVersions {
+    return { ios: this.env.MIN_APP_VERSION_IOS, android: this.env.MIN_APP_VERSION_ANDROID };
+  }
+
+  /** T115: per-platform recommended-version gate (default "0.0.0" on both = no gate). */
+  get recommendedAppVersion(): PlatformAppVersions {
+    return {
+      ios: this.env.RECOMMENDED_APP_VERSION_IOS,
+      android: this.env.RECOMMENDED_APP_VERSION_ANDROID,
+    };
+  }
+
+  /** T106: env default for the `checks` kill switch — the Redis override in
+   * `FeatureFlagsService` takes precedence when present. */
+  get featureChecksDefault(): boolean {
+    return this.env.FEATURE_CHECKS === "on";
+  }
+
+  /** T106: env default for the `chat` kill switch. */
+  get featureChatDefault(): boolean {
+    return this.env.FEATURE_CHAT === "on";
+  }
+
+  /** T106: env default for the `paywall` flag (plumbed, not enforced — D7). */
+  get featurePaywallDefault(): boolean {
+    return this.env.FEATURE_PAYWALL === "on";
+  }
+
   get posthogApiKey(): string {
     return this.env.POSTHOG_API_KEY;
   }
 
   get posthogHost(): string {
     return this.env.POSTHOG_HOST;
+  }
+
+  get sentryDsn(): string {
+    return this.env.SENTRY_DSN;
+  }
+
+  get sentryEnvironment(): string {
+    return this.env.SENTRY_ENVIRONMENT ?? this.nodeEnv;
+  }
+
+  get gitSha(): string {
+    return this.env.GIT_SHA;
+  }
+
+  get appVersion(): string {
+    return this.env.APP_VERSION;
+  }
+
+  /** T117: empty = the `/v1/meta/client-versions` admin aggregate is closed (D6). */
+  get adminApiToken(): string {
+    return this.env.ADMIN_API_TOKEN;
   }
 }

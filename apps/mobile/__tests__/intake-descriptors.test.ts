@@ -1,4 +1,4 @@
-import { SYMPTOM_CATEGORIES } from "@pawcareright/types";
+import { SYMPTOM_CATEGORIES } from "@bombaypetcompany/types";
 
 import { getDescriptors, INTAKE_DESCRIPTORS } from "../src/checks/intake-descriptors";
 

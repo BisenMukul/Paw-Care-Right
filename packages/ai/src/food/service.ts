@@ -1,5 +1,5 @@
-import { findToxinEntry, normalizeItem } from "@pawcareright/data";
-import { FOOD_SAFETY_FALLBACK, parseFoodSafetyAnswer, type FoodVerdict, type Species } from "@pawcareright/types";
+import { findToxinEntry, normalizeItem } from "@bombaypetcompany/data";
+import { FOOD_SAFETY_FALLBACK, parseFoodSafetyAnswer, type FoodVerdict, type Species } from "@bombaypetcompany/types";
 
 import { extractJsonCandidate } from "../triage/extract-json";
 import { foodCacheKey } from "./cache";

@@ -1,7 +1,8 @@
-import { APP_DISPLAY_NAME } from "@pawcareright/config";
+import { APP_DISPLAY_NAME } from "@bombaypetcompany/config";
+import type { PaywallVariant } from "@bombaypetcompany/types";
 import * as Linking from "expo-linking";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -14,6 +15,8 @@ import { purchasePackage, restorePurchases } from "../src/billing/purchases";
 import { GhostButton } from "../src/components/ghost-button";
 import { PrimaryButton } from "../src/components/primary-button";
 import { getConfig } from "../src/config";
+import { captureExposure } from "../src/experiments/paywall-experiment";
+import { useResolvedPaywallVariant } from "../src/experiments/use-resolved-paywall-variant";
 import { useLayoutBucket } from "../src/hooks/use-layout-bucket";
 import { strings } from "../src/strings";
 
@@ -67,6 +70,28 @@ export default function PaywallScreen() {
 
   const variant = config?.variant ?? "A";
   const copy = strings.paywall.variants[variant];
+
+  // Exposure (T107 plan step 8a; fix-round F1+F2): the user actually saw an
+  // arm. Fires once per rendered variant -- a `useRef` (not `[]` deps) is
+  // deliberate here, distinct from `paywall_view`'s mount-once effect above,
+  // so a mid-session variant change (R3) is treated as a new exposure
+  // rather than silently hidden. GATED on `resolved` (an AUTHENTICATED
+  // `/v1/config` fetch, `use-resolved-paywall-variant.ts`) so the metric's
+  // denominator never counts the anonymous cold-start fallback variant --
+  // the RENDERED copy above still uses the fail-open `config?.variant ?? "A"`
+  // immediately (no loading state added to the screen itself), because both
+  // read the same shared `["app-config"]` cache entry and settle together.
+  const { variant: resolvedVariant, resolved } = useResolvedPaywallVariant();
+  const exposedVariantRef = useRef<PaywallVariant | null>(null);
+  useEffect(() => {
+    if (!resolved) {
+      return;
+    }
+    if (exposedVariantRef.current !== resolvedVariant) {
+      exposedVariantRef.current = resolvedVariant;
+      captureExposure(resolvedVariant);
+    }
+  }, [resolved, resolvedVariant]);
 
   const annual = offering?.packages.find((p) => p.id === "annual");
   const monthly = offering?.packages.find((p) => p.id === "monthly");
@@ -124,7 +149,12 @@ export default function PaywallScreen() {
       <View className="relative flex-1">
         <ScrollView testID="paywall-scroll" className="flex-1">
           <View className={contentClassName}>
-            <Text testID="paywall-headline" className="text-3xl font-bold text-brand-900 dark:text-ink-dark font-display">
+            <Text
+              testID="paywall-headline"
+              accessibilityRole="header"
+              maxFontSizeMultiplier={1.5}
+              className="text-3xl font-bold text-brand-900 dark:text-ink-dark font-display"
+            >
               {copy.headline(APP_DISPLAY_NAME)}
             </Text>
             <Text testID="paywall-subcopy" className="text-base text-brand-700 dark:text-ink-muted-dark font-body">
@@ -137,7 +167,7 @@ export default function PaywallScreen() {
               </View>
             ) : null}
             {notice === "error" ? (
-              <View testID="paywall-error-notice" className="rounded-2xl bg-red-100 px-4 py-3">
+              <View testID="paywall-error-notice" accessibilityRole="alert" className="rounded-2xl bg-red-100 px-4 py-3">
                 <Text className="text-center text-sm text-red-800">{strings.paywall.error}</Text>
               </View>
             ) : null}
@@ -200,7 +230,7 @@ export default function PaywallScreen() {
                       {monthly.priceString}
                     </Text>
                     <Text testID="paywall-trial-badge" className="text-xs text-brand-700 dark:text-ink-muted-dark font-body">
-                      {strings.paywall.trialCta}
+                      {copy.trialCta}
                     </Text>
                   </Pressable>
                 ) : null}
@@ -264,8 +294,14 @@ export default function PaywallScreen() {
             <PrimaryButton
               testID="paywall-trial-cta"
               label={
+                // Fix-round F4 (pre-existing bug, now duplicated into arm B):
+                // the "then <price>" clause must bind to the RECURRING
+                // price (`monthly.priceString`), never the introductory/
+                // trial price (`introPriceString`, typically "$0.00") --
+                // `introPriceString !== undefined` still gates whether this
+                // package actually HAS a trial to frame at all.
                 monthly.introPriceString !== undefined
-                  ? strings.paywall.trialCtaWithPrice(monthly.introPriceString)
+                  ? copy.trialCtaWithPrice(monthly.priceString)
                   : strings.paywall.subscribeCta(monthly.priceString)
               }
               loading={busyPackageId === monthly.id}

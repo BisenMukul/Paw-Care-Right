@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { REMINDER_TYPES } from "@pawcareright/types";
+import { REMINDER_TYPES } from "@bombaypetcompany/types";
 import { IsBoolean, IsDateString, IsIn, IsOptional, IsString, IsTimeZone, MaxLength } from "class-validator";
 
 import { IsRRule } from "../validators/is-rrule.validator";

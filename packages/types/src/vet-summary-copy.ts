@@ -7,7 +7,7 @@
  * be byte-identical everywhere it is ever rendered is the mandatory
  * disclaimer footer, so it lives here as the single source of truth
  * (mirrors `MEDICATION_STATIC_COPY`'s precedent for safety-critical copy
- * living in `@pawcareright/types`) — the pure builder, the golden-file test,
+ * living in `@bombaypetcompany/types`) — the pure builder, the golden-file test,
  * and any future UI all import the same constant, never a re-typed copy.
  *
  * Constraints on `VET_SUMMARY_DISCLAIMER` (mechanically asserted by

@@ -1,6 +1,6 @@
 import { Text } from "react-native";
 
-import { APP_DISPLAY_NAME } from "@pawcareright/config";
+import { APP_DISPLAY_NAME } from "@bombaypetcompany/config";
 
 export interface AppTitleProps {
   /** `"default"` (unchanged) keeps every existing call site's exact look; `"hero"` is the pre-auth welcome-screen treatment (design-system.md §1.4 display role). */

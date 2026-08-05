@@ -1,4 +1,4 @@
-import { useIsOffline } from "@pawcareright/api-client";
+import { useIsOffline } from "@bombaypetcompany/api-client";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Pressable, Switch, Text, View } from "react-native";
@@ -12,6 +12,7 @@ import { GhostButton } from "../../src/components/ghost-button";
 import { PrimaryButton } from "../../src/components/primary-button";
 import { ScreenScaffold } from "../../src/components/screen-scaffold";
 import { Skeleton } from "../../src/components/skeleton";
+import { useNavBack } from "../../src/hooks/use-nav-back";
 import { strings } from "../../src/strings";
 
 const DEFAULT_TIMEZONE = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -51,6 +52,7 @@ interface RowState {
  */
 export default function CarePlanWizardScreen() {
   const router = useRouter();
+  const onBack = useNavBack("/(tabs)");
   const { petId, localPhoto } = useLocalSearchParams<{ petId: string; localPhoto?: string }>();
   const countryCode = getDeviceRegionCode();
   const { data: suggestions, isLoading, isError, refetch } = useTemplateSuggestions(
@@ -178,7 +180,12 @@ export default function CarePlanWizardScreen() {
   }
 
   return (
-    <ScreenScaffold title={strings.carePlan.title} subtitle={strings.carePlan.subtitle} scrollTestID="care-plan-scroll">
+    <ScreenScaffold
+      title={strings.carePlan.title}
+      subtitle={strings.carePlan.subtitle}
+      scrollTestID="care-plan-scroll"
+      onBack={onBack}
+    >
       {isOffline ? (
         <Text testID="care-plan-offline-banner" className="text-center text-sm text-brand-700">
           {strings.carePlan.offlineBanner}

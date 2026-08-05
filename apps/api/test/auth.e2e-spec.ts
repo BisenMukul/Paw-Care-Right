@@ -3,7 +3,8 @@ import { randomUUID } from "node:crypto";
 import type { INestApplication } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { Test } from "@nestjs/testing";
-import { errorResponseSchema } from "@pawcareright/types";
+import { getStorageToken, type ThrottlerStorageService } from "@nestjs/throttler";
+import { errorResponseSchema } from "@bombaypetcompany/types";
 import { PrismaClient } from "@prisma/client";
 import { Redis } from "ioredis";
 import request from "supertest";
@@ -14,6 +15,46 @@ import { OTP_MAX_ATTEMPTS, RATE_LIMIT_MAX } from "../src/auth/auth.constants";
 import { OTP_TRANSPORT, type OtpTransport } from "../src/auth/otp-transport";
 import { AppConfigService } from "../src/config/app-config.service";
 import { overrideCheckRunner } from "./factories";
+
+/**
+ * T090 follow-up: resets `ThrottlerGuard`'s in-memory per-route rate-limit
+ * counters between test cases in this file. Mirrors this file's existing
+ * `beforeEach` reset of the pre-existing, Redis-backed `OtpRateLimitGuard`
+ * counter (`bombaypetcompany:rl:*`) below -- that reset has no visibility into
+ * the NEW, separate in-memory `ThrottlerGuard` bucket that T090's
+ * `@Throttle(THROTTLE_AUTH)`/`@Throttle(THROTTLE_AUTH_REFRESH)` decorators
+ * add to `verifyOtp`/`refresh`/`logout`. Without this, this file's
+ * cumulative call volume across its many `it()`s (all sharing ONE compiled
+ * app instance/`beforeAll`) would exhaust that 5-or-30-per-60s budget well
+ * before the file finishes, turning later, unrelated assertions into false
+ * `429`s.
+ *
+ * `getStorageToken()` is a normal, non-rewritten DI token (unlike
+ * `APP_GUARD` -- see `breeds.e2e-spec.ts`'s documented note on why
+ * `APP_GUARD`/`ThrottlerGuard` itself can never be `overrideProvider`'d), so
+ * `app.get(getStorageToken())` reliably resolves the SAME
+ * `ThrottlerStorageService` instance `ThrottlerGuard` reads from. `.storage`
+ * is that class's own PUBLIC getter (`get storage(): Map<string,
+ * ThrottlerStorageOptions>` in its `.d.ts`) -- no private field access.
+ * Zeroing `totalHits`/`isBlocked` on every existing entry (rather than
+ * `.clear()`ing the whole Map) is deliberate: the service schedules
+ * internal `setTimeout`s per key that dereference `storage.get(key)` when
+ * they fire; removing a map entry outright would make a still-pending
+ * timeout throw against a since-deleted key. Zeroing counts in place leaves
+ * every entry (and its timers) structurally intact -- this file's own
+ * "6th otp/request from same IP → 429" / OTP-attempt-cap assertions (which
+ * exercise the real limiter's live behavior within a single test) are
+ * unaffected, since the reset only runs BETWEEN tests, in `beforeEach`.
+ */
+function resetThrottlerStorage(app: INestApplication): void {
+  const storage = app.get<ThrottlerStorageService>(getStorageToken());
+  for (const record of storage.storage.values()) {
+    for (const name of record.totalHits.keys()) {
+      record.totalHits.set(name, 0);
+    }
+    record.isBlocked = false;
+  }
+}
 
 class CapturingOtpTransport implements OtpTransport {
   private readonly codes = new Map<string, string>();
@@ -62,14 +103,17 @@ describe("Auth (e2e)", () => {
   beforeEach(async () => {
     // Isolate the per-IP rate-limit counter across tests — supertest can't
     // vary the request IP, so every test would otherwise share one counter.
-    const rateLimitKeys = await redis.keys("pawcareright:rl:*");
+    const rateLimitKeys = await redis.keys("bombaypetcompany:rl:*");
     if (rateLimitKeys.length > 0) {
       await redis.del(...rateLimitKeys);
     }
+    // T090 follow-up: also isolate ThrottlerGuard's own, separate in-memory
+    // per-route counters (see `resetThrottlerStorage`'s doc comment above).
+    resetThrottlerStorage(app);
   });
 
   afterEach(async () => {
-    const otpKeys = await redis.keys("pawcareright:otp:*");
+    const otpKeys = await redis.keys("bombaypetcompany:otp:*");
     if (otpKeys.length > 0) {
       await redis.del(...otpKeys);
     }
@@ -92,7 +136,7 @@ describe("Auth (e2e)", () => {
   });
 
   function uniqueEmail(): string {
-    return `otp-${randomUUID()}@pawcareright.local`;
+    return `otp-${randomUUID()}@bombaypetcompany.local`;
   }
 
   async function requestAndCapture(email: string): Promise<string> {
@@ -177,6 +221,15 @@ describe("Auth (e2e)", () => {
       expect(res.status).toBe(401);
     }
 
+    // This test exercises the OTP business-logic attempt cap
+    // (`OTP_MAX_ATTEMPTS`), a layer independent of T090's transport-level
+    // `THROTTLE_AUTH` (both happen to be 5) -- reset the latter mid-test so
+    // this 6th call to the route reaches the controller/business logic
+    // instead of being 429'd by the guard first (which would correctly
+    // happen for a REAL 6th request within the window; see
+    // `rate-limits.e2e-spec.ts`'s dedicated regression case for THAT proof).
+    resetThrottlerStorage(app);
+
     const finalRes = await request(app.getHttpServer())
       .post("/v1/auth/otp/verify")
       .send({ email, code });
@@ -189,7 +242,7 @@ describe("Auth (e2e)", () => {
     const code = await requestAndCapture(email);
 
     // Simulate TTL expiry by deleting the OTP record directly.
-    const otpKeys = await redis.keys("pawcareright:otp:*");
+    const otpKeys = await redis.keys("bombaypetcompany:otp:*");
     if (otpKeys.length > 0) {
       await redis.del(...otpKeys);
     }

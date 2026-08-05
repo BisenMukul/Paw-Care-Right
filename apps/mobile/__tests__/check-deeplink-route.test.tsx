@@ -3,7 +3,7 @@ import { render } from "@testing-library/react-native";
 import CheckDeepLinkScreen from "../app/checks/[id]";
 
 // T050 plan "Tests to write" -> check-deeplink-route.test.tsx. Asserts the
-// `pawcareright://checks/:id` alias route redirects to the unchanged result
+// `bombaypetcompany://checks/:id` alias route redirects to the unchanged result
 // screen carrying the id. Native scheme->route resolution (the
 // `getInitialURL` mapping) is on-device behavior and is NOT exercised here —
 // it is explicitly deferred (plan Risk 2); this test only covers the

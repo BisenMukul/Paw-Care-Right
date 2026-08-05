@@ -311,7 +311,7 @@ describe("PushSenderService", () => {
 
       await service.sendForEvent(EVENT_ID);
 
-      expect(setNx.mock.calls[0]?.[0]).toBe(`pawcareright:push:collapse:user-1:${minuteEpoch}`);
+      expect(setNx.mock.calls[0]?.[0]).toBe(`bombaypetcompany:push:collapse:user-1:${minuteEpoch}`);
     });
   });
 
@@ -634,7 +634,7 @@ describe("PushSenderService", () => {
     });
 
     it("collapseKey embeds userId and minuteEpoch", () => {
-      expect(collapseKey("user-1", 123)).toBe("pawcareright:push:collapse:user-1:123");
+      expect(collapseKey("user-1", 123)).toBe("bombaypetcompany:push:collapse:user-1:123");
     });
   });
 });

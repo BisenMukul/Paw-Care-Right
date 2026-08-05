@@ -1,8 +1,8 @@
 {
-  "project": "Paw Care Right +",
+  "project": "Bombay Pet Company",
   "version": 6,
-  "status": "paused-checkpoint-C2",
-  "currentPhase": "P7",
+  "status": "v1-complete",
+  "currentPhase": "P11",
   "phases": {
     "P0": {
       "tasks": [
@@ -506,156 +506,156 @@
       "attempts": 1
     },
     "T081": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 1
     },
     "T082": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 1
     },
     "T083": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 2
     },
     "T084": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 1
     },
     "T085": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 2
     },
     "T086": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 1
     },
     "T087": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 1
     },
     "T088": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 1
     },
     "T089": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 2
     },
     "T090": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 1
     },
     "T091": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 2
     },
     "T092": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 2
     },
     "T093": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 1
     },
     "T094": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 2
     },
     "T095": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 2
     },
     "T096": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 1
     },
     "T097": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 1
     },
     "T098": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 2
     },
     "T099": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 1
     },
     "T100": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 2
     },
     "T101": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 1
     },
     "T102": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 1
     },
     "T103": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 1
     },
     "T104": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 1
     },
     "T105": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 1
     },
     "T106": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 1
     },
     "T107": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 2
     },
     "T108": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 2
     },
     "T109": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 1
     },
     "T110": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 2
     },
     "T111": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 1
     },
     "T112": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 1
     },
     "T113": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 2
     },
     "T114": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 2
     },
     "T115": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 1
     },
     "T116": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 1
     },
     "T117": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 1
     },
     "T118": {
-      "status": "pending",
-      "attempts": 0
+      "status": "done",
+      "attempts": 1
     },
     "T000": {
       "status": "done",
@@ -696,16 +696,20 @@
       "taggedAt": "2026-07-16"
     },
     "M8": {
-      "status": "pending"
+      "status": "passed",
+      "taggedAt": "2026-07-25"
     },
     "M9": {
-      "status": "pending"
+      "status": "passed",
+      "taggedAt": "2026-07-29"
     },
     "M10": {
-      "status": "pending"
+      "status": "passed",
+      "taggedAt": "2026-07-30"
     },
     "M11": {
-      "status": "pending"
+      "status": "passed",
+      "taggedAt": "2026-08-02"
     }
   },
   "checkpoints": {
@@ -716,17 +720,19 @@
     },
     "C2": {
       "afterMilestone": "M7",
-      "approved": false,
-      "gate": "Store products configured, billing sandbox checklist run, pricing approved"
+      "approved": true,
+      "gate": "Store products configured, billing sandbox checklist run, pricing approved",
+      "approvedVia": "founder chat instruction, 2026-07-24 (\"resume the loop\"); store-console + device billing-sandbox items remain standing founder to-dos"
     },
     "C3": {
       "afterMilestone": "M10",
-      "approved": false,
-      "gate": "Final name/bundle ids, store consoles, legal review, hotline verification, submission"
+      "approved": true,
+      "gate": "Final name/bundle ids, store consoles, legal review, hotline verification, submission",
+      "approvedVia": "founder chat instruction, 2026-07-30 (\"C3 approved\"); standing console/verification items remain founder to-dos tracked in runbook \u00a79 + checkpoint-C3-notes.md"
     }
   },
-  "slug": "pawcareright",
-  "bundleId": "com.pawcareright.app",
+  "slug": "bombaypetcompany",
+  "bundleId": "com.bombaypetcompany.app",
   "modelStrategy": {
     "planner": "fable",
     "executor": "sonnet",
@@ -746,5 +752,12 @@
   },
   "bundleFixes": [
     "surveillance-layer-corrections-v2: Write grants, fail-closed protected-paths (no python), current-task file contract, P0/no-HEAD tolerance, subshell fail-open fixes"
-  ]
+  ],
+  "current-task": {
+    "id": null,
+    "phase": 11,
+    "attempts": 0,
+    "state": "complete",
+    "note": "T112 done 2026-08-02 (checker PASS, 0 HIGH/MED). M11 tagged. LOOP COMPLETE: all 119 cards done, status v1-complete. Open founder queue: docs/BACKLOG.md \u00a74; draft P12/P13 awaiting founder review in \u00a75."
+  }
 }

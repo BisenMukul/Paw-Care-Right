@@ -53,6 +53,16 @@ enum SubscriptionEntitlement {
   PREMIUM
 }
 
+enum ChatMessageRole {
+  USER
+  ASSISTANT
+}
+
+enum ChatMessageStatus {
+  OK
+  SAFE_FALLBACK
+}
+
 model User {
   id        String   @id @default(uuid())
   email     String   @unique
@@ -62,6 +72,14 @@ model User {
   region    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  // T091 (privacy: consent, export & deletion, plan D5): server-side consent
+  // gate read by `AnalyticsService.captureForUser` -- also force-set true by
+  // `requestDeletion` (D2).
+  analyticsOptOut     Boolean   @default(false)
+  // T091 (plan D2): non-null while a grace-period deletion is pending; a
+  // successful sign-in during the window clears it (`AuthService.issueSession`).
+  // `@@index` below backs the daily sweep's `where: { lte: now } }` scan.
+  deletionScheduledAt DateTime?
 
   ownedHouseholds Household[]       @relation("HouseholdOwner")
   memberships     Membership[]
@@ -72,6 +90,15 @@ model User {
   createdChecks   SymptomCheck[]
   notificationPrefs UserNotificationPrefs?
   subscription    Subscription?
+  chatThreads     ChatThread[]
+  accountExports  AccountExport[]
+  feedbackReports FeedbackReport[]
+  // T108: grants this user received, and grants this user's acceptance/invite
+  // counterparty-side triggered for someone else -- see `ReferralGrant`.
+  referralGrants      ReferralGrant[] @relation("ReferralGrantRecipient")
+  referralGrantsGiven ReferralGrant[] @relation("ReferralGrantCounterparty")
+
+  @@index([deletionScheduledAt])
 }
 
 model Household {
@@ -111,9 +138,20 @@ model Device {
   platform      String
   lastSeenAt    DateTime @default(now())
   createdAt     DateTime @default(now())
+  // T117: reported at JIT push registration only (`POST /v1/devices`), no
+  // new PII (a version string + an EAS update id) — see docs/store-privacy.md
+  // §2. Feeds the coarse `/v1/meta/client-versions` admin aggregate; an
+  // absent field leaves the previously-stored value untouched on update.
+  appVersion    String?
+  otaUpdateId   String?
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+  // T117: the only filter/group column of the `/v1/meta/client-versions`
+  // aggregate query (CLAUDE §6 "every new query pattern gets an index").
+  @@index([lastSeenAt])
+  // T111: backs the admin KPI "devices created per day" bucketed aggregate.
+  @@index([createdAt])
 }
 
 // Per-user notification preferences (T058): per-type on/off + an optional
@@ -167,6 +205,7 @@ model Pet {
   checks            SymptomCheck[]
   reminders         Reminder[]
   healthLogs        HealthLog[]
+  chatThreads       ChatThread[]
 
   @@index([householdId, deletedAt])
 }
@@ -183,6 +222,9 @@ model HouseholdInvite {
   expiresAt   DateTime
   usedAt      DateTime?
   createdAt   DateTime  @default(now())
+
+  // T108: referral grants issued off this invite's acceptance.
+  referralGrants ReferralGrant[]
 
   @@index([householdId])
   @@index([expiresAt])
@@ -218,6 +260,8 @@ model SymptomCheck {
   @@unique([createdById, idempotencyKey])
   @@index([petId, createdAt(sort: Desc)])
   @@index([createdById])
+  // T111: backs the admin KPI "checks created/done/fallback per day" aggregate.
+  @@index([createdAt])
 }
 
 model TriageResult {
@@ -337,9 +381,183 @@ model Subscription {
   household Household @relation(fields: [householdId], references: [id], onDelete: Cascade)
 
   @@index([householdId])
+  // T111: backs the admin KPI "subscriptions updated per day" aggregate.
+  @@index([lastEventAt])
+}
+
+// ReferralGrant (T108 plan D1/D11): a server-side, RC-FREE referral grace
+// window. `acceptInvite` issues up to two rows synchronously (joiner +
+// inviter) inside its existing single-use-claim transaction -- see
+// `ReferralGrantService`. Nothing here ever reads, writes, or derives from
+// `Subscription` -- the AC's "RC entitlement unaffected (server-side grace
+// only)" is implemented by keeping this model and `pickEntitlement`'s grant
+// branch entirely separate from the RC webhook write path. `userId` is
+// `onDelete: Cascade` (T091 erasure: recipient rows die with the user);
+// `counterpartyUserId`/`inviteId` are `onDelete: SetNull` so ANOTHER party's
+// erasure can never revoke a grant this user already earned.
+model ReferralGrant {
+  id                String    @id @default(uuid())
+  userId            String
+  user              User      @relation("ReferralGrantRecipient", fields: [userId], references: [id], onDelete: Cascade)
+  counterpartyUserId String?
+  counterparty      User?     @relation("ReferralGrantCounterparty", fields: [counterpartyUserId], references: [id], onDelete: SetNull)
+  inviteId          String?
+  invite            HouseholdInvite? @relation(fields: [inviteId], references: [id], onDelete: SetNull)
+  startsAt          DateTime
+  expiresAt         DateTime
+  createdAt         DateTime  @default(now())
+
+  @@unique([inviteId, userId])
+  @@index([userId, expiresAt])
+  @@index([counterpartyUserId])
 }
 
 model ProcessedWebhookEvent {
   eventId     String   @id
   processedAt DateTime @default(now())
+
+  // T111: backs the admin KPI "billing events processed per day" aggregate.
+  @@index([processedAt])
+}
+
+// ChatThread/ChatMessage (T081 -- F7 "Ask Bombay Pet Company"). A thread is a
+// per-pet conversation; messages carry role, delivered content, and safety/
+// cost metadata. `content` on an ASSISTANT row is exactly what was released
+// to the client (never a flagged/undelivered span) -- `status` records
+// whether the answer was the model's own text (`OK`) or the fail-upward
+// fallback (`SAFE_FALLBACK`). `nudgeCategory` is set only on the assistant
+// row when the deterministic pre-AI nudge detector fired on the paired user
+// message. No message content is ever logged (see ChatService).
+model ChatThread {
+  id          String        @id @default(uuid())
+  petId       String
+  createdById String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  pet         Pet           @relation(fields: [petId], references: [id], onDelete: Cascade)
+  createdBy   User          @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  messages    ChatMessage[]
+
+  @@index([petId, createdAt(sort: Desc)])
+  @@index([createdById])
+}
+
+model ChatMessage {
+  id            String            @id @default(uuid())
+  threadId      String
+  role          ChatMessageRole
+  content       String
+  status        ChatMessageStatus @default(OK)
+  nudgeCategory String?
+  promptVersion String?
+  modelId       String?
+  costMicroUsd  Int               @default(0)
+  createdAt     DateTime          @default(now())
+  thread        ChatThread        @relation(fields: [threadId], references: [id], onDelete: Cascade)
+
+  @@index([threadId, createdAt])
+}
+
+enum AiAuditSurface {
+  CHECK
+  CHAT
+}
+
+// AI audit log (T090). (a) APPEND-ONLY: written once by `AiAuditService.record`,
+// deleted only in bulk by `AiAuditRetentionService`'s 90-day sweep -- no
+// update path exists anywhere in this codebase. (b) NO FOREIGN KEYS by
+// design: an FK with `onDelete: Cascade` would let a pet/check deletion
+// silently erase the audit trail, and `Restrict` would break T091's
+// deletion cascade -- `checkId`/`threadId` are loose id references,
+// exactly-one-of enforced by the `AiAuditEntry` TS discriminated union
+// (`audit/ai-audit.types.ts`) + a unit test, not a SQL `CHECK` constraint
+// (would create schema.prisma<->DB drift). (c) NO CONTENT COLUMNS, EVER:
+// ids, versions, enumerated flag CODES, and counts only (T089 PII
+// discipline) -- `detectorFlags` is built by a pure function from a closed
+// code set, proven free of `failureReason`/error-message/chat-content
+// passthrough by test.
+enum AccountExportStatus {
+  PENDING
+  DONE
+  FAILED
+}
+
+// AccountExport (T091 plan D6/D4): one row per `POST /me/export` request.
+// `objectKey` is the S3 key the finished bundle was written to
+// (`exports/<userId>/<exportId>.json`); `failureReason` carries a short,
+// content-free reason string on FAILED (no user content, per plan step 20).
+// A daily sweep (`AccountDeletionService.sweep`) purges rows + objects older
+// than `ACCOUNT_EXPORT_RETENTION_DAYS` (D6) -- without this, a full
+// personal-data JSON bundle would sit in S3 forever.
+model AccountExport {
+  id            String              @id @default(uuid())
+  userId        String
+  status        AccountExportStatus @default(PENDING)
+  objectKey     String?
+  failureReason String?
+  requestedAt   DateTime            @default(now())
+  completedAt   DateTime?
+  user          User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, requestedAt(sort: Desc)])
+  @@index([requestedAt])
+}
+
+model AiAuditLog {
+  id            String         @id @default(uuid())
+  surface       AiAuditSurface
+  checkId       String?
+  threadId      String?
+  promptVersion String
+  modelId       String
+  detectorFlags String[]       @default([])
+  costMicroUsd  Int            @default(0)
+  latencyMs     Int?
+  status        String
+  createdAt     DateTime       @default(now())
+
+  // `createdAt` -- the retention sweep's `where createdAt < cutoff order by
+  // createdAt asc`. `checkId`/`threadId` -- per-subject audit lookup (the
+  // only reason an audit log exists).
+  @@index([createdAt])
+  @@index([checkId])
+  @@index([threadId])
+  // T111: backs the admin audit browser's keyset cursor pagination
+  // (`orderBy: [{createdAt: "desc"}, {id: "desc"}]`).
+  @@index([createdAt(sort: Desc), id(sort: Desc)])
+}
+
+enum FeedbackCategory {
+  BUG
+  IDEA
+  OTHER
+}
+
+// FeedbackReport (T104 plan D4/D7/step 4): one row per `POST /v1/feedback`
+// in-app bug report. INVARIANT: `logs` is a closed, free-text-free JSON
+// shape (`FeedbackLogEntry[]`, see `packages/types/src/feedback.ts`) --
+// never an owner's symptom text, a pet's name, or a token (T089 PII
+// posture) -- and `logsConsent === false` implies `logs === []`
+// (`FeedbackService.submit` enforces this server-side; the DTO/schema
+// refine it independently, belt-and-braces). `screenshotKey` (when present)
+// points at `feedback/<userId>/<uuid>.jpg` in S3, erased alongside the row
+// by the T091 account-erasure cascade (`account-erasure.service.ts` +
+// `account-erasure-cascade-completeness.spec.ts`).
+model FeedbackReport {
+  id            String           @id @default(uuid())
+  userId        String
+  category      FeedbackCategory @default(BUG)
+  message       String
+  platform      String
+  appVersion    String
+  logsConsent   Boolean          @default(false)
+  logs          Json             @default("[]")
+  screenshotKey String?
+  sentryEventId String?
+  sentryRelease String?
+  createdAt     DateTime         @default(now())
+  user          User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([createdAt])
 }

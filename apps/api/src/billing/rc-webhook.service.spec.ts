@@ -17,7 +17,7 @@ function buildEnvelope(overrides: Record<string, unknown> = {}) {
       id: "evt_1",
       type: "RENEWAL",
       app_user_id: "user-1",
-      product_id: "pawcareright_monthly",
+      product_id: "bombaypetcompany_monthly",
       expiration_at_ms: Date.parse("2026-08-16T12:00:00.000Z"),
       event_timestamp_ms: Date.parse("2026-07-16T12:00:00.000Z"),
       ...overrides,
@@ -40,9 +40,9 @@ function buildTx(overrides: Partial<TxMock> = {}): TxMock {
   } as TxMock;
 }
 
-function buildAnalytics(overrides: { capture?: jest.Mock } = {}) {
-  const capture = overrides.capture ?? jest.fn();
-  return { analytics: { capture } as unknown as AnalyticsService, capture };
+function buildAnalytics(overrides: { captureForUser?: jest.Mock } = {}) {
+  const captureForUser = overrides.captureForUser ?? jest.fn().mockResolvedValue(undefined);
+  return { analytics: { captureForUser } as unknown as AnalyticsService, capture: captureForUser };
 }
 
 function buildService(
@@ -201,13 +201,13 @@ describe("RcWebhookService.handle", () => {
       const { service } = buildService(tx, { analytics });
 
       await service.handle(
-        buildEnvelope({ type: "INITIAL_PURCHASE", period_type: "TRIAL", product_id: "pawcareright_monthly" }),
+        buildEnvelope({ type: "INITIAL_PURCHASE", period_type: "TRIAL", product_id: "bombaypetcompany_monthly" }),
       );
 
       expect(capture).toHaveBeenCalledTimes(1);
       expect(capture).toHaveBeenCalledWith("user-1", "trial_start", {
         householdId: "household-1",
-        plan: "pawcareright_monthly",
+        plan: "bombaypetcompany_monthly",
       });
     });
 

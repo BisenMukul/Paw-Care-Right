@@ -11,6 +11,8 @@ describe("errorCodeSchema", () => {
       "RATE_LIMITED",
       "PAYMENT_REQUIRED",
       "INTERNAL",
+      "FEATURE_DISABLED",
+      "SERVICE_UNAVAILABLE",
     ]);
   });
 });

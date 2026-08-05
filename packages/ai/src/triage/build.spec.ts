@@ -1,4 +1,4 @@
-import { CONFIDENCE_LEVELS, URGENCY_TIERS, type CompletedIntake } from "@pawcareright/types";
+import { CONFIDENCE_LEVELS, URGENCY_TIERS, type CompletedIntake } from "@bombaypetcompany/types";
 
 import { buildTriagePrompt } from "./build";
 import type { TriagePetContext, TriagePromptInput } from "./types";

@@ -1,4 +1,4 @@
-import { resolveEmergencyPayload, resolveRegionHotline } from "@pawcareright/data";
+import { resolveEmergencyPayload, resolveRegionHotline } from "@bombaypetcompany/data";
 import * as Linking from "expo-linking";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect } from "react";
@@ -9,6 +9,7 @@ import { useCheck } from "../../../src/api/checks-api";
 import { getDeviceRegionCode } from "../../../src/checks/region";
 import { buildVetSearchUrl } from "../../../src/checks/vet-search";
 import { PrimaryButton } from "../../../src/components/primary-button";
+import { recordEmergencySeen } from "../../../src/review/review-state";
 import { strings } from "../../../src/strings";
 
 /**
@@ -31,6 +32,10 @@ export default function EmergencyInterstitialScreen() {
   const hotline = resolveRegionHotline(getDeviceRegionCode());
 
   useEffect(() => {
+    // T109: this interstitial mounting IS the "an emergency happened"
+    // moment (card: "never after emergencies") -- recorded unconditionally
+    // on mount, independent of the back-block below.
+    recordEmergencySeen();
     const sub = BackHandler.addEventListener("hardwareBackPress", () => true);
     return () => sub.remove();
   }, []);

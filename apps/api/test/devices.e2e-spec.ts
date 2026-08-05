@@ -3,7 +3,7 @@ import { randomUUID } from "node:crypto";
 import type { INestApplication } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { Test } from "@nestjs/testing";
-import { errorResponseSchema } from "@pawcareright/types";
+import { errorResponseSchema } from "@bombaypetcompany/types";
 import { PrismaClient } from "@prisma/client";
 import request from "supertest";
 
@@ -171,6 +171,63 @@ describe("Devices (e2e)", () => {
 
     const device = await prisma.device.findUnique({ where: { expoPushToken: token } });
     expect(device?.userId).toBe(user2.id);
+  });
+
+  it("registering with appVersion/otaUpdateId persists them (T117)", async () => {
+    const { bearer } = await createUser("versioned");
+    const token = uniqueToken("versioned");
+    tokens.push(token);
+
+    const res = await request(app.getHttpServer())
+      .post("/v1/devices")
+      .set("Authorization", `Bearer ${bearer}`)
+      .send({ expoPushToken: token, platform: "ios", appVersion: "1.2.3", otaUpdateId: "update-abc" });
+
+    expect(res.status).toBe(200);
+
+    const device = await prisma.device.findUnique({ where: { expoPushToken: token } });
+    expect(device?.appVersion).toBe("1.2.3");
+    expect(device?.otaUpdateId).toBe("update-abc");
+  });
+
+  it("omitting appVersion/otaUpdateId still 200s (T117)", async () => {
+    const { bearer } = await createUser("noversion");
+    const token = uniqueToken("noversion");
+    tokens.push(token);
+
+    const res = await registerDevice(bearer, token);
+
+    expect(res.status).toBe(200);
+  });
+
+  it("an over-long appVersion -> 400 VALIDATION_FAILED (T117)", async () => {
+    const { bearer } = await createUser("overlong");
+    const token = uniqueToken("overlong");
+    tokens.push(token);
+
+    const res = await request(app.getHttpServer())
+      .post("/v1/devices")
+      .set("Authorization", `Bearer ${bearer}`)
+      .send({ expoPushToken: token, platform: "ios", appVersion: "x".repeat(65) });
+
+    expect(res.status).toBe(400);
+    const parsed = errorResponseSchema.parse(res.body);
+    expect(parsed.error.code).toBe("VALIDATION_FAILED");
+  });
+
+  it("a bad-charset otaUpdateId -> 400 VALIDATION_FAILED (T117)", async () => {
+    const { bearer } = await createUser("badcharset");
+    const token = uniqueToken("badcharset");
+    tokens.push(token);
+
+    const res = await request(app.getHttpServer())
+      .post("/v1/devices")
+      .set("Authorization", `Bearer ${bearer}`)
+      .send({ expoPushToken: token, platform: "ios", otaUpdateId: "not a valid id!" });
+
+    expect(res.status).toBe(400);
+    const parsed = errorResponseSchema.parse(res.body);
+    expect(parsed.error.code).toBe("VALIDATION_FAILED");
   });
 
   it("request carrying x-device-token touches lastSeenAt", async () => {

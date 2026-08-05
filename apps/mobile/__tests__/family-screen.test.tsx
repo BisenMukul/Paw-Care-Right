@@ -1,4 +1,5 @@
-import type { HouseholdMe } from "@pawcareright/types";
+import { APP_DISPLAY_NAME } from "@bombaypetcompany/config";
+import type { HouseholdMe } from "@bombaypetcompany/types";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react-native";
 import { Share } from "react-native";
 
@@ -118,7 +119,7 @@ describe("family screen", () => {
     expect(screen.queryByTestId("family-invite-button")).toBeNull();
   });
 
-  it("[AC] invite button creates an invite and shares the returned deep link", async () => {
+  it("[AC] invite button creates an invite and shares the referral message containing the deep link, the app display name and '14 days'", async () => {
     mockedUseHouseholdMe.mockReturnValue({
       data: HOUSEHOLD,
       isLoading: false,
@@ -127,7 +128,7 @@ describe("family screen", () => {
     });
     mockMutateAsync.mockResolvedValue({
       code: "ABCD2345",
-      deepLink: "pawcareright://join/ABCD2345",
+      deepLink: "bombaypetcompany://join/ABCD2345",
       expiresAt: "2099-01-01T00:00:00.000Z",
     });
 
@@ -135,9 +136,48 @@ describe("family screen", () => {
     await fireEvent.press(screen.getByTestId("family-invite-button"));
 
     await waitFor(() => {
-      expect(Share.share).toHaveBeenCalledWith({ message: "pawcareright://join/ABCD2345" });
+      expect(Share.share).toHaveBeenCalledTimes(1);
     });
+    const shareMessage = (Share.share as jest.Mock).mock.calls[0][0].message as string;
+    expect(shareMessage).toContain("bombaypetcompany://join/ABCD2345");
+    expect(shareMessage).toContain(APP_DISPLAY_NAME);
+    expect(shareMessage).toContain("14 days");
+    // Fix round (checker F3): qualified with "up to" -- a capped or
+    // already-subscribed recipient may see no visible benefit, so the
+    // invitee-facing message must not promise the grant unconditionally.
+    expect(shareMessage).toContain("up to 14 days");
+    // §7 copy-hygiene: no medical/diagnostic claim, no dosing, no earnings claim.
+    expect(shareMessage).not.toMatch(/diagnos/i);
+    expect(shareMessage).not.toMatch(/\b(dose|dosage|mg)\b/i);
+    expect(shareMessage).not.toMatch(/\b(earn|cash|money)\b/i);
     expect(screen.queryByTestId("family-invite-error")).toBeNull();
+  });
+
+  it("[AC] referral caption renders for an OWNER", async () => {
+    mockedUseHouseholdMe.mockReturnValue({
+      data: HOUSEHOLD,
+      isLoading: false,
+      isError: false,
+      refetch: mockRefetch,
+    });
+
+    await render(<FamilyScreen />);
+
+    expect(screen.getByTestId("family-referral-caption")).toBeTruthy();
+  });
+
+  it("[AC] no referral caption for a MEMBER", async () => {
+    resetAuthUser("user-member", "member@example.com");
+    mockedUseHouseholdMe.mockReturnValue({
+      data: HOUSEHOLD,
+      isLoading: false,
+      isError: false,
+      refetch: mockRefetch,
+    });
+
+    await render(<FamilyScreen />);
+
+    expect(screen.queryByTestId("family-referral-caption")).toBeNull();
   });
 
   it("shows an invite error when create-invite fails, without calling Share", async () => {

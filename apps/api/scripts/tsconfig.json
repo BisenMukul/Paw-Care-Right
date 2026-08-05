@@ -1,0 +1,10 @@
+{
+  "//": "T103 step 5 -- SEEDER-1 precedent (see apps/api/prisma/seed/tsconfig.json's own \"//\" comment for the full rationale): `tsx` resolves `@bombaypetcompany/*` via THIS project's tsconfig `paths` at RUNTIME, but apps/api/tsconfig.json's own `paths` entry for @bombaypetcompany/analytics deliberately points at its built `.d.ts` declaration file (correct for `tsc`, fatal for `tsx`, which loads whatever `paths` maps to and executes it -- importing a `.d.ts` yields an empty module or a SyntaxError at runtime). This dedicated tsconfig (extended-into via `tsx --tsconfig scripts/tsconfig.json`, see apps/api/package.json's `ops:posthog:dashboards`/`ops:sentry:alerts` scripts) overrides ONLY that one entry to point at the actual runtime-loadable CJS build output (dist/index.cjs). Requires `packages/analytics` to be built first (`dist/index.cjs` must exist) -- guaranteed by turbo's `^build` dependency for `pnpm build`, but running these CLIs directly on a bare fresh checkout must run `pnpm build` (or `pnpm --filter @bombaypetcompany/analytics build`) first.",
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@bombaypetcompany/analytics": ["../../../packages/analytics/dist/index.cjs"]
+    }
+  }
+}

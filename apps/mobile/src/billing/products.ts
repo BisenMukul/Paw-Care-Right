@@ -17,9 +17,9 @@ export const RC_OFFERING_ID = "default" as const;
 
 /** App Store Connect / Play Console product ids (identical on both stores). */
 export const PRODUCT_IDS = {
-  monthly: "pawcareright_monthly",
-  annual: "pawcareright_annual",
-  family: "pawcareright_family_annual",
+  monthly: "bombaypetcompany_monthly",
+  annual: "bombaypetcompany_annual",
+  family: "bombaypetcompany_family_annual",
 } as const;
 
 /**

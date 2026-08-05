@@ -9,6 +9,7 @@ import type {
   Pet,
   Prisma,
   PrismaClient,
+  ReferralGrant,
   Role,
   Species,
   Subscription,
@@ -29,10 +30,10 @@ import { CheckRunnerProcessor } from "../../src/workers/check-runner.processor";
  */
 
 export function uniqueEmail(prefix = "user"): string {
-  return `${prefix}-${randomUUID()}@pawcareright.local`;
+  return `${prefix}-${randomUUID()}@bombaypetcompany.local`;
 }
 
-/** Registers a no-op CheckRunnerProcessor so BullMQ attaches NO live `pawcareright-checks`
+/** Registers a no-op CheckRunnerProcessor so BullMQ attaches NO live `bombaypetcompany-checks`
  *  Worker for this app instance (the explorer keys off @Processor metadata on the resolved
  *  instance's constructor; a plain object has none). Only the T052 lifecycle suite omits this. */
 export function overrideCheckRunner(builder: TestingModuleBuilder): TestingModuleBuilder {
@@ -232,4 +233,52 @@ export async function createSubscription(
   });
 }
 
+/**
+ * T108 referral factory: seeds a `ReferralGrant` row directly (bypassing the
+ * invite-accept flow so grant-math e2e cases can seed a precise history).
+ * `userId` is `onDelete: Cascade` from `User` -- `cleanupUsers`'s existing
+ * `user.deleteMany` cascade removes any row seeded here (recipient side); no
+ * cleanup-ordering change needed. `counterpartyUserId`/`inviteId` are
+ * `onDelete: SetNull`, so a row seeded with a counterparty who is cleaned up
+ * separately survives with that column nulled, not deleted.
+ */
+export async function createReferralGrant(
+  prisma: PrismaClient,
+  args: {
+    userId: string;
+    counterpartyUserId?: string;
+    inviteId?: string;
+    startsAt?: Date;
+    expiresAt?: Date;
+  },
+): Promise<ReferralGrant> {
+  const startsAt = args.startsAt ?? new Date();
+  return prisma.referralGrant.create({
+    data: {
+      userId: args.userId,
+      counterpartyUserId: args.counterpartyUserId ?? null,
+      inviteId: args.inviteId ?? null,
+      startsAt,
+      expiresAt: args.expiresAt ?? new Date(startsAt.getTime() + 14 * 24 * 60 * 60 * 1000),
+    },
+  });
+}
+
 export * from "./health-logs";
+
+/**
+ * T081 chat factory: seeds a `ChatThread` row directly (bypassing the
+ * premium feature-lock so quota/gating e2e cases can seed a thread under a
+ * FREE app instance when needed). `ChatThread` cascades from both `Pet`
+ * (-> Household -> owner) and `User` -- `cleanupUsers`'s existing
+ * `household.deleteMany` cascade already removes any row seeded here, no
+ * cleanup-ordering change needed.
+ */
+export async function createChatThread(
+  prisma: PrismaClient,
+  args: { petId: string; createdById: string },
+): Promise<{ id: string; petId: string; createdById: string }> {
+  return prisma.chatThread.create({
+    data: { petId: args.petId, createdById: args.createdById },
+  });
+}

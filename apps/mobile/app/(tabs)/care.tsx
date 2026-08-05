@@ -1,7 +1,7 @@
-import { useIsOffline } from "@pawcareright/api-client";
-import type { AgendaEntry } from "@pawcareright/types";
+import { useIsOffline } from "@bombaypetcompany/api-client";
+import type { AgendaEntry } from "@bombaypetcompany/types";
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { RefreshControl, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -14,7 +14,11 @@ import { PetFilterChips } from "../../src/components/pet-filter-chips";
 import { PrimaryButton } from "../../src/components/primary-button";
 import { ScreenScaffold } from "../../src/components/screen-scaffold";
 import { Skeleton } from "../../src/components/skeleton";
+import { useOutboxStore } from "../../src/offline/outbox-store";
 import { useActivePetStore } from "../../src/pets/active-pet-store";
+import { maybeRequestReview } from "../../src/review/request-review";
+import { recordReminderEvent } from "../../src/review/review-state";
+import { hasMissedEntry } from "../../src/review/review-trigger";
 import { strings } from "../../src/strings";
 
 /** Agenda window (T060 plan): 30 days out, well within the api's 92-day cap. */
@@ -56,6 +60,7 @@ export default function CareScreen() {
   const router = useRouter();
   const activePetId = useActivePetStore((state) => state.activePetId);
   const isOffline = useIsOffline();
+  const pendingCount = useOutboxStore((state) => state.items.length);
 
   const [selectedPetId, setSelectedPetId] = useState<string | null>(null);
 
@@ -67,9 +72,29 @@ export default function CareScreen() {
   const completeMutation = useCompleteOccurrence();
   const snoozeMutation = useSnoozeOccurrence();
 
+  // T109: resets the completion streak the moment a loaded agenda window
+  // contains a MISSED occurrence -- idempotent (it just re-sets the streak
+  // to 0), runs unconditionally (before any early return, rules-of-hooks),
+  // and is itself a no-op read until `data` resolves.
+  useEffect(() => {
+    if (hasMissedEntry(data?.entries ?? [])) {
+      recordReminderEvent("missed");
+    }
+  }, [data]);
+
   async function handleComplete(entry: AgendaEntry) {
     try {
       await completeMutation.mutateAsync({ reminderId: entry.reminderId, dueAt: entry.dueAt });
+      // T109: a completion counts toward the streak whether it resolved as
+      // a real server entry or the offline `"queued"` result (T094) -- the
+      // mutation resolving at all (not throwing) is "completed" from the
+      // reminder-streak gate's point of view. `decideReview` re-checks the
+      // `% 5` threshold and remains the single source of truth; the `% 5`
+      // here is only to avoid a pointless call on every completion.
+      const streak = recordReminderEvent("completed");
+      if (streak > 0 && streak % 5 === 0) {
+        void maybeRequestReview("reminder-streak");
+      }
     } catch {
       // The mutation's own onError already rolled the optimistic patch back
       // (plan decision 6) -- nothing further to do here.
@@ -83,6 +108,7 @@ export default function CareScreen() {
         dueAt: entry.dueAt,
         snoozeUntil: tomorrowNineAmLocalIso(),
       });
+      recordReminderEvent("snoozed");
     } catch {
       // Same as above.
     }
@@ -141,6 +167,12 @@ export default function CareScreen() {
           className="text-center text-sm text-brand-700"
         >
           {strings.agenda.offlineBanner}
+        </Text>
+      ) : null}
+
+      {pendingCount > 0 ? (
+        <Text testID="agenda-outbox-banner" accessibilityRole="alert" className="text-center text-sm text-brand-700">
+          {strings.agenda.queuedBanner(pendingCount)}
         </Text>
       ) : null}
 

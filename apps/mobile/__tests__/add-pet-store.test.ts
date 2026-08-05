@@ -102,7 +102,7 @@ describe("useAddPetStore", () => {
       useAddPetStore.getState().setField("name", "Rex");
 
       const mmkv = createMMKV();
-      const persistedRaw = mmkv.getString("pawcareright.add-pet-draft");
+      const persistedRaw = mmkv.getString("bombaypetcompany.add-pet-draft");
       expect(persistedRaw).toBeTruthy();
       expect(persistedRaw).toContain("Rex");
 
@@ -113,7 +113,7 @@ describe("useAddPetStore", () => {
       expect(useAddPetStore.getState().draft.name).toBe("Changed-in-memory");
 
       // Simulate relaunch: storage still holds the earlier "Rex" snapshot.
-      mmkv.set("pawcareright.add-pet-draft", persistedRaw as string);
+      mmkv.set("bombaypetcompany.add-pet-draft", persistedRaw as string);
       await useAddPetStore.persist.rehydrate();
 
       const state = useAddPetStore.getState();

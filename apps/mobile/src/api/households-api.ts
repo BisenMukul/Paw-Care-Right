@@ -4,7 +4,7 @@ import type {
   CreateInviteResponse,
   HouseholdMe,
   LeaveHouseholdResponse,
-} from "@pawcareright/types";
+} from "@bombaypetcompany/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { billingKeys } from "./billing-api";
@@ -33,8 +33,11 @@ export function useCreateInvite() {
 /**
  * POST `/v1/households/invites/accept` — joins the caller into the inviting
  * household (JOIN-REPLACES, see `households.service.ts`). Success replaces
- * the caller's household, so both the pets list and the household-members
- * view are invalidated (plan Interfaces §).
+ * the caller's household, so the pets list and the household-members view
+ * are invalidated; T108 also grants a server-side referral entitlement to
+ * both parties at accept time, so billing entitlement is invalidated too
+ * (otherwise the joiner would see a stale FREE entitlement until the next
+ * unrelated refetch).
  */
 export function useAcceptInvite() {
   const queryClient = useQueryClient();
@@ -44,6 +47,7 @@ export function useAcceptInvite() {
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: petsKeys.all });
       void queryClient.invalidateQueries({ queryKey: householdKeys.me });
+      void queryClient.invalidateQueries({ queryKey: billingKeys.entitlement });
     },
   });
 }

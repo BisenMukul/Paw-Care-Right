@@ -1,4 +1,4 @@
-import type { FoodVerdict } from "@pawcareright/types";
+import type { FoodVerdict } from "@bombaypetcompany/types";
 
 import type { ToxinRow } from "./schema";
 import { toxins } from "./index";

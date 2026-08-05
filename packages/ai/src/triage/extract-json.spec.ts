@@ -1,4 +1,4 @@
-import { parseTriage, SAFE_FALLBACK } from "@pawcareright/types";
+import { parseTriage, SAFE_FALLBACK } from "@bombaypetcompany/types";
 
 import { extractJsonCandidate } from "./extract-json";
 

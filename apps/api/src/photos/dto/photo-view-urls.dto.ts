@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { HEALTH_LOG_PHOTO_KEYS_MAX } from "@pawcareright/types";
+import { HEALTH_LOG_PHOTO_KEYS_MAX } from "@bombaypetcompany/types";
 import { ArrayMaxSize, ArrayMinSize, IsArray, IsString } from "class-validator";
 
 /**

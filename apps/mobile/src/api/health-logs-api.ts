@@ -1,4 +1,4 @@
-import type { ActivityType, ActivityUnit, HealthLogKind, VetVisitValue } from "@pawcareright/types";
+import type { ActivityType, ActivityUnit, HealthLogKind, VetVisitValue } from "@bombaypetcompany/types";
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { apiClient } from "./client";

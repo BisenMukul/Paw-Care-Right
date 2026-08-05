@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
-import { SPECIES, URGENCY_TIERS } from "@pawcareright/types";
+import { SPECIES, URGENCY_TIERS } from "@bombaypetcompany/types";
 
 import { RED_FLAG_RULES } from "./rules-table";
 

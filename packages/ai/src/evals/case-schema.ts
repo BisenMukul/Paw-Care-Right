@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { sexSchema, speciesSchema, symptomCategorySchema, urgencySchema } from "@pawcareright/types";
+import { sexSchema, speciesSchema, symptomCategorySchema, urgencySchema } from "@bombaypetcompany/types";
 
 import { RED_FLAG_SIGNS, SIZE_CLASSES } from "../rules";
 
@@ -30,7 +30,7 @@ export const evalCaseInputSchema = z.strictObject({
 });
 export type EvalCaseInput = z.infer<typeof evalCaseInputSchema>;
 
-const kebabIdSchema = z.string().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, "id must be kebab-case");
+export const kebabIdSchema = z.string().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, "id must be kebab-case");
 
 const goldenBaseSchema = z.strictObject({
   id: kebabIdSchema,

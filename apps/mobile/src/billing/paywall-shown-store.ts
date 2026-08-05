@@ -44,7 +44,7 @@ export const usePaywallShownStore = create<PaywallShownState>()(
       },
     }),
     {
-      name: "pawcareright.paywall-shown",
+      name: "bombaypetcompany.paywall-shown",
       storage: createJSONStorage(() => mmkvStorage),
       partialize: (state) => ({ shown: state.shown }),
     },

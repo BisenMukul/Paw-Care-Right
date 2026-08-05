@@ -1,4 +1,4 @@
-import { RRULE_WEEKDAYS, type RRuleWeekday } from "@pawcareright/types";
+import { RRULE_WEEKDAYS, type RRuleWeekday } from "@bombaypetcompany/types";
 import { Pressable, Text, View } from "react-native";
 
 import type { ScheduleConfig, ScheduleFrequency } from "../reminders/schedule-builder";
@@ -66,6 +66,8 @@ export function ScheduleBuilder({ value, onChange }: ScheduleBuilderProps) {
             key={freq}
             testID={`schedule-freq-${freq}`}
             onPress={() => selectFreq(freq)}
+            accessibilityRole="button"
+            accessibilityState={{ selected: value.freq === freq }}
             className={value.freq === freq ? SELECTED_CLASS : UNSELECTED_CLASS}
           >
             {strings.reminderForm.freqLabel(freq)}
@@ -78,6 +80,8 @@ export function ScheduleBuilder({ value, onChange }: ScheduleBuilderProps) {
         <Pressable
           testID="schedule-interval-decrement"
           onPress={() => setInterval(interval - 1)}
+          accessibilityRole="button"
+          accessibilityLabel={strings.reminderForm.intervalDecreaseA11y}
           hitSlop={STEPPER_HIT_SLOP}
           className={UNSELECTED_CLASS}
         >
@@ -89,6 +93,8 @@ export function ScheduleBuilder({ value, onChange }: ScheduleBuilderProps) {
         <Pressable
           testID="schedule-interval-increment"
           onPress={() => setInterval(interval + 1)}
+          accessibilityRole="button"
+          accessibilityLabel={strings.reminderForm.intervalIncreaseA11y}
           hitSlop={STEPPER_HIT_SLOP}
           className={UNSELECTED_CLASS}
         >
@@ -103,6 +109,8 @@ export function ScheduleBuilder({ value, onChange }: ScheduleBuilderProps) {
               key={day}
               testID={`schedule-day-${day}`}
               onPress={() => toggleDay(day)}
+              accessibilityRole="button"
+              accessibilityState={{ selected: (value.byDay ?? []).includes(day) }}
               className={(value.byDay ?? []).includes(day) ? SELECTED_CLASS : UNSELECTED_CLASS}
             >
               {day}
@@ -117,6 +125,8 @@ export function ScheduleBuilder({ value, onChange }: ScheduleBuilderProps) {
           <Pressable
             testID="schedule-monthday-decrement"
             onPress={() => setMonthDay((value.byMonthDay ?? 1) - 1)}
+            accessibilityRole="button"
+            accessibilityLabel={strings.reminderForm.monthDayDecreaseA11y}
             hitSlop={STEPPER_HIT_SLOP}
             className={UNSELECTED_CLASS}
           >
@@ -128,6 +138,8 @@ export function ScheduleBuilder({ value, onChange }: ScheduleBuilderProps) {
           <Pressable
             testID="schedule-monthday-increment"
             onPress={() => setMonthDay((value.byMonthDay ?? 1) + 1)}
+            accessibilityRole="button"
+            accessibilityLabel={strings.reminderForm.monthDayIncreaseA11y}
             hitSlop={STEPPER_HIT_SLOP}
             className={UNSELECTED_CLASS}
           >

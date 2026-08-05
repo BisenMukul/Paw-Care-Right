@@ -25,7 +25,7 @@ describe("useActivePetStore", () => {
     useActivePetStore.getState().setActivePet("pet-B");
 
     const mmkv = createMMKV();
-    const persistedRaw = mmkv.getString("pawcareright.active-pet");
+    const persistedRaw = mmkv.getString("bombaypetcompany.active-pet");
     expect(persistedRaw).toBeTruthy();
     expect(persistedRaw).toContain("pet-B");
 
@@ -36,7 +36,7 @@ describe("useActivePetStore", () => {
     expect(useActivePetStore.getState().activePetId).toBe("pet-other");
 
     // Simulate relaunch: storage still holds the earlier "pet-B" snapshot.
-    mmkv.set("pawcareright.active-pet", persistedRaw as string);
+    mmkv.set("bombaypetcompany.active-pet", persistedRaw as string);
     await useActivePetStore.persist.rehydrate();
 
     expect(useActivePetStore.getState().activePetId).toBe("pet-B");

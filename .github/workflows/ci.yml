@@ -3,9 +3,46 @@ on:
   push:
     branches: [main]
   pull_request:
+  # T116: manual dispatch for the production OTA publish job (OTA_UPDATES
+  # §8.3 — production publishes are human-triggered only). Dispatching with
+  # `confirm_production_publish` left empty runs only the full gate suite;
+  # the `ota-publish-production` job itself stays skipped until a non-empty
+  # value is supplied, and it separately refuses anything that is not
+  # exactly `PUBLISH-PROD`.
+  workflow_dispatch:
+    inputs:
+      confirm_production_publish:
+        description: "Type PUBLISH-PROD exactly to publish to production; leave empty to run gates only."
+        required: false
+        default: ""
+        type: string
+      update_message:
+        description: "Update message, convention Txxx|Mx: summary [critical] — docs/OTA_UPDATES.md §8.4"
+        required: false
+        default: ""
+        type: string
+      api_build_id:
+        description: "Commit sha the production API must already be running (checked against GET /v1/health's buildId)"
+        required: false
+        default: ""
+        type: string
+# T116 (plan D1): both OTA publish jobs live in THIS workflow, not a new one
+# -- `needs:` cannot cross workflows, and the card requires the preview
+# publish to be gated on the full check suite; a separate workflow would
+# have to duplicate every gate (drift hazard) or gate on nothing.
+# T116 (plan D2): the group is now split by event name and cancellation is
+# disabled for workflow_dispatch runs. Under the OLD single
+# `ci-${{ github.ref }}` group + unconditional `cancel-in-progress: true`, a
+# push to main could cancel an in-flight manual production-publish run on
+# the same ref -- including mid-rollout, between `eas update` and
+# `eas channel:rollout`, which would leave an unconstrained (100%) update
+# live with no rollout guard. Both halves below are required: the group
+# split stops a push from targeting the dispatch run's group at all; the
+# `cancel-in-progress` expression stops a SECOND dispatch from cancelling
+# the first.
 concurrency:
-  group: ci-${{ github.ref }}
-  cancel-in-progress: true
+  group: ci-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -13,12 +50,12 @@ jobs:
       postgres:
         image: postgres:16
         env:
-          POSTGRES_USER: pawcareright
-          POSTGRES_PASSWORD: pawcareright
-          POSTGRES_DB: pawcareright
+          POSTGRES_USER: bombaypetcompany
+          POSTGRES_PASSWORD: bombaypetcompany
+          POSTGRES_DB: bombaypetcompany
         ports: ["5432:5432"]
         options: >-
-          --health-cmd "pg_isready -U pawcareright -d pawcareright"
+          --health-cmd "pg_isready -U bombaypetcompany -d bombaypetcompany"
           --health-interval 5s --health-timeout 5s --health-retries 10
       redis:
         image: redis:7
@@ -27,8 +64,22 @@ jobs:
           --health-cmd "redis-cli ping" --health-interval 5s
           --health-timeout 3s --health-retries 10
     env:
-      DATABASE_URL: postgresql://pawcareright:pawcareright@localhost:5432/pawcareright?schema=public
+      DATABASE_URL: postgresql://bombaypetcompany:bombaypetcompany@localhost:5432/bombaypetcompany?schema=public
       REDIS_URL: redis://localhost:6379
+      # T089: GIT_SHA feeds the pinned bombaypetcompany@{version}+{buildId} release
+      # shape (CLAUDE §1a). SENTRY_AUTH_TOKEN is optional — its absence must
+      # never fail CI (D7); the upload step below is gated on its presence.
+      # APP_VERSION mirrors the runtime env var (default "0.0.0" until T099
+      # wires real versioning) so the uploaded source-map release string can
+      # never silently drift from the running app's actual release name
+      # (finding F5) — once T099 sets a repo/environment `vars.APP_VERSION`,
+      # this line needs no further edits. The `|| '0.0.0'` fallback is
+      # load-bearing (review R3): an UNSET repo var renders as the empty
+      # string — not undefined — which would defeat the Zod .default() and
+      # fail every env-validated step in tokenless CI.
+      GIT_SHA: ${{ github.sha }}
+      APP_VERSION: ${{ vars.APP_VERSION || '0.0.0' }}
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -42,13 +93,116 @@ jobs:
       - name: Start MinIO
         run: |
           docker run -d --name minio -p 9000:9000 \
-            -e MINIO_ROOT_USER=pawcareright -e MINIO_ROOT_PASSWORD=pawcareright-dev-secret \
+            -e MINIO_ROOT_USER=bombaypetcompany -e MINIO_ROOT_PASSWORD=bombaypetcompany-dev-secret \
             minio/minio:RELEASE.2024-11-07T00-52-20Z server /data
           for i in $(seq 1 30); do curl -sf http://localhost:9000/minio/health/live && break; sleep 2; done
       - run: pnpm typecheck
       - run: pnpm lint
       - run: pnpm test
+      # T098: coverage gate (api services >= 80% statements, packages/ai >=
+      # 80/80/80/70). Lives in THIS job, not a new one, because (a) the api
+      # coverage run needs postgres+redis+MinIO, all already provisioned
+      # above — a second job would duplicate the whole services block (drift
+      # hazard) and double the infra; (b) it re-runs the api + ai suites
+      # instrumented, a real runtime cost accepted in exchange for that; and
+      # (c) it carries no `if:` — same as every other step here — so it is a
+      # required gate, never silently skippable.
+      - run: pnpm test:cov
       - run: pnpm build
+      # T089 (plan D7): source-map upload is best-effort observability, never
+      # a required gate — it only runs when a real SENTRY_AUTH_TOKEN secret is
+      # configured. Org/project default to the §1a `bombaypetcompany` slugs.
+      - name: Upload API source maps to Sentry
+        if: env.SENTRY_AUTH_TOKEN != ''
+        uses: getsentry/action-release@v1
+        env:
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG || 'bombaypetcompany' }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT || 'bombaypetcompany-api' }}
+        with:
+          environment: production
+          version: "bombaypetcompany@${{ env.APP_VERSION || '0.0.0' }}+${{ github.sha }}"
+          sourcemaps: apps/api/dist
+      - name: Sentry source-map upload skipped
+        if: env.SENTRY_AUTH_TOKEN == ''
+        run: echo "Sentry source-map upload skipped — no SENTRY_AUTH_TOKEN secret" >> "$GITHUB_STEP_SUMMARY"
+  # T113 — per-PR native fingerprint diff (OTA_UPDATES §1: "CI computes and
+  # prints the fingerprint diff on every PR so this is never a surprise").
+  # Informational by construction: it fails only if the tooling itself fails
+  # (missing --base file, tool crash), NEVER because the fingerprint changed
+  # — a changed fingerprint is a legitimate, expected event whose only
+  # consequence is that prior binaries can no longer receive an OTA update.
+  # PR-only (there is no meaningful base-tree diff on a plain push to main).
+  # Costs an extra `pnpm i --frozen-lockfile` in `base-tree`: reusing the
+  # head tree's `node_modules` for the base fingerprint would mask exactly
+  # the native-dep change this job exists to detect (autolinking depends on
+  # what's actually installed), so the base tree gets its own real install.
+  mobile-fingerprint:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: 10.34.3 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      - run: pnpm i --frozen-lockfile
+      - name: Checkout base tree
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          path: base-tree
+      - name: Install base tree
+        working-directory: base-tree
+        run: pnpm i --frozen-lockfile
+      - name: Generate base fingerprints
+        working-directory: base-tree/apps/mobile
+        run: |
+          npx --yes @expo/fingerprint@0.20.5 fingerprint:generate --platform android > "$GITHUB_WORKSPACE/base-android.json"
+          npx --yes @expo/fingerprint@0.20.5 fingerprint:generate --platform ios > "$GITHUB_WORKSPACE/base-ios.json"
+      # `set -o pipefail`: the default `bash -e {0}` run shell does NOT set
+      # pipefail, so `cmd | tee -a "$GITHUB_STEP_SUMMARY"` would report the
+      # pipeline's exit status as tee's (always 0), silently masking a real
+      # script failure behind a green step -- exactly the `|| true`-style
+      # masking `ota-config.test.ts` forbids in the script itself. pipefail
+      # makes the step's own exit status the fingerprint-diff.sh status,
+      # while a *changed* fingerprint still legitimately exits 0 (D8).
+      # No `--` before the script's own flags: `pnpm run <script> -- --flag`
+      # forwards a literal `--` on this pnpm major version, which the script
+      # (correctly) used to reject as an unknown argument -- flags are passed
+      # directly, and the script is additionally hardened to tolerate a `--`
+      # if it does appear (defense in depth for other pnpm versions).
+      - name: Fingerprint diff (android)
+        working-directory: apps/mobile
+        run: |
+          set -o pipefail
+          {
+            echo '### Fingerprint diff — android'
+            echo '```json'
+            pnpm ota:fingerprint --base "$GITHUB_WORKSPACE/base-android.json" --platform android --out-dir "$GITHUB_WORKSPACE"
+            echo '```'
+          } | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Fingerprint diff (ios)
+        working-directory: apps/mobile
+        run: |
+          set -o pipefail
+          {
+            echo '### Fingerprint diff — ios'
+            echo '```json'
+            pnpm ota:fingerprint --base "$GITHUB_WORKSPACE/base-ios.json" --platform ios --out-dir "$GITHUB_WORKSPACE"
+            echo '```'
+          } | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Upload fingerprint artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-fingerprints-${{ github.run_id }}
+          path: |
+            base-android.json
+            base-ios.json
+            current-android.json
+            current-ios.json
+          retention-days: 30
+          if-no-files-found: warn
   # AI eval gate — activated at T040. Fake provider: deterministic, keyless,
   # threshold-enforcing (packages/ai harness). Report uploaded as an artifact.
   ai-evals:
@@ -72,3 +226,320 @@ jobs:
           path: loop/eval-reports/*.md
           retention-days: 30
           if-no-files-found: warn
+  # T118: OTA_UPDATES §8.2 -- "No OTA may weaken Safety Policy surfaces:
+  # <VetDisclaimer/> presence snapshots ... are required-green for the
+  # publish job specifically." This is its own JOB (not a step inside
+  # `build` or inside `ai-evals`) because in GitHub Actions a *check* is a
+  # JOB: `needs:` cannot reference a step, and branch protection cannot
+  # require a step -- only a named job can be both listed in `needs:` and
+  # marked a required status check. It is deliberately UNCONDITIONAL (no
+  # job-level `if:`): a job-level `if:` would make it event-scoped, and a
+  # `needs:` target that is skipped on push-to-main would silently skip
+  # `ota-publish-preview` forever (the T116 `mobile-fingerprint` trap, in
+  # reverse -- that job is event-scoped precisely so it is NOT in `needs:`).
+  # `--ci` is load-bearing: without it, jest WRITES a missing/deleted
+  # snapshot and passes; with it, a missing snapshot fails loud instead of
+  # silently self-healing inside the gate.
+  safety-vet-disclaimer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: 10.34.3 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      - run: pnpm i --frozen-lockfile
+      - name: VetDisclaimer presence snapshots + placement inventory
+        run: |
+          set -euo pipefail
+          pnpm --filter @bombaypetcompany/mobile exec jest --ci __tests__/check-result-snapshot.test.tsx __tests__/chat-screen-snapshot.test.tsx __tests__/breed-guide-sections.test.tsx __tests__/disclaimer-placement-scan.test.ts
+  # T118: OTA_UPDATES §8.2's other named surface -- "Emergency interstitial
+  # flow tests are required-green for the publish job specifically." Same
+  # rationale as `safety-vet-disclaimer` above: a dedicated job (not a step)
+  # so it is independently nameable in `needs:` and in branch protection,
+  # deliberately unconditional for the same T116 `mobile-fingerprint`-in-
+  # reverse reason, and `--ci` for the same missing-snapshot/self-heal
+  # reason (the paywall-exclusion and check-submission-routing suites here
+  # are plain assertions rather than snapshots, but the invocation is
+  # identical to its sibling job for consistency).
+  safety-emergency-interstitial:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: 10.34.3 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      - run: pnpm i --frozen-lockfile
+      - name: Emergency interstitial flow tests
+        run: |
+          set -euo pipefail
+          pnpm --filter @bombaypetcompany/mobile exec jest --ci __tests__/emergency-interstitial.test.tsx __tests__/paywall-emergency-safety.test.tsx __tests__/check-submission.test.tsx
+  # T095: web performance/SEO budgets. This job is a REQUIRED gate (the card's
+  # AC is "CI budget job green"), so unlike T089's Sentry upload it is never
+  # skipped. It needs no secret and no external service: Chrome is preinstalled
+  # on ubuntu-latest, lhci collects against a locally served build, and the
+  # report is kept as a workflow artifact instead of lhci's cloud upload.
+  web-perf-budget:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: 10.34.3 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      - run: pnpm i --frozen-lockfile
+      - run: pnpm --filter @bombaypetcompany/web build
+      - name: Collect Lighthouse runs
+        run: pnpm --filter @bombaypetcompany/web exec lhci collect --config=./lighthouserc.json
+      - name: Assert performance + SEO budgets
+        run: pnpm --filter @bombaypetcompany/web exec lhci assert --config=./lighthouserc.json
+      - name: Upload Lighthouse reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-${{ github.run_id }}
+          # `pnpm --filter @bombaypetcompany/web exec` runs lhci with its cwd set
+          # to apps/web (verified empirically), so lhci's `.lighthouseci/`
+          # report directory lands there, not at the repo root.
+          path: apps/web/.lighthouseci/
+          retention-days: 30
+          if-no-files-found: warn
+  # T098: Playwright web E2E smoke (landing + one toxic food page). REQUIRED
+  # gate, following the T095 web-perf-budget pattern exactly: unconditional
+  # (no `if:` at job or step level), no secret needed.
+  web-e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: 10.34.3 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      - run: pnpm i --frozen-lockfile
+      - run: pnpm --filter @bombaypetcompany/web build
+      - run: npx playwright install --with-deps chromium
+      - run: pnpm --filter @bombaypetcompany/web test:e2e
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ github.run_id }}
+          path: apps/web/playwright-report/
+          retention-days: 30
+          if-no-files-found: warn
+  # T096: security gates. REQUIRED (the card's AC is a "`pnpm audit`-gated CI
+  # step"), so — unlike T089's Sentry upload — neither step is ever skipped and
+  # neither is gated on a secret. `--audit-level high` fails the job on high +
+  # critical only; suppressions live in root package.json's
+  # `pnpm.auditConfig.ignoreGhsas`, each justified + expiry-dated in
+  # docs/security/audit-allowlist.json (kept in sync by a test).
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: 10.34.3 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      # --ignore-scripts: this job never builds or runs the app, so prisma
+      # generate & friends are pure cost. The install exists only so `pnpm
+      # audit` resolves the workspace tree exactly as a developer would see it.
+      - run: pnpm i --frozen-lockfile --ignore-scripts
+      - name: Dependency audit (fails on high + critical)
+        run: pnpm audit --audit-level high
+      - name: Secrets scan (tracked files)
+        run: node scripts/scan-secrets.js --tracked
+  # T116: preview channel auto-publishes on every push to main, AFTER the
+  # full CI gate suite (OTA_UPDATES §1: "auto-publish on push to main (CI)";
+  # §8.1: "every OTA publish passes the full CI gate suite").
+  #
+  # `mobile-fingerprint` is deliberately ABSENT from `needs:` below: that job
+  # runs `if: github.event_name == 'pull_request'` (see the `mobile-fingerprint`
+  # job above), so on a push to main it is always SKIPPED -- and in GitHub
+  # Actions, a job whose `needs:` target was skipped is itself skipped.
+  # Including it here would silently prevent this job from EVER running on a
+  # push to main. `apps/mobile/__tests__/ota-publish-ci.test.ts` pins this
+  # exemption and proves it is not abusable (every exempted job must itself
+  # be genuinely event-scoped).
+  #
+  # T118: added `safety-vet-disclaimer` and `safety-emergency-interstitial`
+  # to `needs:` below -- both carry no job-level `if:` (unlike
+  # `mobile-fingerprint`), so, unlike that job, they are safe to include here
+  # and run on every push to main.
+  ota-publish-preview:
+    needs: [build, ai-evals, safety-vet-disclaimer, safety-emergency-interstitial, web-perf-budget, web-e2e, security]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    env:
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: 10.34.3 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      # T116 (plan D6): unconditional -- no token needed, so the update
+      # message convention has teeth on every push to main, even in a
+      # tokenless environment (this sandbox, forks).
+      - name: Lint update message
+        id: message
+        env:
+          COMMIT_SUBJECT: ${{ github.event.head_commit.message }}
+        run: |
+          set -euo pipefail
+          MESSAGE="$(node scripts/lint-update-message.js --from-commit "$COMMIT_SUBJECT")"
+          node scripts/lint-update-message.js --message "$MESSAGE"
+          echo "message=$MESSAGE" >> "$GITHUB_OUTPUT"
+      # T116 (plan D5): a full install is only needed for the real `eas
+      # update` call, so it is gated on EXPO_TOKEN too -- tokenless runs stay
+      # cheap.
+      - if: env.EXPO_TOKEN != ''
+        run: pnpm i --frozen-lockfile
+      - name: Publish OTA update (preview)
+        if: env.EXPO_TOKEN != ''
+        working-directory: apps/mobile
+        env:
+          MESSAGE: ${{ steps.message.outputs.message }}
+        run: |
+          set -euo pipefail
+          npx --yes eas-cli@latest update --branch preview --message "$MESSAGE" --non-interactive
+      - name: Preview OTA publish skipped — no EXPO_TOKEN
+        if: env.EXPO_TOKEN == ''
+        env:
+          MESSAGE: ${{ steps.message.outputs.message }}
+        run: |
+          echo "Preview OTA publish skipped — no EXPO_TOKEN secret configured. Message that would have published: $MESSAGE" >> "$GITHUB_STEP_SUMMARY"
+  # T116: production publish is manual-dispatch ONLY (OTA_UPDATES §8.3 --
+  # human-triggered, never reachable by the autonomous loop; §5.3 -- the API
+  # must already be deployed to the commit this update expects, checked by
+  # the pre-flight step below; §6 -- every production publish is immediately
+  # constrained to a 10% rollout).
+  ota-publish-production:
+    needs: [build, ai-evals, safety-vet-disclaimer, safety-emergency-interstitial, web-perf-budget, web-e2e, security]
+    if: github.event_name == 'workflow_dispatch' && inputs.confirm_production_publish != ''
+    runs-on: ubuntu-latest
+    env:
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      # T116 (review R3 lesson, carried from T089): an UNSET repo variable
+      # renders as the empty string, not undefined -- the `|| '…'` fallback
+      # is mandatory or the pre-flight curl would hit an empty URL.
+      PROD_API_URL: ${{ vars.PROD_API_URL || 'https://api.bombaypetcompany.app' }}
+    steps:
+      # The refusal guard: a dispatch with ANYTHING other than the exact
+      # string `PUBLISH-PROD` fails loudly here, before any checkout/install/
+      # publish work happens. Strict equality, no trimming (documented in
+      # the input's own description above).
+      - name: Confirm production publish
+        env:
+          CONFIRMATION: ${{ inputs.confirm_production_publish }}
+        run: |
+          set -euo pipefail
+          if [ "${CONFIRMATION:-}" != "PUBLISH-PROD" ]; then
+            echo "refusing production publish: confirmation input must be exactly PUBLISH-PROD (got '${CONFIRMATION:-}')" >&2
+            exit 1
+          fi
+          echo "confirmed: PUBLISH-PROD" >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: 10.34.3 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: pnpm }
+      # Unconditional here (unlike preview): this job only ever runs on a
+      # confirmed dispatch, so the install cost is always warranted.
+      - run: pnpm i --frozen-lockfile
+      - name: Require EXPO_TOKEN
+        if: env.EXPO_TOKEN == ''
+        run: |
+          echo "refusing production publish: no EXPO_TOKEN secret configured" >&2
+          exit 1
+      - name: Lint update message
+        id: message
+        env:
+          MESSAGE: ${{ inputs.update_message }}
+        run: |
+          set -euo pipefail
+          node scripts/lint-update-message.js --message "$MESSAGE"
+          echo "message=$MESSAGE" >> "$GITHUB_OUTPUT"
+      # OTA_UPDATES §5.3: deploy backend first, then OTA publish -- the
+      # promote job checks GET /health includes the required API build id.
+      # Note the /v1/ prefix (app.setup.ts sets a global "v1" prefix).
+      - name: Pre-flight API build check
+        env:
+          REQUIRED_API_BUILD_ID: ${{ inputs.api_build_id }}
+        run: |
+          set -euo pipefail
+          BODY="$(curl -sS --fail-with-body --max-time 20 "$PROD_API_URL/v1/health")"
+          node scripts/check-api-build.js --body "$BODY" --expect "$REQUIRED_API_BUILD_ID"
+      # `set -o pipefail` is required here (T113 F2): the default GitHub
+      # Actions `bash -e {0}` run shell does NOT set pipefail, so
+      # `cmd | tee file` would report `tee`'s exit status (always 0),
+      # silently masking a real `eas update` failure behind a green step.
+      - name: Publish OTA update (production)
+        working-directory: apps/mobile
+        env:
+          MESSAGE: ${{ steps.message.outputs.message }}
+        run: |
+          set -o pipefail
+          npx --yes eas-cli@latest update --branch production --message "$MESSAGE" --non-interactive --json | tee "$GITHUB_WORKSPACE/eas-update.json"
+      - name: Constrain rollout to 10%
+        working-directory: apps/mobile
+        run: |
+          set -euo pipefail
+          npx --yes eas-cli@latest channel:rollout production --action create --branch production --percent 10 --non-interactive
+      - name: Rollout playbook
+        run: |
+          set -uo pipefail
+          UPDATE_ID="$(node -e "
+            try {
+              const fs = require('fs');
+              const raw = fs.readFileSync(process.env.GITHUB_WORKSPACE + '/eas-update.json', 'utf8');
+              const parsed = JSON.parse(raw);
+              const first = Array.isArray(parsed) ? parsed[0] : parsed;
+              process.stdout.write(((first && (first.id || first.group)) || '') + '\n');
+            } catch (e) {
+              process.stdout.write('\n');
+            }
+          " 2>/dev/null || echo "")"
+          {
+            echo "### OTA production publish — rollout playbook"
+            if [ -n "$UPDATE_ID" ]; then
+              echo "Published update id: $UPDATE_ID"
+            else
+              echo "Published update id could not be read automatically — check the 'Publish OTA update (production)' step's JSON output above and paste the update id here manually."
+            fi
+            echo ""
+            echo "Promotion commands (see docs/OTA_UPDATES.md §6 for criteria and minimum dwell times):"
+            echo "npx eas-cli@latest channel:rollout production --action edit --percent 50 --non-interactive"
+            echo "npx eas-cli@latest channel:rollout production --action edit --percent 100 --non-interactive"
+            echo "npx eas-cli@latest channel:rollout production --action end --non-interactive"
+            echo ""
+            echo "Halt command (stop the rollout without promoting further):"
+            echo "npx eas-cli@latest channel:rollout production --action end --non-interactive"
+            echo ""
+            echo "Rollback command (republish the previous known-good update group):"
+            echo "npx eas-cli@latest update:republish --branch production --group <previous-known-good-group-id> --non-interactive"
+          } >> "$GITHUB_STEP_SUMMARY"
+      # T116 (plan D3c): [critical] in the message is a human/dashboard
+      # convention only -- it does NOT reach the app (D3 descopes the
+      # manifest-marker publish path; see update-controller.ts's doc
+      # comment). This is the actual, authoritative follow-up.
+      - name: Critical follow-up (set /config.criticalOtaVersion)
+        if: contains(steps.message.outputs.message, '[critical]')
+        run: |
+          echo "### [critical] publish detected — mandatory follow-up" >> "$GITHUB_STEP_SUMMARY"
+          echo "A [critical] message does NOT prompt users by itself. To actually prompt users, set CRITICAL_OTA_VERSION to the new update id on the API and redeploy -- /config.criticalOtaVersion is the authoritative signal (docs/OTA_UPDATES.md §3, D3)." >> "$GITHUB_STEP_SUMMARY"
+      - name: Halt and rollback commands (failure)
+        if: failure()
+        run: |
+          {
+            echo "### Production OTA publish FAILED — halt and rollback"
+            echo "Halt command:"
+            echo "npx eas-cli@latest channel:rollout production --action end --non-interactive"
+            echo ""
+            echo "Rollback command (republish the previous known-good update group):"
+            echo "npx eas-cli@latest update:republish --branch production --group <previous-known-good-group-id> --non-interactive"
+            echo ""
+            echo "Verify what actually shipped:"
+            echo "npx eas-cli@latest update:list --branch production --non-interactive"
+          } >> "$GITHUB_STEP_SUMMARY"

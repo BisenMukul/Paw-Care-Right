@@ -1,4 +1,4 @@
-import type { CompletedIntake } from "@pawcareright/types";
+import type { CompletedIntake } from "@bombaypetcompany/types";
 
 /**
  * Flattens every `photoPrompt` answer's `photoKeys` across a completed

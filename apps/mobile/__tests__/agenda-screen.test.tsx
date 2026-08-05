@@ -1,5 +1,5 @@
-import { ApiError, createQueryClient, setOnline } from "@pawcareright/api-client";
-import { petIdSchema, type AgendaEntry, type AgendaResponse, type Pet } from "@pawcareright/types";
+import { ApiError, createQueryClient, setOnline } from "@bombaypetcompany/api-client";
+import { petIdSchema, type AgendaEntry, type AgendaResponse, type Pet } from "@bombaypetcompany/types";
 import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react-native";
 import { QueryClientProvider, type QueryClient } from "@tanstack/react-query";
 import type { ReactNode } from "react";
@@ -7,6 +7,7 @@ import React from "react";
 
 import CareScreen from "../app/(tabs)/care";
 import { apiClient } from "../src/api/client";
+import { useOutboxStore } from "../src/offline/outbox-store";
 import { useActivePetStore } from "../src/pets/active-pet-store";
 import { strings } from "../src/strings";
 
@@ -143,6 +144,7 @@ describe("Care agenda screen", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     useActivePetStore.getState().clear();
+    useOutboxStore.getState().clear();
   });
 
   afterEach(async () => {
@@ -213,6 +215,39 @@ describe("Care agenda screen", () => {
 
     expect(screen.getByTestId("agenda-offline-banner")).toBeTruthy();
     expect(screen.getByTestId(rowTestId)).toBeTruthy();
+  });
+
+  // T094 (plan step 4 AC2 screen-level test): offline reminder completion
+  // enqueues into the outbox instead of POSTing, and the screen shows BOTH
+  // the connectivity banner and the pending-sync line -- no error state.
+  it("offline: marking a reminder done shows the row as done and the pending-sync line", async () => {
+    const entry = scheduledEntry();
+    const dueAtMs = new Date(entry.dueAt).getTime();
+    const completeTestId = `agenda-item-complete-${entry.reminderId}-${dueAtMs}`;
+    const statusTestId = `agenda-item-status-${entry.reminderId}-${dueAtMs}`;
+    mockGetRouting(() => Promise.resolve(buildAgenda([entry])));
+
+    await renderScreen();
+
+    await waitFor(() => {
+      expect(screen.getByTestId(completeTestId)).toBeTruthy();
+    });
+
+    await act(async () => {
+      setOnline(false);
+    });
+
+    await fireEvent.press(screen.getByTestId(completeTestId));
+
+    await waitFor(() => {
+      expect(screen.getByTestId(statusTestId)).toBeTruthy();
+    });
+
+    expect(screen.getByTestId("agenda-outbox-banner")).toBeTruthy();
+    expect(screen.getByTestId("agenda-offline-banner")).toBeTruthy();
+    expect(screen.queryByTestId("agenda-error")).toBeNull();
+    expect(mockedPost).not.toHaveBeenCalled();
+    expect(useOutboxStore.getState().items).toHaveLength(1);
   });
 
   it("empty: no entries -> shows agenda-empty (with its value-preview body)", async () => {
@@ -429,5 +464,18 @@ describe("Care agenda screen", () => {
       expect(screen.queryByTestId("agenda-new")).toBeNull();
       expect(screen.queryByTestId("agenda-care-plan")).toBeNull();
     });
+  });
+
+  // FOUNDER-UX-3 plan AC4: tab roots keep their large in-content title and
+  // never render the canon `AppHeader` (no back affordance on a root tab).
+  it("[AC4] renders no app-header (care tab root unchanged)", async () => {
+    mockGetRouting(() => Promise.resolve(buildAgenda([])), []);
+
+    await renderScreen();
+
+    await waitFor(() => {
+      expect(screen.getByTestId("agenda-empty")).toBeTruthy();
+    });
+    expect(screen.queryByTestId("app-header")).toBeNull();
   });
 });

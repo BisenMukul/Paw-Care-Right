@@ -3,7 +3,7 @@ import { billingEntitlementSchema, entitlementSourceSchema, FAMILY_PLAN_PRODUCT_
 const VALID_PAYLOAD = {
   entitled: true,
   source: "own",
-  plan: "pawcareright_monthly",
+  plan: "bombaypetcompany_monthly",
   expiresAt: "2026-08-01T00:00:00.000Z",
   billingIssue: false,
 };
@@ -45,13 +45,30 @@ describe("billingEntitlementSchema", () => {
 });
 
 describe("entitlementSourceSchema", () => {
-  it.each(["own", "family", "none"])("accepts %p", (value) => {
+  it.each(["own", "family", "grant", "none"])("accepts %p", (value) => {
     expect(entitlementSourceSchema.parse(value)).toBe(value);
+  });
+
+  it("rejects a bad source", () => {
+    expect(entitlementSourceSchema.safeParse("premium").success).toBe(false);
+  });
+});
+
+describe("billingEntitlementSchema with source: 'grant' (T108)", () => {
+  it("parses a referral-grant entitlement payload", () => {
+    const payload = {
+      entitled: true,
+      source: "grant",
+      plan: null,
+      expiresAt: "2026-08-13T00:00:00.000Z",
+      billingIssue: false,
+    };
+    expect(billingEntitlementSchema.parse(payload)).toEqual(payload);
   });
 });
 
 describe("FAMILY_PLAN_PRODUCT_ID", () => {
   it("pins the exact server-side family product id (must match mobile PRODUCT_IDS.family)", () => {
-    expect(FAMILY_PLAN_PRODUCT_ID).toBe("pawcareright_family_annual");
+    expect(FAMILY_PLAN_PRODUCT_ID).toBe("bombaypetcompany_family_annual");
   });
 });

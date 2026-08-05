@@ -1,4 +1,4 @@
-import { MEDICATION_STATIC_COPY, type TriageResult } from "@pawcareright/types";
+import { MEDICATION_STATIC_COPY, type TriageResult } from "@bombaypetcompany/types";
 
 import { scanUnsafe } from "./detector";
 
@@ -6,7 +6,7 @@ import { scanUnsafe } from "./detector";
  * Detector-reuse lint test (T061 plan decision 7 / AC2 -- CLAUDE §7 rule 2,
  * the med tracker RECORDS, never suggests). Scans every user-facing
  * medication-tracker string, sourced from the `MEDICATION_STATIC_COPY` SSOT
- * in `@pawcareright/types` (the exact strings `apps/mobile/src/strings.ts`
+ * in `@bombaypetcompany/types` (the exact strings `apps/mobile/src/strings.ts`
  * renders -- no drift), through the REAL T038 `scanUnsafe` -- not a
  * re-implementation -- and asserts zero findings. A positive control (a
  * deliberately planted bad string) proves this spec is non-vacuous: if the

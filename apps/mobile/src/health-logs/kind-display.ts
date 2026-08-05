@@ -1,4 +1,4 @@
-import type { HealthLogKind } from "@pawcareright/types";
+import type { HealthLogKind } from "@bombaypetcompany/types";
 
 /**
  * Presentation-only glyph + badge-color map for the timeline (T067 plan

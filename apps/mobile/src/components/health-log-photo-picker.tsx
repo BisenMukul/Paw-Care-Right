@@ -1,4 +1,4 @@
-import { HEALTH_LOG_PHOTO_KEYS_MAX } from "@pawcareright/types";
+import { HEALTH_LOG_PHOTO_KEYS_MAX } from "@bombaypetcompany/types";
 import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 import { useEffect, useRef, useState } from "react";
@@ -12,6 +12,7 @@ import {
   type PhotoSlot,
   type PhotoUploadEvent,
 } from "../checks/photo-upload-machine";
+import { LOCAL_IMAGE_CACHE_POLICY } from "../perf/image-cache-policy";
 import { compressImage } from "../pets/compress-image";
 import { strings } from "../strings";
 
@@ -153,6 +154,7 @@ export function HealthLogPhotoPicker({
               <Image
                 testID={`health-log-photo-thumb-${slot.id}`}
                 source={{ uri: slot.uri }}
+                cachePolicy={LOCAL_IMAGE_CACHE_POLICY}
                 className="h-20 w-20 rounded-lg"
               />
             ) : null}

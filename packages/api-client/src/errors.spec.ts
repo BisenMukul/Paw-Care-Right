@@ -1,4 +1,4 @@
-import type { ErrorCode } from "@pawcareright/types";
+import type { ErrorCode } from "@bombaypetcompany/types";
 import { ApiError, isApiError, normalizeError, normalizeNetworkError } from "./errors";
 
 describe("normalizeError", () => {

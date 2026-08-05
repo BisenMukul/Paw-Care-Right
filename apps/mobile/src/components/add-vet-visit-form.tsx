@@ -1,4 +1,4 @@
-import type { VetVisitValue } from "@pawcareright/types";
+import type { VetVisitValue } from "@bombaypetcompany/types";
 import { forwardRef, useImperativeHandle, useState } from "react";
 import { Text, TextInput, useColorScheme, View } from "react-native";
 

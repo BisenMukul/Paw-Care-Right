@@ -1,10 +1,10 @@
-import type { CompletedIntake, Sex, Species, TriageResult, Urgency } from "@pawcareright/types";
+import type { CompletedIntake, Sex, Species, TriageResult, Urgency } from "@bombaypetcompany/types";
 
 import type { ProviderUsage, TextMessage, TextProvider } from "../providers/types";
 
 /**
  * Pure TS interfaces for the triage prompt layer (T033). No zod here — the
- * app-side `@pawcareright/types` schemas remain the single validation source
+ * app-side `@bombaypetcompany/types` schemas remain the single validation source
  * of truth (`parseTriage`, T030).
  *
  * `TriagePetContext` structurally contains ONLY whitelisted pet fields — no

@@ -1,11 +1,30 @@
 {
   "ci": {
     "collect": {
-      "url": ["http://localhost:3000/"],
-      "startServerCommand": "pnpm --filter @pawcareright/web start"
+      "url": [
+        "http://localhost:3000/",
+        "http://localhost:3000/can-dogs-eat/grapes",
+        "http://localhost:3000/can-cats-eat/onion",
+        "http://localhost:3000/can-dogs-eat/apple"
+      ],
+      "numberOfRuns": 3,
+      "startServerCommand": "pnpm --filter @bombaypetcompany/web start"
     },
     "assert": {
-      "assertions": {}
+      "assertMatrix": [
+        {
+          "matchingUrlPattern": ".*",
+          "assertions": {
+            "categories:seo": ["error", { "minScore": 0.95 }]
+          }
+        },
+        {
+          "matchingUrlPattern": "^https?://[^/]+/$",
+          "assertions": {
+            "categories:performance": ["error", { "minScore": 0.9 }]
+          }
+        }
+      ]
     },
     "upload": {
       "target": "temporary-public-storage"

@@ -1,4 +1,4 @@
-# CLAUDE.md — Paw Care Right + Project Constitution
+# CLAUDE.md — Bombay Pet Company Project Constitution
 
 > **Read this file at the start of every loop iteration.** It is the single source of truth for how code is written in this repository. `LOOP_PROTOCOL.md` defines *how the loop runs*; this file defines *how work is done*. If any instruction elsewhere conflicts with this file, this file wins — except the Safety Policy in `docs/PRODUCT_SPEC.md §5`, which wins over everything.
 
@@ -6,7 +6,7 @@
 
 ## 1. What we are building
 
-**Paw Care Right +** (working title — trademark check is task T102) is a B2C mobile-first AI pet care companion: a "pocket vet + pet life manager" for dog and cat owners worldwide.
+**Bombay Pet Company** (trademark check is task T102) is a B2C mobile-first AI pet care companion: a "pocket vet + pet life manager" for dog and cat owners worldwide.
 
 Core promise: **peace of mind between vet visits.** The app gives AI-powered symptom *guidance* (never diagnosis), food/toxin safety answers, care reminders (vaccines, parasites, meds), a health timeline, and family sharing — priced as a low-cost consumer subscription with regional pricing.
 
@@ -14,21 +14,21 @@ Non-negotiable product principle: **when in doubt, escalate to a real veterinari
 
 ## 1a. Naming convention (display name vs. identifiers) — do not violate
 
-The product's **display name** is exactly `Paw Care Right +` (with spaces and the trailing `+`). This string is used **only** in user-facing surfaces: store listings, the app's on-screen title, marketing/legal copy, push-notification sender name, and email. Wherever the display name is rendered, it comes from **one constant** (`APP_DISPLAY_NAME` in `packages/config`) — never hardcode it in components.
+The product's **display name** is exactly `Bombay Pet Company` (three words, single spaces, no suffix). This string is used **only** in user-facing surfaces: store listings, the app's on-screen title, marketing/legal copy, push-notification sender name, and email. Wherever the display name is rendered, it comes from **one constant** (`APP_DISPLAY_NAME` in `packages/config`) — never hardcode it in components.
 
-The `+` and spaces are **illegal or unsafe** in identifiers, so everywhere that isn't user-facing prose uses these fixed technical derivatives — never invent new ones:
+Spaces are **illegal or unsafe** in identifiers, so everywhere that isn't user-facing prose uses these fixed technical derivatives — never invent new ones:
 
 | Context | Value |
 |---|---|
-| npm/repo/workspace name, monorepo root | `pawcareright` |
-| iOS/Android bundle id | `com.pawcareright.app` |
-| Deep-link scheme | `pawcareright://` |
-| S3 bucket, Redis prefixes, queue names | `pawcareright-*` |
-| Sentry release | `pawcareright@{version}+{updateId}` |
-| Web domain (placeholder until T102) | `pawcareright.app` |
-| EAS project slug | `pawcareright` |
+| npm/repo/workspace name, monorepo root | `bombaypetcompany` |
+| iOS/Android bundle id | `com.bombaypetcompany.app` |
+| Deep-link scheme | `bombaypetcompany://` |
+| S3 bucket, Redis prefixes, queue names | `bombaypetcompany-*` |
+| Sentry release | `bombaypetcompany@{version}+{updateId}` |
+| Web domain (placeholder until T102) | `bombaypetcompany.app` |
+| EAS project slug | `bombaypetcompany` |
 
-Rule: if a value goes into code, config, a URL, a package manifest, or an id → use `pawcareright` (or `com.pawcareright.app`). If it's shown to a human as the product's name → use `Paw Care Right +` via the shared constant. The final store name + bundle ids are confirmed at the **C3 checkpoint** after the T102 trademark pass; treat both as provisional until then.
+Rule: if a value goes into code, config, a URL, a package manifest, or an id → use `bombaypetcompany` (or `com.bombaypetcompany.app`). If it's shown to a human as the product's name → use `Bombay Pet Company` via the shared constant. The final store name + bundle ids are confirmed at the **C3 checkpoint** after the T102 trademark pass; treat both as provisional until then.
 
 ## 2. Golden rules (in priority order)
 
@@ -68,7 +68,7 @@ Do not substitute any of these. If a task seems to require something else, mark 
 ## 4. Repository layout
 
 ```
-pawcareright/
+bombaypetcompany/
 ├── apps/
 │   ├── api/          # NestJS backend
 │   ├── mobile/       # Expo app (the product)

@@ -1,4 +1,4 @@
-import type { Answer, QuestionDef } from "@pawcareright/types";
+import type { Answer, QuestionDef } from "@bombaypetcompany/types";
 import { useState } from "react";
 import { Pressable, Text, TextInput, View } from "react-native";
 

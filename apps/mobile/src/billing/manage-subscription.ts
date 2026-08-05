@@ -8,11 +8,11 @@ export const IOS_MANAGE_SUBSCRIPTION_URL = "https://apps.apple.com/account/subsc
 
 /**
  * Android Play Store subscriptions management page, scoped to our package
- * (§1a: `com.pawcareright.app` is the bundle-id identifier, safe to hardcode
+ * (§1a: `com.bombaypetcompany.app` is the bundle-id identifier, safe to hardcode
  * -- it is not the display name).
  */
 export const ANDROID_MANAGE_SUBSCRIPTION_URL =
-  "https://play.google.com/store/account/subscriptions?package=com.pawcareright.app";
+  "https://play.google.com/store/account/subscriptions?package=com.bombaypetcompany.app";
 
 /**
  * Pure URL resolution (T076 plan decision 2): prefers RC's store-correct

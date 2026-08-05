@@ -1,4 +1,4 @@
-import { ACTIVITY_TYPES } from "@pawcareright/types";
+import { ACTIVITY_TYPES } from "@bombaypetcompany/types";
 
 import { ACTIVITY_TYPE_CONFIG, ACTIVITY_TYPES_ORDER, clampQuantity } from "../src/health-logs/activity-config";
 

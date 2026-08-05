@@ -3,6 +3,7 @@ import {
   DeleteObjectCommand,
   GetObjectCommand,
   HeadObjectCommand,
+  ListObjectsV2Command,
   PutObjectCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
@@ -75,6 +76,26 @@ describe("StorageService", () => {
       expect(url).toContain("pets/pet-1/thumb/abc.jpg");
       expect(url).toContain("X-Amz-Signature");
     });
+
+    it("honours a custom expiresInSeconds (T091 plan step 7)", async () => {
+      const client = new S3Client({
+        endpoint: config.s3Endpoint,
+        region: config.s3Region,
+        credentials: {
+          accessKeyId: config.s3AccessKey,
+          secretAccessKey: config.s3SecretKey,
+        },
+        forcePathStyle: true,
+      });
+      const service = new StorageService(client, config);
+
+      const url = await service.getPresignedGetUrl({
+        key: "exports/user-1/export-1.json",
+        expiresInSeconds: 604_800,
+      });
+
+      expect(url).toContain("X-Amz-Expires=604800");
+    });
   });
 
   describe("getObject", () => {
@@ -123,6 +144,69 @@ describe("StorageService", () => {
       const command = send.mock.calls[0][0] as DeleteObjectCommand;
       expect(command).toBeInstanceOf(DeleteObjectCommand);
       expect(command.input).toEqual({ Bucket: config.s3Bucket, Key: "pets/pet-1/original/abc.jpg" });
+    });
+  });
+
+  describe("listKeys", () => {
+    it("returns [] when the prefix has no objects (single empty page, no continuation)", async () => {
+      const send = jest.fn().mockResolvedValue({ Contents: undefined, IsTruncated: false });
+      const service = new StorageService(buildClientWithSend(send), config);
+
+      const result = await service.listKeys("pets/no-such-pet/");
+
+      expect(result).toEqual([]);
+      expect(send).toHaveBeenCalledTimes(1);
+      const command = send.mock.calls[0][0] as ListObjectsV2Command;
+      expect(command).toBeInstanceOf(ListObjectsV2Command);
+      expect(command.input).toEqual({ Bucket: config.s3Bucket, Prefix: "pets/no-such-pet/" });
+    });
+
+    it("follows the ContinuationToken across two pages and concatenates the keys", async () => {
+      const send = jest
+        .fn()
+        .mockResolvedValueOnce({
+          Contents: [{ Key: "pets/pet-1/original/a.jpg" }],
+          IsTruncated: true,
+          NextContinuationToken: "token-2",
+        })
+        .mockResolvedValueOnce({
+          Contents: [{ Key: "pets/pet-1/original/b.jpg" }],
+          IsTruncated: false,
+        });
+      const service = new StorageService(buildClientWithSend(send), config);
+
+      const result = await service.listKeys("pets/pet-1/");
+
+      expect(result).toEqual(["pets/pet-1/original/a.jpg", "pets/pet-1/original/b.jpg"]);
+      expect(send).toHaveBeenCalledTimes(2);
+      const secondCommand = send.mock.calls[1][0] as ListObjectsV2Command;
+      expect(secondCommand.input).toEqual({
+        Bucket: config.s3Bucket,
+        Prefix: "pets/pet-1/",
+        ContinuationToken: "token-2",
+      });
+    });
+  });
+
+  describe("deleteObjects", () => {
+    it("is a no-op on an empty array (no send call)", async () => {
+      const send = jest.fn();
+      const service = new StorageService(buildClientWithSend(send), config);
+
+      await service.deleteObjects([]);
+
+      expect(send).not.toHaveBeenCalled();
+    });
+
+    it("deletes every key in the array", async () => {
+      const send = jest.fn().mockResolvedValue({});
+      const service = new StorageService(buildClientWithSend(send), config);
+
+      await service.deleteObjects(["pets/pet-1/original/a.jpg", "pets/pet-1/main/a.jpg"]);
+
+      expect(send).toHaveBeenCalledTimes(2);
+      const keys = send.mock.calls.map((call) => (call[0] as DeleteObjectCommand).input.Key);
+      expect(keys).toEqual(["pets/pet-1/original/a.jpg", "pets/pet-1/main/a.jpg"]);
     });
   });
 

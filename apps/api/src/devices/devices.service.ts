@@ -25,16 +25,16 @@ export class DevicesService {
 
   async register(
     userId: string,
-    input: { expoPushToken: string; platform: string },
+    input: { expoPushToken: string; platform: string; appVersion?: string; otaUpdateId?: string },
   ): Promise<RegisteredDevice> {
     try {
-      return await this.upsertAndPrune(userId, input.expoPushToken, input.platform);
+      return await this.upsertAndPrune(userId, input);
     } catch (err) {
       if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") {
         // Parallel callers raced the create path on the unique
         // expoPushToken constraint; the row now exists, so a retry takes
         // the update path and succeeds. Any further failure propagates.
-        return this.upsertAndPrune(userId, input.expoPushToken, input.platform);
+        return this.upsertAndPrune(userId, input);
       }
       throw err;
     }
@@ -42,14 +42,31 @@ export class DevicesService {
 
   private async upsertAndPrune(
     userId: string,
-    expoPushToken: string,
-    platform: string,
+    input: { expoPushToken: string; platform: string; appVersion?: string; otaUpdateId?: string },
   ): Promise<RegisteredDevice> {
+    const { expoPushToken, platform, appVersion, otaUpdateId } = input;
+
+    // T117: an absent field leaves the previously-stored value untouched on
+    // the update branch (never overwritten with `undefined`/null); with
+    // `exactOptionalPropertyTypes`, the data objects are built conditionally
+    // rather than spreading an explicit `undefined` key.
     const [device] = await this.prisma.$transaction([
       this.prisma.device.upsert({
         where: { expoPushToken },
-        create: { userId, expoPushToken, platform },
-        update: { userId, platform, lastSeenAt: new Date() },
+        create: {
+          userId,
+          expoPushToken,
+          platform,
+          ...(appVersion !== undefined ? { appVersion } : {}),
+          ...(otaUpdateId !== undefined ? { otaUpdateId } : {}),
+        },
+        update: {
+          userId,
+          platform,
+          lastSeenAt: new Date(),
+          ...(appVersion !== undefined ? { appVersion } : {}),
+          ...(otaUpdateId !== undefined ? { otaUpdateId } : {}),
+        },
       }),
       this.prisma.device.deleteMany({
         where: { userId, platform, expoPushToken: { not: expoPushToken } },

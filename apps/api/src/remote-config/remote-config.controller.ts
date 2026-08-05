@@ -1,6 +1,6 @@
 import { Controller, Get, UseGuards } from "@nestjs/common";
 import { ApiOkResponse, ApiTags } from "@nestjs/swagger";
-import type { AppConfigResponse } from "@pawcareright/types";
+import type { AppConfigResponse } from "@bombaypetcompany/types";
 
 import { CurrentUser, Public } from "../auth/auth.decorators";
 import { OptionalJwtAuthGuard } from "../auth/optional-jwt-auth.guard";
@@ -25,9 +25,9 @@ export class RemoteConfigController {
   @Get()
   @ApiOkResponse({
     description:
-      "Remote client config: paywall A/B variant, min-supported-version gate, hotline pack version.",
+      "Remote client config: paywall A/B variant, min-supported-version gate, hotline pack version, feature kill switches (T106), the critical-OTA-update signal (T114, mirrors the update's [critical] marker), and the per-platform forced/recommended binary upgrade gates minAppVersion/recommendedAppVersion (T115).",
   })
-  getConfig(@CurrentUser() user?: { userId: string }): AppConfigResponse {
+  getConfig(@CurrentUser() user?: { userId: string }): Promise<AppConfigResponse> {
     return this.remoteConfigService.getConfig(user?.userId);
   }
 }

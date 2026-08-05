@@ -1,4 +1,4 @@
-// Shared ESLint 9 flat config for all Paw Care Right + workspaces.
+// Shared ESLint 9 flat config for all Bombay Pet Company workspaces.
 //
 // This base intentionally uses the NON type-checked `typescript-eslint`
 // recommended preset (no `parserOptions.project`) so it stays portable to

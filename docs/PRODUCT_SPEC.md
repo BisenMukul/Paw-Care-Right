@@ -1,7 +1,7 @@
-# Paw Care Right + — Product Specification v1.0
+# Bombay Pet Company — Product Specification v1.0
 
 Status: LOCKED for v1 build. Changes require a founder decision logged in `loop/journal.md`.
-Owner: Mukul Bisen · Working title "Paw Care Right +" pending trademark check (T102).
+Owner: Mukul Bisen · Working title "Bombay Pet Company" pending trademark check (T102).
 
 ---
 
@@ -82,7 +82,7 @@ Owner invites partner/family → shared pets, shared reminders, shared timeline 
 - Invite via deep link/code; roles: owner, member. All members see pets, reminders, timeline; owner manages billing.
 - Premium entitlement is household-scoped (family plan) — this is the retention moat.
 
-### F7 — Ask Paw Care Right + (AI chat)
+### F7 — Ask Bombay Pet Company (AI chat)
 - Free-form Q&A grounded in the active pet's profile + recent timeline. Same safety system prompt and fallback rules as Symptom Check. Quota-limited (see §7).
 - Not a vet-replacement chat: any symptom-like message is nudged into the structured Symptom Check flow.
 
@@ -100,7 +100,7 @@ Owner invites partner/family → shared pets, shared reminders, shared timeline 
 
 ## 5. Safety & Liability Policy (supreme — overrides all other requirements)
 
-1. **Not a veterinarian.** Persistent, non-dismissible disclaimer on every AI output: "Paw Care Right + provides general guidance, not veterinary diagnosis or treatment. Always consult a licensed veterinarian." Localized once i18n lands.
+1. **Not a veterinarian.** Persistent, non-dismissible disclaimer on every AI output: "Bombay Pet Company provides general guidance, not veterinary diagnosis or treatment. Always consult a licensed veterinarian." Localized once i18n lands.
 2. **Fail upward.** Any schema-validation failure, low-confidence output, provider error, or ambiguous case → safe fallback screen recommending a vet. Never silently retry into a guess. Cats bias one tier more urgent than dogs for equivalent inputs (illness-masking species).
 3. **Deterministic emergencies.** The red-flag rules table (§6.2) is code, not AI. Matches render the Emergency interstitial with local emergency vet search + region-aware poison hotline before any AI content.
 4. **No dosing, ever.** No medication dosages, no drug recommendations, no "give X mg per kg," no human-medication guidance. This is a CHECKER-enforced string/prompt rule and a red-team eval class.

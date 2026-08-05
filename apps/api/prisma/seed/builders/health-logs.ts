@@ -1,4 +1,4 @@
-import type { ActivityType, ActivityUnit } from "@pawcareright/types";
+import type { ActivityType, ActivityUnit } from "@bombaypetcompany/types";
 
 import { daysAgo, startOfUtcDay } from "../clock";
 import { ACTIVITY_NOTES } from "../content";

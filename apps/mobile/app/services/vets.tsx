@@ -8,6 +8,7 @@ import { Chip } from "../../src/components/chip";
 import { PrimaryButton } from "../../src/components/primary-button";
 import { ScreenScaffold } from "../../src/components/screen-scaffold";
 import { PreviewBanner } from "../../src/components/services/preview-banner";
+import { useNavBack } from "../../src/hooks/use-nav-back";
 import { useReducedMotion } from "../../src/hooks/use-reduced-motion";
 import { PREVIEW_VETS, PREVIEW_VET_MODES, type PreviewVetMode } from "../../src/services/preview-fixtures";
 import { strings } from "../../src/strings";
@@ -25,11 +26,16 @@ const DEFAULT_MODE: PreviewVetMode = PREVIEW_VET_MODES[0]?.key ?? "video";
 export default function ServicesVetsScreen() {
   const router = useRouter();
   const reduced = useReducedMotion();
+  const onBack = useNavBack("/services");
   const [mode, setMode] = useState<PreviewVetMode>(DEFAULT_MODE);
 
   return (
     <View testID="services-vets-screen" className="flex-1">
-      <ScreenScaffold title={strings.servicesPreview.vets.title} subtitle={strings.servicesPreview.vets.subtitle}>
+      <ScreenScaffold
+        title={strings.servicesPreview.vets.title}
+        subtitle={strings.servicesPreview.vets.subtitle}
+        onBack={onBack}
+      >
         <PreviewBanner />
 
         <View className="flex-row flex-wrap gap-2">

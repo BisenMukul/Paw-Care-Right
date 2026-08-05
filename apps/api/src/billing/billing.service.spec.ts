@@ -1,9 +1,10 @@
-import { FAMILY_PLAN_PRODUCT_ID } from "@pawcareright/types";
+import { FAMILY_PLAN_PRODUCT_ID } from "@bombaypetcompany/types";
 
 import type { PrismaService } from "../prisma/prisma.service";
 import { BillingService } from "./billing.service";
 import type { SubscriptionRow } from "./entitlement.util";
 import { RC_WEBHOOK_STATUS } from "./rc-webhook.state";
+import { REFERRAL_GRANT_MS } from "./referral.constants";
 
 describe("BillingService", () => {
   const userId = "user-1";
@@ -14,7 +15,7 @@ describe("BillingService", () => {
       rcAppUserId: userId,
       householdId,
       entitlement: "PREMIUM",
-      plan: "pawcareright_monthly",
+      plan: "bombaypetcompany_monthly",
       expiresAt: new Date(Date.now() + 60_000),
       status: RC_WEBHOOK_STATUS.ACTIVE,
       ...overrides,
@@ -24,11 +25,15 @@ describe("BillingService", () => {
   function buildPrisma(overrides: {
     findUnique?: jest.Mock;
     findMany?: jest.Mock;
+    grantFindMany?: jest.Mock;
   }): PrismaService {
     return {
       subscription: {
         findUnique: overrides.findUnique ?? jest.fn().mockResolvedValue(null),
         findMany: overrides.findMany ?? jest.fn().mockResolvedValue([]),
+      },
+      referralGrant: {
+        findMany: overrides.grantFindMany ?? jest.fn().mockResolvedValue([]),
       },
     } as unknown as PrismaService;
   }
@@ -55,7 +60,7 @@ describe("BillingService", () => {
       expect(result).toEqual({
         entitled: true,
         source: "own",
-        plan: "pawcareright_monthly",
+        plan: "bombaypetcompany_monthly",
         expiresAt: expiresAt.toISOString(),
         billingIssue: false,
       });
@@ -94,7 +99,7 @@ describe("BillingService", () => {
     it("does NOT entitle from another member's active NON-family sub", async () => {
       const findUnique = jest.fn().mockResolvedValue(null);
       const findMany = jest.fn().mockResolvedValue([
-        buildRow({ rcAppUserId: "other-member", plan: "pawcareright_monthly" }),
+        buildRow({ rcAppUserId: "other-member", plan: "bombaypetcompany_monthly" }),
       ]);
       const service = new BillingService(buildPrisma({ findUnique, findMany }));
 
@@ -129,7 +134,7 @@ describe("BillingService", () => {
       expect(result).toEqual({
         entitled: true,
         source: "own",
-        plan: "pawcareright_monthly",
+        plan: "bombaypetcompany_monthly",
         expiresAt: expiresAt.toISOString(),
         billingIssue: true,
       });
@@ -165,10 +170,11 @@ describe("BillingService", () => {
       expect(result.expiresAt).toBe(later.toISOString());
     });
 
-    it("issues exactly one findUnique(rcAppUserId) and one findMany(householdId) -- no N+1", async () => {
+    it("issues exactly one findUnique(rcAppUserId), one findMany(householdId), and one referralGrant.findMany -- no N+1", async () => {
       const findUnique = jest.fn().mockResolvedValue(null);
       const findMany = jest.fn().mockResolvedValue([]);
-      const service = new BillingService(buildPrisma({ findUnique, findMany }));
+      const grantFindMany = jest.fn().mockResolvedValue([]);
+      const service = new BillingService(buildPrisma({ findUnique, findMany, grantFindMany }));
 
       await service.getEntitlement(userId, householdId);
 
@@ -176,6 +182,84 @@ describe("BillingService", () => {
       expect(findUnique).toHaveBeenCalledWith({ where: { rcAppUserId: userId } });
       expect(findMany).toHaveBeenCalledTimes(1);
       expect(findMany).toHaveBeenCalledWith({ where: { householdId } });
+      expect(grantFindMany).toHaveBeenCalledTimes(1);
+      const call = grantFindMany.mock.calls[0][0] as { where: { userId: string; expiresAt: { gt: Date } } };
+      expect(call.where.userId).toBe(userId);
+      expect(call.where.expiresAt.gt).toBeInstanceOf(Date);
+    });
+
+    // T108: the grant read path (D1/D2) -- a THIRD, RC-independent input.
+    describe("referral grant source (T108)", () => {
+      it("resolves entitled/grant from an active referral grant when there is no subscription", async () => {
+        const now = Date.now();
+        const grantFindMany = jest
+          .fn()
+          .mockResolvedValue([{ startsAt: new Date(now), expiresAt: new Date(now + REFERRAL_GRANT_MS) }]);
+        const service = new BillingService(buildPrisma({ grantFindMany }));
+
+        const result = await service.getEntitlement(userId, householdId);
+
+        expect(result.entitled).toBe(true);
+        expect(result.source).toBe("grant");
+        expect(result.plan).toBeNull();
+        expect(result.billingIssue).toBe(false);
+      });
+
+      it("an own active sub takes precedence over an active grant (source own, RC expiresAt reported)", async () => {
+        const ownExpiresAt = new Date(Date.now() + 30_000);
+        const findUnique = jest.fn().mockResolvedValue(buildRow({ expiresAt: ownExpiresAt }));
+        const grantFindMany = jest
+          .fn()
+          .mockResolvedValue([{ startsAt: new Date(), expiresAt: new Date(Date.now() + REFERRAL_GRANT_MS) }]);
+        const service = new BillingService(buildPrisma({ findUnique, grantFindMany }));
+
+        const result = await service.getEntitlement(userId, householdId);
+
+        expect(result.source).toBe("own");
+        expect(result.expiresAt).toBe(ownExpiresAt.toISOString());
+      });
+
+      it("a family sub takes precedence over a grant", async () => {
+        const familyExpiresAt = new Date(Date.now() + 30_000);
+        const findMany = jest
+          .fn()
+          .mockResolvedValue([
+            { rcAppUserId: "other-member", householdId, entitlement: "PREMIUM", plan: FAMILY_PLAN_PRODUCT_ID, expiresAt: familyExpiresAt, status: RC_WEBHOOK_STATUS.ACTIVE },
+          ]);
+        const grantFindMany = jest
+          .fn()
+          .mockResolvedValue([{ startsAt: new Date(), expiresAt: new Date(Date.now() + REFERRAL_GRANT_MS) }]);
+        const service = new BillingService(buildPrisma({ findMany, grantFindMany }));
+
+        const result = await service.getEntitlement(userId, householdId);
+
+        expect(result.source).toBe("family");
+      });
+
+      it("an expired grant does not entitle", async () => {
+        const grantFindMany = jest
+          .fn()
+          .mockResolvedValue([{ startsAt: new Date(Date.now() - 2000), expiresAt: new Date(Date.now() - 1000) }]);
+        const service = new BillingService(buildPrisma({ grantFindMany }));
+
+        const result = await service.getEntitlement(userId, householdId);
+
+        expect(result).toEqual({ entitled: false, source: "none", plan: null, expiresAt: null, billingIssue: false });
+      });
+
+      it("reports the chained tip (+42d) for 3 stacked grants", async () => {
+        const now = Date.now();
+        const g1 = { startsAt: new Date(now), expiresAt: new Date(now + REFERRAL_GRANT_MS) };
+        const g2 = { startsAt: g1.expiresAt, expiresAt: new Date(g1.expiresAt.getTime() + REFERRAL_GRANT_MS) };
+        const g3 = { startsAt: g2.expiresAt, expiresAt: new Date(g2.expiresAt.getTime() + REFERRAL_GRANT_MS) };
+        const grantFindMany = jest.fn().mockResolvedValue([g1, g2, g3]);
+        const service = new BillingService(buildPrisma({ grantFindMany }));
+
+        const result = await service.getEntitlement(userId, householdId);
+
+        expect(result.source).toBe("grant");
+        expect(result.expiresAt).toBe(g3.expiresAt.toISOString());
+      });
     });
   });
 });

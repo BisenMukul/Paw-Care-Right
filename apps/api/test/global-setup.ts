@@ -2,7 +2,7 @@ import { execSync } from "node:child_process";
 import path from "node:path";
 
 const DEFAULT_DATABASE_URL =
-  "postgresql://pawcareright:pawcareright@localhost:5432/pawcareright?schema=public";
+  "postgresql://bombaypetcompany:bombaypetcompany@localhost:5432/bombaypetcompany?schema=public";
 
 /**
  * Jest globalSetup: applies committed Prisma migrations before the suite

@@ -1,5 +1,5 @@
 {
-  "name": "@pawcareright/ai",
+  "name": "@bombaypetcompany/ai",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -15,13 +15,15 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "jest",
-    "test:ai-evals": "tsup && node dist/evals/run.js"
+    "test:cov": "jest --coverage",
+    "test:ai-evals": "tsup && node dist/evals/run.js",
+    "generate:breed-guides": "tsup && node dist/content/generate-breed-guides.js"
   },
   "dependencies": {
     "zod": "^4",
-    "@pawcareright/config": "workspace:*",
-    "@pawcareright/types": "workspace:*",
-    "@pawcareright/data": "workspace:*"
+    "@bombaypetcompany/config": "workspace:*",
+    "@bombaypetcompany/types": "workspace:*",
+    "@bombaypetcompany/data": "workspace:*"
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",
@@ -44,6 +46,22 @@
       "^.+\\.ts$": ["ts-jest", { "tsconfig": "<rootDir>/tsconfig.spec.json" }]
     },
     "testMatch": ["**/*.spec.ts"],
-    "moduleFileExtensions": ["ts", "js", "json"]
+    "moduleFileExtensions": ["ts", "js", "json"],
+    "collectCoverageFrom": [
+      "src/**/*.ts",
+      "!src/**/*.spec.ts",
+      "!src/index.ts",
+      "!src/evals/run.ts",
+      "!src/content/generate-breed-guides.ts"
+    ],
+    "coverageDirectory": "<rootDir>/coverage",
+    "coverageThreshold": {
+      "global": {
+        "statements": 80,
+        "lines": 80,
+        "functions": 80,
+        "branches": 70
+      }
+    }
   }
 }

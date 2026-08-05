@@ -1,4 +1,4 @@
-import { isApiError } from "@pawcareright/api-client";
+import { isApiError } from "@bombaypetcompany/api-client";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { Text } from "react-native";

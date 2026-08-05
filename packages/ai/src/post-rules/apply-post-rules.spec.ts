@@ -7,7 +7,7 @@ import {
   type Confidence,
   type TriageResult,
   type Urgency,
-} from "@pawcareright/types";
+} from "@bombaypetcompany/types";
 
 import { applyPostRules, type PostRulesContext } from "./apply-post-rules";
 

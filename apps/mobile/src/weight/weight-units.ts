@@ -1,8 +1,12 @@
+import type { LocaleId } from "@bombaypetcompany/config";
+
+import { formatDecimal } from "../i18n/format";
+
 /**
  * Weight unit domain (T065 plan): pure conversions between the storage
- * source of truth (integer grams) and the two display units. No React, no
- * imports — every mobile weight surface (chart, form, unit store) is built
- * on top of this module.
+ * source of truth (integer grams) and the two display units. No React —
+ * every mobile weight surface (chart, form, unit store) is built on top of
+ * this module.
  */
 export type WeightUnit = "kg" | "lb";
 
@@ -29,9 +33,17 @@ export function gramsToDisplay(grams: number, unit: WeightUnit): number {
   return Math.round(raw * 10) / 10;
 }
 
-/** Grams → a formatted, unit-suffixed string (e.g. `"25.0 kg"`). */
-export function formatWeight(grams: number, unit: WeightUnit): string {
-  return `${gramsToDisplay(grams, unit).toFixed(1)} ${unit}`;
+/**
+ * Grams → a formatted, unit-suffixed string (e.g. `"25.0 kg"`). `locale`
+ * defaults to `"en"` — T110 (F11): the app's weight domain
+ * (`WEIGHT_MIN_GRAMS`..`WEIGHT_MAX_GRAMS`) never converts to a value large
+ * enough to reach a grouping separator in either unit, so delegating to
+ * `formatDecimal` is BYTE-IDENTICAL to the pre-T110 `toFixed(1)` output for
+ * `en` across the whole legal domain (mechanised by
+ * `i18n-format.test.ts`'s "formatWeight is byte-identical..." case).
+ */
+export function formatWeight(grams: number, unit: WeightUnit, locale: LocaleId = "en"): string {
+  return `${formatDecimal(gramsToDisplay(grams, unit), locale)} ${unit}`;
 }
 
 export type ParseDisplayToGramsResult =

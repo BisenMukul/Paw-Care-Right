@@ -1,4 +1,4 @@
-import type { AgendaEntry } from "@pawcareright/types";
+import type { AgendaEntry } from "@bombaypetcompany/types";
 import { Text, View } from "react-native";
 
 import { strings } from "../strings";

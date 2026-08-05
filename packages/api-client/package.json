@@ -1,5 +1,5 @@
 {
-  "name": "@pawcareright/api-client",
+  "name": "@bombaypetcompany/api-client",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -22,7 +22,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@pawcareright/types": "workspace:*",
+    "@bombaypetcompany/types": "workspace:*",
     "@tanstack/react-query": "^5",
     "@tanstack/react-query-persist-client": "^5",
     "zod": "^4"
@@ -35,7 +35,7 @@
     "react-native-mmkv": { "optional": true }
   },
   "devDependencies": {
-    "@pawcareright/config": "workspace:*",
+    "@bombaypetcompany/config": "workspace:*",
     "react": "^19",
     "@types/react": "^19",
     "react-native-mmkv": "^4",

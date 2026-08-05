@@ -31,9 +31,14 @@ const mmkvStorage: StateStorage = {
 
 /**
  * Analytics consent (T078 plan decision 4): default ON, with a functional
- * off switch pre-wired in Settings for T091. Gates the MOBILE emitter ONLY
- * (`src/analytics/analytics.ts`'s `isEnabled`) -- server events are not
- * gated in v1 (plan R1).
+ * off switch wired in Settings. Gates the MOBILE emitter ONLY
+ * (`src/analytics/analytics.ts`'s `isEnabled`). As of T091, server-side
+ * events are ALSO gated -- separately, by `AnalyticsService.captureForUser`
+ * reading `User.analyticsOptOut` (apps/api) -- and Settings' toggle PUTs
+ * that same server flag whenever this local store changes
+ * (`apps/mobile/app/(tabs)/settings.tsx`'s `handleAnalyticsToggle`), so the
+ * two gates stay in sync. This store's own on/off behavior is unchanged
+ * from T078; only the server side of the picture is new.
  */
 export const useConsentStore = create<ConsentState>()(
   persist(
@@ -45,7 +50,7 @@ export const useConsentStore = create<ConsentState>()(
       },
     }),
     {
-      name: "pawcareright.analytics-consent",
+      name: "bombaypetcompany.analytics-consent",
       storage: createJSONStorage(() => mmkvStorage),
       partialize: (state) => ({ enabled: state.enabled }),
     },

@@ -48,4 +48,18 @@ describe("resolveLimit", () => {
     expect(resolveLimit("PREMIUM", "checks")).toEqual({ window: "month", limit: 30 });
     expect(resolveLimit("PREMIUM", "foodLookups")).toEqual({ window: "day", limit: null });
   });
+
+  it("chatMessages limits: PREMIUM 200/month, FREE 0 (T081)", () => {
+    expect(resolveLimit("PREMIUM", "chatMessages")).toEqual({ window: "month", limit: 200 });
+    expect(resolveLimit("FREE", "chatMessages")).toEqual({ window: "month", limit: 0 });
+  });
+});
+
+describe("quotaKey — chatMessages (T081)", () => {
+  it("renders the exact documented key shape", () => {
+    const now = new Date("2026-07-24T10:00:00Z");
+    expect(quotaKey("chatMessages", "month", "u1", now)).toBe(
+      `${QUOTA_KEY_PREFIX}chatMessages:month:u1:2026-07`,
+    );
+  });
 });

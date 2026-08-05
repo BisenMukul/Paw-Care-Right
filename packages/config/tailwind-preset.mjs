@@ -1,4 +1,4 @@
-// Shared Tailwind v3 JS preset for all Paw Care Right + workspaces.
+// Shared Tailwind v3 JS preset for all Bombay Pet Company workspaces.
 //
 // Kept as a plain, directly-loadable ESM file (not routed through tsup) so
 // Tailwind's own config loader (jiti) can `import`/`require` it straight

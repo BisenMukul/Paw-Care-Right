@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Put } from "@nestjs/common";
 import { ApiBadRequestResponse, ApiOkResponse, ApiTags, ApiUnauthorizedResponse } from "@nestjs/swagger";
-import type { NotificationPrefs, UpdateNotificationPrefsInput } from "@pawcareright/types";
+import type { NotificationPrefs, UpdateNotificationPrefsInput } from "@bombaypetcompany/types";
 
 import { CurrentUser } from "../auth/auth.decorators";
 import { UpdateNotificationPrefsDto } from "./dto/update-notification-prefs.dto";

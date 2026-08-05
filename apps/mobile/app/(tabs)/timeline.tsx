@@ -1,5 +1,5 @@
-import { useIsOffline } from "@pawcareright/api-client";
-import type { HealthLogKind } from "@pawcareright/types";
+import { useIsOffline } from "@bombaypetcompany/api-client";
+import type { HealthLogKind } from "@bombaypetcompany/types";
 import { useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { RefreshControl, SectionList, Share, Text, View } from "react-native";

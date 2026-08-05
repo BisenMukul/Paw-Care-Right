@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
-import { VET_SUMMARY_DISCLAIMER, VET_SUMMARY_MAX_CHARS } from "@pawcareright/types";
+import { VET_SUMMARY_DISCLAIMER, VET_SUMMARY_MAX_CHARS } from "@bombaypetcompany/types";
 
 import { buildVetSummary, type VetSummaryInput } from "./build-vet-summary";
 

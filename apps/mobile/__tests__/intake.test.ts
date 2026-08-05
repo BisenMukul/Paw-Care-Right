@@ -1,5 +1,5 @@
-import { getCategoryDef, parseIntake } from "@pawcareright/types";
-import type { Answer, CategoryDef } from "@pawcareright/types";
+import { getCategoryDef, parseIntake } from "@bombaypetcompany/types";
+import type { Answer, CategoryDef } from "@bombaypetcompany/types";
 
 import { buildDescriptorFreeText, buildIntakeCandidate, describeAnswer } from "../src/checks/intake";
 

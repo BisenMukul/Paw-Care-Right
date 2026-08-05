@@ -1,5 +1,5 @@
-import { setOnline } from "@pawcareright/api-client";
-import type { CheckResponse } from "@pawcareright/types";
+import { setOnline } from "@bombaypetcompany/api-client";
+import type { CheckResponse } from "@bombaypetcompany/types";
 import { act, fireEvent, render, screen } from "@testing-library/react-native";
 
 import CheckHistoryScreen from "../app/check/history/[petId]";
@@ -7,12 +7,15 @@ import { strings } from "../src/strings";
 
 // T050 plan "Tests to write" -> check-history-screen.test.tsx. `expo-router`
 // and `useChecksList` are mocked; offline is driven by the REAL shared store
-// (`setOnline`) from `@pawcareright/api-client`, reset to online in
+// (`setOnline`) from `@bombaypetcompany/api-client`, reset to online in
 // `afterEach`. RNTL v14 — every render is awaited.
 const mockPush = jest.fn();
 
+// FOUNDER-UX-3 plan: `back`/`canGoBack` added -- the loaded screen now
+// composes the canon `AppHeader` (title + back), whose `onBack` resolves
+// through `useNavBack`.
 jest.mock("expo-router", () => ({
-  useRouter: () => ({ push: mockPush }),
+  useRouter: () => ({ push: mockPush, back: jest.fn(), replace: jest.fn(), canGoBack: () => true }),
   useLocalSearchParams: () => ({ petId: "pet1" }),
 }));
 
@@ -182,5 +185,15 @@ describe("check history screen", () => {
 
     expect(screen.getByTestId("check-history-offline-banner")).toBeTruthy();
     expect(screen.getByTestId("check-history-row-c1")).toBeTruthy();
+  });
+
+  // FOUNDER-UX-3 plan AC3: the canon header carries the screen's title.
+  it("[AC3] renders app-header with the screen title", async () => {
+    mockUseChecksList.mockReturnValue({ ...BASE_MOCK, ...page([MONITOR_ITEM]) });
+
+    await render(<CheckHistoryScreen />);
+
+    expect(screen.getByTestId("app-header")).toBeTruthy();
+    expect(screen.getByTestId("app-header-title")).toHaveTextContent(strings.check.history.title);
   });
 });

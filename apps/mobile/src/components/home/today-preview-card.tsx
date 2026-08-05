@@ -1,6 +1,6 @@
-import { useIsOffline } from "@pawcareright/api-client";
+import { useIsOffline } from "@bombaypetcompany/api-client";
 import { Ionicons } from "@expo/vector-icons";
-import type { AgendaEntry } from "@pawcareright/types";
+import type { AgendaEntry } from "@bombaypetcompany/types";
 import { useRouter } from "expo-router";
 import type { ComponentProps, ReactNode } from "react";
 import { ActivityIndicator, Pressable, Text, useColorScheme, View } from "react-native";

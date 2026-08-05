@@ -1,4 +1,4 @@
-import { URGENCY_SEVERITY } from "@pawcareright/types";
+import { URGENCY_SEVERITY } from "@bombaypetcompany/types";
 
 import { matchesKeywordLeaf, normalizeText } from "./normalize";
 import { RED_FLAG_RULES } from "./rules-table";

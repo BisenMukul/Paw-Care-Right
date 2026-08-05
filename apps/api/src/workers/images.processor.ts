@@ -12,7 +12,7 @@ const MAIN_MAX_DIMENSION = 1600;
 const THUMB_MAX_DIMENSION = 320;
 
 /**
- * Consumes `pawcareright-images` jobs: download the original -> sharp resize
+ * Consumes `bombaypetcompany-images` jobs: download the original -> sharp resize
  * (main 1600px, thumb 320px long edge, no enlargement) -> re-upload both
  * renditions -> household-scoped `Pet.photoKey` write. `.rotate()` bakes
  * EXIF orientation into the pixels before sharp's default (no

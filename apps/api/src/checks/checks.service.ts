@@ -8,7 +8,7 @@ import {
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
-import { evaluateRedFlags } from "@pawcareright/ai";
+import { evaluateRedFlags } from "@bombaypetcompany/ai";
 import {
   parseIntake,
   parseTriage,
@@ -17,7 +17,7 @@ import {
   type FollowUpResponse,
   type TriageResult,
   type Urgency,
-} from "@pawcareright/types";
+} from "@bombaypetcompany/types";
 import {
   Prisma,
   type CheckFollowUp,
@@ -26,6 +26,7 @@ import {
 } from "@prisma/client";
 import type { Queue } from "bullmq";
 
+import { AnomalyService } from "../abuse/anomaly.service";
 import { PetsService } from "../pets/pets.service";
 import { PrismaService } from "../prisma/prisma.service";
 import { ENTITLEMENT_RESOLVER, type EntitlementResolver } from "../quota/entitlement";
@@ -87,6 +88,7 @@ export class ChecksService {
     private readonly quotaService: QuotaService,
     @Inject(ENTITLEMENT_RESOLVER) private readonly entitlementResolver: EntitlementResolver,
     @InjectQueue(CHECKS_QUEUE) private readonly queue: Queue<ChecksJobData>,
+    private readonly anomaly: AnomalyService,
   ) {}
 
   async create(
@@ -164,6 +166,20 @@ export class ChecksService {
 
     // 8. Both paths enqueue (D2), jobId = checkId (idempotent re-enqueue).
     await this.enqueue(check.id);
+
+    // Counts BOTH branches (red-flag and quota) so an abuser cannot hide
+    // behind red-flag intake; alert-only -- see `AnomalyService`. Placed
+    // AFTER persist+enqueue so it can never sit between the red-flag
+    // evaluation and the response (T090 plan §5). `AnomalyService.recordCheck`
+    // already never throws by its own contract; this try/catch is a second,
+    // belt-and-braces layer so this §5-critical response can NEVER be
+    // blocked/500'd by this call, regardless of how the injected dependency
+    // behaves.
+    try {
+      await this.anomaly.recordCheck(userId);
+    } catch {
+      // Deliberately swallowed -- see comment above.
+    }
 
     return this.toResponse(check);
   }

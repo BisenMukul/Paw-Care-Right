@@ -1,5 +1,5 @@
 import { Injectable, Logger } from "@nestjs/common";
-import type { NotificationPrefs, UpdateNotificationPrefsInput } from "@pawcareright/types";
+import type { NotificationPrefs, UpdateNotificationPrefsInput } from "@bombaypetcompany/types";
 
 import { PrismaService } from "../prisma/prisma.service";
 

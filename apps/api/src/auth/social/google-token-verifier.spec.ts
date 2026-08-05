@@ -5,7 +5,7 @@ import type { JWK, JWTVerifyGetKey, KeyLike } from "jose";
 import type { AppConfigService } from "../../config/app-config.service";
 import { GOOGLE_ISSUERS, GoogleTokenVerifier } from "./google-token-verifier";
 
-const TEST_CLIENT_ID = "pawcareright-dev.apps.googleusercontent.com";
+const TEST_CLIENT_ID = "bombaypetcompany-dev.apps.googleusercontent.com";
 const KEY_ID = "test-google-key-1";
 const GOOGLE_DEFAULT_ISSUER: string = GOOGLE_ISSUERS[0] ?? "https://accounts.google.com";
 

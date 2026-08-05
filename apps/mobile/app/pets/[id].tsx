@@ -1,4 +1,4 @@
-import { isApiError, useIsOffline } from "@pawcareright/api-client";
+import { isApiError, useIsOffline } from "@bombaypetcompany/api-client";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from "react-native";
@@ -6,10 +6,14 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { usePet } from "../../src/api/pets-api";
+import { AppHeader } from "../../src/components/app-header";
 import { AnimatedGradientBackground } from "../../src/components/home/animated-gradient-background";
+import { ListRow } from "../../src/components/list-row";
 import { PetHeaderCard } from "../../src/components/pet-header-card";
 import { PrimaryButton } from "../../src/components/primary-button";
 import { QuickActions } from "../../src/components/quick-actions";
+import { guideRouteParams, resolveBreedGuideForPet } from "../../src/content/breed-guide-content";
+import { useNavBack } from "../../src/hooks/use-nav-back";
 import { useReducedMotion } from "../../src/hooks/use-reduced-motion";
 import { CTA_HEIGHT } from "../../src/pets/pet-home-layout";
 import { strings } from "../../src/strings";
@@ -32,6 +36,7 @@ import { strings } from "../../src/strings";
  */
 export default function PetHomeScreen() {
   const router = useRouter();
+  const onBack = useNavBack("/(tabs)");
   const { id, localPhoto } = useLocalSearchParams<{ id: string; localPhoto?: string }>();
   const { data: pet, isLoading, isError, error, isFetching, refetch } = usePet(id);
   const isOffline = useIsOffline();
@@ -96,10 +101,16 @@ export default function PetHomeScreen() {
     );
   }
 
+  // T087 plan step 8: only rendered when the pet's breed has a PUBLISHED
+  // guide (safety statement 4) -- a draft/unknown/missing breed renders no
+  // row at all, never a placeholder that leads to a not-found screen.
+  const guideEntry = resolveBreedGuideForPet(pet.species, pet.breedSlug);
+
   return (
     <View className="flex-1">
       <AnimatedGradientBackground />
       <SafeAreaView className="flex-1">
+        <AppHeader onBack={onBack} />
         <View testID="pet-home-header-region" className="gap-3 px-6 pb-4 pt-2">
           {isOffline ? (
             <Text testID="pet-home-offline-banner" className="text-center text-sm text-brand-700 dark:text-ink-muted-dark font-body">
@@ -137,6 +148,17 @@ export default function PetHomeScreen() {
               onLogVetVisit={() => router.push({ pathname: "/vet-visit/[petId]", params: { petId: id } })}
               onReminders={() => router.push("/(tabs)/care")}
             />
+            {guideEntry !== null ? (
+              <ListRow
+                testID="pet-home-breed-guide"
+                title={strings.breedGuide.title(guideEntry.breedName)}
+                leadingIcon="book-outline"
+                accessibilityLabel={strings.breedGuide.rowA11y(guideEntry.breedName)}
+                onPress={() =>
+                  router.push({ pathname: "/breeds/[species]/[slug]", params: guideRouteParams(guideEntry) })
+                }
+              />
+            ) : null}
           </View>
         </ScrollView>
       </SafeAreaView>

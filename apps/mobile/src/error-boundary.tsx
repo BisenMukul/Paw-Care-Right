@@ -1,6 +1,9 @@
 import { Component, type ErrorInfo, type ReactNode } from "react";
 import { Text, View } from "react-native";
 
+import { recordLogEvent } from "./observability/log-buffer";
+import { captureError } from "./observability/sentry";
+
 interface Props {
   children: ReactNode;
 }
@@ -17,8 +20,12 @@ export class AppErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    // eslint-disable-next-line no-console -- JUSTIFIED: last-resort startup-crash diagnostic; fires only after the UI has already failed (Sentry wiring lands in P9)
+    // eslint-disable-next-line no-console -- JUSTIFIED: last-resort startup-crash diagnostic; fires only after the UI has already failed (Sentry wiring landed T089 -- captureError below is a safe no-op when uninitialized)
     console.error("AppErrorBoundary", error, errorInfo);
+    captureError(error, { componentStack: errorInfo.componentStack ?? "" });
+    // T104: feeds the closed-shape feedback log-buffer (D3) -- never the
+    // error's message/component stack, only its bare class name.
+    recordLogEvent({ level: "error", code: "render_error", ...(error.name ? { errorName: error.name } : {}) });
   }
 
   render() {

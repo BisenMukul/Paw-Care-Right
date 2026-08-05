@@ -1,5 +1,5 @@
 import nextPlugin from "@next/eslint-plugin-next";
-import sharedConfig from "@pawcareright/config/eslint";
+import sharedConfig from "@bombaypetcompany/config/eslint";
 
 export default [
   { ignores: [".next/**", "next-env.d.ts"] },

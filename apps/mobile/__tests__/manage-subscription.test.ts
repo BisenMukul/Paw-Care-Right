@@ -27,7 +27,7 @@ describe("resolveManageSubscriptionUrl", () => {
   it("falls back to the Android store URL (scoped to our package) when managementURL is null", () => {
     const url = resolveManageSubscriptionUrl(null, "android");
     expect(url).toBe(ANDROID_MANAGE_SUBSCRIPTION_URL);
-    expect(url).toContain("package=com.pawcareright.app");
+    expect(url).toContain("package=com.bombaypetcompany.app");
   });
 
   it("falls back to iOS for an unrecognized platform", () => {

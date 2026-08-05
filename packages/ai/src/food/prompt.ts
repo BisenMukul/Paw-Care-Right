@@ -1,4 +1,4 @@
-import { FOOD_VERDICTS, type Species } from "@pawcareright/types";
+import { FOOD_VERDICTS, type Species } from "@bombaypetcompany/types";
 
 import type { TextMessage } from "../providers/types";
 
@@ -11,7 +11,7 @@ export const FOOD_SAFETY_PROMPT_VERSION = "food-safety-v1";
 /**
  * `FoodSafetyAnswer` rendered as model-facing text (mirrors
  * `../triage/schema-text.ts`). The verdict list is interpolated from
- * `FOOD_VERDICTS` so it cannot drift from `@pawcareright/types`; the rest is
+ * `FOOD_VERDICTS` so it cannot drift from `@bombaypetcompany/types`; the rest is
  * static descriptive text. `parseFoodSafetyAnswer` remains the real
  * validation gate — this text is a teaching aid, not a schema serializer.
  */

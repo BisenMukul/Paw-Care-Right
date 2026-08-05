@@ -15,6 +15,12 @@ jest.mock("../src/api/billing-api", () => ({
   useEntitlement: jest.fn(),
 }));
 
+// T091: see settings-restore.test.tsx's identical mock for why this is needed.
+jest.mock("../src/api/privacy-api", () => ({
+  usePrivacySettings: jest.fn(() => ({ data: undefined })),
+  useUpdatePrivacySettings: jest.fn(() => ({ mutateAsync: jest.fn() })),
+}));
+
 jest.mock("../src/billing/manage-subscription", () => ({
   openManageSubscription: jest.fn(),
 }));
@@ -34,7 +40,7 @@ describe("settings screen — manage subscription row", () => {
 
   it("is present when entitled and pressing it opens the manage-subscription flow", async () => {
     mockedUseEntitlement.mockReturnValue({
-      data: { entitled: true, source: "own", plan: "pawcareright_monthly", expiresAt: null, billingIssue: false },
+      data: { entitled: true, source: "own", plan: "bombaypetcompany_monthly", expiresAt: null, billingIssue: false },
     });
 
     await render(<SettingsScreen />);
@@ -67,7 +73,7 @@ describe("settings screen — manage subscription row", () => {
       data: {
         entitled: true,
         source: "family",
-        plan: "pawcareright_family",
+        plan: "bombaypetcompany_family",
         expiresAt: null,
         billingIssue: false,
       },
