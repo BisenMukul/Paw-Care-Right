@@ -53,10 +53,20 @@ export async function fetchAppConfig(): Promise<AppConfig> {
  * from the cache-or-default so the config is NEVER `undefined`/loading, and
  * a background refetch swaps in the fresh value once, in place.
  */
+// Config changes rarely; without a staleTime the default (0) makes the query
+// stale immediately, so every observer mount refetches `/v1/config`. Under any
+// mount/reconnect churn that becomes a request storm (observed: ~7 req/s that
+// trips the global throttler). A finite staleTime fetches once per window and
+// serves the cache in between; `initialData` still guarantees a value on the
+// first render, and the MMKV cache survives restarts.
+const APP_CONFIG_STALE_TIME_MS = 5 * 60 * 1000;
+
 export function useAppConfig(): UseQueryResult<AppConfig> {
   return useQuery({
     queryKey: ["app-config"],
     queryFn: fetchAppConfig,
     initialData: readCachedConfig() ?? DEFAULT_APP_CONFIG,
+    staleTime: APP_CONFIG_STALE_TIME_MS,
+    refetchOnWindowFocus: false,
   });
 }
